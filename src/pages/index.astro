@@ -1,0 +1,217 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import { SITE, SERVICES, SOCIALS } from '@utils/constants';
+import { getCollection } from 'astro:content';
+
+// Fetch all articles (sorted by date, featured first)
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+const sorted = allArticles.sort((a, b) => {
+  if (a.data.featured !== b.data.featured) {
+    return a.data.featured ? -1 : 1;
+  }
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
+
+const featuredArticles = sorted.filter(a => a.data.featured).slice(0, 3);
+const recentArticles = sorted.slice(0, 6);
+
+const categories = await getCollection('categories');
+const categoryNames = new Map(categories.map((c) => [c.id, c.data.name]));
+
+const title = SITE.name;
+const description = SITE.description;
+---
+
+<MainLayout {title} {description}>
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div class="hero-content reveal">
+        <span class="hero-eyebrow">
+          <span class="flag-dot" aria-hidden="true"><i></i><i></i><i></i></span>
+          স্বাধীন কমিউনিটি তথ্য প্ল্যাটফর্ম
+        </span>
+        <h1>পশ্চিমবঙ্গ ও ভারতের সরকারি তথ্যের নির্ভরযোগ্য উৎস</h1>
+        <p class="hero-sub">সরকারি চাকরি, সরকারি প্রকল্প, পরীক্ষার আপডেট, অ্যাডমিট কার্ড, রেজাল্ট ও নোটিশ — সব তথ্য এখন এক জায়গায়, সহজ ও স্পষ্ট বাংলা ভাষায়।</p>
+        <div class="hero-ctas">
+          <a href={SOCIALS.telegram} target="_blank" rel="noopener" class="btn btn-primary">
+            <svg class="icon" aria-hidden="true" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5 2 7z"/><path d="M21 3 12.5 13"/></svg>
+            Telegram Channel
+          </a>
+          <a href={SOCIALS.whatsapp} target="_blank" rel="noopener" class="btn btn-secondary">
+            <svg class="icon" aria-hidden="true" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M6.5 17.5 4 20l2.6-.7A8 8 0 1 0 4 12a8 8 0 0 0 2.5 5.5z"/><path d="M9 10.5c.3 2 2.5 4.2 4.5 4.5.8.1 1.5-.4 1.7-1"/></svg>
+            WhatsApp Channel
+          </a>
+        </div>
+        <div class="hero-meta">
+          <div><strong>৩</strong><span>কমিউনিটি প্ল্যাটফর্ম</span></div>
+          <div><strong>১০০%</strong><span>বাংলা ভাষায়</span></div>
+          <div><strong>০</strong><span>সদস্য ফি</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">আমরা যা নিয়ে কাজ করি</span>
+        <h2>আমাদের সেবাসমূহ</h2>
+      </div>
+      <div class="services-grid">
+        {SERVICES.map((s) => <div class="service-card reveal"><span class="icon"></span><h3>{s.title}</h3></div>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Community -->
+  <section class="section section-alt" id="channel">
+    <div class="container">
+      <div class="section-head reveal center" style="margin-inline:auto; text-align:center;">
+        <span class="eyebrow" style="margin-inline:auto;">আমাদের কমিউনিটি</span>
+        <h2>যেভাবে যুক্ত থাকবেন</h2>
+      </div>
+      <div class="community-grid">
+        <div class="community-card telegram reveal">
+          <h3>Telegram Channel</h3>
+          <ul>
+            <li>সর্বশেষ সরকারি চাকরির খবর</li>
+            <li>সরকারি প্রকল্পের তথ্য</li>
+            <li>ব্রেকিং আপডেট</li>
+          </ul>
+          <a href={SOCIALS.telegram} target="_blank" rel="noopener" class="btn btn-primary btn-block">Join Telegram</a>
+        </div>
+        <div class="community-card mcq reveal">
+          <h3>Telegram MCQ Group</h3>
+          <ul>
+            <li>দৈনিক MCQ অনুশীলন</li>
+            <li>প্রতিযোগিতামূলক পরীক্ষার প্রস্তুতি</li>
+            <li>আলোচনা ও সমাধান</li>
+          </ul>
+          <a href={SOCIALS.telegramMCQ} target="_blank" rel="noopener" class="btn btn-primary btn-block">Join Group</a>
+        </div>
+        <div class="community-card whatsapp reveal">
+          <h3>WhatsApp Channel</h3>
+          <ul>
+            <li>তাৎক্ষণিক নোটিফিকেশন</li>
+            <li>সরকারি আপডেট</li>
+            <li>অফিসিয়াল তথ্য সংক্ষেপে</li>
+          </ul>
+          <a href={SOCIALS.whatsapp} target="_blank" rel="noopener" class="btn btn-primary btn-block">Join WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Articles Preview -->
+  {recentArticles.length > 0 && (
+    <section class="section section-alt" id="articles">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">সাম্প্রতিক</span>
+          <h2>আর্টিকেল ও আপডেট</h2>
+        </div>
+        <div class="articles-grid">
+          {recentArticles.map((article) => {
+            const date = new Date(article.data.date).toLocaleDateString('bn-BD', { year: 'numeric', month: 'short', day: 'numeric' });
+            return (
+              <a href={`/sarkari-tathya-kendra/articles/${article.slug}`} class="article-card reveal">
+                <div class="article-body">
+                  <span class="article-category">{categoryNames.get(article.data.category) ?? article.data.category}</span>
+                  <h3>{article.data.title}</h3>
+                  <p>{article.data.description}</p>
+                  <span class="article-date">{date}</span>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+        <div style="text-align: center; margin-top: var(--space-5);">
+          <a href="/sarkari-tathya-kendra/articles/" class="btn btn-secondary">সব আর্টিকেল দেখুন</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Contact -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">যোগাযোগ</span>
+        <h2>আমাদের সাথে যোগাযোগ করুন</h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-card email reveal">
+          <span class="icon">📧</span>
+          <div><h3>ইমেইল</h3><p>{SOCIALS.email}</p></div>
+        </div>
+        <div class="contact-card telegram reveal">
+          <span class="icon">✈️</span>
+          <div><h3>Telegram</h3><p>@SarkariTathyaKendra</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<style>
+  .hero { padding-block: var(--space-6) var(--space-7); position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px circle at 88% -10%, rgba(var(--color-green-rgb), 0.07), transparent 60%), radial-gradient(500px circle at -5% 110%, rgba(var(--color-orange-rgb), 0.08), transparent 60%); pointer-events: none; z-index: 0; }
+  .hero .container { position: relative; z-index: 1; }
+  .hero-eyebrow { display: inline-flex; align-items: center; gap: 0.5em; color: var(--color-navy); background: var(--color-surface-alt); border: 1px solid var(--color-border); padding: 0.4em 1em; border-radius: var(--radius-pill); font-weight: 600; font-size: 0.85rem; margin-bottom: var(--space-3); }
+  .hero-eyebrow .flag-dot { display: inline-flex; gap: 3px; }
+  .hero-eyebrow .flag-dot i { width: 6px; height: 6px; border-radius: 50%; }
+  .hero-eyebrow .flag-dot i:nth-child(1) { background: var(--color-orange); }
+  .hero-eyebrow .flag-dot i:nth-child(2) { background: var(--color-text-muted); }
+  .hero-eyebrow .flag-dot i:nth-child(3) { background: var(--color-green); }
+  .hero h1 { font-size: clamp(2rem, 1.3rem + 3.2vw, 3.4rem); letter-spacing: -0.01em; margin-bottom: var(--space-3); }
+  .hero-sub { font-size: 1.12rem; color: var(--color-text-muted); max-width: 56ch; margin-bottom: var(--space-4); }
+  .hero-ctas { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-4); }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .hero-meta div { display: flex; flex-direction: column; }
+  .hero-meta strong { font-family: var(--font-display); font-size: 1.5rem; color: var(--color-primary); }
+  .hero-meta span { font-size: 0.85rem; color: var(--color-text-muted); }
+
+  .services-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(2, 1fr); }
+  .service-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-4); transition: transform var(--transition-base), box-shadow var(--transition-base); }
+  .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .service-card h3 { font-size: 1rem; font-weight: 700; }
+
+  .community-grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  .community-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5) var(--space-4); display: flex; flex-direction: column; }
+  .community-card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+  .community-card ul { margin: var(--space-3) 0 var(--space-4); display: grid; gap: 0.5rem; }
+  .community-card ul li { color: var(--color-text-muted); font-size: 0.94rem; }
+  .community-card .btn { margin-top: auto; }
+
+  .articles-grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  .article-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base); text-decoration: none; }
+  .article-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: rgba(var(--color-primary-rgb), 0.25); }
+  .article-body { display: flex; flex-direction: column; }
+  .article-category { font-size: 0.74rem; font-weight: 700; color: var(--color-green-text); background: rgba(var(--color-green-rgb), 0.1); padding: 0.25em 0.8em; border-radius: var(--radius-pill); margin-bottom: var(--space-2); align-self: flex-start; }
+  .article-body h3 { font-size: 1.08rem; margin-bottom: 0.4rem; color: var(--color-text); }
+  .article-body p { color: var(--color-text-muted); font-size: 0.93rem; margin-bottom: auto; }
+  .article-date { font-size: 0.8rem; color: var(--color-text-muted); margin-top: var(--space-2); }
+
+  @media (min-width: 640px) {
+    .articles-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  }
+
+  .contact-grid { display: grid; gap: var(--space-4); grid-template-columns: 1fr; }
+  .contact-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; gap: var(--space-3); align-items: center; transition: transform var(--transition-base); }
+  .contact-card:hover { transform: translateY(-4px); }
+  .contact-card .icon { font-size: 1.5rem; }
+  .contact-card h3 { font-size: 1rem; margin-bottom: 0.15rem; }
+  .contact-card p { font-size: 0.88rem; color: var(--color-text-muted); }
+
+  @media (min-width: 640px) {
+    .hero-ctas .btn { width: auto; }
+    .services-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 860px) {
+    .community-grid { grid-template-columns: repeat(3, 1fr); }
+    .articles-grid { grid-template-columns: repeat(3, 1fr); }
+    .contact-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>

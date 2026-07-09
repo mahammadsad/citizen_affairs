@@ -1,0 +1,48 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+---
+<MainLayout title="ব্যবহারের শর্তাবলী" description="সরকারি তথ্যকেন্দ্র ব্যবহারের শর্তাবলী">
+  <a href="/#main-content" class="skip-link">মূল কনটেন্টে যান</a>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="প্রধান নেভিগেশন">
+      <a href="/" class="brand">
+        <img src="/assets/logo-mark.svg" alt="" class="brand-logo" width="42" height="42" />
+        <span class="brand-text">
+          <span class="brand-name">সরকারি তথ্যকেন্দ্র</span>
+          <span class="brand-tagline">সঠিক তথ্য, সবার জন্য।</span>
+        </span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">হোমে ফিরুন</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content" class="section container legal-content">
+    <span class="eyebrow">শর্তাবলী</span>
+    <h1 style="font-size:clamp(1.6rem,1.3rem+1.2vw,2.2rem); margin-bottom:var(--space-2);">Terms of Use</h1>
+    <p class="legal-updated">সর্বশেষ হালনাগাদ: ২০২৬</p>
+    <h2>১. ওয়েবসাইটের উদ্দেশ্য</h2>
+    <p>সরকারি তথ্যকেন্দ্র একটি তথ্যমূলক কমিউনিটি প্ল্যাটফর্ম, যা সরকারি চাকরি, প্রকল্প, পরীক্ষা ও নোটিশ সংক্রান্ত সাধারণ তথ্য বাংলা ভাষায় সরবরাহ করে। এই ওয়েবসাইট ব্যবহার করার মাধ্যমে আপনি নিচের শর্তাবলীতে সম্মত হচ্ছেন।</p>
+    <h2>২. কনটেন্টের ব্যবহার</h2>
+    <p>এই ওয়েবসাইটের তথ্য শুধুমাত্র ব্যক্তিগত ও তথ্যগত উদ্দেশ্যে ব্যবহারযোগ্য। বাণিজ্যিক উদ্দেশ্যে পুনঃপ্রকাশ বা পুনর্বিতরণের আগে অনুমতি নেওয়ার অনুরোধ করা হচ্ছে।</p>
+    <h2>৩. কমিউনিটি আচরণবিধি</h2>
+    <p>Telegram বা WhatsApp কমিউনিটিতে যুক্ত হলে শালীন ও সম্মানজনক আচরণ বজায় রাখুন। স্প্যাম, ভুয়া তথ্য বা বিদ্বেষমূলক বার্তা পোস্ট করলে সংশ্লিষ্ট সদস্যকে গ্রুপ/চ্যানেল থেকে অপসারণ করা হতে পারে।</p>
+    <h2>৪. পরিবর্তনের অধিকার</h2>
+    <p>সরকারি তথ্যকেন্দ্র যেকোনো সময় এই শর্তাবলী, ওয়েবসাইটের কনটেন্ট বা কাঠামো পরিবর্তন করার অধিকার সংরক্ষণ করে।</p>
+    <h2>৫. দায়বদ্ধতা</h2>
+    <p>এই ওয়েবসাইটের তথ্যের যথার্থতা নিশ্চিত করার সর্বাত্মক চেষ্টা করা হলেও, চূড়ান্ত সিদ্ধান্তের আগে সংশ্লিষ্ট সরকারি সূত্র থেকে তথ্য যাচাই করে নেওয়ার দায়িত্ব ব্যবহারকারীর। বিস্তারিত জানতে আমাদের <a href="/disclaimer">দাবিত্যাগ</a> পাতা দেখুন।</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-bottom">
+      <p class="footer-disclaimer"><strong>দাবিত্যাগ:</strong> সরকারি তথ্যকেন্দ্র কোনো সরকারি প্রতিষ্ঠানের অংশ নয়।</p>
+      <p>© <span id="year"></span> সরকারি তথ্যকেন্দ্র। সর্বস্বত্ব সংরক্ষিত। — <a href="/" style="color:var(--color-orange)">হোমে ফিরুন</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear().toString();
+  </script>
+</MainLayout>

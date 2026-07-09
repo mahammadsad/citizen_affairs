@@ -1,0 +1,20 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="logoTitle">
+  <title id="logoTitle">সরকারি তথ্যকেন্দ্র লোগো</title>
+  <!-- spokes: hub connecting to three community channels -->
+  <line x1="50" y1="50" x2="50" y2="14" stroke="#0A4D8C" stroke-width="2.2" opacity="0.4"/>
+  <line x1="50" y1="50" x2="21" y2="79" stroke="#0A4D8C" stroke-width="2.2" opacity="0.4"/>
+  <line x1="50" y1="50" x2="79" y2="79" stroke="#0A4D8C" stroke-width="2.2" opacity="0.4"/>
+
+  <!-- satellite nodes: Telegram / WhatsApp / MCQ group -->
+  <circle cx="50" cy="14" r="7" fill="#138A36"/>
+  <circle cx="21" cy="79" r="7" fill="#0A4D8C"/>
+  <circle cx="79" cy="79" r="7" fill="#F39C12"/>
+
+  <!-- central hub ring -->
+  <circle cx="50" cy="50" r="27" fill="#FFFFFF" stroke="#08315C" stroke-width="2.5"/>
+
+  <!-- notification bell (information / alert symbol) -->
+  <path d="M50 36 C57 36 62 41.5 62 49 L62 56 L65.5 60.5 L34.5 60.5 L38 56 L38 49 C38 41.5 43 36 50 36 Z" fill="#08315C"/>
+  <rect x="45.3" y="62" width="9.4" height="4.2" rx="2.1" fill="#08315C"/>
+  <circle cx="50" cy="33.2" r="2.3" fill="#138A36"/>
+</svg>

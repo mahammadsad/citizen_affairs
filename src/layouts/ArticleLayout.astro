@@ -1,0 +1,236 @@
+---
+import MainLayout from './MainLayout.astro';
+import { slugify, formatDateBengali, generateArticleSchema, generateBreadcrumbs, toAbsoluteUrl } from '@lib/seo';
+import { getCategoryData, getAuthorData } from '@lib/content';
+import { SITE } from '@utils/constants';
+
+export interface Props {
+  title: string;
+  description: string;
+  author: string;
+  date: Date;
+  updated?: Date;
+  category: string;
+  tags?: string[];
+  canonical?: string;
+  featuredImage?: string;
+  featuredImageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+}
+
+const {
+  title,
+  description,
+  author,
+  date,
+  updated,
+  category,
+  tags = [],
+  canonical,
+  featuredImage,
+  featuredImageAlt,
+  seoTitle,
+  seoDescription,
+} = Astro.props;
+const readingTime = Math.ceil((await Astro.slots.render('default')).split(/\s+/).length / 200);
+const formattedDate = formatDateBengali(date);
+const updatedDate = updated ? formatDateBengali(updated) : formattedDate;
+
+const categoryEntry = await getCategoryData(category);
+const authorEntry = await getAuthorData(author);
+const categoryName = categoryEntry?.data.name ?? category;
+const authorName = authorEntry?.data.name ?? author;
+
+// seoTitle/seoDescription let an editor override what search engines and
+// social previews see, without changing the on-page heading/summary.
+const metaTitle = seoTitle || title;
+const metaDescription = seoDescription || description;
+const pageUrl = canonical || Astro.url.href;
+const ogImage = featuredImage ? toAbsoluteUrl(featuredImage, SITE.url) : undefined;
+
+const articleSchema = generateArticleSchema({
+  title,
+  description,
+  image: ogImage,
+  datePublished: date,
+  dateModified: updated,
+  author: authorName,
+  url: pageUrl,
+});
+
+const breadcrumbSchema = generateBreadcrumbs([
+  { name: 'হোম', url: `${SITE.url}/` },
+  { name: 'আর্টিকেল', url: `${SITE.url}/articles/` },
+  { name: categoryName, url: `${SITE.url}/categories/${category}/` },
+  { name: title },
+]);
+---
+
+<MainLayout
+  title={metaTitle}
+  description={metaDescription}
+  canonical={pageUrl}
+  ogType="article"
+  image={ogImage}
+  structuredData={[articleSchema, breadcrumbSchema]}
+>
+  <article style="padding-block: var(--space-5);">
+    <div class="container" style="max-width: 720px;">
+      <!-- Breadcrumb -->
+      <nav style="font-size: 0.85rem; margin-bottom: var(--space-4); color: var(--color-text-muted);">
+        <a href="/sarkari-tathya-kendra/" style="color: inherit;">হোম</a>
+        <span> / </span>
+        <a href="/sarkari-tathya-kendra/articles/" style="color: inherit;">আর্টিকেল</a>
+        <span> / </span>
+        <span>{categoryName}</span>
+      </nav>
+
+      <!-- Header -->
+      <header style="margin-bottom: var(--space-5);">
+        <a
+          href={`/sarkari-tathya-kendra/categories/${category}/`}
+          style="display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--color-green-text); background: rgba(var(--color-green-rgb), 0.1); padding: 0.25em 0.8em; border-radius: var(--radius-pill); margin-bottom: var(--space-2); text-decoration: none;"
+        >
+          {categoryName}
+        </a>
+        <h1 style="font-size: clamp(1.5rem, 1rem + 2vw, 2.2rem); margin-bottom: var(--space-3); line-height: 1.2;">
+          {title}
+        </h1>
+        {featuredImage && (
+          <img
+            src={featuredImage}
+            alt={featuredImageAlt || title}
+            style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-3);"
+            loading="eager"
+            decoding="async"
+          />
+        )}
+        <div style="display: flex; gap: var(--space-3); font-size: 0.9rem; color: var(--color-text-muted); flex-wrap: wrap; align-items: center;">
+          <span>📅 {formattedDate}</span>
+          <span>✍️ <a href={`/sarkari-tathya-kendra/authors/${author}/`} style="color: inherit;">{authorName}</a></span>
+          <span>⏱️ {readingTime} মিনিট</span>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <div style="
+        font-size: 1rem;
+        line-height: 1.8;
+        color: var(--color-text);
+      " class="article-content">
+        <slot />
+      </div>
+
+      <!-- Footer -->
+      <footer style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border);">
+        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-4);">
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-2);">
+            <strong>আপডেট:</strong> {updatedDate}
+          </p>
+          {tags.length > 0 && (
+            <div>
+              <strong style="display: block; margin-bottom: 0.5rem; color: var(--color-text);">ট্যাগ:</strong>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                {tags.map(tag => (
+                  <a href={`/sarkari-tathya-kendra/tags/${slugify(tag)}`} style="background: rgba(var(--color-primary-rgb), 0.1); color: var(--color-primary); padding: 0.25em 0.8em; border-radius: var(--radius-pill); font-size: 0.85rem; text-decoration: none; transition: background var(--transition-base);">
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </footer>
+    </div>
+  </article>
+</MainLayout>
+
+<style is:global>
+  .article-content h2,
+  .article-content h3 {
+    font-family: var(--font-display);
+    margin-block: var(--space-3) var(--space-2);
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .article-content h2 { font-size: 1.5rem; }
+  .article-content h3 { font-size: 1.25rem; }
+
+  .article-content p { margin-bottom: 1rem; }
+
+  .article-content ul,
+  .article-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .article-content li { margin-bottom: 0.5rem; line-height: 1.6; }
+
+  .article-content blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .article-content code {
+    background: var(--color-surface-alt);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 0.9em;
+    color: var(--color-text);
+  }
+
+  .article-content pre {
+    background: var(--color-surface-alt);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    border: 1px solid var(--color-border);
+  }
+
+  .article-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .article-content th,
+  .article-content td {
+    border: 1px solid var(--color-border);
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .article-content th {
+    background: var(--color-surface-alt);
+    font-weight: 700;
+  }
+
+  .article-content a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.3);
+    transition: border-color var(--transition-base);
+  }
+
+  .article-content a:hover {
+    border-bottom-color: var(--color-primary);
+  }
+
+  .article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    margin-block: 1rem;
+    display: block;
+  }
+
+  .article-content strong { font-weight: 700; color: var(--color-text); }
+  .article-content em { font-style: italic; }
+</style>

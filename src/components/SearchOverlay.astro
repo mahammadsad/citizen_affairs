@@ -1,0 +1,139 @@
+---
+/**
+ * Site-wide search overlay. Triggered by #searchToggle (added to Header.astro's
+ * nav-actions). Fetches /search-index.json once on first open and filters it
+ * client-side using the shared lib/search.ts helpers as the visitor types.
+ */
+import { SITE } from '@utils/constants';
+---
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box" role="dialog" aria-modal="true" aria-label="সার্চ">
+    <form id="searchForm">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+      <input
+        type="search"
+        id="searchInput"
+        placeholder="আর্টিকেল, বিভাগ বা ট্যাগ খুঁজুন..."
+        autocomplete="off"
+        aria-label="সার্চ করুন"
+      />
+      <button type="button" class="icon-btn" id="searchClose" aria-label="সার্চ বন্ধ করুন">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </form>
+    <div class="search-results" id="searchResults">
+      <p class="search-hint">লিখতে শুরু করুন আর্টিকেল খুঁজে পেতে...</p>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ indexUrl: `${SITE.basePath}search-index.json` }}>
+  const searchToggle = document.getElementById('searchToggle');
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchClose = document.getElementById('searchClose');
+  const searchInput = document.getElementById('searchInput');
+  const searchForm = document.getElementById('searchForm');
+  const searchResults = document.getElementById('searchResults');
+
+  let index = null; // fetched lazily, cached after first fetch
+  let indexPromise = null;
+
+  function loadIndex() {
+    if (!indexPromise) {
+      indexPromise = fetch(indexUrl)
+        .then((res) => res.json())
+        .then((data) => {
+          index = data;
+          return data;
+        })
+        .catch(() => {
+          index = [];
+          return index;
+        });
+    }
+    return indexPromise;
+  }
+
+  function renderHint(text) {
+    searchResults.innerHTML = '';
+    const hint = document.createElement('p');
+    hint.className = 'search-hint';
+    hint.textContent = text;
+    searchResults.appendChild(hint);
+  }
+
+  function renderResults(items) {
+    searchResults.innerHTML = '';
+    if (items.length === 0) {
+      renderHint('কোনো ফলাফল পাওয়া যায়নি। অন্য শব্দ দিয়ে চেষ্টা করুন।');
+      return;
+    }
+    items.slice(0, 8).forEach((item) => {
+      const a = document.createElement('a');
+      a.href = item.href;
+      a.textContent = item.sub ? `${item.label} — ${item.sub}` : item.label;
+      a.addEventListener('click', () => closeSearch({ viaLink: true }));
+      searchResults.appendChild(a);
+    });
+  }
+
+  async function handleInput(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      renderHint('লিখতে শুরু করুন আর্টিকেল খুঁজে পেতে...');
+      return;
+    }
+    const items = index ?? (await loadIndex());
+    const matches = items.filter((item) => {
+      const haystack = [item.label, item.sub, ...(item.keywords || [])]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+    renderResults(matches);
+  }
+
+  function openSearch() {
+    if (!searchOverlay) return;
+    searchOverlay.classList.add('is-open');
+    loadIndex();
+    if (searchInput) {
+      searchInput.value = '';
+      renderHint('লিখতে শুরু করুন আর্টিকেল খুঁজে পেতে...');
+      setTimeout(() => searchInput.focus(), 50);
+    }
+  }
+
+  function closeSearch(opts) {
+    if (!searchOverlay) return;
+    searchOverlay.classList.remove('is-open');
+    if (!opts?.viaLink && searchToggle) searchToggle.focus();
+  }
+
+  if (searchToggle) searchToggle.addEventListener('click', openSearch);
+  if (searchClose) searchClose.addEventListener('click', () => closeSearch());
+  if (searchOverlay) {
+    searchOverlay.addEventListener('click', (e) => {
+      if (e.target === searchOverlay) closeSearch();
+    });
+  }
+  if (searchForm) {
+    searchForm.addEventListener('submit', (e) => e.preventDefault());
+  }
+  if (searchInput) {
+    searchInput.addEventListener('input', () => handleInput(searchInput.value));
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && searchOverlay?.classList.contains('is-open')) {
+      closeSearch();
+    }
+  });
+</script>

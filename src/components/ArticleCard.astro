@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCategoryData } from '@lib/content';
+
+export interface Props {
+  article: CollectionEntry<'articles'>;
+}
+
+const { article } = Astro.props;
+const category = await getCategoryData(article.data.category);
+const categoryName = category?.data.name ?? article.data.category;
+const date = new Date(article.data.date).toLocaleDateString('bn-BD', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<a href={`/sarkari-tathya-kendra/articles/${article.slug}/`} class="article-card">
+  {article.data.featuredImage && (
+    <img
+      src={article.data.featuredImage}
+      alt={article.data.featuredImageAlt || article.data.title}
+      class="article-card-thumb"
+      loading="lazy"
+      decoding="async"
+    />
+  )}
+  <span class="article-card-category">{categoryName}</span>
+  <h3 class="article-card-title">{article.data.title}</h3>
+  <p class="article-card-desc">{article.data.description}</p>
+  <span class="article-card-date">{date}</span>
+</a>
+
+<style>
+  .article-card-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    background: var(--color-border);
+  }
+  .article-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+  }
+  .article-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(var(--color-primary-rgb), 0.25);
+  }
+  .article-card-category {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--color-green-text);
+    background: rgba(var(--color-green-rgb), 0.1);
+    padding: 0.25em 0.8em;
+    border-radius: var(--radius-pill);
+    margin-bottom: var(--space-2);
+    align-self: flex-start;
+  }
+  .article-card-title {
+    font-size: 1.08rem;
+    margin-bottom: 0.4rem;
+    color: var(--color-text);
+  }
+  .article-card-desc {
+    color: var(--color-text-muted);
+    font-size: 0.93rem;
+    margin-bottom: auto;
+  }
+  .article-card-date {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: var(--space-2);
+  }
+</style>

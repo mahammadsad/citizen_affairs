@@ -1,0 +1,43 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { getArticlesByCategorySlug } from '@lib/content';
+
+export async function getStaticPaths() {
+  const categories = await getCollection('categories');
+  return categories.map((category) => ({
+    params: { category: category.id },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+const articles = await getArticlesByCategorySlug(category.id);
+const sorted = articles.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+---
+
+<MainLayout title={category.data.name} description={category.data.description ?? category.data.name}>
+  <div class="container" style="padding-block: var(--space-5);">
+    <nav style="font-size: 0.85rem; margin-bottom: var(--space-3); color: var(--color-text-muted);">
+      <a href="/sarkari-tathya-kendra/categories/" style="color: inherit;">বিভাগসমূহ</a>
+      <span> / </span>
+      <span>{category.data.name}</span>
+    </nav>
+    <h1 style="margin-bottom: var(--space-2);">{category.data.name}</h1>
+    {category.data.description && (
+      <p style="color: var(--color-text-muted); margin-bottom: var(--space-3);">{category.data.description}</p>
+    )}
+    <p style="color: var(--color-text-muted); margin-bottom: var(--space-4);">{sorted.length} টি আর্টিকেল</p>
+
+    <div style="display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));">
+      {sorted.map((article) => <ArticleCard article={article} />)}
+    </div>
+
+    {sorted.length === 0 && (
+      <div style="text-align: center; padding: var(--space-6);">
+        <p style="color: var(--color-text-muted);">এই বিভাগে এখনো কোনো আর্টিকেল নেই।</p>
+      </div>
+    )}
+  </div>
+</MainLayout>

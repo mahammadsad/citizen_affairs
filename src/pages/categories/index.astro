@@ -1,0 +1,40 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import { getCollection } from 'astro:content';
+
+const categories = await getCollection('categories');
+const allArticles = await getCollection('articles', ({ data }) => !data.draft);
+
+const counts = new Map<string, number>();
+for (const article of allArticles) {
+  counts.set(article.data.category, (counts.get(article.data.category) ?? 0) + 1);
+}
+---
+
+<MainLayout title="বিভাগসমূহ" description="সকল বিভাগ অনুযায়ী আর্টিকেল ব্রাউজ করুন।">
+  <div class="container" style="padding-block: var(--space-5);">
+    <h1 style="margin-bottom: var(--space-3);">বিভাগসমূহ</h1>
+    <div class="categories-grid" style="display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-top: var(--space-4);">
+      {categories.map((category) => (
+        <a
+          href={`/sarkari-tathya-kendra/categories/${category.id}/`}
+          class="category-card"
+          style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); text-decoration: none; display: block; transition: transform var(--transition-base), box-shadow var(--transition-base);"
+        >
+          <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--color-text);">{category.data.name}</h3>
+          {category.data.description && (
+            <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: var(--space-2);">{category.data.description}</p>
+          )}
+          <span style="font-size: 0.8rem; color: var(--color-text-muted);">{counts.get(category.id) ?? 0} টি আর্টিকেল</span>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <style>
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+  </style>
+</MainLayout>

@@ -1,0 +1,170 @@
+---
+/**
+ * Header with Navbar and Ticker
+ */
+import { SITE, SOCIALS } from '@utils/constants';
+import SearchOverlay from './SearchOverlay.astro';
+---
+
+<header class="site-header">
+  <nav class="navbar container" aria-label="প্রধান নেভিগেশন">
+    <a href="/sarkari-tathya-kendra/" class="brand" aria-label={`${SITE.name} — হোমপেজ`}>
+      <img src="/sarkari-tathya-kendra/assets/logo-mark.svg" alt="" class="brand-logo" width="42" height="42" />
+      <span class="brand-text">
+        <span class="brand-name">{SITE.name}</span>
+        <span class="brand-tagline">{SITE.tagline}</span>
+      </span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/sarkari-tathya-kendra/">হোম</a></li>
+      <li><a href="/sarkari-tathya-kendra/#channel">চ্যানেল</a></li>
+      <li><a href="/sarkari-tathya-kendra/#services">সেবাসমূহ</a></li>
+      <li><a href="/sarkari-tathya-kendra/articles/">আর্টিকেল</a></li>
+      <li><a href="/sarkari-tathya-kendra/#contact">যোগাযোগ</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="searchToggle" aria-label="সার্চ খুলুন" aria-haspopup="dialog">
+        <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </button>
+      <button class="icon-btn" id="themeToggle" aria-label="ডার্ক মোড চালু/বন্ধ করুন" aria-pressed="false">
+        <svg class="icon" id="themeIconSun" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4.2"/>
+          <line x1="12" y1="1.5" x2="12" y2="4.5"/>
+          <line x1="12" y1="19.5" x2="12" y2="22.5"/>
+          <line x1="1.5" y1="12" x2="4.5" y2="12"/>
+          <line x1="19.5" y1="12" x2="22.5" y2="12"/>
+          <line x1="4.4" y1="4.4" x2="6.5" y2="6.5"/>
+          <line x1="17.5" y1="17.5" x2="19.6" y2="19.6"/>
+          <line x1="4.4" y1="19.6" x2="6.5" y2="17.5"/>
+          <line x1="17.5" y1="6.5" x2="19.6" y2="4.4"/>
+        </svg>
+        <svg class="icon" id="themeIconMoon" aria-hidden="true" style="display:none" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>
+        </svg>
+      </button>
+      <button class="hamburger" id="menuToggle" aria-label="মেনু খুলুন" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Ticker -->
+  <div class="ticker" role="region" aria-label="সর্বশেষ আপডেট">
+    <span class="ticker-label">
+      <span class="dot" aria-hidden="true"></span> সর্বশেষ আপডেট
+    </span>
+    <div class="ticker-track-wrap">
+      <div class="ticker-track">
+        <span>নতুন সরকারি চাকরির বিজ্ঞপ্তি পেতে টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।</span>
+        <span>প্রতিদিন MCQ অনুশীলনের জন্য যোগ দিন আমাদের কম্পিটিটিভ এক্সাম গ্রুপে।</span>
+        <span>অ্যাডমিট কার্ড ও রেজাল্ট সংক্রান্ত হালনাগাদ তথ্য পেতে হোয়াটসঅ্যাপ চ্যানেল ফলো করুন।</span>
+        <span>সরকারি প্রকল্পের খবর সহজ বাংলা ভাষায় সবার আগে পেতে সাবস্ক্রাইব করুন।</span>
+        <!-- Seamless loop duplicates -->
+        <span aria-hidden="true">নতুন সরকারি চাকরির বিজ্ঞপ্তি পেতে টেলিগ্রাম চ্যানেলে যুক্ত থাকুন।</span>
+        <span aria-hidden="true">প্রতিদিন MCQ অনুশীলনের জন্য যোগ দিন আমাদের কম্পিটিটিভ এক্সাম গ্রুপে।</span>
+        <span aria-hidden="true">অ্যাডমিট কার্ড ও রেজাল্ট সংক্রান্ত হালনাগাদ তথ্য পেতে হোয়াটসঅ্যাপ চ্যানেল ফলো করুন।</span>
+        <span aria-hidden="true">সরকারি প্রকল্পের খবর সহজ বাংলা ভাষায় সবার আগে পেতে সাবস্ক্রাইব করুন।</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="/sarkari-tathya-kendra/">হোম</a></li>
+    <li><a href="/sarkari-tathya-kendra/#channel">চ্যানেল</a></li>
+    <li><a href="/sarkari-tathya-kendra/#services">সেবাসমূহ</a></li>
+    <li><a href="/sarkari-tathya-kendra/articles/">আর্টিকেল</a></li>
+    <li><a href="/sarkari-tathya-kendra/#contact">যোগাযোগ</a></li>
+  </ul>
+  <a class="btn btn-primary btn-block" href={SOCIALS.telegram} target="_blank" rel="noopener">Telegram Channel জয়েন করুন</a>
+</div>
+
+<SearchOverlay />
+
+<style>
+  /* Header styles will be in component CSS file */
+</style>
+
+<script>
+  // Theme toggle. The initial theme is already set on <html> by the
+  // blocking script in BaseLayout's <head> (avoids a flash on load) —
+  // this just keeps the icon/aria-pressed in sync and handles clicks.
+  const themeToggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  const sunIcon = document.getElementById('themeIconSun');
+  const moonIcon = document.getElementById('themeIconMoon');
+
+  function syncThemeUI(mode) {
+    if (themeToggle) themeToggle.setAttribute('aria-pressed', mode === 'dark' ? 'true' : 'false');
+    if (sunIcon && moonIcon) {
+      sunIcon.style.display = mode === 'dark' ? 'none' : 'block';
+      moonIcon.style.display = mode === 'dark' ? 'block' : 'none';
+    }
+  }
+
+  syncThemeUI(root.getAttribute('data-theme') || 'light');
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      syncThemeUI(next);
+    });
+  }
+
+  // Mobile menu
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('is-open');
+      if (isOpen) {
+        mobileMenu.classList.remove('is-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      } else {
+        mobileMenu.classList.add('is-open');
+        menuToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('is-open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      });
+    });
+  }
+
+  // Scroll reveal — fades/slides .reveal elements in as they enter the
+  // viewport. Falls back to making everything visible immediately if
+  // IntersectionObserver isn't available, or if there's nothing to reveal.
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && revealEls.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+    );
+    revealEls.forEach((el) => io.observe(el));
+  } else {
+    revealEls.forEach((el) => el.classList.add('is-visible'));
+  }
+</script>
