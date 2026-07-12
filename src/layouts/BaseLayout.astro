@@ -34,6 +34,7 @@ const siteName = locale === 'bn' ? SITE.name : SITE.nameEn;
 const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
 const siteUrl = SITE.url;
 const ogImage = toAbsoluteUrl(image, siteUrl);
+const ogImageAlt = locale === 'bn' ? 'সরকারি তথ্যকেন্দ্র — সঠিক তথ্য, সবার জন্য।' : 'Sarkari Tathya Kendra — verified information for everyone.';
 
 const websiteSchema = {
   '@context': 'https://schema.org',
@@ -111,6 +112,9 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={locale === 'bn' ? 'bn_IN' : 'en_IN'} />
 
@@ -119,6 +123,7 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     <!-- JSON-LD -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
