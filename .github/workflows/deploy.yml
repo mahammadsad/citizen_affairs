@@ -26,17 +26,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
 
       - name: Install dependencies
-        # Using `npm install` rather than `npm ci`: the committed package-lock.json
-        # is currently out of sync with package.json's devDependencies (eslint,
-        # @typescript-eslint/*), which makes `npm ci` hard-fail before installing
-        # anything. `npm install` reconciles this automatically. Once you've run
-        # `npm install` locally and committed the regenerated lock file, switch
-        # this back to `npm ci` for fully reproducible, faster CI installs.
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build

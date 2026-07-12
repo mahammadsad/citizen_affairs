@@ -1,15 +1,22 @@
 ---
 import MainLayout from './MainLayout.astro';
-import { slugify, formatDateBengali, generateArticleSchema, generateBreadcrumbs, toAbsoluteUrl } from '@lib/seo';
-import { getCategoryData, getAuthorData } from '@lib/content';
+import AdSlot from '@components/AdSlot.astro';
+import { generateArticleSchema, generateBreadcrumbs, toAbsoluteUrl } from '@lib/seo';
+import { getCategoryData, getAuthorData, categoryName } from '@lib/content';
 import { SITE } from '@utils/constants';
+import type { Locale } from '../i18n';
+import { localizedPath, ui, verificationLabels } from '../i18n';
 
 export interface Props {
+  locale: Locale;
+  alternateUrl?: string;
   title: string;
   description: string;
   author: string;
   date: Date;
   updated?: Date;
+  lastVerified?: Date;
+  deadline?: Date;
   category: string;
   tags?: string[];
   canonical?: string;
@@ -17,220 +24,77 @@ export interface Props {
   featuredImageAlt?: string;
   seoTitle?: string;
   seoDescription?: string;
+  verificationStatus: 'officially-confirmed' | 'under-verification' | 'corrected' | 'withdrawn' | 'closed';
+  sourceUrls?: string[];
+  officialNoticeUrl?: string;
+  applicationUrl?: string;
 }
 
-const {
-  title,
-  description,
-  author,
-  date,
-  updated,
-  category,
-  tags = [],
-  canonical,
-  featuredImage,
-  featuredImageAlt,
-  seoTitle,
-  seoDescription,
-} = Astro.props;
-const readingTime = Math.ceil((await Astro.slots.render('default')).split(/\s+/).length / 200);
-const formattedDate = formatDateBengali(date);
-const updatedDate = updated ? formatDateBengali(updated) : formattedDate;
-
+const props = Astro.props;
+const { locale, alternateUrl, title, description, author, date, updated, lastVerified, deadline, category, tags = [], canonical, featuredImage, featuredImageAlt, seoTitle, seoDescription, verificationStatus, sourceUrls = [], officialNoticeUrl, applicationUrl } = props;
+const t = ui(locale);
 const categoryEntry = await getCategoryData(category);
 const authorEntry = await getAuthorData(author);
-const categoryName = categoryEntry?.data.name ?? category;
+const categoryLabel = categoryEntry ? categoryName(categoryEntry, locale) : category;
 const authorName = authorEntry?.data.name ?? author;
-
-// seoTitle/seoDescription let an editor override what search engines and
-// social previews see, without changing the on-page heading/summary.
-const metaTitle = seoTitle || title;
-const metaDescription = seoDescription || description;
 const pageUrl = canonical || Astro.url.href;
+const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-IN' : 'en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
 const ogImage = featuredImage ? toAbsoluteUrl(featuredImage, SITE.url) : undefined;
-
-const articleSchema = generateArticleSchema({
-  title,
-  description,
-  image: ogImage,
-  datePublished: date,
-  dateModified: updated,
-  author: authorName,
-  url: pageUrl,
-});
-
+const articleSchema = generateArticleSchema({ title, description, image: ogImage, datePublished: date, dateModified: updated, author: authorName, url: pageUrl });
 const breadcrumbSchema = generateBreadcrumbs([
-  { name: 'হোম', url: `${SITE.url}/` },
-  { name: 'আর্টিকেল', url: `${SITE.url}/articles/` },
-  { name: categoryName, url: `${SITE.url}/categories/${category}/` },
+  { name: t.home, url: `${SITE.url}/${locale}/` },
+  { name: t.articles, url: `${SITE.url}/${locale}/articles/` },
+  { name: categoryLabel, url: `${SITE.url}/${locale}/categories/${category}/` },
   { name: title },
 ]);
+const statusClass = `status-${verificationStatus}`;
 ---
 
-<MainLayout
-  title={metaTitle}
-  description={metaDescription}
-  canonical={pageUrl}
-  ogType="article"
-  image={ogImage}
-  structuredData={[articleSchema, breadcrumbSchema]}
->
-  <article style="padding-block: var(--space-5);">
-    <div class="container" style="max-width: 720px;">
-      <!-- Breadcrumb -->
-      <nav style="font-size: 0.85rem; margin-bottom: var(--space-4); color: var(--color-text-muted);">
-        <a href="/sarkari-tathya-kendra/" style="color: inherit;">হোম</a>
-        <span> / </span>
-        <a href="/sarkari-tathya-kendra/articles/" style="color: inherit;">আর্টিকেল</a>
-        <span> / </span>
-        <span>{categoryName}</span>
-      </nav>
+<MainLayout title={seoTitle || title} description={seoDescription || description} canonical={pageUrl} ogType="article" image={ogImage} structuredData={[articleSchema, breadcrumbSchema]} {locale} {alternateUrl}>
+  <article class="article-shell">
+    <div class="container article-container">
+      <nav class="breadcrumbs"><a href={localizedPath(locale)}>{t.home}</a><span>›</span><a href={localizedPath(locale, 'articles')}>{t.articles}</a><span>›</span><span>{categoryLabel}</span></nav>
 
-      <!-- Header -->
-      <header style="margin-bottom: var(--space-5);">
-        <a
-          href={`/sarkari-tathya-kendra/categories/${category}/`}
-          style="display: inline-block; font-size: 0.74rem; font-weight: 700; color: var(--color-green-text); background: rgba(var(--color-green-rgb), 0.1); padding: 0.25em 0.8em; border-radius: var(--radius-pill); margin-bottom: var(--space-2); text-decoration: none;"
-        >
-          {categoryName}
-        </a>
-        <h1 style="font-size: clamp(1.5rem, 1rem + 2vw, 2.2rem); margin-bottom: var(--space-3); line-height: 1.2;">
-          {title}
-        </h1>
-        {featuredImage && (
-          <img
-            src={featuredImage}
-            alt={featuredImageAlt || title}
-            style="width: 100%; border-radius: var(--radius-md); margin-bottom: var(--space-3);"
-            loading="eager"
-            decoding="async"
-          />
-        )}
-        <div style="display: flex; gap: var(--space-3); font-size: 0.9rem; color: var(--color-text-muted); flex-wrap: wrap; align-items: center;">
-          <span>📅 {formattedDate}</span>
-          <span>✍️ <a href={`/sarkari-tathya-kendra/authors/${author}/`} style="color: inherit;">{authorName}</a></span>
-          <span>⏱️ {readingTime} মিনিট</span>
-        </div>
+      <header class="article-header">
+        <div class="article-labels"><a href={localizedPath(locale, `categories/${category}`)}>{categoryLabel}</a><span class={statusClass}>● {verificationLabels[locale][verificationStatus]}</span></div>
+        <h1>{title}</h1>
+        <p class="article-deck">{description}</p>
+        <div class="article-byline"><span>{formatter.format(date)}</span><span>•</span><span>{authorName}</span>{updated && <><span>•</span><span>{t.updated}: {formatter.format(updated)}</span></>}</div>
       </header>
 
-      <!-- Content -->
-      <div style="
-        font-size: 1rem;
-        line-height: 1.8;
-        color: var(--color-text);
-      " class="article-content">
-        <slot />
-      </div>
+      {featuredImage && <img src={featuredImage} alt={featuredImageAlt || title} class="article-hero-image" loading="eager" decoding="async" />}
 
-      <!-- Footer -->
-      <footer style="margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--color-border);">
-        <div style="background: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-4);">
-          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: var(--space-2);">
-            <strong>আপডেট:</strong> {updatedDate}
-          </p>
-          {tags.length > 0 && (
-            <div>
-              <strong style="display: block; margin-bottom: 0.5rem; color: var(--color-text);">ট্যাগ:</strong>
-              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                {tags.map(tag => (
-                  <a href={`/sarkari-tathya-kendra/tags/${slugify(tag)}`} style="background: rgba(var(--color-primary-rgb), 0.1); color: var(--color-primary); padding: 0.25em 0.8em; border-radius: var(--radius-pill); font-size: 0.85rem; text-decoration: none; transition: background var(--transition-base);">
-                    #{tag}
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </footer>
+      <aside class={`trust-box ${statusClass}`}>
+        <div class="trust-box-title"><span>✓</span><div><strong>{t.verification}</strong><small>{verificationLabels[locale][verificationStatus]}</small></div></div>
+        <dl>
+          {lastVerified && <div><dt>{t.lastVerified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}
+          {deadline && <div><dt>{locale === 'bn' ? 'শেষ তারিখ' : 'Deadline'}</dt><dd>{formatter.format(deadline)}</dd></div>}
+          <div><dt>{t.source}</dt><dd>{sourceUrls.length || (officialNoticeUrl ? 1 : 0)}</dd></div>
+        </dl>
+      </aside>
+
+      <div class="article-content"><slot /></div>
+      <AdSlot position="article-inline" />
+
+      {(officialNoticeUrl || applicationUrl || sourceUrls.length > 0) && (
+        <section class="source-panel">
+          <h2>{locale === 'bn' ? 'অফিসিয়াল লিঙ্ক ও সূত্র' : 'Official links and sources'}</h2>
+          <p>{locale === 'bn' ? 'চূড়ান্ত সিদ্ধান্ত নেওয়ার আগে মূল বিজ্ঞপ্তি বা পোর্টাল যাচাই করুন।' : 'Check the original notice or portal before making a final decision.'}</p>
+          <div class="source-actions">
+            {officialNoticeUrl && <a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{t.source} ↗</a>}
+            {applicationUrl && <a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">{t.apply} ↗</a>}
+          </div>
+          {sourceUrls.length > 0 && <ol>{sourceUrls.map((url, index) => <li><a href={url} target="_blank" rel="noopener noreferrer">{locale === 'bn' ? `সূত্র ${index + 1}` : `Source ${index + 1}`} — {new URL(url).hostname}</a></li>)}</ol>}
+        </section>
+      )}
+
+      {tags.length > 0 && <div class="article-tags">{tags.map((tag) => <span>#{tag}</span>)}</div>}
+      <p class="article-disclaimer">{t.disclaimerShort}</p>
+      <AdSlot position="article-end" />
     </div>
   </article>
 </MainLayout>
 
 <style is:global>
-  .article-content h2,
-  .article-content h3 {
-    font-family: var(--font-display);
-    margin-block: var(--space-3) var(--space-2);
-    font-weight: 700;
-    color: var(--color-text);
-  }
-
-  .article-content h2 { font-size: 1.5rem; }
-  .article-content h3 { font-size: 1.25rem; }
-
-  .article-content p { margin-bottom: 1rem; }
-
-  .article-content ul,
-  .article-content ol {
-    margin-left: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .article-content li { margin-bottom: 0.5rem; line-height: 1.6; }
-
-  .article-content blockquote {
-    border-left: 4px solid var(--color-primary);
-    padding-left: 1rem;
-    margin: 1rem 0;
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
-
-  .article-content code {
-    background: var(--color-surface-alt);
-    padding: 0.2em 0.4em;
-    border-radius: 0.25rem;
-    font-family: 'Menlo', 'Monaco', monospace;
-    font-size: 0.9em;
-    color: var(--color-text);
-  }
-
-  .article-content pre {
-    background: var(--color-surface-alt);
-    padding: var(--space-3);
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    margin-bottom: 1rem;
-    border: 1px solid var(--color-border);
-  }
-
-  .article-content table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  .article-content th,
-  .article-content td {
-    border: 1px solid var(--color-border);
-    padding: 0.75rem;
-    text-align: left;
-  }
-
-  .article-content th {
-    background: var(--color-surface-alt);
-    font-weight: 700;
-  }
-
-  .article-content a {
-    color: var(--color-primary);
-    text-decoration: none;
-    border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.3);
-    transition: border-color var(--transition-base);
-  }
-
-  .article-content a:hover {
-    border-bottom-color: var(--color-primary);
-  }
-
-  .article-content img {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius-md);
-    margin-block: 1rem;
-    display: block;
-  }
-
-  .article-content strong { font-weight: 700; color: var(--color-text); }
-  .article-content em { font-style: italic; }
+  .article-shell{padding:2rem 0 5rem}.article-container{max-width:800px}.breadcrumbs{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;color:var(--color-text-muted);font-size:.8rem;margin-bottom:2rem}.breadcrumbs a:hover{color:var(--color-primary)}.article-header h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.12;letter-spacing:-.025em;margin:.85rem 0 1rem}.article-labels{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}.article-labels a{color:var(--color-primary);font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}.article-labels span{font-size:.76rem;font-weight:700;color:var(--color-green-text)}.article-labels .status-under-verification{color:#a85c00}.article-labels .status-withdrawn,.article-labels .status-closed{color:#b42318}.article-deck{font-size:1.15rem;color:var(--color-text-muted);line-height:1.65}.article-byline{display:flex;flex-wrap:wrap;gap:.55rem;color:var(--color-text-muted);font-size:.82rem;margin-top:1.2rem}.article-hero-image{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:22px;margin:2rem 0}.trust-box{margin:2rem 0;padding:1.15rem;border:1px solid rgba(var(--color-green-rgb),.25);border-radius:18px;background:linear-gradient(135deg,rgba(var(--color-green-rgb),.08),rgba(var(--color-primary-rgb),.05));display:grid;gap:1rem}.trust-box-title{display:flex;gap:.8rem;align-items:center}.trust-box-title>span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--color-green);color:#fff;font-weight:800}.trust-box-title div{display:flex;flex-direction:column}.trust-box-title small{color:var(--color-text-muted)}.trust-box dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem}.trust-box dl div{padding:.7rem;background:rgba(255,255,255,.55);border-radius:12px}[data-theme="dark"] .trust-box dl div{background:rgba(0,0,0,.15)}.trust-box dt{font-size:.7rem;color:var(--color-text-muted)}.trust-box dd{font-weight:700}.article-content{font-size:1.06rem;line-height:1.85}.article-content h2,.article-content h3{margin:2rem 0 .8rem}.article-content p{margin-bottom:1.1rem}.article-content ul,.article-content ol{list-style:revert;margin:0 0 1.25rem 1.4rem}.article-content li{margin-bottom:.45rem}.article-content a,.source-panel a{color:var(--color-primary);text-decoration:underline;text-underline-offset:3px}.article-content blockquote{border-left:4px solid var(--color-primary);padding:1rem 1.25rem;background:var(--color-surface-alt);border-radius:0 12px 12px 0;margin:1.5rem 0}.article-content table{width:100%;border-collapse:collapse;display:block;overflow-x:auto}.article-content th,.article-content td{border:1px solid var(--color-border);padding:.75rem}.source-panel{margin-top:2.5rem;padding:1.35rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:20px}.source-panel h2{font-size:1.35rem}.source-panel p{color:var(--color-text-muted)}.source-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:1rem 0}.source-actions .btn{text-decoration:none}.source-panel ol{list-style:decimal;margin-left:1.25rem}.article-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem}.article-tags span{padding:.35rem .7rem;background:var(--color-surface-alt);border-radius:99px;font-size:.78rem}.article-disclaimer{margin-top:2rem;padding-top:1.25rem;border-top:1px solid var(--color-border);font-size:.8rem;color:var(--color-text-muted)}
 </style>

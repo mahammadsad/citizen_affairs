@@ -4,15 +4,20 @@
 
 export const SITE = {
   name: 'সরকারি তথ্যকেন্দ্র',
+  nameEn: 'Sarkari Tathya Kendra',
   tagline: 'সঠিক তথ্য, সবার জন্য।',
+  taglineEn: 'Verified information for everyone.',
   description:
     'পশ্চিমবঙ্গ ও ভারতের সরকারি চাকরি, সরকারি প্রকল্প, পরীক্ষা ও নোটিশের তথ্য সহজ বাংলায় প্রদানকারী একটি স্বাধীন কমিউনিটি প্ল্যাটফর্ম।',
   url: 'https://mahammadsad.github.io/sarkari-tathya-kendra',
   basePath: '/sarkari-tathya-kendra/',
   logo: '/sarkari-tathya-kendra/assets/logo-mark.svg',
   ogImage: '/sarkari-tathya-kendra/assets/og-image.jpg',
-  language: 'bn',
-  locale: 'bn_IN',
+};
+
+export const ADS = {
+  enabled: false,
+  publisherId: '',
 };
 
 export const SOCIALS = {

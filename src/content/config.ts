@@ -3,6 +3,9 @@ import { defineCollection, z } from 'astro:content';
 const articlesCollection = defineCollection({
   type: 'content',
   schema: z.object({
+    language: z.enum(['en', 'bn']),
+    translationKey: z.string(),
+    urlSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     title: z.string(),
     description: z.string(),
     date: z.string().transform((val) => new Date(val)),
@@ -17,6 +20,12 @@ const articlesCollection = defineCollection({
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
     canonical: z.string().optional(),
+    verificationStatus: z.enum(['officially-confirmed', 'under-verification', 'corrected', 'withdrawn', 'closed']).default('under-verification'),
+    sourceUrls: z.array(z.string().url()).default([]),
+    officialNoticeUrl: z.string().url().optional(),
+    applicationUrl: z.string().url().optional(),
+    lastVerified: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+    deadline: z.string().optional().transform((val) => val ? new Date(val) : undefined),
   }),
 });
 
@@ -35,8 +44,10 @@ const authorsCollection = defineCollection({
 const categoriesCollection = defineCollection({
   type: 'data',
   schema: z.object({
-    name: z.string(),
-    description: z.string().optional(),
+    nameEn: z.string(),
+    nameBn: z.string(),
+    descriptionEn: z.string().optional(),
+    descriptionBn: z.string().optional(),
     color: z.string().optional(),
   }),
 });
