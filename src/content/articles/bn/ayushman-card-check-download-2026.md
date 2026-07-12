@@ -17,7 +17,7 @@ sourceUrls:
   - https://nha.gov.in/PM-JAY
 featured: true
 featuredImage: /sarkari-tathya-kendra/uploads/chatgpt-image-jul-10-2026-104148-pm.png
-draft: true
+draft: false
 ---
 # আয়ুষ্মান ভারত কার্ড: যোগ্যতা যাচাই, e-KYC ও কার্ড ডাউনলোডের নিয়ম
 
