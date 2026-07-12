@@ -1,20 +1,4 @@
 ---
-import { SITE } from '@utils/constants';
-const destination = `${SITE.basePath}en/`;
+import HomePage from '@components/HomePage.astro';
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="refresh" content={`0;url=${destination}`} />
-    <link rel="canonical" href={`${SITE.url}/en/`} />
-    <title>Sarkari Tathya Kendra</title>
-    <script is:inline define:vars={{ destination }}>
-      try {
-        const saved = localStorage.getItem('site-language');
-        location.replace(saved === 'bn' ? destination.replace('/en/', '/bn/') : destination);
-      } catch (_) { location.replace(destination); }
-    </script>
-  </head>
-  <body><a href={destination}>Continue to Sarkari Tathya Kendra</a></body>
-</html>
+<HomePage locale="en" isRoot />

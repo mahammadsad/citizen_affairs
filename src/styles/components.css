@@ -1,5 +1,5 @@
 /* =========================================================================
-   সরকারি তথ্যকেন্দ্র — Component Styles
+   Shared component styles
    ========================================================================= */
 
 /* ---------- Navbar + Header ---------- */
@@ -189,11 +189,11 @@
 
 /* ---------- Footer ---------- */
 .site-footer {
-  background: var(--color-navy);
+  background: var(--footer-bg);
   color: rgba(255,255,255,0.82);
   padding-block: var(--space-6) var(--space-4);
 }
-[data-theme="dark"] .site-footer { background: #060D18; }
+[data-theme="dark"] .site-footer { background: var(--footer-bg); }
 
 .footer-grid {
   display: grid;

@@ -1,13 +1,13 @@
 ---
 import MainLayout from '@layouts/MainLayout.astro';
-import { SITE } from '@utils/constants';
+import { BRAND, SITE } from '@utils/constants';
 import type { Locale } from '../../i18n';
-import { ui } from '../../i18n';
+import { locales, ui } from '../../i18n';
 
 type Policy = 'privacy' | 'terms' | 'disclaimer';
 export function getStaticPaths() {
   const policies: Policy[] = ['privacy', 'terms', 'disclaimer'];
-  return (['en', 'bn'] as Locale[]).flatMap((locale) => policies.map((policy) => ({ params: { lang: locale, policy }, props: { locale, policy } })));
+  return locales.flatMap((locale) => policies.map((policy) => ({ params: { lang: locale, policy }, props: { locale, policy } })));
 }
 const { locale, policy } = Astro.props as { locale: Locale; policy: Policy };
 const t = ui(locale);
@@ -26,7 +26,7 @@ const copy = {
       ['Acceptable use', 'Do not reproduce the site in a misleading way, impersonate a government body or use its content for fraud.'],
     ],
     disclaimer: [
-      ['Independent platform', 'Sarkari Tathya Kendra is an independent information platform. It is not a government department and does not issue official approvals.'],
+      ['Independent platform', `${BRAND.brandName} is an independent information platform. It is not a government department and does not issue official approvals.`],
       ['Accuracy and corrections', 'We aim to verify dates, amounts, eligibility and links. Government information can change, and corrections are added when identified.'],
       ['External links', 'We link to original sources for convenience but do not control the availability or security of external websites.'],
     ],
@@ -44,16 +44,21 @@ const copy = {
       ['গ্রহণযোগ্য ব্যবহার', 'ওয়েবসাইটকে বিভ্রান্তিকরভাবে নকল করা, সরকারি প্রতিষ্ঠান হিসেবে পরিচয় দেওয়া বা প্রতারণায় content ব্যবহার করা যাবে না।'],
     ],
     disclaimer: [
-      ['স্বাধীন প্ল্যাটফর্ম', 'সরকারি তথ্যকেন্দ্র একটি স্বাধীন তথ্য প্ল্যাটফর্ম। এটি কোনো সরকারি দপ্তর নয় এবং কোনো official approval প্রদান করে না।'],
+      ['স্বাধীন প্ল্যাটফর্ম', `${BRAND.brandName} একটি স্বাধীন তথ্য প্ল্যাটফর্ম। এটি কোনো সরকারি দপ্তর নয় এবং কোনো official approval প্রদান করে না।`],
       ['নির্ভুলতা ও সংশোধন', 'আমরা তারিখ, অর্থের পরিমাণ, যোগ্যতা ও লিঙ্ক যাচাই করার চেষ্টা করি। সরকারি তথ্য পরিবর্তিত হতে পারে; ভুল শনাক্ত হলে সংশোধন করা হয়।'],
       ['বাহ্যিক লিঙ্ক', 'সুবিধার জন্য মূল সূত্রের লিঙ্ক দেওয়া হয়, কিন্তু বাহ্যিক ওয়েবসাইটের availability বা security আমাদের নিয়ন্ত্রণে নেই।'],
     ],
   },
+  hi: {
+    privacy: [['हम कौन-सी जानकारी रखते हैं','यह एक स्थिर वेबसाइट है। कोई खाता या विज़िटर प्रोफ़ाइल नहीं रखा जाता। भाषा, थीम और सहेजे गए लेख आपके डिवाइस पर रह सकते हैं।'],['एनालिटिक्स और विज्ञापन','ट्रैकिंग और विज्ञापन डिफ़ॉल्ट रूप से बंद हैं। चालू करने से पहले यह नीति अपडेट की जाएगी।'],['बाहरी सेवाएँ','Telegram, WhatsApp और सरकारी पोर्टल अपनी गोपनीयता नीतियाँ लागू करते हैं।'],['संपर्क',`गोपनीयता संबंधी प्रश्न के लिए ${SITE.author.email} पर संपर्क करें।`]],
+    terms: [['सूचनात्मक उद्देश्य','सामग्री सार्वजनिक जानकारी को आसान भाषा में समझाने के लिए है; यह आधिकारिक सरकारी सलाह नहीं है।'],['अंतिम प्राधिकरण','मूल सरकारी सूचना या पोर्टल ही अंतिम प्राधिकरण है। आवेदन या भुगतान से पहले उसे जाँचें।'],['स्वीकार्य उपयोग','सरकारी संस्था का रूप धारण करने, भ्रम फैलाने या धोखाधड़ी के लिए सामग्री का उपयोग न करें।']],
+    disclaimer: [['स्वतंत्र मंच','यह एक स्वतंत्र सूचना मंच है। यह सरकारी विभाग नहीं है और आधिकारिक मंजूरी जारी नहीं करता।'],['सटीकता और सुधार','हम तिथियों, पात्रता और लिंक को आधिकारिक स्रोतों से जाँचने का प्रयास करते हैं और त्रुटि मिलने पर सुधार करते हैं।'],['बाहरी लिंक','मूल स्रोत सुविधा के लिए दिए जाते हैं; बाहरी वेबसाइटों की उपलब्धता या सुरक्षा हमारे नियंत्रण में नहीं है।']]
+  }
 };
 const canonical = `${SITE.url}/${locale}/${policy}/`;
-const alternateUrl = `${SITE.url}/${locale === 'en' ? 'bn' : 'en'}/${policy}/`;
+const alternateUrls = Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/${policy}/`])) as Record<Locale,string>;
 ---
-<MainLayout title={titles[policy]} description={t.disclaimerShort} {locale} {canonical} {alternateUrl}>
+<MainLayout title={titles[policy]} description={t.disclaimerShort} {locale} {canonical} {alternateUrls}>
   <article class="policy container"><span class="eyebrow">{titles[policy]}</span><h1>{titles[policy]}</h1><p class="updated">{locale === 'bn' ? 'সর্বশেষ আপডেট: জুলাই ২০২৬' : 'Last updated: July 2026'}</p>{copy[locale][policy].map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}</article>
 </MainLayout>
 <style>.policy{max-width:780px;padding-block:4rem}.policy h1{font-size:clamp(2rem,5vw,3.4rem);margin-bottom:.4rem}.updated{color:var(--color-text-muted);font-size:.85rem;margin-bottom:2.5rem}.policy section{margin:2rem 0}.policy h2{font-size:1.35rem;margin-bottom:.55rem}.policy p{line-height:1.8;color:var(--color-text-muted)}</style>

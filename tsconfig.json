@@ -12,9 +12,10 @@
       "@components/*": ["src/components/*"],
       "@layouts/*": ["src/layouts/*"],
       "@lib/*": ["src/lib/*"],
-      "@utils/*": ["src/utils/*"]
+      "@utils/*": ["src/utils/*"],
+      "@brand": ["brand.config.json"]
     }
   },
-  "include": ["src", "astro.config.mjs"],
+  "include": ["src", "astro.config.mjs", "brand.config.json"],
   "exclude": ["node_modules"]
 }

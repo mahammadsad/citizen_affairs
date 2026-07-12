@@ -10,9 +10,9 @@ const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
 const categories = await getCollection('categories');
 const canonical = `${SITE.url}/${locale}/categories/`;
-const alternateUrl = `${SITE.url}/${locale === 'en' ? 'bn' : 'en'}/categories/`;
+const alternateUrls = Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/categories/`])) as Record<Locale,string>;
 ---
-<MainLayout title={t.categories} description={t.whatWeCover} {locale} {canonical} {alternateUrl}>
+<MainLayout title={t.categories} description={t.whatWeCover} {locale} {canonical} {alternateUrls}>
   <section class="listing-hero"><div class="container"><span class="eyebrow">{t.categories}</span><h1>{t.whatWeCover}</h1><p>{locale === 'bn' ? 'চাকরি, প্রকল্প, শিক্ষা, পরীক্ষা, নোটিশ ও জনসেবা—বিষয় অনুযায়ী তথ্য দেখুন।' : 'Browse jobs, schemes, education, exams, notices and public services by topic.'}</p></div></section>
   <section class="section"><div class="container category-grid">{categories.map((category) => <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}><span class={`bar color-${category.data.color || 'primary'}`}></span><div><h2>{categoryName(category, locale)}</h2><p>{categoryDescription(category, locale)}</p></div><b>→</b></a>)}</div></section>
 </MainLayout>

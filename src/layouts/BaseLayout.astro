@@ -1,9 +1,9 @@
 ---
 import '../styles/global.css';
 import '../styles/components.css';
-import { SITE } from '@utils/constants';
+import { BRAND, SITE } from '@utils/constants';
 import { toAbsoluteUrl } from '@lib/seo';
-import type { Locale } from '../i18n';
+import { locales, type Locale } from '../i18n';
 
 export interface Props {
   title?: string;
@@ -13,102 +13,72 @@ export interface Props {
   ogType?: 'website' | 'article';
   structuredData?: object | object[];
   locale?: Locale;
-  alternateUrl?: string;
+  alternateUrls?: Partial<Record<Locale, string>>;
 }
 
 const {
-  title = SITE.name,
+  title = BRAND.brandName,
   description = SITE.description,
   image = SITE.ogImage,
-  // Default to *this page's own* URL, not the homepage. Every page that doesn't
-  // explicitly override this (e.g. an article syndicated elsewhere) gets a
-  // correct, unique canonical automatically.
   canonical = Astro.url.href,
   ogType = 'website',
   structuredData,
   locale = 'en',
-  alternateUrl,
+  alternateUrls = {}
 } = Astro.props;
 
-const siteName = locale === 'bn' ? SITE.name : SITE.nameEn;
-const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
-const siteUrl = SITE.url;
-const ogImage = toAbsoluteUrl(image, siteUrl);
-const ogImageAlt = locale === 'bn' ? 'সরকারি তথ্যকেন্দ্র — সঠিক তথ্য, সবার জন্য।' : 'Sarkari Tathya Kendra — verified information for everyone.';
-
+const fullTitle = title === BRAND.brandName ? title : `${title} | ${BRAND.brandName}`;
+const ogImage = toAbsoluteUrl(image, SITE.url);
+const ogImageAlt = `${BRAND.brandName} — ${BRAND.brandTagline}`;
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: siteName,
-  url: siteUrl,
+  name: BRAND.brandName,
+  alternateName: BRAND.brandShortName,
+  url: SITE.url,
   description,
-  inLanguage: locale,
+  inLanguage: locales,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${SITE.url}/en/articles/?q={search_term_string}`,
+    'query-input': 'required name=search_term_string'
+  }
 };
-
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: siteName,
-  url: siteUrl,
-  logo: toAbsoluteUrl(SITE.logo, siteUrl),
-  description,
-  founder: {
-    '@type': 'Person',
-    name: SITE.author.name,
-    url: SITE.author.github,
-  },
+  name: BRAND.brandName,
+  url: SITE.url,
+  logo: toAbsoluteUrl(SITE.logo, SITE.url),
+  email: BRAND.contactEmail,
+  description
 };
-
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
+const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
 ---
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang={locale} data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <!--
-      Blocking, runs before first paint: reads the saved theme (or system
-      preference) and sets it on <html> immediately. Without this, the page
-      always paints as data-theme="light" first and only corrects itself
-      after Header.astro's script loads — a visible flash for anyone who
-      has dark mode saved. is:inline keeps Astro from bundling/deferring it.
-    -->
     <script is:inline>
-      (function () {
-        try {
-          var saved = localStorage.getItem('theme');
-          var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-          document.documentElement.setAttribute('data-theme', theme);
-        } catch (e) {
-          // localStorage can throw in some privacy modes — fall back to light silently.
-        }
-      })();
+      (() => { try { const saved = localStorage.getItem('theme'); const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = theme; } catch (_) {} })();
     </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonical} />
-    {alternateUrl && <link rel="alternate" hreflang={locale === 'en' ? 'bn' : 'en'} href={alternateUrl} />}
-    <link rel="alternate" hreflang={locale} href={canonical} />
-    <link rel="alternate" hreflang="x-default" href={`${SITE.url}/en/`} />
+    {locales.map((lang) => alternateUrls[lang] && <link rel="alternate" hreflang={lang} href={alternateUrls[lang]} />)}
+    <link rel="alternate" hreflang="x-default" href={alternateUrls.en || `${SITE.url}/`} />
     <link rel="manifest" href={`${SITE.basePath}site.webmanifest`} />
-    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} RSS Feed`} href={`${SITE.basePath}rss.xml`} />
-
-    <!-- Favicons -->
-    <link rel="icon" type="image/svg+xml" href="/sarkari-tathya-kendra/assets/logo-mark.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/sarkari-tathya-kendra/assets/favicon-32.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/sarkari-tathya-kendra/assets/favicon-180.png" />
+    <link rel="alternate" type="application/rss+xml" title={`${BRAND.brandName} RSS`} href={`${SITE.basePath}rss.xml`} />
+    <link rel="icon" type="image/svg+xml" href={`${SITE.basePath}assets/logo-mark.svg`} />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${SITE.basePath}assets/favicon-32.png`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${SITE.basePath}assets/favicon-180.png`} />
     <meta name="theme-color" content="#0A4D8C" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={siteName} />
+    <meta property="og:site_name" content={BRAND.brandName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
@@ -116,24 +86,18 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content={locale === 'bn' ? 'bn_IN' : 'en_IN'} />
-
-    <!-- Twitter -->
+    <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
-
-    <!-- JSON-LD -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
-    {extraSchemas.map((schema) => (
-      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
-    ))}
+    {extraSchemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
-  <body>
-    <a href="#main-content" class="skip-link">{locale === 'bn' ? 'মূল কনটেন্টে যান' : 'Skip to main content'}</a>
+  <body id="top">
+    <a href="#main-content" class="skip-link">{locale === 'bn' ? 'মূল কনটেন্টে যান' : locale === 'hi' ? 'मुख्य सामग्री पर जाएँ' : 'Skip to main content'}</a>
     <slot />
   </body>
 </html>

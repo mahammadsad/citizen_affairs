@@ -1,129 +1,74 @@
 ---
-import { SITE } from '@utils/constants';
+import { BRAND, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
-import type { Locale } from '../i18n';
-import { localizedPath, replaceLocale, ui } from '../i18n';
+import LatestTicker from './LatestTicker.astro';
+import Icon from './Icon.astro';
+import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
 
-interface Props {
-  locale: Locale;
-  languageSwitchUrl?: string;
-}
-
-const { locale, languageSwitchUrl } = Astro.props;
+interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
+const { locale, alternateUrls = {} } = Astro.props;
 const t = ui(locale);
-const otherLocale: Locale = locale === 'en' ? 'bn' : 'en';
-const switchUrl = languageSwitchUrl || replaceLocale(Astro.url.pathname, otherLocale);
-const brandName = locale === 'bn' ? SITE.name : SITE.nameEn;
-const brandTagline = locale === 'bn' ? SITE.tagline : SITE.taglineEn;
+const pathname = Astro.url.pathname;
+const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
+const nav = [
+  { label: t.home, href: localizedPath(locale), active: pathname === localizedPath(locale) || (locale === 'en' && pathname === SITE.basePath) },
+  { label: t.latestNav, href: localizedPath(locale, 'articles'), active: pathname.includes(`/${locale}/articles`) },
+  { label: t.categories, href: localizedPath(locale, 'categories'), active: pathname.includes(`/${locale}/categories`) },
+  { label: t.about, href: `${localizedPath(locale)}#about`, active: false }
+];
 ---
-
 <header class="site-header">
-  <nav class="navbar container" aria-label={locale === 'bn' ? 'প্রধান নেভিগেশন' : 'Primary navigation'}>
-    <a href={localizedPath(locale)} class="brand" aria-label={`${brandName} — ${t.home}`}>
-      <img src={`${SITE.basePath}assets/logo-mark.svg`} alt="" class="brand-logo" width="44" height="44" />
-      <span class="brand-text">
-        <span class="brand-name">{brandName}</span>
-        <span class="brand-tagline">{brandTagline}</span>
-      </span>
+  <nav class="navbar container" aria-label={locale === 'bn' ? 'প্রধান নেভিগেশন' : locale === 'hi' ? 'मुख्य नेविगेशन' : 'Primary navigation'}>
+    <a href={localizedPath(locale)} class="brand" aria-label={`${BRAND.brandName} — ${t.home}`}>
+      <img src={SITE.logo} alt={`${BRAND.brandName} logo`} class="brand-logo" width="46" height="46" />
+      <span class="brand-text"><span class="brand-name">{BRAND.brandName}</span><span class="brand-tagline">{BRAND.brandTagline}</span></span>
     </a>
-
     <ul class="nav-links">
-      <li><a href={localizedPath(locale)}>{t.home}</a></li>
-      <li><a href={localizedPath(locale, 'articles')}>{t.articles}</a></li>
-      <li><a href={localizedPath(locale, 'categories')}>{t.categories}</a></li>
-      <li><a href={`${localizedPath(locale)}#community`}>{t.community}</a></li>
-      <li><a href={`${localizedPath(locale)}#contact`}>{t.contact}</a></li>
+      {nav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
     </ul>
-
     <div class="nav-actions">
-      <a class="language-toggle" href={switchUrl} lang={otherLocale} hreflang={otherLocale}>
-        <span aria-hidden="true">文</span> {t.switchLanguage}
-      </a>
-      <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog">
-        <svg class="icon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-      </button>
-      <button class="icon-btn" id="themeToggle" aria-label={locale === 'bn' ? 'থিম পরিবর্তন করুন' : 'Change colour theme'} aria-pressed="false">
-        <svg class="icon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-.5 0-1-.1-1.5A7 7 0 0 1 12 3Z"/></svg>
-      </button>
-      <button class="icon-btn menu-toggle" id="menuToggle" aria-label={locale === 'bn' ? 'মেনু খুলুন' : 'Open menu'} aria-expanded="false" aria-controls="mobileMenu">
-        <svg class="icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
+      <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog"><Icon name="search" /></button>
+      <div class="language-picker">
+        <button class="language-trigger" id="languageTrigger" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu">
+          <Icon name="globe" /><span class="language-code">{localeMeta[locale].code}</span><span class="chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="language-menu" id="languageMenu" role="menu" hidden>
+          {locales.map((lang) => <a role="menuitem" href={languageUrls[lang]} lang={lang} hreflang={lang} data-language={lang} aria-current={lang === locale ? 'true' : undefined}><span>{lang === locale ? '✓' : ''}</span>{localeMeta[lang].nativeName}</a>)}
+        </div>
+      </div>
+      <button class="icon-btn theme-toggle desktop-theme" aria-label={locale === 'bn' ? 'থিম পরিবর্তন' : locale === 'hi' ? 'थीम बदलें' : 'Change theme'}><Icon name="theme" /></button>
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label={t.menu} aria-expanded="false" aria-controls="mobileMenu"><Icon name="menu" /></button>
     </div>
   </nav>
-
-  <div class="trust-strip">
-    <div class="container trust-strip-inner">
-      <strong>{locale === 'bn' ? 'তথ্য যাচাই নীতি' : 'Verification policy'}</strong>
-      <span>•</span>
-      <span>{locale === 'bn' ? 'Official source → Fact check → সহজ ব্যাখ্যা → Update tracking' : 'Official source → Fact check → Clear explanation → Update tracking'}</span>
-    </div>
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <ul>{nav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}</ul>
+    <button class="mobile-theme theme-toggle"><Icon name="theme" />{locale === 'bn' ? 'থিম পরিবর্তন' : locale === 'hi' ? 'थीम बदलें' : 'Change theme'}</button>
   </div>
+  <LatestTicker {locale} />
 </header>
-
-<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-  <ul>
-    <li><a href={localizedPath(locale)}>{t.home}</a></li>
-    <li><a href={localizedPath(locale, 'articles')}>{t.articles}</a></li>
-    <li><a href={localizedPath(locale, 'categories')}>{t.categories}</a></li>
-    <li><a href={`${localizedPath(locale)}#community`}>{t.community}</a></li>
-    <li><a href={`${localizedPath(locale)}#contact`}>{t.contact}</a></li>
-  </ul>
-  <a class="language-toggle mobile-language" href={switchUrl} lang={otherLocale} hreflang={otherLocale}>{t.switchLanguage}</a>
-</div>
-
 <SearchOverlay {locale} />
 
 <script>
   const root = document.documentElement;
-  const themeToggle = document.getElementById('themeToggle');
+  const languageTrigger = document.getElementById('languageTrigger');
+  const languageMenu = document.getElementById('languageMenu');
   const menuToggle = document.getElementById('menuToggle');
   const mobileMenu = document.getElementById('mobileMenu');
-
-  themeToggle?.addEventListener('click', () => {
-    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    themeToggle.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
-    try { localStorage.setItem('theme', next); } catch (_) {}
-  });
-
-  function closeMenu() {
-    mobileMenu?.classList.remove('is-open');
-    mobileMenu?.setAttribute('aria-hidden', 'true');
-    menuToggle?.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  menuToggle?.addEventListener('click', () => {
-    const open = !mobileMenu?.classList.contains('is-open');
-    mobileMenu?.classList.toggle('is-open', open);
-    mobileMenu?.setAttribute('aria-hidden', open ? 'false' : 'true');
-    menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    document.body.style.overflow = open ? 'hidden' : '';
-  });
-
-  mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
-
-  const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && revealEls.length) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: .08 });
-    revealEls.forEach((el) => observer.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add('is-visible'));
-  }
+  const closeLanguage = () => { languageMenu?.setAttribute('hidden', ''); languageTrigger?.setAttribute('aria-expanded', 'false'); };
+  languageTrigger?.addEventListener('click', () => { const open = languageMenu?.hasAttribute('hidden'); if (open) languageMenu?.removeAttribute('hidden'); else languageMenu?.setAttribute('hidden', ''); languageTrigger.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  languageMenu?.querySelectorAll('[data-language]').forEach((link) => link.addEventListener('click', () => { try { localStorage.setItem('site-language', (link as HTMLElement).dataset.language || 'en'); } catch (_) {} }));
+  document.addEventListener('click', (event) => { if (!(event.target as Element).closest('.language-picker')) closeLanguage(); });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeLanguage(); mobileMenu?.classList.remove('is-open'); menuToggle?.setAttribute('aria-expanded', 'false'); } });
+  menuToggle?.addEventListener('click', () => { const open = !mobileMenu?.classList.contains('is-open'); mobileMenu?.classList.toggle('is-open', open); mobileMenu?.setAttribute('aria-hidden', open ? 'false' : 'true'); menuToggle.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  document.querySelectorAll('.theme-toggle').forEach((button) => button.addEventListener('click', () => { const next = root.dataset.theme === 'dark' ? 'light' : 'dark'; root.dataset.theme = next; try { localStorage.setItem('theme', next); } catch (_) {} }));
 </script>
-
 <style>
-  .language-toggle { display:inline-flex; align-items:center; gap:.45rem; min-height:42px; padding:.55rem .85rem; border:1px solid var(--color-border); border-radius:var(--radius-pill); color:var(--color-primary); background:var(--color-surface); font-weight:700; font-size:.86rem; }
-  .trust-strip { border-top:1px solid var(--color-border); background:linear-gradient(90deg, rgba(var(--color-green-rgb),.09), rgba(var(--color-primary-rgb),.06)); }
-  .trust-strip-inner { min-height:38px; display:flex; align-items:center; gap:.65rem; font-size:.78rem; color:var(--color-text-muted); white-space:nowrap; overflow:hidden; }
-  .trust-strip strong { color:var(--color-green-text); }
-  .mobile-language { justify-content:center; margin-top:1rem; }
-  @media (max-width: 760px) { .nav-actions > .language-toggle { display:none; } }
+  .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
+  [data-theme="dark"] .site-header{background:rgba(10,18,32,.9)}
+  .navbar{height:74px}.brand-logo{width:46px;height:46px}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
+  .language-picker{position:relative}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;right:0;top:calc(100% + .55rem);min-width:174px;padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg)}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
+  .mobile-menu{top:74px;padding-bottom:5rem}.mobile-theme{display:flex;align-items:center;gap:.65rem;width:100%;min-height:48px;margin-top:1rem;padding:.75rem;border:1px solid var(--color-border);border-radius:12px}.desktop-theme{display:none}
+  @media(max-width:520px){.brand-text{display:none}.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
+  @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-menu{display:none!important}.brand-tagline{display:none}}
+  @media(min-width:1080px){.brand-tagline{display:block}}
 </style>
