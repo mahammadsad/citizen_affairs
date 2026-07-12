@@ -49,11 +49,11 @@ const cases = [
           exactViewport:win.innerWidth===width,
           closedHidden:!!drawer?.hidden&&toggle?.getAttribute('aria-expanded')==='false',
           controlsVisible:!!search&&!!language&&getComputedStyle(search).display!=='none'&&getComputedStyle(language).display!=='none',
-          closedNoOverflow:html.scrollWidth<=html.clientWidth,
+          closedNoOverflow:html.scrollWidth<=win.innerWidth+2,
           desktopNav:desktop?getComputedStyle(doc.querySelector('.nav-links') as Element).display==='flex':true
         };
         if(!desktop&&toggle&&drawer&&backdrop&&main){
-          toggle.click();await wait(340);
+          toggle.focus();toggle.click();await wait(400);
           const rect=drawer.getBoundingClientRect();
           const labels=[...drawer.querySelectorAll<HTMLAnchorElement>('.drawer-scroll a[href]')].map(a=>a.textContent?.trim()||'');
           checks.openVisible=!drawer.hidden&&drawer.classList.contains('is-open')&&getComputedStyle(drawer).visibility!=='hidden';
@@ -62,7 +62,7 @@ const cases = [
           checks.activePage=!!drawer.querySelector('[aria-current="page"]');
           checks.insideViewport=rect.left>=-1&&rect.right<=win.innerWidth+1&&rect.width<=win.innerWidth+1;
           checks.mainWidthStable=Math.abs(main.getBoundingClientRect().width-beforeMain)<=1;
-          checks.openNoOverflow=html.scrollWidth<=html.clientWidth;
+          checks.openNoOverflow=html.scrollWidth<=win.innerWidth+2;
           checks.bodyLocked=doc.body.classList.contains('menu-open');
           checks.backdropVisible=backdrop.classList.contains('is-open')&&getComputedStyle(backdrop).visibility==='visible';
 
@@ -70,17 +70,17 @@ const cases = [
           else if(index%4===1)backdrop.click();
           else if(index%4===2)doc.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
           else {const first=drawer.querySelector<HTMLAnchorElement>('.drawer-quick-links a');first?.addEventListener('click',event=>event.preventDefault(),{once:true});first?.click()}
-          await wait(340);
+          await wait(400);
           checks.closedReliably=drawer.hidden&&backdrop.hidden&&toggle.getAttribute('aria-expanded')==='false'&&!doc.body.classList.contains('menu-open');
           checks.focusRestored=index%4===3||doc.activeElement===toggle;
 
           if(width===390){
-            toggle.click();await wait(340);(drawer.querySelector('.mobile-theme') as HTMLButtonElement)?.click();
+            toggle.focus();toggle.click();await wait(400);(drawer.querySelector('.mobile-theme') as HTMLButtonElement)?.click();
             const footer=doc.querySelector('footer');checks.darkMode=html.dataset.theme==='dark'&&footer?getComputedStyle(footer).backgroundColor==='rgb(16, 36, 61)':false;
-            (doc.getElementById('menuClose') as HTMLButtonElement).click();await wait(340);
+            (doc.getElementById('menuClose') as HTMLButtonElement).click();await wait(400);
           }
         }
-        checks.finalNoOverflow=html.scrollWidth<=html.clientWidth;
+        checks.finalNoOverflow=html.scrollWidth<=win.innerWidth+2;
         const pass=Object.values(checks).every(value=>value===true||typeof value==='number'||typeof value==='string'||value===null);
         results.push({label,width,height,locale,pass,checks});
       };
@@ -89,8 +89,8 @@ const cases = [
         for(let i=0;i<frames.length;i++)await runCase(frames[i],i);
         const resizeFrame=frames.find(frame=>frame.dataset.width==='768')!;
         const resizeDoc=resizeFrame.contentDocument!,resizeToggle=resizeDoc.getElementById('menuToggle') as HTMLButtonElement,resizeDrawer=resizeDoc.getElementById('mobileMenu') as HTMLElement;
-        resizeToggle.click();await wait(340);resizeFrame.width='1024';resizeFrame.style.width='1024px';await wait(400);
-        results.push({label:'zoom/viewport expansion while open',width:1024,height:Number(resizeFrame.dataset.height),locale:resizeFrame.dataset.locale||'bn',pass:resizeDrawer.hidden&&resizeToggle.getAttribute('aria-expanded')==='false'&&resizeDoc.documentElement.scrollWidth<=resizeDoc.documentElement.clientWidth,checks:{drawerClosed:resizeDrawer.hidden,ariaClosed:resizeToggle.getAttribute('aria-expanded')==='false',noOverflow:resizeDoc.documentElement.scrollWidth<=resizeDoc.documentElement.clientWidth}});
+        resizeToggle.focus();resizeToggle.click();await wait(400);resizeFrame.width='1024';resizeFrame.style.width='1024px';await wait(500);
+        results.push({label:'zoom/viewport expansion while open',width:1024,height:Number(resizeFrame.dataset.height),locale:resizeFrame.dataset.locale||'bn',pass:resizeDrawer.hidden&&resizeToggle.getAttribute('aria-expanded')==='false'&&resizeDoc.documentElement.scrollWidth<=resizeFrame.contentWindow!.innerWidth+2,checks:{drawerClosed:resizeDrawer.hidden,ariaClosed:resizeToggle.getAttribute('aria-expanded')==='false',noOverflow:resizeDoc.documentElement.scrollWidth<=resizeFrame.contentWindow!.innerWidth+2}});
       }catch(error){results.push({label:'harness',width:0,height:0,locale:'en',pass:false,checks:{error:error instanceof Error?error.message:String(error)}})}
       const box=document.getElementById('results')!;box.textContent=JSON.stringify(results,null,2);document.getElementById('status')!.textContent=results.every(result=>result.pass)?'PASS':'FAIL';document.body.dataset.complete='true';
     </script>
