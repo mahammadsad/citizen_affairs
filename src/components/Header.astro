@@ -124,6 +124,7 @@ const labels = {
   let drawerOpen = false;
   let releaseFocusTrap: (() => void) | undefined;
   let closeTimer: number | undefined;
+  let originalBodyPaddingRight = '';
 
   const closeLanguage = () => {
     languageMenu?.setAttribute('hidden', '');
@@ -146,6 +147,7 @@ const labels = {
     menuToggle?.setAttribute('aria-expanded', 'false');
     if (menuToggle instanceof HTMLElement) menuToggle.setAttribute('aria-label', menuToggle.dataset.openLabel || 'Menu');
     document.body.classList.remove('menu-open');
+    document.body.style.paddingRight = originalBodyPaddingRight;
     releaseFocusTrap?.();
     releaseFocusTrap = undefined;
     if (reducedMotion.matches) finishClosingDrawer();
@@ -163,15 +165,23 @@ const labels = {
     mobileMenu?.setAttribute('aria-hidden', 'false');
     menuToggle?.setAttribute('aria-expanded', 'true');
     if (menuToggle instanceof HTMLElement) menuToggle.setAttribute('aria-label', menuToggle.dataset.closeLabel || 'Close menu');
+    originalBodyPaddingRight = document.body.style.paddingRight;
+    const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+    if (scrollbarGap) {
+      const currentPadding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0;
+      document.body.style.paddingRight = `${currentPadding + scrollbarGap}px`;
+    }
     document.body.classList.add('menu-open');
-    requestAnimationFrame(() => {
-      mobileMenu?.classList.add('is-open');
-      mobileBackdrop?.classList.add('is-open');
-      if (mobileMenu instanceof HTMLElement) {
-        releaseFocusTrap = trapFocus(mobileMenu);
-        menuClose?.focus();
-      }
-    });
+    // Force the initial off-canvas state to be committed before starting the transition.
+    // This is deterministic in background tabs/iframes where requestAnimationFrame may be throttled.
+    if (mobileMenu instanceof HTMLElement) void mobileMenu.offsetWidth;
+    if (!drawerOpen) return;
+    mobileMenu?.classList.add('is-open');
+    mobileBackdrop?.classList.add('is-open');
+    if (mobileMenu instanceof HTMLElement) {
+      releaseFocusTrap = trapFocus(mobileMenu);
+      menuClose?.focus();
+    }
   };
 
   languageTrigger?.addEventListener('click', () => {
@@ -193,6 +203,7 @@ const labels = {
   mobileBackdrop?.addEventListener('click', () => closeDrawer());
   mobileMenu?.querySelectorAll('a[href]').forEach((link) => link.addEventListener('click', () => closeDrawer(false)));
   desktopQuery.addEventListener('change', (event) => { if (event.matches) closeDrawer(false); });
+  window.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
   window.addEventListener('popstate', () => closeDrawer(false));
   window.addEventListener('pageshow', () => closeDrawer(false));
   document.querySelectorAll('.theme-toggle').forEach((button) => button.addEventListener('click', () => {
