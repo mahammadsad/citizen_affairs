@@ -1,6 +1,6 @@
 ---
 language: bn
-translationKey: verify-government-job-notice
+translationKey: ayushman-card-check-download-2026
 urlSlug: ayushman-card-check-download-2026
 title: "আয়ুষ্মান ভারত কার্ড: যোগ্যতা যাচাই, e-KYC ও কার্ড ডাউনলোডের নিয়ম"
 description: অফিসিয়াল পোর্টালে আয়ুষ্মান ভারত PM-JAY-এর beneficiary record
@@ -9,12 +9,13 @@ description: অফিসিয়াল পোর্টালে আয়ু�
 date: 2026-07-12
 updated: 2026-07-12
 lastVerified: 2026-07-12
-deadline: 2026-07-12
 author: admin
 category: affairs
-verificationStatus: under-verification
+verificationStatus: officially-confirmed
 sourceUrls:
   - https://nha.gov.in/PM-JAY
+  - https://beneficiary.nha.gov.in/
+  - https://hem.nha.gov.in/
 featured: true
 featuredImage: /sarkari-tathya-kendra/uploads/chatgpt-image-jul-10-2026-104148-pm.png
 draft: false
