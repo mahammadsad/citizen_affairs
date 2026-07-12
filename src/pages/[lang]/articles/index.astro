@@ -1,0 +1,19 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import { getLocalizedArticles } from '@lib/content';
+import { locales, type Locale, localizedPath, ui } from '../../../i18n';
+import { SITE } from '@utils/constants';
+
+export function getStaticPaths() { return locales.map((lang) => ({ params: { lang }, props: { locale: lang } })); }
+const { locale } = Astro.props as { locale: Locale };
+const t = ui(locale);
+const articles = await getLocalizedArticles(locale);
+const canonical = `${SITE.url}/${locale}/articles/`;
+const alternateUrl = `${SITE.url}/${locale === 'en' ? 'bn' : 'en'}/articles/`;
+---
+<MainLayout title={t.articles} description={t.latestDescription} {locale} {canonical} {alternateUrl}>
+  <section class="listing-hero"><div class="container"><span class="eyebrow">{t.articles}</span><h1>{t.latest}</h1><p>{t.latestDescription}</p></div></section>
+  <section class="section"><div class="container"><div class="listing-toolbar"><span>{articles.length} {t.articleCount}</span><a href={localizedPath(locale, 'categories')}>{t.allCategories} →</a></div><div class="articles-grid">{articles.map((article) => <ArticleCard {article} {locale} />)}</div>{!articles.length && <p class="empty-state">{t.noArticles}</p>}</div></section>
+</MainLayout>
+<style>.listing-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.08),rgba(var(--color-green-rgb),.06))}.listing-hero h1{font-size:clamp(2rem,5vw,3.5rem)}.listing-hero p{color:var(--color-text-muted);max-width:60ch}.listing-toolbar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;color:var(--color-text-muted)}.listing-toolbar a{color:var(--color-primary);font-weight:700}.articles-grid{display:grid;gap:1.2rem}@media(min-width:680px){.articles-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:980px){.articles-grid{grid-template-columns:repeat(3,1fr)}}</style>

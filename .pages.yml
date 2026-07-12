@@ -1,0 +1,92 @@
+media:
+  input: public/uploads
+  output: /sarkari-tathya-kendra/uploads
+  rename: safe
+  categories: [image, document]
+
+content:
+  - name: articles
+    label: Articles / আর্টিকেল
+    type: group
+    items:
+      - name: english-articles
+        label: English articles
+        type: collection
+        path: src/content/articles/en
+        format: yaml-frontmatter
+        filename: "{fields.urlSlug}.md"
+        view:
+          primary: title
+          fields: [title, category, verificationStatus, date, draft]
+          sort: date
+          order: desc
+        fields: &article_fields
+          - { name: language, label: Language, type: select, options: [{ label: English, value: en }, { label: Bengali, value: bn }], required: true }
+          - { name: translationKey, label: Translation key, type: string, required: true, description: Use the same key for the English and Bengali versions. }
+          - { name: urlSlug, label: URL slug, type: string, required: true, description: Lowercase English letters, numbers and hyphens only. }
+          - { name: title, label: Title, type: string, required: true }
+          - { name: description, label: Short summary, type: text, required: true }
+          - { name: date, label: Published date, type: date, required: true }
+          - { name: updated, label: Updated date, type: date, required: false }
+          - { name: lastVerified, label: Last verified, type: date, required: false }
+          - { name: deadline, label: Deadline, type: date, required: false }
+          - { name: author, label: Author ID, type: string, default: admin, required: true }
+          - { name: category, label: Category ID, type: select, options: [jobs, projects, exams, notices, affairs, materials], required: true }
+          - name: verificationStatus
+            label: Verification status
+            type: select
+            required: true
+            default: under-verification
+            options:
+              - { label: Officially confirmed, value: officially-confirmed }
+              - { label: Under verification, value: under-verification }
+              - { label: Corrected, value: corrected }
+              - { label: Withdrawn, value: withdrawn }
+              - { label: Closed, value: closed }
+          - { name: sourceUrls, label: Source URLs, type: string, list: true, required: true }
+          - { name: officialNoticeUrl, label: Official notice URL, type: string, required: false }
+          - { name: applicationUrl, label: Application or service URL, type: string, required: false }
+          - { name: tags, label: Tags, type: string, list: true, required: false }
+          - { name: featured, label: Feature on homepage, type: boolean, default: false }
+          - { name: featuredImage, label: Featured image, type: image, required: false }
+          - { name: featuredImageAlt, label: Image description, type: string, required: false }
+          - { name: draft, label: Keep as draft, type: boolean, default: true }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
+          - { name: body, label: Article content, type: rich-text, required: true }
+      - name: bengali-articles
+        label: বাংলা আর্টিকেল
+        type: collection
+        path: src/content/articles/bn
+        format: yaml-frontmatter
+        filename: "{fields.urlSlug}.md"
+        view:
+          primary: title
+          fields: [title, category, verificationStatus, date, draft]
+          sort: date
+          order: desc
+        fields: *article_fields
+
+  - name: categories
+    label: Categories / বিভাগ
+    type: collection
+    path: src/content/categories
+    format: yaml
+    view:
+      primary: nameEn
+    fields:
+      - { name: nameEn, label: English name, type: string, required: true }
+      - { name: nameBn, label: বাংলা নাম, type: string, required: true }
+      - { name: descriptionEn, label: English description, type: text, required: false }
+      - { name: descriptionBn, label: বাংলা বিবরণ, type: text, required: false }
+      - { name: color, label: Colour, type: select, options: [primary, green, orange, navy], required: false }
+
+settings:
+  content:
+    merge: direct
+  commit:
+    identity: user
+    templates:
+      create: "content: add {filename}"
+      update: "content: update {filename}"
+      delete: "content: remove {filename}"

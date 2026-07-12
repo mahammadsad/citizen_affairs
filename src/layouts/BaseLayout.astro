@@ -3,6 +3,7 @@ import '../styles/global.css';
 import '../styles/components.css';
 import { SITE } from '@utils/constants';
 import { toAbsoluteUrl } from '@lib/seo';
+import type { Locale } from '../i18n';
 
 export interface Props {
   title?: string;
@@ -10,7 +11,9 @@ export interface Props {
   image?: string;
   canonical?: string;
   ogType?: 'website' | 'article';
-  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  structuredData?: object | object[];
+  locale?: Locale;
+  alternateUrl?: string;
 }
 
 const {
@@ -23,35 +26,38 @@ const {
   canonical = Astro.url.href,
   ogType = 'website',
   structuredData,
+  locale = 'en',
+  alternateUrl,
 } = Astro.props;
 
-const fullTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
+const siteName = locale === 'bn' ? SITE.name : SITE.nameEn;
+const fullTitle = title === siteName ? title : `${title} | ${siteName}`;
 const siteUrl = SITE.url;
 const ogImage = toAbsoluteUrl(image, siteUrl);
 
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: SITE.name,
+  name: siteName,
   url: siteUrl,
-  description: SITE.description,
-  inLanguage: SITE.language,
+  description,
+  inLanguage: locale,
 };
 
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: SITE.name,
+  name: siteName,
   url: siteUrl,
   logo: toAbsoluteUrl(SITE.logo, siteUrl),
-  description: SITE.description,
+  description,
 };
 
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 ---
 
 <!DOCTYPE html>
-<html lang={SITE.language} data-theme="light">
+<html lang={locale} data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <!--
@@ -78,6 +84,9 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta name="author" content={SITE.name} />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonical} />
+    {alternateUrl && <link rel="alternate" hreflang={locale === 'en' ? 'bn' : 'en'} href={alternateUrl} />}
+    <link rel="alternate" hreflang={locale} href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={`${SITE.url}/en/`} />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} RSS Feed`} href={`${SITE.basePath}rss.xml`} />
 
     <!-- Favicons -->
@@ -89,19 +98,15 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
 
     <!-- Open Graph -->
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:locale" content={locale === 'bn' ? 'bn_IN' : 'en_IN'} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -110,14 +115,14 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta name="twitter:image" content={ogImage} />
 
     <!-- JSON-LD -->
-    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
-    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     {extraSchemas.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
     ))}
   </head>
   <body>
-    <a href="#main-content" class="skip-link">মূল কনটেন্টে যান</a>
+    <a href="#main-content" class="skip-link">{locale === 'bn' ? 'মূল কনটেন্টে যান' : 'Skip to main content'}</a>
     <slot />
   </body>
 </html>

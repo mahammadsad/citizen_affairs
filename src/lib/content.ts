@@ -8,6 +8,7 @@
  */
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import { slugify } from './seo';
+import type { Locale } from '../i18n';
 
 export async function getCategoryData(slug: string): Promise<CollectionEntry<'categories'> | undefined> {
   return getEntry('categories', slug);
@@ -43,6 +44,34 @@ export async function getArticlesByTagSlug(tagSlug: string) {
 export async function getArticlesByCategorySlug(categorySlug: string) {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
   return articles.filter((article) => article.data.category === categorySlug);
+}
+
+export async function getLocalizedArticles(locale: Locale) {
+  const articles = await getCollection('articles', ({ data }) => !data.draft && data.language === locale);
+  return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+}
+
+export async function getLocalizedArticle(locale: Locale, slug: string) {
+  const articles = await getLocalizedArticles(locale);
+  return articles.find((article) => article.data.urlSlug === slug);
+}
+
+export async function getArticleTranslation(translationKey: string, locale: Locale) {
+  const articles = await getLocalizedArticles(locale);
+  return articles.find((article) => article.data.translationKey === translationKey);
+}
+
+export async function getLocalizedArticlesByCategory(locale: Locale, category: string) {
+  const articles = await getLocalizedArticles(locale);
+  return articles.filter((article) => article.data.category === category);
+}
+
+export function categoryName(category: CollectionEntry<'categories'>, locale: Locale) {
+  return locale === 'bn' ? category.data.nameBn : category.data.nameEn;
+}
+
+export function categoryDescription(category: CollectionEntry<'categories'>, locale: Locale) {
+  return locale === 'bn' ? category.data.descriptionBn : category.data.descriptionEn;
 }
 
 export async function getArticlesByAuthorSlug(authorSlug: string) {

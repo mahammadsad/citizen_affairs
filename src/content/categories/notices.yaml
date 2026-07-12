@@ -1,3 +1,5 @@
-name: নোটিশ
-description: সরকারি দপ্তরের অফিসিয়াল নোটিশ ও ঘোষণা।
+nameEn: Government Notices
+nameBn: সরকারি নোটিশ
+descriptionEn: Important public notices, corrections, extensions and official announcements.
+descriptionBn: গুরুত্বপূর্ণ সরকারি ঘোষণা, সংশোধন, সময়সীমা বৃদ্ধি ও জনসাধারণের নোটিশ।
 color: navy

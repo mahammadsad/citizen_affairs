@@ -1,22 +1,27 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { getCategoryData } from '@lib/content';
+import { categoryName } from '@lib/content';
+import type { Locale } from '../i18n';
+import { localizedPath, ui, verificationLabels } from '../i18n';
 
 export interface Props {
   article: CollectionEntry<'articles'>;
+  locale: Locale;
 }
 
-const { article } = Astro.props;
+const { article, locale } = Astro.props;
 const category = await getCategoryData(article.data.category);
-const categoryName = category?.data.name ?? article.data.category;
-const date = new Date(article.data.date).toLocaleDateString('bn-BD', {
+const categoryLabel = category ? categoryName(category, locale) : article.data.category;
+const t = ui(locale);
+const date = new Date(article.data.date).toLocaleDateString(locale === 'bn' ? 'bn-IN' : 'en-IN', {
   year: 'numeric',
   month: 'long',
   day: 'numeric',
 });
 ---
 
-<a href={`/sarkari-tathya-kendra/articles/${article.slug}/`} class="article-card">
+<a href={localizedPath(locale, `articles/${article.data.urlSlug}`)} class="article-card">
   {article.data.featuredImage && (
     <img
       src={article.data.featuredImage}
@@ -26,10 +31,14 @@ const date = new Date(article.data.date).toLocaleDateString('bn-BD', {
       decoding="async"
     />
   )}
-  <span class="article-card-category">{categoryName}</span>
+  <div class="article-card-meta">
+    <span class="article-card-category">{categoryLabel}</span>
+    <span class={`verification-dot status-${article.data.verificationStatus}`}>{verificationLabels[locale][article.data.verificationStatus]}</span>
+  </div>
   <h3 class="article-card-title">{article.data.title}</h3>
   <p class="article-card-desc">{article.data.description}</p>
   <span class="article-card-date">{date}</span>
+  <span class="article-card-link">{t.readMore} →</span>
 </a>
 
 <style>
@@ -67,6 +76,12 @@ const date = new Date(article.data.date).toLocaleDateString('bn-BD', {
     margin-bottom: var(--space-2);
     align-self: flex-start;
   }
+  .article-card-meta { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; margin-bottom:var(--space-2); }
+  .article-card-meta .article-card-category { margin-bottom:0; }
+  .verification-dot { font-size:.7rem; font-weight:700; color:var(--color-text-muted); display:inline-flex; align-items:center; gap:.35rem; }
+  .verification-dot::before { content:""; width:.5rem; height:.5rem; border-radius:50%; background:var(--color-orange); }
+  .status-officially-confirmed::before { background:var(--color-green); }
+  .status-withdrawn::before, .status-closed::before { background:#b42318; }
   .article-card-title {
     font-size: 1.08rem;
     margin-bottom: 0.4rem;
@@ -82,4 +97,5 @@ const date = new Date(article.data.date).toLocaleDateString('bn-BD', {
     color: var(--color-text-muted);
     margin-top: var(--space-2);
   }
+  .article-card-link { margin-top:var(--space-2); color:var(--color-primary); font-weight:700; font-size:.88rem; }
 </style>

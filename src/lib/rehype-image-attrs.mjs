@@ -5,7 +5,7 @@ import { visit } from 'unist-util-visit';
  * markdown content (e.g. ![alt](url) inside an article body).
  *
  * This is the "automatic image handling" that's actually achievable for
- * this project: article images are uploaded through Decap CMS into
+ * this project: article images are uploaded through Pages CMS into
  * public/uploads/... as plain files, and Astro's build pipeline only
  * optimizes (resizes/re-encodes) images imported from src/ — files in
  * public/ are always copied through unprocessed, by design. Real

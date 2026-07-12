@@ -1,0 +1,26 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+import { categoryDescription, categoryName, getLocalizedArticlesByCategory } from '@lib/content';
+import type { Locale } from '../../../i18n';
+import { localizedPath, ui } from '../../../i18n';
+import { SITE } from '@utils/constants';
+
+export async function getStaticPaths() {
+  const categories = await getCollection('categories');
+  return (['en', 'bn'] as Locale[]).flatMap((locale) => categories.map((category) => ({ params: { lang: locale, category: category.id }, props: { locale, category } })));
+}
+const { locale, category } = Astro.props as { locale: Locale; category: any };
+const t = ui(locale);
+const articles = await getLocalizedArticlesByCategory(locale, category.id);
+const name = categoryName(category, locale);
+const description = categoryDescription(category, locale) || name;
+const canonical = `${SITE.url}/${locale}/categories/${category.id}/`;
+const alternateUrl = `${SITE.url}/${locale === 'en' ? 'bn' : 'en'}/categories/${category.id}/`;
+---
+<MainLayout title={name} {description} {locale} {canonical} {alternateUrl}>
+  <section class="listing-hero"><div class="container"><a href={localizedPath(locale, 'categories')}>← {t.allCategories}</a><h1>{name}</h1><p>{description}</p></div></section>
+  <section class="section"><div class="container"><p class="count">{articles.length} {t.articleCount}</p><div class="articles-grid">{articles.map((article) => <ArticleCard {article} {locale} />)}</div>{!articles.length && <p class="empty-state">{t.noArticles}</p>}</div></section>
+</MainLayout>
+<style>.listing-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.08),rgba(var(--color-green-rgb),.06))}.listing-hero a{color:var(--color-primary);font-weight:700}.listing-hero h1{font-size:clamp(2rem,5vw,3.5rem);margin-top:1rem}.listing-hero p,.count{color:var(--color-text-muted)}.count{margin-bottom:1.3rem}.articles-grid{display:grid;gap:1.2rem}@media(min-width:680px){.articles-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:980px){.articles-grid{grid-template-columns:repeat(3,1fr)}}</style>

@@ -1,5 +1,3 @@
-import type { AstroGlobal } from 'astro';
-
 export interface SEOMeta {
   title: string;
   description: string;
