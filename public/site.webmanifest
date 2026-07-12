@@ -1,0 +1,23 @@
+{
+  "name": "সরকারি তথ্যকেন্দ্র",
+  "short_name": "তথ্যকেন্দ্র",
+  "description": "Verified government jobs, schemes, exams and public-service information in Bengali and English.",
+  "lang": "bn",
+  "start_url": "/sarkari-tathya-kendra/",
+  "scope": "/sarkari-tathya-kendra/",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#0A4D8C",
+  "icons": [
+    {
+      "src": "/sarkari-tathya-kendra/assets/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/sarkari-tathya-kendra/assets/logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
