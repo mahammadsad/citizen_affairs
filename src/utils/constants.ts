@@ -13,6 +13,13 @@ export const SITE = {
   basePath: '/sarkari-tathya-kendra/',
   logo: '/sarkari-tathya-kendra/assets/logo-mark.svg',
   ogImage: '/sarkari-tathya-kendra/assets/og-image.jpg',
+  author: {
+    name: 'Mahammad Sad',
+    role: 'Programmer and Mathematician',
+    bio: 'Interested in AI automation, technology, business, startups, investing and computer science.',
+    email: 'contact.mahammadsad@gmail.com',
+    github: 'https://github.com/mahammadsad',
+  },
 };
 
 export const ADS = {
