@@ -120,10 +120,8 @@ const labels = {
   const menuClose = document.getElementById('menuClose');
   const mobileBackdrop = document.getElementById('mobileBackdrop');
   const desktopQuery = window.matchMedia('(min-width: 860px)');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let drawerOpen = false;
   let releaseFocusTrap: (() => void) | undefined;
-  let closeTimer: number | undefined;
   let originalBodyPaddingRight = '';
 
   const closeLanguage = () => {
@@ -140,7 +138,6 @@ const labels = {
   const closeDrawer = (restoreFocus = true) => {
     if (!drawerOpen && mobileMenu?.hasAttribute('hidden')) return;
     drawerOpen = false;
-    window.clearTimeout(closeTimer);
     mobileMenu?.classList.remove('is-open');
     mobileBackdrop?.classList.remove('is-open');
     mobileMenu?.setAttribute('aria-hidden', 'true');
@@ -150,15 +147,13 @@ const labels = {
     document.body.style.paddingRight = originalBodyPaddingRight;
     releaseFocusTrap?.();
     releaseFocusTrap = undefined;
-    if (reducedMotion.matches) finishClosingDrawer();
-    else closeTimer = window.setTimeout(finishClosingDrawer, 280);
+    finishClosingDrawer();
     if (restoreFocus && menuToggle instanceof HTMLElement && !desktopQuery.matches) menuToggle.focus();
   };
 
   const openDrawer = () => {
     if (desktopQuery.matches || drawerOpen) return;
     closeLanguage();
-    window.clearTimeout(closeTimer);
     drawerOpen = true;
     mobileMenu?.removeAttribute('hidden');
     mobileBackdrop?.removeAttribute('hidden');
@@ -172,9 +167,6 @@ const labels = {
       document.body.style.paddingRight = `${currentPadding + scrollbarGap}px`;
     }
     document.body.classList.add('menu-open');
-    // Force the initial off-canvas state to be committed before starting the transition.
-    // This is deterministic in background tabs/iframes where requestAnimationFrame may be throttled.
-    if (mobileMenu instanceof HTMLElement) void mobileMenu.offsetWidth;
     if (!drawerOpen) return;
     mobileMenu?.classList.add('is-open');
     mobileBackdrop?.classList.add('is-open');
@@ -204,6 +196,7 @@ const labels = {
   mobileMenu?.querySelectorAll('a[href]').forEach((link) => link.addEventListener('click', () => closeDrawer(false)));
   desktopQuery.addEventListener('change', (event) => { if (event.matches) closeDrawer(false); });
   window.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
+  window.visualViewport?.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
   window.addEventListener('popstate', () => closeDrawer(false));
   window.addEventListener('pageshow', () => closeDrawer(false));
   document.querySelectorAll('.theme-toggle').forEach((button) => button.addEventListener('click', () => {
@@ -220,11 +213,11 @@ const labels = {
   .language-picker{position:relative}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;right:0;top:calc(100% + .55rem);min-width:174px;padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg)}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
   .desktop-theme{display:none}
 
-  .mobile-backdrop{position:fixed;inset:0;z-index:200;background:rgba(5,14,28,.58);opacity:0;visibility:hidden;transition:opacity var(--transition-base),visibility var(--transition-base);backdrop-filter:blur(2px)}
+  .mobile-backdrop{position:fixed;inset:0;z-index:200;background:rgba(5,14,28,.58);opacity:1;visibility:visible;backdrop-filter:blur(2px)}
   .mobile-backdrop.is-open{opacity:1;visibility:visible}
-  .mobile-drawer{position:fixed;inset-block:0;inset-inline-end:0;z-index:210;width:min(90vw,390px);max-width:100vw;height:100vh;max-height:100vh;display:flex;flex-direction:column;background:var(--color-surface);border-inline-start:1px solid var(--color-border);box-shadow:-18px 0 48px rgba(4,18,36,.24);transform:translateX(100%);transition:transform var(--transition-base);overflow:hidden;contain:layout style;isolation:isolate}
+  .mobile-drawer{position:fixed;inset-block:0;inset-inline-end:0;z-index:210;width:min(90vw,390px);max-width:100vw;height:100vh;max-height:100vh;display:flex;flex-direction:column;background:var(--color-surface);border-inline-start:1px solid var(--color-border);box-shadow:-18px 0 48px rgba(4,18,36,.24);transform:none;overflow:hidden;contain:layout style;isolation:isolate}
   @supports (height:100dvh){.mobile-drawer{height:100dvh;max-height:100dvh}}
-  .mobile-drawer.is-open{transform:translateX(0)}
+  .mobile-drawer.is-open{transform:none}
   .mobile-drawer[hidden],.mobile-backdrop[hidden]{display:none}
   .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:0 0 auto;min-height:74px;padding:max(.7rem,env(safe-area-inset-top)) 1rem .7rem;border-bottom:1px solid var(--color-border)}
   .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}.drawer-brand img{flex:0 0 auto}.drawer-brand span{display:flex;flex-direction:column;min-width:0}.drawer-brand strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.drawer-brand small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text-muted);font-size:.7rem}
@@ -242,5 +235,4 @@ const labels = {
   @media(max-width:350px){.navbar{padding-inline:.7rem}.nav-actions{gap:.1rem}.mobile-drawer{width:100vw}.drawer-languages{grid-template-columns:1fr}}
   @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}.brand-tagline{display:none}}
   @media(min-width:1080px){.brand-tagline{display:block}}
-  @media(prefers-reduced-motion:reduce){.mobile-drawer,.mobile-backdrop{transition:none}}
 </style>

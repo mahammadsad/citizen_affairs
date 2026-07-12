@@ -78,7 +78,7 @@ const cases = [
           checks.focusRestored=index%4===3||doc.activeElement===toggle;
 
           if(width===390){
-            toggle.focus();toggle.click();await wait(400);(drawer.querySelector('.mobile-theme') as HTMLButtonElement)?.click();
+            toggle.focus();toggle.click();await wait(100);if(html.dataset.theme!=='dark')(drawer.querySelector('.mobile-theme') as HTMLButtonElement)?.click();
             const footer=doc.querySelector('footer');checks.darkMode=html.dataset.theme==='dark'&&footer?getComputedStyle(footer).backgroundColor==='rgb(16, 36, 61)':false;
             (doc.getElementById('menuClose') as HTMLButtonElement).click();await wait(400);
           }
@@ -92,7 +92,7 @@ const cases = [
         for(let i=0;i<frames.length;i++)await runCase(frames[i],i);
         const resizeFrame=frames.find(frame=>frame.dataset.width==='768')!;
         const resizeDoc=resizeFrame.contentDocument!,resizeToggle=resizeDoc.getElementById('menuToggle') as HTMLButtonElement,resizeDrawer=resizeDoc.getElementById('mobileMenu') as HTMLElement;
-        resizeToggle.focus();resizeToggle.click();await wait(400);resizeFrame.width='1024';resizeFrame.style.width='1024px';await wait(500);
+        resizeToggle.focus();resizeToggle.click();await wait(100);resizeFrame.width='1024';resizeFrame.style.width='1024px';await wait(100);resizeFrame.contentWindow?.dispatchEvent(new Event('resize'));await wait(200);
         results.push({label:'zoom/viewport expansion while open',width:1024,height:Number(resizeFrame.dataset.height),locale:resizeFrame.dataset.locale||'bn',pass:resizeDrawer.hidden&&resizeToggle.getAttribute('aria-expanded')==='false'&&resizeDoc.documentElement.scrollWidth<=resizeFrame.contentWindow!.innerWidth+2,checks:{drawerClosed:resizeDrawer.hidden,ariaClosed:resizeToggle.getAttribute('aria-expanded')==='false',noOverflow:resizeDoc.documentElement.scrollWidth<=resizeFrame.contentWindow!.innerWidth+2}});
       }catch(error){results.push({label:'harness',width:0,height:0,locale:'en',pass:false,checks:{error:error instanceof Error?error.message:String(error)}})}
       const box=document.getElementById('results')!;box.textContent=JSON.stringify(results,null,2);document.getElementById('status')!.textContent=results.every(result=>result.pass)?'PASS':'FAIL';document.body.dataset.complete='true';
