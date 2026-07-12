@@ -20,59 +20,46 @@ content:
           fields: [title, category, verificationStatus, date, draft]
           sort: date
           order: desc
-        fields: &article_fields
-          - name: language
-            label: Language
-            type: select
-            required: true
-            options:
-              values:
-                - { name: en, label: English }
-                - { name: bn, label: Bengali }
-          - { name: translationKey, label: Translation key, type: string, required: true, description: Use the same key for the English and Bengali versions. }
-          - { name: urlSlug, label: URL slug, type: string, required: true, description: Lowercase English letters, numbers and hyphens only. }
-          - { name: title, label: Title, type: string, required: true }
-          - { name: description, label: Short summary, type: text, required: true }
+        fields:
+          - { name: language, label: Language, type: string, default: en, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: Use the URL slug here. Use the same value in the Bengali version if you add a translation. }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: Lowercase English letters, numbers and hyphens only; for example ayushman-card-guide. }
+          - { name: title, label: Article title, type: string, required: true }
+          - { name: description, label: Short summary, type: text, required: true, description: One or two sentences shown on article cards and search results. }
           - { name: date, label: Published date, type: date, required: true }
           - { name: updated, label: Updated date, type: date, required: false }
-          - { name: lastVerified, label: Last verified, type: date, required: false }
-          - { name: deadline, label: Deadline, type: date, required: false }
-          - { name: author, label: Author ID, type: string, default: admin, required: true }
+          - { name: lastVerified, label: Last verified date, type: date, required: false }
+          - { name: deadline, label: Application deadline, type: date, required: false, description: Leave blank when the article has no deadline. }
+          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
           - name: category
             label: Category
-            type: select
+            type: reference
             required: true
             options:
-              values:
-                - { name: jobs, label: Government Jobs / সরকারি চাকরি }
-                - { name: projects, label: Welfare Schemes / জনকল্যাণ প্রকল্প }
-                - { name: exams, label: Exams & Results / পরীক্ষা ও ফলাফল }
-                - { name: notices, label: Government Notices / সরকারি নোটিশ }
-                - { name: affairs, label: Public Services / জনসেবা }
-                - { name: materials, label: Education & Scholarships / শিক্ষা ও স্কলারশিপ }
+              collection: categories
+              search: "nameEn,nameBn"
+              value: "{name}"
+              label: "{nameEn} / {nameBn}"
           - name: verificationStatus
             label: Verification status
             type: select
             required: true
             default: under-verification
+            description: Select officially-confirmed only after checking an official government source.
             options:
-              values:
-                - { name: officially-confirmed, label: Officially confirmed }
-                - { name: under-verification, label: Under verification }
-                - { name: corrected, label: Corrected }
-                - { name: withdrawn, label: Withdrawn }
-                - { name: closed, label: Closed }
-          - { name: sourceUrls, label: Source URLs, type: string, list: true, required: true }
+              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+          - { name: sourceUrls, label: Official source URLs, type: string, list: { min: 1 }, required: true, description: Add at least one official government source. }
           - { name: officialNoticeUrl, label: Official notice URL, type: string, required: false }
           - { name: applicationUrl, label: Application or service URL, type: string, required: false }
-          - { name: tags, label: Tags, type: string, list: true, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
           - { name: featured, label: Feature on homepage, type: boolean, default: false }
           - { name: featuredImage, label: Featured image, type: image, required: false }
-          - { name: featuredImageAlt, label: Image description, type: string, required: false }
-          - { name: draft, label: Keep as draft, type: boolean, default: true }
+          - { name: featuredImageAlt, label: Image description, type: string, required: false, description: Describe the image for visually impaired readers. }
+          - { name: draft, label: Hide from website as draft, type: boolean, default: false, description: Leave this OFF to publish immediately. Turn it ON only when the article is unfinished. }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
           - { name: body, label: Article content, type: rich-text, required: true }
+
       - name: bengali-articles
         label: বাংলা আর্টিকেল
         type: collection
@@ -84,7 +71,45 @@ content:
           fields: [title, category, verificationStatus, date, draft]
           sort: date
           order: desc
-        fields: *article_fields
+        fields:
+          - { name: language, label: Language, type: string, default: bn, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: URL slug-টি এখানে দিন। English version তৈরি করলে সেখানেও একই value ব্যবহার করুন। }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: শুধু ছোট হাতের English অক্ষর, সংখ্যা ও hyphen ব্যবহার করুন; যেমন ayushman-card-guide। }
+          - { name: title, label: আর্টিকেলের শিরোনাম, type: string, required: true }
+          - { name: description, label: সংক্ষিপ্ত সারাংশ, type: text, required: true, description: Article card ও Google result-এর জন্য এক বা দুই বাক্য লিখুন। }
+          - { name: date, label: প্রকাশের তারিখ, type: date, required: true }
+          - { name: updated, label: আপডেটের তারিখ, type: date, required: false }
+          - { name: lastVerified, label: সর্বশেষ যাচাইয়ের তারিখ, type: date, required: false }
+          - { name: deadline, label: আবেদনের শেষ তারিখ, type: date, required: false, description: কোনো deadline না থাকলে ফাঁকা রাখুন। }
+          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
+          - name: category
+            label: বিভাগ
+            type: reference
+            required: true
+            options:
+              collection: categories
+              search: "nameBn,nameEn"
+              value: "{name}"
+              label: "{nameBn} / {nameEn}"
+          - name: verificationStatus
+            label: তথ্য যাচাইয়ের অবস্থা
+            type: select
+            required: true
+            default: under-verification
+            description: Official source যাচাই করার পরেই officially-confirmed নির্বাচন করুন।
+            options:
+              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+          - { name: sourceUrls, label: অফিসিয়াল তথ্যসূত্র, type: string, list: { min: 1 }, required: true, description: অন্তত একটি official government source যোগ করুন। }
+          - { name: officialNoticeUrl, label: অফিসিয়াল নোটিশ URL, type: string, required: false }
+          - { name: applicationUrl, label: আবেদন বা পরিষেবা URL, type: string, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
+          - { name: featured, label: Homepage-এ বিশেষভাবে দেখান, type: boolean, default: false }
+          - { name: featuredImage, label: Featured image, type: image, required: false }
+          - { name: featuredImageAlt, label: ছবির বর্ণনা, type: string, required: false, description: দৃষ্টিপ্রতিবন্ধী পাঠকের জন্য ছবিটি সংক্ষেপে বর্ণনা করুন। }
+          - { name: draft, label: Draft হিসেবে website থেকে লুকিয়ে রাখুন, type: boolean, default: false, description: সঙ্গে সঙ্গে publish করতে এটি OFF রাখুন। Article অসম্পূর্ণ হলেই শুধু ON করুন। }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
+          - { name: body, label: সম্পূর্ণ Article, type: rich-text, required: true }
 
   - name: categories
     label: Categories / বিভাগ

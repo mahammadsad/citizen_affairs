@@ -1,5 +1,10 @@
 import { defineCollection, z } from 'astro:content';
 
+const optionalDate = z.preprocess(
+  (value) => value === '' || value === null ? undefined : value,
+  z.coerce.date().optional(),
+);
+
 const articlesCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -8,8 +13,8 @@ const articlesCollection = defineCollection({
     urlSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     title: z.string(),
     description: z.string(),
-    date: z.string().transform((val) => new Date(val)),
-    updated: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+    date: z.coerce.date(),
+    updated: optionalDate,
     author: z.string(),
     category: z.string(),
     tags: z.array(z.string()).default([]),
@@ -24,8 +29,8 @@ const articlesCollection = defineCollection({
     sourceUrls: z.array(z.string().url()).default([]),
     officialNoticeUrl: z.string().url().optional(),
     applicationUrl: z.string().url().optional(),
-    lastVerified: z.string().optional().transform((val) => val ? new Date(val) : undefined),
-    deadline: z.string().optional().transform((val) => val ? new Date(val) : undefined),
+    lastVerified: optionalDate,
+    deadline: optionalDate,
   }),
 });
 
