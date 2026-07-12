@@ -30,10 +30,13 @@ const cases = [
       const wait=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms));
       const frames=[...document.querySelectorAll<HTMLIFrameElement>('iframe[data-width]')];
       const results:Result[]=[];
+      const runId=Date.now();
 
       const runCase=async(frame:HTMLIFrameElement,index:number)=>{
         const width=Number(frame.dataset.width),height=Number(frame.dataset.height),locale=frame.dataset.locale||'en',label=frame.dataset.label||String(width);
-        frame.src=`${basePath}${locale}/?nav-qa=${width}-${height}`;
+        frame.scrollIntoView({block:'center'});
+        await wait(50);
+        frame.src=`${basePath}${locale}/?nav-qa=${width}-${height}&run=${runId}`;
         await new Promise<void>((resolve,reject)=>{const timeout=setTimeout(()=>reject(new Error(`${label} load timeout`)),15000);frame.addEventListener('load',()=>{clearTimeout(timeout);resolve()},{once:true})});
         await wait(80);
         const win=frame.contentWindow!,doc=frame.contentDocument!,html=doc.documentElement;
