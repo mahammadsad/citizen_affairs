@@ -51,6 +51,11 @@ const organizationSchema = {
   url: siteUrl,
   logo: toAbsoluteUrl(SITE.logo, siteUrl),
   description,
+  founder: {
+    '@type': 'Person',
+    name: SITE.author.name,
+    url: SITE.author.github,
+  },
 };
 
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
@@ -81,12 +86,13 @@ const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structure
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="author" content={SITE.name} />
+    <meta name="author" content={SITE.author.name} />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href={canonical} />
     {alternateUrl && <link rel="alternate" hreflang={locale === 'en' ? 'bn' : 'en'} href={alternateUrl} />}
     <link rel="alternate" hreflang={locale} href={canonical} />
     <link rel="alternate" hreflang="x-default" href={`${SITE.url}/en/`} />
+    <link rel="manifest" href={`${SITE.basePath}site.webmanifest`} />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} RSS Feed`} href={`${SITE.basePath}rss.xml`} />
 
     <!-- Favicons -->
