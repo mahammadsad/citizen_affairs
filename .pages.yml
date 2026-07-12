@@ -21,7 +21,14 @@ content:
           sort: date
           order: desc
         fields: &article_fields
-          - { name: language, label: Language, type: select, options: [{ label: English, value: en }, { label: Bengali, value: bn }], required: true }
+          - name: language
+            label: Language
+            type: select
+            required: true
+            options:
+              values:
+                - { name: en, label: English }
+                - { name: bn, label: Bengali }
           - { name: translationKey, label: Translation key, type: string, required: true, description: Use the same key for the English and Bengali versions. }
           - { name: urlSlug, label: URL slug, type: string, required: true, description: Lowercase English letters, numbers and hyphens only. }
           - { name: title, label: Title, type: string, required: true }
@@ -31,18 +38,30 @@ content:
           - { name: lastVerified, label: Last verified, type: date, required: false }
           - { name: deadline, label: Deadline, type: date, required: false }
           - { name: author, label: Author ID, type: string, default: admin, required: true }
-          - { name: category, label: Category ID, type: select, options: [jobs, projects, exams, notices, affairs, materials], required: true }
+          - name: category
+            label: Category
+            type: select
+            required: true
+            options:
+              values:
+                - { name: jobs, label: Government Jobs / সরকারি চাকরি }
+                - { name: projects, label: Welfare Schemes / জনকল্যাণ প্রকল্প }
+                - { name: exams, label: Exams & Results / পরীক্ষা ও ফলাফল }
+                - { name: notices, label: Government Notices / সরকারি নোটিশ }
+                - { name: affairs, label: Public Services / জনসেবা }
+                - { name: materials, label: Education & Scholarships / শিক্ষা ও স্কলারশিপ }
           - name: verificationStatus
             label: Verification status
             type: select
             required: true
             default: under-verification
             options:
-              - { label: Officially confirmed, value: officially-confirmed }
-              - { label: Under verification, value: under-verification }
-              - { label: Corrected, value: corrected }
-              - { label: Withdrawn, value: withdrawn }
-              - { label: Closed, value: closed }
+              values:
+                - { name: officially-confirmed, label: Officially confirmed }
+                - { name: under-verification, label: Under verification }
+                - { name: corrected, label: Corrected }
+                - { name: withdrawn, label: Withdrawn }
+                - { name: closed, label: Closed }
           - { name: sourceUrls, label: Source URLs, type: string, list: true, required: true }
           - { name: officialNoticeUrl, label: Official notice URL, type: string, required: false }
           - { name: applicationUrl, label: Application or service URL, type: string, required: false }
@@ -79,7 +98,12 @@ content:
       - { name: nameBn, label: বাংলা নাম, type: string, required: true }
       - { name: descriptionEn, label: English description, type: text, required: false }
       - { name: descriptionBn, label: বাংলা বিবরণ, type: text, required: false }
-      - { name: color, label: Colour, type: select, options: [primary, green, orange, navy], required: false }
+      - name: color
+        label: Colour
+        type: select
+        required: false
+        options:
+          values: [primary, green, orange, navy]
 
 settings:
   content:
