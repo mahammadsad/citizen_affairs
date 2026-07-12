@@ -11,7 +11,7 @@ updated: 2026-07-12
 lastVerified: 2026-07-12
 author: admin
 category: affairs
-verificationStatus: officially-confirmed
+verificationStatus: under-verification
 sourceUrls:
   - https://nha.gov.in/PM-JAY
   - https://beneficiary.nha.gov.in/
@@ -19,6 +19,7 @@ sourceUrls:
 featured: true
 featuredImage: /sarkari-tathya-kendra/uploads/chatgpt-image-jul-10-2026-104148-pm.png
 draft: false
+deadline: 2026-07-12
 ---
 # আয়ুষ্মান ভারত কার্ড: যোগ্যতা যাচাই, e-KYC ও কার্ড ডাউনলোডের নিয়ম
 
