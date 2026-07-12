@@ -33,13 +33,16 @@ content:
           - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
           - name: category
             label: Category
-            type: reference
+            type: select
             required: true
             options:
-              collection: categories
-              search: "nameEn,nameBn"
-              value: "{name}"
-              label: "{nameEn} / {nameBn}"
+              values:
+                - { value: jobs, label: "Government jobs" }
+                - { value: projects, label: "Welfare schemes" }
+                - { value: exams, label: "Exams and results" }
+                - { value: notices, label: "Government notices" }
+                - { value: materials, label: "Education and scholarships" }
+                - { value: affairs, label: "Public services" }
           - name: verificationStatus
             label: Verification status
             type: select
@@ -58,6 +61,27 @@ content:
           - { name: draft, label: Hide from website as draft, type: boolean, default: false, description: Leave this OFF to publish immediately. Turn it ON only when the article is unfinished. }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
+          - name: governmentLevel
+            label: Government level
+            type: select
+            required: false
+            options:
+              values: [central, west-bengal, other-state]
+          - { name: regionLabel, label: State or region label, type: string, required: false }
+          - { name: qualification, label: Eligibility or qualification, type: string, list: true, required: false }
+          - { name: quickSummary, label: Quick summary points, type: string, list: true, required: false }
+          - { name: importantDates, label: Important dates, type: string, list: true, required: false }
+          - { name: amountOrVacancies, label: Benefits vacancies or amount, type: text, required: false }
+          - { name: requiredDocuments, label: Required documents, type: string, list: true, required: false }
+          - { name: updateHistory, label: Update history, type: string, list: true, required: false }
+          - name: faqs
+            label: FAQs
+            type: object
+            list: true
+            required: false
+            fields:
+              - { name: question, label: Question, type: string, required: true }
+              - { name: answer, label: Answer, type: text, required: true }
           - { name: body, label: Article content, type: rich-text, required: true }
 
       - name: bengali-articles
@@ -84,13 +108,16 @@ content:
           - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
           - name: category
             label: বিভাগ
-            type: reference
+            type: select
             required: true
             options:
-              collection: categories
-              search: "nameBn,nameEn"
-              value: "{name}"
-              label: "{nameBn} / {nameEn}"
+              values:
+                - { value: jobs, label: "সরকারি চাকরি" }
+                - { value: projects, label: "জনকল্যাণ প্রকল্প" }
+                - { value: exams, label: "পরীক্ষা ও ফলাফল" }
+                - { value: notices, label: "সরকারি নোটিশ" }
+                - { value: materials, label: "শিক্ষা ও স্কলারশিপ" }
+                - { value: affairs, label: "জনপরিষেবা" }
           - name: verificationStatus
             label: তথ্য যাচাইয়ের অবস্থা
             type: select
@@ -109,7 +136,102 @@ content:
           - { name: draft, label: Draft হিসেবে website থেকে লুকিয়ে রাখুন, type: boolean, default: false, description: সঙ্গে সঙ্গে publish করতে এটি OFF রাখুন। Article অসম্পূর্ণ হলেই শুধু ON করুন। }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
+          - name: governmentLevel
+            label: সরকারের স্তর
+            type: select
+            required: false
+            options:
+              values: [central, west-bengal, other-state]
+          - { name: regionLabel, label: রাজ্য বা অঞ্চল, type: string, required: false }
+          - { name: qualification, label: যোগ্যতা, type: string, list: true, required: false }
+          - { name: quickSummary, label: সংক্ষিপ্ত সারাংশের পয়েন্ট, type: string, list: true, required: false }
+          - { name: importantDates, label: গুরুত্বপূর্ণ তারিখ, type: string, list: true, required: false }
+          - { name: amountOrVacancies, label: সুবিধা শূন্যপদ বা অর্থ, type: text, required: false }
+          - { name: requiredDocuments, label: প্রয়োজনীয় নথি, type: string, list: true, required: false }
+          - { name: updateHistory, label: আপডেটের ইতিহাস, type: string, list: true, required: false }
+          - name: faqs
+            label: সাধারণ প্রশ্ন
+            type: object
+            list: true
+            required: false
+            fields:
+              - { name: question, label: প্রশ্ন, type: string, required: true }
+              - { name: answer, label: উত্তর, type: text, required: true }
           - { name: body, label: সম্পূর্ণ Article, type: rich-text, required: true }
+
+      - name: hindi-articles
+        label: हिन्दी लेख
+        type: collection
+        path: src/content/articles/hi
+        format: yaml-frontmatter
+        filename: "{fields.urlSlug}.md"
+        view:
+          primary: title
+          fields: [title, category, verificationStatus, date, draft]
+          sort: date
+          order: desc
+        fields:
+          - { name: language, label: Language, type: string, default: hi, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: तीनों भाषाओं के संबंधित लेख में एक ही ID रखें। }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: छोटे English अक्षर, संख्या और hyphen ही उपयोग करें। }
+          - { name: title, label: लेख का शीर्षक, type: string, required: true }
+          - { name: description, label: संक्षिप्त सारांश, type: text, required: true }
+          - { name: date, label: प्रकाशन तिथि, type: date, required: true }
+          - { name: updated, label: अपडेट तिथि, type: date, required: false }
+          - { name: lastVerified, label: अंतिम सत्यापन तिथि, type: date, required: false }
+          - { name: deadline, label: आवेदन की अंतिम तिथि, type: date, required: false }
+          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
+          - name: category
+            label: श्रेणी
+            type: select
+            required: true
+            options:
+              values:
+                - { value: jobs, label: "सरकारी नौकरियाँ" }
+                - { value: projects, label: "कल्याणकारी योजनाएँ" }
+                - { value: exams, label: "परीक्षाएँ और परिणाम" }
+                - { value: notices, label: "सरकारी सूचनाएँ" }
+                - { value: materials, label: "शिक्षा और छात्रवृत्ति" }
+                - { value: affairs, label: "सार्वजनिक सेवाएँ" }
+          - name: verificationStatus
+            label: सत्यापन स्थिति
+            type: select
+            required: true
+            default: under-verification
+            options:
+              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+          - { name: sourceUrls, label: आधिकारिक स्रोत URL, type: string, list: { min: 1 }, required: true }
+          - { name: officialNoticeUrl, label: आधिकारिक सूचना URL, type: string, required: false }
+          - { name: applicationUrl, label: आवेदन या सेवा URL, type: string, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
+          - { name: featured, label: Homepage पर दिखाएँ, type: boolean, default: false }
+          - { name: featuredImage, label: Featured image, type: image, required: false }
+          - { name: featuredImageAlt, label: चित्र विवरण, type: string, required: false }
+          - { name: draft, label: Draft के रूप में छिपाएँ, type: boolean, default: false, description: तुरंत प्रकाशित करने के लिए इसे OFF रखें। }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
+          - name: governmentLevel
+            label: सरकार का स्तर
+            type: select
+            required: false
+            options:
+              values: [central, west-bengal, other-state]
+          - { name: regionLabel, label: राज्य या क्षेत्र, type: string, required: false }
+          - { name: qualification, label: पात्रता, type: string, list: true, required: false }
+          - { name: quickSummary, label: त्वरित सारांश बिंदु, type: string, list: true, required: false }
+          - { name: importantDates, label: महत्वपूर्ण तिथियाँ, type: string, list: true, required: false }
+          - { name: amountOrVacancies, label: लाभ रिक्तियाँ या राशि, type: text, required: false }
+          - { name: requiredDocuments, label: आवश्यक दस्तावेज़, type: string, list: true, required: false }
+          - { name: updateHistory, label: अपडेट इतिहास, type: string, list: true, required: false }
+          - name: faqs
+            label: सामान्य प्रश्न
+            type: object
+            list: true
+            required: false
+            fields:
+              - { name: question, label: प्रश्न, type: string, required: true }
+              - { name: answer, label: उत्तर, type: text, required: true }
+          - { name: body, label: पूरा लेख, type: rich-text, required: true }
 
   - name: categories
     label: Categories / বিভাগ
@@ -121,8 +243,10 @@ content:
     fields:
       - { name: nameEn, label: English name, type: string, required: true }
       - { name: nameBn, label: বাংলা নাম, type: string, required: true }
+      - { name: nameHi, label: हिन्दी नाम, type: string, required: false }
       - { name: descriptionEn, label: English description, type: text, required: false }
       - { name: descriptionBn, label: বাংলা বিবরণ, type: text, required: false }
+      - { name: descriptionHi, label: हिन्दी विवरण, type: text, required: false }
       - name: color
         label: Colour
         type: select

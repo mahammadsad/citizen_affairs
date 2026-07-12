@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "সরকারি তথ্যকেন্দ্র - সঠিক তথ্য, সবার জন্য।",
-  "author": "সরকারি তথ্যকেন্দ্র",
+  "description": "Static multilingual public-information website",
+  "author": "Mahammad Sad",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

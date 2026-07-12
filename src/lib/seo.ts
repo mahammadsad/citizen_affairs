@@ -1,3 +1,5 @@
+import { BRAND, SITE } from '@utils/constants';
+
 export interface SEOMeta {
   title: string;
   description: string;
@@ -159,7 +161,7 @@ export function generateArticleSchema(article: {
 }): ArticleSchema {
   return {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': 'NewsArticle',
     headline: article.title,
     description: article.description,
     image: article.image,
@@ -171,10 +173,10 @@ export function generateArticleSchema(article: {
     },
     publisher: {
       '@type': 'Organization',
-      name: 'সরকারি তথ্যকেন্দ্র',
+      name: BRAND.brandName,
       logo: {
         '@type': 'ImageObject',
-        url: 'https://mahammadsad.github.io/sarkari-tathya-kendra/assets/logo-mark.svg',
+        url: toAbsoluteUrl(SITE.logo, SITE.url),
       },
     },
   };

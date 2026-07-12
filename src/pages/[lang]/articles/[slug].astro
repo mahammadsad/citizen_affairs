@@ -1,8 +1,8 @@
 ---
 import ArticleLayout from '@layouts/ArticleLayout.astro';
 import { getCollection } from 'astro:content';
-import { getArticleTranslation } from '@lib/content';
-import type { Locale } from '../../../i18n';
+import { getArticleTranslation, getRelatedArticles } from '@lib/content';
+import { locales, type Locale } from '../../../i18n';
 import { SITE } from '@utils/constants';
 
 export async function getStaticPaths() {
@@ -11,12 +11,12 @@ export async function getStaticPaths() {
 }
 const { article } = Astro.props;
 const locale = article.data.language as Locale;
-const otherLocale: Locale = locale === 'en' ? 'bn' : 'en';
-const translation = await getArticleTranslation(article.data.translationKey, otherLocale);
-const alternateUrl = translation ? `${SITE.url}/${otherLocale}/articles/${translation.data.urlSlug}/` : undefined;
+const translations = await Promise.all(locales.map(async (lang) => [lang, await getArticleTranslation(article.data.translationKey, lang)] as const));
+const alternateUrls = Object.fromEntries(translations.map(([lang,entry]) => [lang, entry ? `${SITE.url}/${lang}/articles/${entry.data.urlSlug}/` : `${SITE.url}/${lang}/`])) as Record<Locale,string>;
 const canonical = article.data.canonical || `${SITE.url}/${locale}/articles/${article.data.urlSlug}/`;
+const related = await getRelatedArticles(locale, article.data.category, article.data.urlSlug);
 const { Content } = await article.render();
 ---
-<ArticleLayout locale={locale} {alternateUrl} title={article.data.title} description={article.data.description} author={article.data.author} date={article.data.date} updated={article.data.updated} lastVerified={article.data.lastVerified} deadline={article.data.deadline} category={article.data.category} tags={article.data.tags} {canonical} featuredImage={article.data.featuredImage} featuredImageAlt={article.data.featuredImageAlt} seoTitle={article.data.seoTitle} seoDescription={article.data.seoDescription} verificationStatus={article.data.verificationStatus} sourceUrls={article.data.sourceUrls} officialNoticeUrl={article.data.officialNoticeUrl} applicationUrl={article.data.applicationUrl}>
+<ArticleLayout locale={locale} {alternateUrls} title={article.data.title} description={article.data.description} author={article.data.author} date={article.data.date} updated={article.data.updated} lastVerified={article.data.lastVerified} deadline={article.data.deadline} category={article.data.category} tags={article.data.tags} {canonical} featuredImage={article.data.featuredImage} featuredImageAlt={article.data.featuredImageAlt} seoTitle={article.data.seoTitle} seoDescription={article.data.seoDescription} verificationStatus={article.data.verificationStatus} sourceUrls={article.data.sourceUrls} officialNoticeUrl={article.data.officialNoticeUrl} applicationUrl={article.data.applicationUrl} urlSlug={article.data.urlSlug} quickSummary={article.data.quickSummary} importantDates={article.data.importantDates} qualification={article.data.qualification} requiredDocuments={article.data.requiredDocuments} updateHistory={article.data.updateHistory} amountOrVacancies={article.data.amountOrVacancies} faqs={article.data.faqs} {related}>
   <Content />
 </ArticleLayout>

@@ -1,0 +1,39 @@
+---
+import { getLocalizedArticles } from '@lib/content';
+import { localizedPath, type Locale, ui } from '../i18n';
+
+const { locale } = Astro.props as { locale: Locale };
+const t = ui(locale);
+const articles = (await getLocalizedArticles(locale)).slice(0, 8);
+const demos = locale === 'bn'
+  ? ['DEMO — সরকারি চাকরির আপডেট এখানে দেখা যাবে', 'DEMO — জনকল্যাণ প্রকল্পের আপডেট এখানে দেখা যাবে', 'DEMO — পরীক্ষার আপডেট এখানে দেখা যাবে']
+  : locale === 'hi'
+    ? ['DEMO — सरकारी नौकरी अपडेट यहाँ दिखाई देंगे', 'DEMO — कल्याण योजना अपडेट यहाँ दिखाई देंगे', 'DEMO — परीक्षा अपडेट यहाँ दिखाई देंगे']
+    : ['DEMO — Government job updates will appear here', 'DEMO — Welfare scheme updates will appear here', 'DEMO — Examination updates will appear here'];
+const items = articles.length
+  ? articles.map((article) => ({ title: article.data.title, href: localizedPath(locale, `articles/${article.data.urlSlug}`) }))
+  : demos.map((title) => ({ title, href: localizedPath(locale, 'articles') }));
+const loop = [...items, ...items];
+---
+<div class="latest-ticker" aria-label={t.latestTicker}>
+  <div class="ticker-label"><span class="ticker-live" aria-hidden="true"></span>{t.latestTicker}</div>
+  <div class="ticker-window">
+    <div class="ticker-loop">
+      {loop.map((item, index) => <a href={item.href} aria-hidden={index >= items.length ? 'true' : undefined} tabindex={index >= items.length ? -1 : undefined}>{item.title}<span aria-hidden="true">•</span></a>)}
+    </div>
+  </div>
+</div>
+<style>
+  .latest-ticker{height:42px;display:flex;background:#092b4b;color:#fff;overflow:hidden;border-top:1px solid rgba(255,255,255,.08)}
+  .ticker-label{position:relative;z-index:2;flex:none;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#113b60;font-size:.78rem;font-weight:800;white-space:nowrap}
+  .ticker-live{width:8px;height:8px;border-radius:50%;background:#45d071;box-shadow:0 0 0 4px rgba(69,208,113,.18)}
+  .ticker-window{display:flex;align-items:center;overflow:hidden;flex:1}
+  .ticker-loop{display:flex;align-items:center;width:max-content;animation:ticker-move 48s linear infinite;will-change:transform}
+  .ticker-loop:hover,.ticker-loop:focus-within{animation-play-state:paused}
+  .ticker-loop a{display:flex;align-items:center;gap:1.4rem;min-height:42px;padding-left:1.4rem;color:#e8f2fa;font-size:.84rem;white-space:nowrap;text-decoration:none}
+  .ticker-loop a span{color:#7fb4d9}
+  .ticker-loop a:focus-visible{outline:2px solid #f6b73c;outline-offset:-3px}
+  @keyframes ticker-move{to{transform:translateX(-50%)}}
+  @media(max-width:560px){.ticker-label{font-size:0;width:48px;justify-content:center;padding:0}.ticker-live{margin:0}.ticker-loop a{font-size:.8rem}}
+  @media(prefers-reduced-motion:reduce){.ticker-window{overflow-x:auto}.ticker-loop{animation:none}.ticker-loop a[aria-hidden="true"]{display:none}}
+</style>

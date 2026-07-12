@@ -5,54 +5,48 @@ import { ui } from '../i18n';
 
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
+const popular = ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'West Bengal Jobs', 'Admit Cards', 'Results'];
 ---
 
-<div class="search-overlay" id="searchOverlay" data-index-url={indexUrl} data-search-hint={t.searchHint} data-no-results={t.noResults}>
-  <div class="search-box" role="dialog" aria-modal="true" aria-label={t.search}>
-    <form id="searchForm">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+<div class="search-overlay" id="searchOverlay" data-index-url={`${SITE.basePath}${locale}/search-index.json`} data-hint={t.searchHint} data-empty={t.noResults} data-locale={locale} hidden>
+  <div class="search-box" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
+    <h2 id="searchTitle" class="sr-only">{t.search}</h2>
+    <form id="searchForm" role="search">
+      <span aria-hidden="true">⌕</span>
       <input type="search" id="searchInput" placeholder={t.searchPlaceholder} autocomplete="off" aria-label={t.search} />
-      <button type="button" class="icon-btn" id="searchClose" aria-label={locale === 'bn' ? 'সার্চ বন্ধ করুন' : 'Close search'}>×</button>
+      <kbd>/</kbd>
+      <button type="button" class="icon-btn" id="searchClose" aria-label={t.close}>×</button>
     </form>
-    <div class="search-results" id="searchResults"><p class="search-hint">{t.searchHint}</p></div>
+    <div class="search-suggestions" id="searchSuggestions">
+      <strong>{locale === 'bn' ? 'জনপ্রিয় সার্চ' : locale === 'hi' ? 'लोकप्रिय खोज' : 'Popular searches'}</strong>
+      <div>{popular.map((term) => <button type="button" data-search-term={term}>{term}</button>)}</div>
+    </div>
+    <div class="recent-searches" id="recentSearches" hidden><strong>{locale === 'bn' ? 'সাম্প্রতিক সার্চ' : locale === 'hi' ? 'हाल की खोजें' : 'Recent searches'}</strong><div></div></div>
+    <div class="search-results" id="searchResults" aria-live="polite"><p>{t.searchHint}</p></div>
   </div>
 </div>
 
 <script>
-  const toggle = document.getElementById('searchToggle');
-  const overlay = document.getElementById('searchOverlay');
-  const close = document.getElementById('searchClose');
-  const input = document.getElementById('searchInput') as HTMLInputElement | null;
-  const results = document.getElementById('searchResults');
-  const indexUrl = overlay?.dataset.indexUrl || '';
-  const searchHint = overlay?.dataset.searchHint || '';
-  const noResults = overlay?.dataset.noResults || '';
-  type SearchItem = { label: string; sub?: string; href: string; keywords?: string[] };
-  let indexPromise: Promise<SearchItem[]> | undefined;
-
-  const hint = (text: string) => { if (results) results.innerHTML = `<p class="search-hint"></p>`; const node = results?.querySelector('p'); if (node) node.textContent = text; };
-  const load = (): Promise<SearchItem[]> => indexPromise ||= fetch(indexUrl).then(r => r.ok ? r.json() : []).catch(() => []);
-  const closeSearch = () => { overlay?.classList.remove('is-open'); toggle?.focus(); };
-
-  toggle?.addEventListener('click', () => { overlay?.classList.add('is-open'); load(); setTimeout(() => input?.focus(), 40); });
-  close?.addEventListener('click', closeSearch);
-  overlay?.addEventListener('click', (event) => { if (event.target === overlay) closeSearch(); });
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeSearch(); });
-  document.getElementById('searchForm')?.addEventListener('submit', (event) => event.preventDefault());
-  input?.addEventListener('input', async () => {
-    const query = input.value.trim().toLowerCase();
-    if (!query) return hint(searchHint);
-    const items = await load();
-    const matches = items.filter(item => [item.label, item.sub, ...(item.keywords || [])].join(' ').toLowerCase().includes(query)).slice(0, 8);
-    if (!results) return;
-    results.innerHTML = '';
-    if (!matches.length) return hint(noResults);
-    matches.forEach(item => {
-      const link = document.createElement('a');
-      link.href = item.href;
-      link.textContent = item.sub ? `${item.label} — ${item.sub}` : item.label;
-      results.appendChild(link);
-    });
-  });
+  type SearchItem = { label:string; sub?:string; href:string; keywords?:string[]; verification?:string; category?:string };
+  const toggle=document.getElementById('searchToggle'), overlay=document.getElementById('searchOverlay'), close=document.getElementById('searchClose');
+  const input=document.getElementById('searchInput') as HTMLInputElement|null, results=document.getElementById('searchResults'), recent=document.getElementById('recentSearches');
+  const indexUrl=overlay?.dataset.indexUrl||'', hintText=overlay?.dataset.hint||'', emptyText=overlay?.dataset.empty||'';
+  let indexPromise:Promise<SearchItem[]>|undefined;
+  const load=()=>indexPromise ||= fetch(indexUrl).then(r=>r.ok?r.json():[]).catch(()=>[]);
+  const setHint=(text:string)=>{if(results){results.replaceChildren();const p=document.createElement('p');p.textContent=text;results.append(p)}};
+  const getRecent=()=>{try{return JSON.parse(localStorage.getItem('recent-searches')||'[]') as string[]}catch{return[]}};
+  const drawRecent=()=>{if(!recent)return;const values=getRecent();recent.hidden=!values.length;const box=recent.querySelector('div');if(!box)return;box.replaceChildren(...values.map(value=>{const b=document.createElement('button');b.type='button';b.textContent=value;b.onclick=()=>{if(input){input.value=value;runSearch(value)}};return b}))};
+  const remember=(value:string)=>{if(value.length<2)return;try{localStorage.setItem('recent-searches',JSON.stringify([value,...getRecent().filter(v=>v!==value)].slice(0,5)));drawRecent()}catch{}};
+  const appendHighlighted=(parent:HTMLElement,text:string,query:string)=>{const escaped=query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');const re=new RegExp(`(${escaped})`,'ig');text.split(re).forEach(part=>{const node=part.toLowerCase()===query.toLowerCase()?document.createElement('mark'):document.createTextNode(part);if(node instanceof HTMLElement)node.textContent=part;parent.append(node)})};
+  const runSearch=async(raw:string)=>{const query=raw.trim().toLowerCase();if(!query)return setHint(hintText);const items:SearchItem[]=await load();const matches:SearchItem[]=items.filter((i:SearchItem)=>[i.label,i.sub,i.category,i.verification,...(i.keywords||[])].join(' ').toLowerCase().includes(query)).slice(0,10);if(!results)return;results.replaceChildren();if(!matches.length)return setHint(emptyText);remember(raw.trim());matches.forEach((item:SearchItem)=>{const a=document.createElement('a');a.href=item.href;const title=document.createElement('strong');appendHighlighted(title,item.label,query);const meta=document.createElement('span');meta.textContent=[item.category||item.sub,item.verification].filter(Boolean).join(' · ');a.append(title,meta);results.append(a)})};
+  const openSearch=()=>{overlay?.removeAttribute('hidden');document.body.classList.add('search-open');load();drawRecent();setTimeout(()=>input?.focus(),20)};
+  const closeSearch=()=>{overlay?.setAttribute('hidden','');document.body.classList.remove('search-open');toggle?.focus()};
+  toggle?.addEventListener('click',openSearch);close?.addEventListener('click',closeSearch);overlay?.addEventListener('click',e=>{if(e.target===overlay)closeSearch()});
+  document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes((e.target as HTMLElement).tagName)){e.preventDefault();openSearch()}if(e.key==='Escape'&&!overlay?.hasAttribute('hidden'))closeSearch()});
+  document.getElementById('searchForm')?.addEventListener('submit',e=>e.preventDefault());input?.addEventListener('input',()=>runSearch(input.value));
+  document.querySelectorAll<HTMLElement>('[data-search-term]').forEach(b=>b.addEventListener('click',()=>{if(input){input.value=b.dataset.searchTerm||'';runSearch(input.value);input.focus()}}));
 </script>
+
+<style>
+  .search-overlay{position:fixed;inset:0;z-index:300;background:rgba(5,14,28,.68);backdrop-filter:blur(7px);padding:clamp(1rem,7vh,5rem) 1rem;overflow:auto}.search-overlay[hidden]{display:none}.search-box{width:min(720px,100%);margin:auto;background:var(--color-surface);border:1px solid var(--color-border);border-radius:22px;box-shadow:var(--shadow-lg);overflow:hidden}form{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:.75rem;padding:.8rem 1rem;border-bottom:1px solid var(--color-border)}input{min-width:0;width:100%;border:0;outline:0;background:transparent;font-size:1.05rem}kbd{padding:.15rem .45rem;border:1px solid var(--color-border);border-radius:6px;color:var(--color-text-muted)}.search-suggestions,.recent-searches{padding:1rem 1.2rem .2rem}.search-suggestions strong,.recent-searches strong{font-size:.78rem;color:var(--color-text-muted)}.search-suggestions div,.recent-searches div{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.55rem}.search-suggestions button,.recent-searches button{min-height:36px;padding:.35rem .7rem;border:1px solid var(--color-border);border-radius:999px}.search-results{padding:1rem;display:grid;gap:.4rem}.search-results p{padding:1rem;color:var(--color-text-muted)}.search-results a{display:grid;gap:.15rem;padding:.8rem;border-radius:12px}.search-results a:hover,.search-results a:focus-visible{background:var(--color-surface-alt)}.search-results span{font-size:.78rem;color:var(--color-text-muted)}:global(mark){background:#ffe08a;color:#16202d;border-radius:3px;padding:0 .08em}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+</style>

@@ -8,7 +8,7 @@ const optionalDate = z.preprocess(
 const articlesCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    language: z.enum(['en', 'bn']),
+    language: z.enum(['en', 'bn', 'hi']),
     translationKey: z.string(),
     urlSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
     title: z.string(),
@@ -31,6 +31,15 @@ const articlesCollection = defineCollection({
     applicationUrl: z.string().url().optional(),
     lastVerified: optionalDate,
     deadline: optionalDate,
+    governmentLevel: z.enum(['central', 'west-bengal', 'other-state']).optional(),
+    regionLabel: z.string().optional(),
+    qualification: z.array(z.string()).default([]),
+    quickSummary: z.array(z.string()).default([]),
+    importantDates: z.array(z.string()).default([]),
+    requiredDocuments: z.array(z.string()).default([]),
+    updateHistory: z.array(z.string()).default([]),
+    amountOrVacancies: z.string().optional(),
+    faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
   }),
 });
 
@@ -51,8 +60,10 @@ const categoriesCollection = defineCollection({
   schema: z.object({
     nameEn: z.string(),
     nameBn: z.string(),
+    nameHi: z.string().optional(),
     descriptionEn: z.string().optional(),
     descriptionBn: z.string().optional(),
+    descriptionHi: z.string().optional(),
     color: z.string().optional(),
   }),
 });

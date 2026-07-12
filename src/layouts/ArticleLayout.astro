@@ -1,100 +1,48 @@
 ---
 import MainLayout from './MainLayout.astro';
-import AdSlot from '@components/AdSlot.astro';
+import ArticleCard from '@components/ArticleCard.astro';
+import Icon from '@components/Icon.astro';
 import { generateArticleSchema, generateBreadcrumbs, toAbsoluteUrl } from '@lib/seo';
 import { getCategoryData, getAuthorData, categoryName } from '@lib/content';
-import { SITE } from '@utils/constants';
+import { BRAND, SITE } from '@utils/constants';
+import type { CollectionEntry } from 'astro:content';
 import type { Locale } from '../i18n';
-import { localizedPath, ui, verificationLabels } from '../i18n';
+import { dateLocale, localizedPath, ui, verificationLabels } from '../i18n';
 
 export interface Props {
-  locale: Locale;
-  alternateUrl?: string;
-  title: string;
-  description: string;
-  author: string;
-  date: Date;
-  updated?: Date;
-  lastVerified?: Date;
-  deadline?: Date;
-  category: string;
-  tags?: string[];
-  canonical?: string;
-  featuredImage?: string;
-  featuredImageAlt?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  verificationStatus: 'officially-confirmed' | 'under-verification' | 'corrected' | 'withdrawn' | 'closed';
-  sourceUrls?: string[];
-  officialNoticeUrl?: string;
-  applicationUrl?: string;
+  locale:Locale; alternateUrls?:Partial<Record<Locale,string>>; title:string; description:string; author:string; date:Date; updated?:Date; lastVerified?:Date; deadline?:Date; category:string; tags?:string[]; canonical?:string; featuredImage?:string; featuredImageAlt?:string; seoTitle?:string; seoDescription?:string; verificationStatus:'officially-confirmed'|'under-verification'|'corrected'|'withdrawn'|'closed'; sourceUrls?:string[]; officialNoticeUrl?:string; applicationUrl?:string; urlSlug:string; quickSummary?:string[]; importantDates?:string[]; qualification?:string[]; requiredDocuments?:string[]; updateHistory?:string[]; amountOrVacancies?:string; faqs?:Array<{question:string;answer:string}>; related?:CollectionEntry<'articles'>[];
 }
-
-const props = Astro.props;
-const { locale, alternateUrl, title, description, author, date, updated, lastVerified, deadline, category, tags = [], canonical, featuredImage, featuredImageAlt, seoTitle, seoDescription, verificationStatus, sourceUrls = [], officialNoticeUrl, applicationUrl } = props;
-const t = ui(locale);
-const categoryEntry = await getCategoryData(category);
-const authorEntry = await getAuthorData(author);
-const categoryLabel = categoryEntry ? categoryName(categoryEntry, locale) : category;
-const authorName = authorEntry?.data.name ?? author;
-const pageUrl = canonical || Astro.url.href;
-const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-IN' : 'en-IN', { year: 'numeric', month: 'long', day: 'numeric' });
-const ogImage = featuredImage ? toAbsoluteUrl(featuredImage, SITE.url) : undefined;
-const articleSchema = generateArticleSchema({ title, description, image: ogImage, datePublished: date, dateModified: updated, author: authorName, url: pageUrl });
-const breadcrumbSchema = generateBreadcrumbs([
-  { name: t.home, url: `${SITE.url}/${locale}/` },
-  { name: t.articles, url: `${SITE.url}/${locale}/articles/` },
-  { name: categoryLabel, url: `${SITE.url}/${locale}/categories/${category}/` },
-  { name: title },
-]);
-const statusClass = `status-${verificationStatus}`;
+const p=Astro.props; const { locale, alternateUrls, title, description, author, date, updated, lastVerified, deadline, category, tags=[], canonical, featuredImage, featuredImageAlt, seoTitle, seoDescription, verificationStatus, sourceUrls=[], officialNoticeUrl, applicationUrl, urlSlug, quickSummary=[], importantDates=[], qualification=[], requiredDocuments=[], updateHistory=[], amountOrVacancies, faqs=[], related=[] }=p;
+const t=ui(locale), categoryEntry=await getCategoryData(category), authorEntry=await getAuthorData(author); const categoryLabel=categoryEntry?categoryName(categoryEntry,locale):category; const authorName=authorEntry?.data.name??author; const pageUrl=canonical||Astro.url.href; const formatter=new Intl.DateTimeFormat(dateLocale(locale),{year:'numeric',month:'long',day:'numeric'}); const ogImage=featuredImage?toAbsoluteUrl(featuredImage,SITE.url):undefined;
+const articleSchema=generateArticleSchema({title,description,image:ogImage,datePublished:date,dateModified:updated,author:authorName,url:pageUrl});
+const breadcrumbSchema=generateBreadcrumbs([{name:t.home,url:`${SITE.url}/${locale}/`},{name:t.articles,url:`${SITE.url}/${locale}/articles/`},{name:categoryLabel,url:`${SITE.url}/${locale}/categories/${category}/`},{name:title}]);
+const faqSchema=faqs.length?{'@context':'https://schema.org','@type':'FAQPage',mainEntity:faqs.map(f=>({'@type':'Question',name:f.question,acceptedAnswer:{'@type':'Answer',text:f.answer}}))}:undefined;
+const schemas=faqSchema?[articleSchema,breadcrumbSchema,faqSchema]:[articleSchema,breadcrumbSchema];
+const sectionText={en:{quick:'Quick summary',dates:'Important dates',eligibility:'Eligibility',amount:'Benefits, vacancies or amount',documents:'Required documents',history:'Update history',related:'Related articles',faq:'Frequently asked questions',primary:'Primary source: Official notification or portal'},bn:{quick:'সংক্ষিপ্ত সারাংশ',dates:'গুরুত্বপূর্ণ তারিখ',eligibility:'যোগ্যতা',amount:'সুবিধা, শূন্যপদ বা অর্থের পরিমাণ',documents:'প্রয়োজনীয় নথি',history:'আপডেটের ইতিহাস',related:'সম্পর্কিত আর্টিকেল',faq:'সাধারণ প্রশ্ন',primary:'প্রাথমিক সূত্র: অফিসিয়াল বিজ্ঞপ্তি বা পোর্টাল'},hi:{quick:'त्वरित सारांश',dates:'महत्वपूर्ण तिथियाँ',eligibility:'पात्रता',amount:'लाभ, रिक्तियाँ या राशि',documents:'आवश्यक दस्तावेज़',history:'अपडेट इतिहास',related:'संबंधित लेख',faq:'सामान्य प्रश्न',primary:'प्राथमिक स्रोत: आधिकारिक सूचना या पोर्टल'}}[locale];
 ---
-
-<MainLayout title={seoTitle || title} description={seoDescription || description} canonical={pageUrl} ogType="article" image={ogImage} structuredData={[articleSchema, breadcrumbSchema]} {locale} {alternateUrl}>
-  <article class="article-shell">
+<MainLayout title={seoTitle||title} description={seoDescription||description} canonical={pageUrl} ogType="article" image={ogImage} structuredData={schemas} {locale} {alternateUrls}>
+  <article class="article-shell" data-article data-id={`${locale}:${urlSlug}`} data-url={pageUrl} data-title={title} data-description={description}>
     <div class="container article-container">
-      <nav class="breadcrumbs"><a href={localizedPath(locale)}>{t.home}</a><span>›</span><a href={localizedPath(locale, 'articles')}>{t.articles}</a><span>›</span><span>{categoryLabel}</span></nav>
-
-      <header class="article-header">
-        <div class="article-labels"><a href={localizedPath(locale, `categories/${category}`)}>{categoryLabel}</a><span class={statusClass}>● {verificationLabels[locale][verificationStatus]}</span></div>
-        <h1>{title}</h1>
-        <p class="article-deck">{description}</p>
-        <div class="article-byline"><span>{formatter.format(date)}</span><span>•</span><span>{authorName}</span>{updated && <><span>•</span><span>{t.updated}: {formatter.format(updated)}</span></>}</div>
-      </header>
-
-      {featuredImage && <img src={featuredImage} alt={featuredImageAlt || title} class="article-hero-image" loading="eager" decoding="async" />}
-
-      <aside class={`trust-box ${statusClass}`}>
-        <div class="trust-box-title"><span>✓</span><div><strong>{t.verification}</strong><small>{verificationLabels[locale][verificationStatus]}</small></div></div>
-        <dl>
-          {lastVerified && <div><dt>{t.lastVerified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}
-          {deadline && <div><dt>{locale === 'bn' ? 'শেষ তারিখ' : 'Deadline'}</dt><dd>{formatter.format(deadline)}</dd></div>}
-          <div><dt>{t.source}</dt><dd>{sourceUrls.length || (officialNoticeUrl ? 1 : 0)}</dd></div>
-        </dl>
-      </aside>
-
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={localizedPath(locale)}>{t.home}</a><span>›</span><a href={localizedPath(locale,'articles')}>{t.articles}</a><span>›</span><a href={localizedPath(locale,`categories/${category}`)}>{categoryLabel}</a></nav>
+      <header class="article-header"><div class="article-labels"><span>{categoryLabel}</span><span class={`status-${verificationStatus}`}>● {verificationLabels[locale][verificationStatus]}</span></div><h1>{title}</h1><p class="article-deck">{description}</p><div class="article-byline"><span>{t.published}: {formatter.format(date)}</span>{updated&&<span>{t.updated}: {formatter.format(updated)}</span>}<span>{authorName}</span></div></header>
+      {featuredImage&&<img src={featuredImage} alt={featuredImageAlt||title} class="article-hero-image" width="1200" height="675" loading="eager" decoding="async"/>}
+      <aside class={`trust-box status-${verificationStatus}`}><div><Icon name="check"/><span><strong>{verificationLabels[locale][verificationStatus]}</strong><small>{sectionText.primary}</small></span></div><dl>{lastVerified&&<div><dt>{t.lastVerified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}{deadline&&<div><dt>{locale==='bn'?'শেষ তারিখ':locale==='hi'?'अंतिम तिथि':'Deadline'}</dt><dd>{formatter.format(deadline)}</dd></div>}<div><dt>{t.source}</dt><dd>{sourceUrls.length+(officialNoticeUrl?1:0)}</dd></div></dl></aside>
+      <div class="article-actions"><button id="saveArticle"><Icon name="bookmark"/><span>{t.save}</span></button><button id="nativeShare"><Icon name="share"/><span>{t.share}</span></button><a data-share="whatsapp" href="#">WhatsApp</a><a data-share="telegram" href="#">Telegram</a><a data-share="facebook" href="#">Facebook</a><button id="copyLink"><Icon name="copy"/><span>{locale==='bn'?'লিঙ্ক কপি':locale==='hi'?'लिंक कॉपी':'Copy link'}</span></button></div>
+      {quickSummary.length>0&&<section class="info-panel"><h2>{sectionText.quick}</h2><ul>{quickSummary.map(item=><li>{item}</li>)}</ul></section>} {importantDates.length>0&&<section class="info-panel"><h2>{sectionText.dates}</h2><ul>{importantDates.map(item=><li>{item}</li>)}</ul></section>} {qualification.length>0&&<section class="info-panel"><h2>{sectionText.eligibility}</h2><ul>{qualification.map(item=><li>{item}</li>)}</ul></section>} {amountOrVacancies&&<section class="info-panel"><h2>{sectionText.amount}</h2><p>{amountOrVacancies}</p></section>} {requiredDocuments.length>0&&<section class="info-panel"><h2>{sectionText.documents}</h2><ul>{requiredDocuments.map(item=><li>{item}</li>)}</ul></section>} 
       <div class="article-content"><slot /></div>
-      <AdSlot position="article-inline" />
-
-      {(officialNoticeUrl || applicationUrl || sourceUrls.length > 0) && (
-        <section class="source-panel">
-          <h2>{locale === 'bn' ? 'অফিসিয়াল লিঙ্ক ও সূত্র' : 'Official links and sources'}</h2>
-          <p>{locale === 'bn' ? 'চূড়ান্ত সিদ্ধান্ত নেওয়ার আগে মূল বিজ্ঞপ্তি বা পোর্টাল যাচাই করুন।' : 'Check the original notice or portal before making a final decision.'}</p>
-          <div class="source-actions">
-            {officialNoticeUrl && <a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{t.source} ↗</a>}
-            {applicationUrl && <a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">{t.apply} ↗</a>}
-          </div>
-          {sourceUrls.length > 0 && <ol>{sourceUrls.map((url, index) => <li><a href={url} target="_blank" rel="noopener noreferrer">{locale === 'bn' ? `সূত্র ${index + 1}` : `Source ${index + 1}`} — {new URL(url).hostname}</a></li>)}</ol>}
-        </section>
-      )}
-
-      {tags.length > 0 && <div class="article-tags">{tags.map((tag) => <span>#{tag}</span>)}</div>}
-      <p class="article-disclaimer">{t.disclaimerShort}</p>
-      <AdSlot position="article-end" />
+      {(officialNoticeUrl||applicationUrl||sourceUrls.length>0)&&<section class="source-panel"><h2>{t.officialLinks}</h2><p>{locale==='bn'?'কোনো সিদ্ধান্ত নেওয়ার আগে মূল সরকারি নথি যাচাই করুন।':locale==='hi'?'निर्णय लेने से पहले मूल सरकारी दस्तावेज़ जाँचें।':'Check the original government document before making a decision.'}</p><div class="source-actions">{officialNoticeUrl&&<a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{t.source} ↗</a>}{applicationUrl&&<a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">{t.apply} ↗</a>}</div>{sourceUrls.length>0&&<ol>{sourceUrls.map((url,i)=><li><a href={url} target="_blank" rel="noopener noreferrer">{locale==='bn'?'সূত্র':locale==='hi'?'स्रोत':'Source'} {i+1} — {new URL(url).hostname}</a></li>)}</ol>}</section>}
+      {faqs.length>0&&<section class="faq-section"><h2>{sectionText.faq}</h2>{faqs.map(f=><details><summary>{f.question}</summary><p>{f.answer}</p></details>)}</section>}
+      {updateHistory.length>0&&<section class="info-panel"><h2>{sectionText.history}</h2><ul>{updateHistory.map(item=><li>{item}</li>)}</ul></section>} {tags.length>0&&<div class="article-tags">{tags.map(tag=><span>#{tag}</span>)}</div>}
+      {related.length>0&&<section class="related"><h2>{sectionText.related}</h2><div>{related.map(article=><ArticleCard {article} {locale}/>)}</div></section>}
+      <p class="article-disclaimer"><strong>{BRAND.brandName}</strong> — {t.disclaimerShort}</p>
     </div>
   </article>
 </MainLayout>
-
+<script>
+  const article=document.querySelector<HTMLElement>('[data-article]');if(article){const item={id:article.dataset.id,title:article.dataset.title,url:article.dataset.url,description:article.dataset.description};try{const viewed=JSON.parse(localStorage.getItem('recently-viewed')||'[]');localStorage.setItem('recently-viewed',JSON.stringify([item,...viewed.filter((v:{id:string})=>v.id!==item.id)].slice(0,8)))}catch{}
+  const save=document.getElementById('saveArticle');const updateSave=()=>{try{const saved=JSON.parse(localStorage.getItem('saved-articles')||'[]');const exists=saved.some((v:{id:string})=>v.id===item.id);save?.classList.toggle('is-saved',exists);const span=save?.querySelector('span');if(span&&exists)span.textContent=document.documentElement.lang==='bn'?'সংরক্ষিত':document.documentElement.lang==='hi'?'सहेजा गया':'Saved'}catch{}};save?.addEventListener('click',()=>{try{const saved=JSON.parse(localStorage.getItem('saved-articles')||'[]');const next=saved.some((v:{id:string})=>v.id===item.id)?saved.filter((v:{id:string})=>v.id!==item.id):[item,...saved];localStorage.setItem('saved-articles',JSON.stringify(next));updateSave()}catch{}});updateSave();
+  const shareUrl=encodeURIComponent(item.url||location.href),shareText=encodeURIComponent(item.title||'');document.querySelectorAll<HTMLAnchorElement>('[data-share]').forEach(a=>{const type=a.dataset.share;a.href=type==='whatsapp'?`https://wa.me/?text=${shareText}%20${shareUrl}`:type==='telegram'?`https://t.me/share/url?url=${shareUrl}&text=${shareText}`:`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;a.target='_blank';a.rel='noopener'});document.getElementById('nativeShare')?.addEventListener('click',()=>navigator.share?navigator.share({title:item.title,text:item.description,url:item.url}):navigator.clipboard.writeText(item.url||location.href));document.getElementById('copyLink')?.addEventListener('click',()=>navigator.clipboard.writeText(item.url||location.href));}
+</script>
 <style is:global>
-  .article-shell{padding:2rem 0 5rem}.article-container{max-width:800px}.breadcrumbs{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;color:var(--color-text-muted);font-size:.8rem;margin-bottom:2rem}.breadcrumbs a:hover{color:var(--color-primary)}.article-header h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.12;letter-spacing:-.025em;margin:.85rem 0 1rem}.article-labels{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:center}.article-labels a{color:var(--color-primary);font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}.article-labels span{font-size:.76rem;font-weight:700;color:var(--color-green-text)}.article-labels .status-under-verification{color:#a85c00}.article-labels .status-withdrawn,.article-labels .status-closed{color:#b42318}.article-deck{font-size:1.15rem;color:var(--color-text-muted);line-height:1.65}.article-byline{display:flex;flex-wrap:wrap;gap:.55rem;color:var(--color-text-muted);font-size:.82rem;margin-top:1.2rem}.article-hero-image{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:22px;margin:2rem 0}.trust-box{margin:2rem 0;padding:1.15rem;border:1px solid rgba(var(--color-green-rgb),.25);border-radius:18px;background:linear-gradient(135deg,rgba(var(--color-green-rgb),.08),rgba(var(--color-primary-rgb),.05));display:grid;gap:1rem}.trust-box-title{display:flex;gap:.8rem;align-items:center}.trust-box-title>span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--color-green);color:#fff;font-weight:800}.trust-box-title div{display:flex;flex-direction:column}.trust-box-title small{color:var(--color-text-muted)}.trust-box dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.75rem}.trust-box dl div{padding:.7rem;background:rgba(255,255,255,.55);border-radius:12px}[data-theme="dark"] .trust-box dl div{background:rgba(0,0,0,.15)}.trust-box dt{font-size:.7rem;color:var(--color-text-muted)}.trust-box dd{font-weight:700}.article-content{font-size:1.06rem;line-height:1.85}.article-content h2,.article-content h3{margin:2rem 0 .8rem}.article-content p{margin-bottom:1.1rem}.article-content ul,.article-content ol{list-style:revert;margin:0 0 1.25rem 1.4rem}.article-content li{margin-bottom:.45rem}.article-content a,.source-panel a{color:var(--color-primary);text-decoration:underline;text-underline-offset:3px}.article-content blockquote{border-left:4px solid var(--color-primary);padding:1rem 1.25rem;background:var(--color-surface-alt);border-radius:0 12px 12px 0;margin:1.5rem 0}.article-content table{width:100%;border-collapse:collapse;display:block;overflow-x:auto}.article-content th,.article-content td{border:1px solid var(--color-border);padding:.75rem}.source-panel{margin-top:2.5rem;padding:1.35rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:20px}.source-panel h2{font-size:1.35rem}.source-panel p{color:var(--color-text-muted)}.source-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:1rem 0}.source-actions .btn{text-decoration:none}.source-panel ol{list-style:decimal;margin-left:1.25rem}.article-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem}.article-tags span{padding:.35rem .7rem;background:var(--color-surface-alt);border-radius:99px;font-size:.78rem}.article-disclaimer{margin-top:2rem;padding-top:1.25rem;border-top:1px solid var(--color-border);font-size:.8rem;color:var(--color-text-muted)}
+  .article-shell{padding:2rem 0 5rem}.article-container{max-width:860px}.breadcrumbs{display:flex;gap:.5rem;flex-wrap:wrap;color:var(--color-text-muted);font-size:.82rem;margin-bottom:1.6rem}.article-header h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.12;margin:.8rem 0}.article-labels,.article-byline,.article-actions{display:flex;gap:.7rem;flex-wrap:wrap}.article-labels{justify-content:space-between;font-weight:800;font-size:.78rem;color:var(--color-primary)}.article-deck{font-size:1.14rem;color:var(--color-text-muted)}.article-byline{font-size:.8rem;color:var(--color-text-muted);margin-top:1rem}.article-hero-image{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:22px;margin:1.8rem 0}.trust-box{padding:1.1rem;border:1px solid rgba(var(--color-green-rgb),.28);border-radius:18px;background:linear-gradient(135deg,rgba(var(--color-green-rgb),.08),rgba(var(--color-primary-rgb),.05));margin:1.5rem 0}.trust-box>div{display:flex;gap:.8rem}.trust-box>div>span{display:flex;flex-direction:column}.trust-box small{color:var(--color-text-muted)}.trust-box dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-top:1rem}.trust-box dl div{padding:.65rem;background:var(--color-surface);border-radius:10px}.trust-box dt{font-size:.7rem;color:var(--color-text-muted)}.trust-box dd{font-weight:800}.article-actions{position:sticky;top:122px;z-index:5;background:var(--color-surface);border:1px solid var(--color-border);padding:.55rem;border-radius:14px;margin:1.2rem 0}.article-actions button,.article-actions a{display:flex;align-items:center;gap:.35rem;min-height:44px;padding:.45rem .65rem;border-radius:9px;font-weight:700;font-size:.78rem}.article-actions button:hover,.article-actions a:hover,.article-actions .is-saved{background:var(--color-surface-alt);color:var(--color-primary)}.info-panel,.source-panel,.faq-section{margin:1.5rem 0;padding:1.25rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:18px}.info-panel h2,.source-panel h2,.faq-section h2,.related h2{font-size:1.3rem;margin-bottom:.7rem}.info-panel ul,.source-panel ol{list-style:revert;margin-left:1.2rem}.article-content{font-size:1.04rem;line-height:1.85}.article-content h2,.article-content h3{margin:2rem 0 .8rem}.article-content p{margin-bottom:1rem}.article-content ul,.article-content ol{list-style:revert;margin:0 0 1rem 1.3rem}.source-panel p{color:var(--color-text-muted)}.source-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}.source-panel a,.article-content a{color:var(--color-primary);text-decoration:underline}.faq-section details{border-top:1px solid var(--color-border);padding:.8rem 0}.faq-section summary{font-weight:800;cursor:pointer}.faq-section p{color:var(--color-text-muted);padding-top:.5rem}.article-tags{display:flex;gap:.4rem;flex-wrap:wrap}.article-tags span{padding:.3rem .6rem;background:var(--color-surface-alt);border-radius:999px}.related{margin-top:2.5rem}.related>div{display:grid;gap:1rem}@media(min-width:700px){.related>div{grid-template-columns:repeat(3,1fr)}}.article-disclaimer{margin-top:2rem;border-top:1px solid var(--color-border);padding-top:1rem;color:var(--color-text-muted);font-size:.82rem}@media(max-width:620px){.article-actions{position:static}.article-actions a[data-share]{display:none}}
 </style>

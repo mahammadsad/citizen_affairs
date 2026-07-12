@@ -47,7 +47,7 @@ export async function getArticlesByCategorySlug(categorySlug: string) {
 }
 
 export async function getLocalizedArticles(locale: Locale) {
-  const articles = await getCollection('articles', ({ data }) => !data.draft && data.language === locale);
+  const articles = await getCollection('articles', ({ data }) => !data.draft && data.language === locale && data.verificationStatus !== 'withdrawn');
   return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
@@ -67,11 +67,33 @@ export async function getLocalizedArticlesByCategory(locale: Locale, category: s
 }
 
 export function categoryName(category: CollectionEntry<'categories'>, locale: Locale) {
-  return locale === 'bn' ? category.data.nameBn : category.data.nameEn;
+  if (locale === 'bn') return category.data.nameBn;
+  if (locale === 'hi') return category.data.nameHi || category.data.nameEn;
+  return category.data.nameEn;
 }
 
 export function categoryDescription(category: CollectionEntry<'categories'>, locale: Locale) {
-  return locale === 'bn' ? category.data.descriptionBn : category.data.descriptionEn;
+  if (locale === 'bn') return category.data.descriptionBn;
+  if (locale === 'hi') return category.data.descriptionHi || category.data.descriptionEn;
+  return category.data.descriptionEn;
+}
+
+export async function getUpcomingDeadlines(locale: Locale, limit?: number) {
+  const now = Date.now();
+  const articles = (await getLocalizedArticles(locale)).filter((article) => article.data.deadline && !Number.isNaN(article.data.deadline.getTime()));
+  articles.sort((a, b) => {
+    const aTime = a.data.deadline!.getTime();
+    const bTime = b.data.deadline!.getTime();
+    const aClosed = aTime < now;
+    const bClosed = bTime < now;
+    if (aClosed !== bClosed) return aClosed ? 1 : -1;
+    return aClosed ? bTime - aTime : aTime - bTime;
+  });
+  return typeof limit === 'number' ? articles.slice(0, limit) : articles;
+}
+
+export async function getRelatedArticles(locale: Locale, category: string, excludeSlug: string, limit = 3) {
+  return (await getLocalizedArticlesByCategory(locale, category)).filter((article) => article.data.urlSlug !== excludeSlug).slice(0, limit);
 }
 
 export async function getArticlesByAuthorSlug(authorSlug: string) {

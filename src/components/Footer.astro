@@ -1,42 +1,44 @@
 ---
-import { SITE, SOCIALS } from '@utils/constants';
+import { BRAND, SITE, SOCIALS } from '@utils/constants';
+import Icon from './Icon.astro';
 import type { Locale } from '../i18n';
 import { localizedPath, ui } from '../i18n';
-
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const brandName = locale === 'bn' ? SITE.name : SITE.nameEn;
+const trustLabel = locale === 'bn' ? 'বিশ্বাস ও নীতি' : locale === 'hi' ? 'विश्वास और नीतियाँ' : 'Trust & Policies';
+const footerLinks = [
+  { icon:'updates', label:t.latestNav, href:localizedPath(locale,'articles') },
+  { icon:'clock', label:t.deadlines, href:localizedPath(locale,'deadlines') },
+  { icon:'categories', label:t.categories, href:localizedPath(locale,'categories') },
+  { icon:'bookmark', label:t.saved, href:localizedPath(locale,'saved') }
+];
+const policies = [
+  { label:t.editorial, href:localizedPath(locale,'editorial-policy') },
+  { label:t.privacy, href:localizedPath(locale,'privacy') },
+  { label:t.terms, href:localizedPath(locale,'terms') },
+  { label:t.disclaimer, href:localizedPath(locale,'disclaimer') }
+];
 ---
-
+<section class="prefooter container" aria-labelledby="stayUpdatedTitle">
+  <div><span>{t.stayUpdated}</span><h2 id="stayUpdatedTitle">{t.stayUpdatedText}</h2></div>
+  <div class="prefooter-actions"><a href={SOCIALS.telegram} target="_blank" rel="noopener"><Icon name="telegram" />Telegram Updates</a><a href={SOCIALS.whatsapp} target="_blank" rel="noopener"><Icon name="whatsapp" />WhatsApp Updates</a></div>
+</section>
 <footer class="site-footer" id="contact">
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-brand">
-          <img src={`${SITE.basePath}assets/logo-mark.svg`} alt="" width="42" height="42" />
-          <span class="brand-text"><span class="brand-name">{brandName}</span><span class="brand-tagline">{locale === 'bn' ? SITE.tagline : SITE.taglineEn}</span></span>
-        </div>
-        <p class="footer-about">{t.disclaimerShort}</p>
-        <a href={`mailto:${SOCIALS.email}`} class="footer-email">{SOCIALS.email}</a>
-      </div>
-      <div class="footer-col">
-        <h4>{t.articles}</h4>
-        <ul><li><a href={localizedPath(locale, 'articles')}>{t.latest}</a></li><li><a href={localizedPath(locale, 'categories')}>{t.categories}</a></li></ul>
-      </div>
-      <div class="footer-col">
-        <h4>{locale === 'bn' ? 'বিশ্বাস ও নীতি' : 'Trust & policies'}</h4>
-        <ul>
-          <li><a href={localizedPath(locale, 'privacy')}>{t.privacy}</a></li>
-          <li><a href={localizedPath(locale, 'disclaimer')}>{t.disclaimer}</a></li>
-          <li><a href={localizedPath(locale, 'terms')}>{t.terms}</a></li>
-          <li><a href={localizedPath(locale, 'editorial-policy')}>{t.editorial}</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>{t.community}</h4>
-        <ul><li><a href={SOCIALS.telegram} target="_blank" rel="noopener">Telegram Channel</a></li><li><a href={SOCIALS.telegramMCQ} target="_blank" rel="noopener">MCQ Practice Group</a></li><li><a href={SOCIALS.whatsapp} target="_blank" rel="noopener">WhatsApp Channel</a></li></ul>
-      </div>
-    </div>
-    <div class="footer-bottom"><p>{t.disclaimerShort}</p><p>© 2026 {brandName}</p></div>
+  <div class="container footer-grid">
+    <section class="footer-intro">
+      <a class="footer-brand" href={localizedPath(locale)}><img src={SITE.logo} alt={`${BRAND.brandName} logo`} width="48" height="48"/><span><strong>{BRAND.brandName}</strong><small>{BRAND.brandTagline}</small></span></a>
+      <p>{t.disclaimerShort}</p><span class="demo-badge">{t.demoVersion}</span>
+      <div class="contact-card"><div><small>{locale==='bn'?'যোগাযোগ করুন':locale==='hi'?'संपर्क करें':'Contact us'}</small><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></div><button id="copyEmail" data-email={BRAND.contactEmail} data-copy={t.copyEmail} data-copied={t.copied} aria-label={t.copyEmail}><Icon name="copy"/><span>{t.copyEmail}</span></button></div>
+    </section>
+    <section><h3>{locale==='bn'?'দেখুন':locale==='hi'?'देखें':'Explore'}</h3><nav class="footer-links">{footerLinks.map(link=><a href={link.href}><Icon name={link.icon}/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
+    <section><h3>{trustLabel}</h3><nav class="footer-links">{policies.map(link=><a href={link.href}><Icon name="check"/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
+    <section><h3>{t.community}</h3><div class="community-cards"><a class="telegram" href={SOCIALS.telegram} target="_blank" rel="noopener"><Icon name="telegram"/><span><strong>Telegram</strong><small>{locale==='bn'?'দ্রুত আপডেট':locale==='hi'?'त्वरित अपडेट':'Fast update alerts'}</small></span><Icon name="external"/></a><a class="whatsapp" href={SOCIALS.whatsapp} target="_blank" rel="noopener"><Icon name="whatsapp"/><span><strong>WhatsApp</strong><small>{locale==='bn'?'চ্যানেল আপডেট':locale==='hi'?'चैनल अपडेट':'Channel updates'}</small></span><Icon name="external"/></a><a class="mcq" href={SOCIALS.telegramMCQ} target="_blank" rel="noopener"><Icon name="group"/><span><strong>MCQ Group</strong><small>{locale==='bn'?'অনুশীলন কমিউনিটি':locale==='hi'?'अभ्यास समुदाय':'Practice community'}</small></span><Icon name="external"/></a></div></section>
   </div>
+  <div class="container footer-bottom"><span>© 2026 {BRAND.brandName}</span><span>{locale==='bn'?'স্বাধীন তথ্যসেবা · সরকারি ওয়েবসাইট নয়':locale==='hi'?'स्वतंत्र सूचना सेवा · सरकारी वेबसाइट नहीं':'Independent information service · Not a government website'}</span><nav><a href={localizedPath(locale,'privacy')}>{t.privacy}</a><a href={localizedPath(locale,'terms')}>{t.terms}</a><a href="#languageTrigger">{locale==='bn'?'ভাষা':locale==='hi'?'भाषा':'Language'}</a><a href="#top">↑ {locale==='bn'?'উপরে':locale==='hi'?'ऊपर':'Back to top'}</a></nav></div>
 </footer>
+<script>
+  const copy=document.getElementById('copyEmail');copy?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copy.dataset.email||'');const text=copy.querySelector('span');if(text){text.textContent=copy.dataset.copied||'Copied';setTimeout(()=>text.textContent=copy.dataset.copy||'Copy email',1600)}}catch{}});
+</script>
+<style>
+  .prefooter{transform:translateY(2rem);position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.5rem 1.7rem;border-radius:22px;background:linear-gradient(135deg,#0a4d8c,#126f9e);color:#fff;box-shadow:var(--shadow-lg)}.prefooter span{font-weight:800}.prefooter h2{color:#fff;font-size:clamp(1.1rem,2vw,1.55rem);margin-top:.2rem}.prefooter-actions{display:flex;gap:.6rem;flex-wrap:wrap}.prefooter-actions a{display:flex;align-items:center;gap:.5rem;min-height:44px;padding:.65rem .85rem;border-radius:12px;background:rgba(255,255,255,.14);font-weight:800}.site-footer{background:var(--footer-bg);color:#d9e8f5;padding:5.4rem 0 1.5rem}.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.15fr;gap:2rem}.footer-brand{display:flex;gap:.75rem;align-items:center}.footer-brand span{display:flex;flex-direction:column}.footer-brand strong{font-size:1.12rem;color:#fff}.footer-brand small{color:#b9d1e5}.footer-intro>p{margin:1rem 0;color:#bdd0e1;max-width:42ch}.demo-badge{display:inline-flex;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.2rem .6rem;font-size:.72rem}.site-footer h3{color:#fff;font-size:1rem;margin-bottom:.75rem}.footer-links{display:grid;gap:.4rem}.footer-links a,.community-cards a{display:grid;grid-template-columns:22px 1fr 18px;align-items:center;gap:.55rem;min-height:46px;padding:.65rem;border-radius:11px}.footer-links a:hover,.footer-links a:focus-visible{background:var(--footer-card)}.community-cards{display:grid;gap:.55rem}.community-cards a.telegram{background:rgba(42,171,238,.11)}.community-cards a.whatsapp{background:rgba(37,211,102,.10)}.community-cards a.mcq{background:rgba(167,139,250,.10)}.community-cards span{display:flex;flex-direction:column}.community-cards small{color:#bdd0e1}.contact-card{margin-top:1rem;padding:.75rem;border-radius:13px;background:var(--footer-card);display:flex;align-items:center;justify-content:space-between;gap:.6rem;overflow:hidden}.contact-card div{min-width:0;display:flex;flex-direction:column}.contact-card a{overflow-wrap:anywhere;color:#fff}.contact-card button{flex:0 0 auto;display:flex;align-items:center;gap:.35rem;min-height:44px;padding:.45rem;color:#fff}.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.14);margin-top:2.2rem;padding-top:1.2rem;font-size:.78rem;color:#b9d1e5}.footer-bottom nav{display:flex;flex-wrap:wrap;gap:1rem}.site-footer a:hover{color:#fff}@media(max-width:940px){.footer-grid{grid-template-columns:1fr 1fr}.prefooter{margin-inline:1rem}}@media(max-width:620px){.prefooter{align-items:flex-start;flex-direction:column}.prefooter-actions{width:100%}.prefooter-actions a{flex:1}.footer-grid{grid-template-columns:1fr}.footer-bottom{align-items:flex-start;flex-direction:column}.contact-card button span{display:none}}
+</style>
