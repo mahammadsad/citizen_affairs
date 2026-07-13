@@ -5,7 +5,7 @@ import { getBrandName, getBrandTagline, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
 import LatestTicker from './LatestTicker.astro';
 import Icon from './Icon.astro';
-import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
+import { localeMeta, locales, localizedPath, trustPagePath, type Locale, ui } from '../i18n';
 
 interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
 const { locale, alternateUrls = {} } = Astro.props;
@@ -18,7 +18,8 @@ const desktopNav = [
   { label: t.home, href: localizedPath(locale), active: pathname === localizedPath(locale) || (locale === 'en' && pathname === SITE.basePath) },
   { label: t.latestNav, href: localizedPath(locale, 'articles'), active: pathname.includes(`/${locale}/articles`) },
   { label: t.categories, href: localizedPath(locale, 'categories'), active: pathname.includes(`/${locale}/categories`) },
-  { label: t.about, href: `${localizedPath(locale)}#about`, active: false }
+  { label: t.about, href: trustPagePath(locale, 'about'), active: pathname === trustPagePath(locale, 'about') },
+  { label: t.contact, href: trustPagePath(locale, 'contact'), active: pathname === trustPagePath(locale, 'contact') }
 ];
 const quickLinks = [
   desktopNav[0],
@@ -94,8 +95,8 @@ const categoryEntries = (await getCollection('categories')).sort((a, b) => categ
     </section>
 
     <div class="drawer-secondary-links">
-      <a href={`${localizedPath(locale)}#about`}><Icon name="about" />{t.about}<Icon name="arrow" size={18} /></a>
-      <a href={`${localizedPath(locale)}#contact`}><Icon name="mail" />{t.contact}<Icon name="arrow" size={18} /></a>
+      <a href={trustPagePath(locale, 'about')}><Icon name="about" />{t.about}<Icon name="arrow" size={18} /></a>
+      <a href={trustPagePath(locale, 'contact')}><Icon name="mail" />{t.contact}<Icon name="arrow" size={18} /></a>
       <button class="mobile-theme theme-toggle" type="button"><Icon name="theme" />{t.changeTheme}</button>
     </div>
   </div>

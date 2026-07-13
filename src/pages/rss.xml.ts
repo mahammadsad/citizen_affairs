@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import { getBrandName, SITE } from '@utils/constants';
 
 export async function GET() {
-  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  const articles = await getCollection('articles', ({ data }) => !data.draft && data.verificationStatus !== 'withdrawn');
   return rss({
     title: getBrandName('en'),
     description: SITE.description,

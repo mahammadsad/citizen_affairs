@@ -8,8 +8,10 @@ export async function GET() {
   const articles = await getCollection('articles', ({ data }) => !data.draft && data.verificationStatus !== 'withdrawn');
   const categories = await getCollection('categories');
   const staticPaths = ['', ...locales.flatMap(locale => [locale === 'en' ? null : `${locale}/`, `${locale}/articles/`, `${locale}/categories/`, `${locale}/deadlines/`, `${locale}/editorial-policy/`, `${locale}/privacy/`, `${locale}/terms/`, `${locale}/disclaimer/`]).filter((path): path is string => Boolean(path))];
+  const trustPaths = ['about/', 'contact/', 'authors/mahammad-sad/', 'corrections/', ...['bn', 'hi'].flatMap((locale) => [`${locale}/about/`, `${locale}/contact/`, `${locale}/authors/mahammad-sad/`, `${locale}/corrections/`])];
   const paths: Array<{ path: string; lastmod?: Date }> = [
     ...staticPaths.map((path) => ({ path })),
+    ...trustPaths.map((path) => ({ path })),
     ...articles.map((article) => ({ path: `${article.data.language}/articles/${article.data.urlSlug}/`, lastmod: article.data.updated ?? article.data.date })),
     ...locales.flatMap((locale) => categories.map((category) => ({ path: `${locale}/categories/${category.id}/` }))),
   ];

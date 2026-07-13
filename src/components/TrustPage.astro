@@ -1,0 +1,108 @@
+---
+import { getEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import Icon from './Icon.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+import { generateBreadcrumbs } from '@lib/seo';
+import { getArticlesByAuthorSlug } from '@lib/content';
+import { BRAND, getBrandName, resolveAssetPath, SITE, SOCIALS } from '@utils/constants';
+import { getTrustCopy } from '../i18n/trust';
+import { locales, localizedPath, trustPagePath, type Locale, type TrustPageId, ui } from '../i18n';
+
+interface Props { locale: Locale; page: TrustPageId; }
+const { locale, page } = Astro.props;
+const copy = getTrustCopy(locale);
+const t = ui(locale);
+const brandName = getBrandName(locale);
+const pageCopy = copy[page];
+const introText = page === 'author' ? copy.author.bio : page === 'about' ? copy.about.intro : page === 'contact' ? copy.contact.intro : copy.corrections.intro;
+const segment = page === 'author' ? 'authors/mahammad-sad' : page;
+const absoluteRoute = (lang: Locale) => `${SITE.url}/${lang === 'en' ? '' : `${lang}/`}${segment}/`;
+const canonical = absoluteRoute(locale);
+const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, absoluteRoute(lang)])) as Record<Locale, string>;
+const homeUrl = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
+const breadcrumbSchema = generateBreadcrumbs([{ name: copy.home, url: homeUrl }, { name: pageCopy.title }]);
+const pageType = page === 'about' ? 'AboutPage' : page === 'contact' ? 'ContactPage' : 'WebPage';
+const pageSchema = page === 'author' ? {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.author.name,
+  url: canonical,
+  email: BRAND.contactEmail,
+  sameAs: [SITE.author.github],
+  jobTitle: copy.author.role,
+  description: copy.author.bio,
+  worksFor: { '@type': 'Organization', name: brandName, url: SITE.url }
+} : {
+  '@context': 'https://schema.org',
+  '@type': pageType,
+  name: pageCopy.title,
+  description: pageCopy.description,
+  url: canonical,
+  inLanguage: locale,
+  isPartOf: { '@type': 'WebSite', name: brandName, url: SITE.url }
+};
+const authorEntry = page === 'author' ? await getEntry('authors', 'admin') : undefined;
+const authorArticles = page === 'author'
+  ? (await getArticlesByAuthorSlug('admin')).filter((article) => article.data.language === locale && article.data.verificationStatus !== 'withdrawn')
+  : [];
+const correctionsEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.reportTitle} — ${brandName}`)}`;
+const updateEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.suggestTitle} — ${brandName}`)}`;
+const generalEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.generalTitle} — ${brandName}`)}`;
+const trustLinks = [
+  { label: t.editorial, href: localizedPath(locale, 'editorial-policy') },
+  { label: t.corrections, href: trustPagePath(locale, 'corrections') },
+  { label: t.disclaimer, href: localizedPath(locale, 'disclaimer') },
+  { label: t.contact, href: trustPagePath(locale, 'contact') },
+  { label: t.authorProfile, href: trustPagePath(locale, 'author') }
+];
+---
+<MainLayout title={pageCopy.title} description={pageCopy.description} {locale} {canonical} {alternateUrls} structuredData={[pageSchema, breadcrumbSchema]}>
+  <article class="trust-page container">
+    <nav class="trust-breadcrumbs" aria-label={copy.breadcrumb}>
+      <a href={localizedPath(locale)}>{copy.home}</a><span aria-hidden="true">›</span><span>{pageCopy.title}</span>
+    </nav>
+    <header class="trust-header">
+      <span class="eyebrow">{brandName}</span>
+      {page === 'author' && authorEntry?.data.image && <img class="author-image" src={resolveAssetPath(authorEntry.data.image)} alt="" width="96" height="96" />}
+      <h1>{pageCopy.title}</h1>
+      {page === 'author' && <p class="trust-role">{copy.author.role}</p>}
+      <p class="trust-intro">{introText}</p>
+      <p class="trust-updated">{copy.updated}</p>
+    </header>
+
+    {page === 'about' && <>
+      <div class="trust-sections">{copy.about.sections.map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}</div>
+      <section class="trust-links" aria-labelledby="trustLinksTitle"><h2 id="trustLinksTitle">{copy.about.linksTitle}</h2><div>{trustLinks.map((link) => <a href={link.href}>{link.label}<Icon name="arrow" /></a>)}</div></section>
+    </>}
+
+    {page === 'contact' && <>
+      <section class="contact-primary"><h2>{copy.contact.emailLabel}</h2><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></section>
+      <div class="trust-sections contact-sections">
+        <section><h2>{copy.contact.reportTitle}</h2><p>{copy.contact.reportBody}</p><a class="btn btn-primary" href={correctionsEmail}>{copy.contact.reportAction}</a></section>
+        <section><h2>{copy.contact.suggestTitle}</h2><p>{copy.contact.suggestBody}</p><a class="btn btn-secondary" href={updateEmail}>{copy.contact.suggestAction}</a></section>
+        <section><h2>{copy.contact.generalTitle}</h2><p>{copy.contact.generalBody}</p><a class="btn btn-secondary" href={generalEmail}>{copy.contact.generalAction}</a></section>
+      </div>
+      <section class="trust-links" aria-labelledby="communityTitle"><h2 id="communityTitle">{copy.contact.communityTitle}</h2><div><a href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer">Telegram <Icon name="external" /></a><a href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp <Icon name="external" /></a></div></section>
+    </>}
+
+    {page === 'author' && <>
+      <div class="trust-sections">
+        <section><h2>{copy.author.interestsTitle}</h2><ul>{copy.author.interests.map((item) => <li>{item}</li>)}</ul></section>
+        <section><h2>{copy.author.responsibilityTitle}</h2><p>{copy.author.responsibility}</p></section>
+        <section><h2>{copy.author.verificationTitle}</h2><p>{copy.author.verification}</p></section>
+        <section><h2>{copy.author.contactTitle}</h2><p><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></p><p><a href={SITE.author.github} target="_blank" rel="noopener noreferrer">GitHub — mahammadsad <Icon name="external" /></a></p><p><a href={localizedPath(locale, 'editorial-policy')}>{t.editorial}</a> · <a href={trustPagePath(locale, 'corrections')}>{t.corrections}</a></p></section>
+      </div>
+      <section class="author-articles"><h2>{copy.author.articlesTitle}</h2>{authorArticles.length ? <div>{authorArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <p>{copy.author.noArticles}</p>}</section>
+    </>}
+
+    {page === 'corrections' && <>
+      <div class="trust-sections">{copy.corrections.sections.map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}</div>
+      <aside class="correction-cta"><h2>{copy.corrections.action}</h2><p>{copy.contact.reportBody}</p><div><a class="btn btn-primary" href={correctionsEmail}>{copy.corrections.action}</a><a class="btn btn-secondary" href={trustPagePath(locale, 'contact')}>{t.contact}</a></div></aside>
+    </>}
+  </article>
+</MainLayout>
+
+<style>
+  .trust-page{max-width:960px;padding-block:2rem 5rem;overflow-wrap:anywhere}.trust-breadcrumbs{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--color-text-muted);font-size:.84rem;margin-bottom:2rem}.trust-breadcrumbs a{color:var(--color-primary);font-weight:700}.trust-header{max-width:780px;margin-bottom:2.5rem}.trust-header h1{font-size:clamp(2.2rem,6vw,4rem);margin:.8rem 0}.trust-intro{font-size:1.12rem;color:var(--color-text-muted);line-height:1.85}.trust-role{font-weight:800;color:var(--color-primary);margin-top:-.4rem}.trust-updated{font-size:.82rem;color:var(--color-text-muted);margin-top:1rem}.author-image{border-radius:20px;background:var(--color-surface);border:1px solid var(--color-border);padding:.7rem;margin-top:1.2rem}.trust-sections{display:grid;gap:1rem}.trust-sections>*{min-width:0}.trust-sections section,.contact-primary,.trust-links,.correction-cta,.author-articles{padding:1.4rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.trust-sections h2,.contact-primary h2,.trust-links h2,.correction-cta h2,.author-articles h2{font-size:1.35rem;margin-bottom:.55rem}.trust-sections p,.correction-cta p{color:var(--color-text-muted);line-height:1.85}.trust-sections ul{list-style:disc;margin-left:1.2rem;color:var(--color-text-muted)}.trust-sections li+li{margin-top:.35rem}.trust-links,.correction-cta,.author-articles{margin-top:1.4rem}.trust-links>div{display:grid;gap:.5rem}.trust-links a{display:flex;align-items:center;justify-content:space-between;gap:.6rem;min-height:48px;padding:.7rem .8rem;border-radius:11px;background:var(--color-surface-alt);font-weight:750}.contact-primary{margin-bottom:1rem}.contact-primary a,.trust-sections a:not(.btn){color:var(--color-primary);text-decoration:underline;text-underline-offset:.16em;overflow-wrap:anywhere}.contact-sections .btn{max-width:100%;margin-top:1rem;white-space:normal;text-align:center}.correction-cta>div{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}.author-articles>div{display:grid;gap:1rem;margin-top:1rem}.author-articles>p{color:var(--color-text-muted)}@media(min-width:720px){.trust-sections{grid-template-columns:repeat(2,minmax(0,1fr))}.contact-sections{grid-template-columns:repeat(3,minmax(0,1fr))}.author-articles>div{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.trust-page{padding-inline:1rem}.trust-sections section,.contact-primary,.trust-links,.correction-cta,.author-articles{padding:1rem}.correction-cta .btn{width:100%}}
+</style>

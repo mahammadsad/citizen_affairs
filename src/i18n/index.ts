@@ -15,7 +15,7 @@ export const UI = {
   en: {
     home: 'Home', latestNav: 'Latest Updates', articles: 'Updates', categories: 'Categories', about: 'About',
     services: 'Services', community: 'Community', contact: 'Contact', search: 'Search', close: 'Close', menu: 'Menu',
-    privacy: 'Privacy Policy', terms: 'Terms', editorial: 'Editorial Policy', disclaimer: 'Disclaimer',
+    privacy: 'Privacy Policy', terms: 'Terms', editorial: 'Editorial Policy', disclaimer: 'Disclaimer', corrections: 'Corrections Policy', authorProfile: 'Author',
     searchPlaceholder: 'Search jobs, schemes, admit cards, results…', searchHint: 'Search verified public information.', noResults: 'No matching information found.',
     popularSearches: 'Popular searches', recentSearches: 'Recent searches',
     popularSearchTerms: ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'All India Jobs', 'Admit Cards', 'Results'],
@@ -45,12 +45,12 @@ export const UI = {
     savedDescription: 'Articles saved on this device. No login required.', deadlinesDescription: 'Nearest valid deadlines appear first. Closed items remain clearly marked.',
     deadline: 'Deadline', copyLink: 'Copy link', breadcrumb: 'Breadcrumb', checkOriginal: 'Check the original government document before making a decision.', sourceItem: 'Source',
     quickSummary: 'Quick summary', importantDates: 'Important dates', eligibility: 'Eligibility', amount: 'Benefits, vacancies or amount', requiredDocuments: 'Required documents', updateHistory: 'Update history', relatedArticles: 'Related articles', faq: 'Frequently asked questions', primarySource: 'Primary source: Official notification or portal',
-    policyUpdated: 'Last updated: July 2026', publishingCorrections: 'Publishing and corrections', publishingCorrectionsText: 'Dates, amounts, vacancies and eligibility are checked against original government documents. Corrections and deadline changes are recorded in the article update history.'
+    policyUpdated: 'Last updated: July 2026', publishingCorrections: 'Publishing and corrections', publishingCorrectionsText: 'Dates, amounts, vacancies and eligibility are checked against original government documents. Corrections and deadline changes are recorded in the article update history.', learnMoreAbout: 'Read more about us', reportCorrection: 'Report a correction'
   },
   bn: {
     home: 'হোম', latestNav: 'সর্বশেষ আপডেট', articles: 'আপডেট', categories: 'বিভাগ', about: 'আমাদের সম্পর্কে',
     services: 'পরিষেবা', community: 'কমিউনিটি', contact: 'যোগাযোগ', search: 'খুঁজুন', close: 'বন্ধ করুন', menu: 'মেনু',
-    privacy: 'গোপনীয়তা নীতি', terms: 'শর্তাবলি', editorial: 'সম্পাদকীয় নীতি', disclaimer: 'দায়ত্যাগ',
+    privacy: 'গোপনীয়তা নীতি', terms: 'শর্তাবলি', editorial: 'সম্পাদকীয় নীতি', disclaimer: 'দায়ত্যাগ', corrections: 'সংশোধন নীতি', authorProfile: 'লেখক',
     searchPlaceholder: 'চাকরি, প্রকল্প, অ্যাডমিট কার্ড, ফলাফল খুঁজুন…', searchHint: 'যাচাইকৃত জনতথ্য খুঁজুন।', noResults: 'মিলছে এমন তথ্য পাওয়া যায়নি।',
     popularSearches: 'জনপ্রিয় অনুসন্ধান', recentSearches: 'সাম্প্রতিক অনুসন্ধান',
     popularSearchTerms: ['SSC', 'রেলওয়ে', 'স্কলারশিপ', 'Ayushman Bharat', 'সারা ভারতের চাকরি', 'অ্যাডমিট কার্ড', 'ফলাফল'],
@@ -80,12 +80,12 @@ export const UI = {
     savedDescription: 'এই ডিভাইসে সংরক্ষিত নিবন্ধ। লগইনের প্রয়োজন নেই।', deadlinesDescription: 'নিকটতম বৈধ সময়সীমা আগে দেখানো হয়েছে। বন্ধ হয়ে যাওয়া তথ্য স্পষ্টভাবে চিহ্নিত।',
     deadline: 'শেষ তারিখ', copyLink: 'লিঙ্ক কপি করুন', breadcrumb: 'পৃষ্ঠার পথ', checkOriginal: 'কোনো সিদ্ধান্ত নেওয়ার আগে মূল সরকারি নথি যাচাই করুন।', sourceItem: 'সূত্র',
     quickSummary: 'সংক্ষিপ্ত সারাংশ', importantDates: 'গুরুত্বপূর্ণ তারিখ', eligibility: 'যোগ্যতা', amount: 'সুবিধা, শূন্যপদ বা অর্থের পরিমাণ', requiredDocuments: 'প্রয়োজনীয় নথি', updateHistory: 'আপডেটের ইতিহাস', relatedArticles: 'সম্পর্কিত নিবন্ধ', faq: 'সাধারণ প্রশ্ন', primarySource: 'প্রাথমিক সূত্র: অফিসিয়াল বিজ্ঞপ্তি বা পোর্টাল',
-    policyUpdated: 'সর্বশেষ আপডেট: জুলাই ২০২৬', publishingCorrections: 'প্রকাশ ও সংশোধন', publishingCorrectionsText: 'তারিখ, অর্থের পরিমাণ, শূন্যপদ ও যোগ্যতা মূল সরকারি নথির সঙ্গে মিলিয়ে দেখা হয়। সংশোধনী বা সময়সীমা পরিবর্তিত হলে নিবন্ধের আপডেট ইতিহাসে তা যোগ করা হয়।'
+    policyUpdated: 'সর্বশেষ আপডেট: জুলাই ২০২৬', publishingCorrections: 'প্রকাশ ও সংশোধন', publishingCorrectionsText: 'তারিখ, অর্থের পরিমাণ, শূন্যপদ ও যোগ্যতা মূল সরকারি নথির সঙ্গে মিলিয়ে দেখা হয়। সংশোধনী বা সময়সীমা পরিবর্তিত হলে নিবন্ধের আপডেট ইতিহাসে তা যোগ করা হয়।', learnMoreAbout: 'আমাদের সম্পর্কে বিস্তারিত পড়ুন', reportCorrection: 'সংশোধনের অনুরোধ পাঠান'
   },
   hi: {
     home: 'होम', latestNav: 'नवीनतम अपडेट', articles: 'अपडेट', categories: 'श्रेणियाँ', about: 'हमारे बारे में',
     services: 'सेवाएँ', community: 'समुदाय', contact: 'संपर्क', search: 'खोजें', close: 'बंद करें', menu: 'मेनू',
-    privacy: 'गोपनीयता नीति', terms: 'नियम और शर्तें', editorial: 'संपादकीय नीति', disclaimer: 'अस्वीकरण',
+    privacy: 'गोपनीयता नीति', terms: 'नियम और शर्तें', editorial: 'संपादकीय नीति', disclaimer: 'अस्वीकरण', corrections: 'सुधार नीति', authorProfile: 'लेखक',
     searchPlaceholder: 'नौकरियाँ, योजनाएँ, एडमिट कार्ड, परिणाम खोजें…', searchHint: 'सत्यापित सार्वजनिक जानकारी खोजें।', noResults: 'कोई मिलती-जुलती जानकारी नहीं मिली।',
     popularSearches: 'लोकप्रिय खोजें', recentSearches: 'हाल की खोजें',
     popularSearchTerms: ['SSC', 'रेलवे', 'छात्रवृत्तियाँ', 'Ayushman Bharat', 'पूरे भारत की नौकरियाँ', 'एडमिट कार्ड', 'परिणाम'],
@@ -115,7 +115,7 @@ export const UI = {
     savedDescription: 'इस डिवाइस पर सहेजे गए लेख। लॉगिन आवश्यक नहीं है।', deadlinesDescription: 'निकटतम वैध अंतिम तिथियाँ पहले दिखाई गई हैं। बंद मदें स्पष्ट रूप से चिह्नित हैं।',
     deadline: 'अंतिम तिथि', copyLink: 'लिंक कॉपी करें', breadcrumb: 'पृष्ठ क्रम', checkOriginal: 'निर्णय लेने से पहले मूल सरकारी दस्तावेज़ जाँचें।', sourceItem: 'स्रोत',
     quickSummary: 'त्वरित सारांश', importantDates: 'महत्वपूर्ण तिथियाँ', eligibility: 'पात्रता', amount: 'लाभ, रिक्तियाँ या राशि', requiredDocuments: 'आवश्यक दस्तावेज़', updateHistory: 'अपडेट इतिहास', relatedArticles: 'संबंधित लेख', faq: 'सामान्य प्रश्न', primarySource: 'प्राथमिक स्रोत: आधिकारिक सूचना या पोर्टल',
-    policyUpdated: 'अंतिम अपडेट: जुलाई 2026', publishingCorrections: 'प्रकाशन और सुधार', publishingCorrectionsText: 'तारीख, राशि, रिक्ति और पात्रता मूल सरकारी दस्तावेज़ से मिलाई जाती है। सुधार या अंतिम तिथि बदलने पर लेख के अपडेट इतिहास में बदलाव दर्ज किया जाता है।'
+    policyUpdated: 'अंतिम अपडेट: जुलाई 2026', publishingCorrections: 'प्रकाशन और सुधार', publishingCorrectionsText: 'तारीख, राशि, रिक्ति और पात्रता मूल सरकारी दस्तावेज़ से मिलाई जाती है। सुधार या अंतिम तिथि बदलने पर लेख के अपडेट इतिहास में बदलाव दर्ज किया जाता है।', learnMoreAbout: 'हमारे बारे में विस्तार से पढ़ें', reportCorrection: 'सुधार की सूचना दें'
   }
 } as const;
 
@@ -125,6 +125,14 @@ export function localizedPath(locale: Locale, path = '') {
   const clean = path.replace(/^\/+|\/+$/g, '');
   if (locale === 'en' && !clean) return BASE_PATH;
   return `${BASE_PATH}${locale}/${clean}${clean ? '/' : ''}`;
+}
+
+export type TrustPageId = 'about' | 'contact' | 'author' | 'corrections';
+
+export function trustPagePath(locale: Locale, page: TrustPageId) {
+  const segment = page === 'author' ? 'authors/mahammad-sad' : page;
+  const prefix = locale === 'en' ? '' : `${locale}/`;
+  return `${BASE_PATH}${prefix}${segment}/`;
 }
 
 export function replaceLocale(pathname: string, locale: Locale) {
