@@ -1,0 +1,135 @@
+---
+import { SITE } from '@utils/constants';
+const cases = [
+  { width: 360, height: 780, locale: 'bn', label: '360 Bengali portrait' },
+  { width: 375, height: 812, locale: 'hi', label: '375 Hindi portrait' },
+  { width: 390, height: 844, locale: 'en', label: '390 English portrait' },
+  { width: 412, height: 915, locale: 'bn', label: '412 Bengali portrait' },
+  { width: 430, height: 932, locale: 'hi', label: '430 Hindi portrait' },
+  { width: 430, height: 390, locale: 'bn', label: '430 Bengali landscape' },
+  { width: 1024, height: 768, locale: 'en', label: '1024 desktop' }
+];
+---
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex,nofollow"/><title>Locale QA</title></head>
+  <body>
+    <main data-base={SITE.basePath}>
+      <h1>Locale QA</h1><p id="status">Running…</p><pre id="results"></pre>
+      <div id="frames">{cases.map((item, index) => <iframe title={item.label} data-index={index} data-label={item.label} data-width={item.width} data-height={item.height} data-locale={item.locale} width={item.width} height={item.height}></iframe>)}</div>
+    </main>
+    <script>
+      type Check = Record<string, boolean | string | number>;
+      type Result = { label: string; pass: boolean; checks: Check };
+      const base = (document.querySelector('main') as HTMLElement).dataset.base || '/';
+      const frames = [...document.querySelectorAll<HTMLIFrameElement>('iframe')];
+      const results: Result[] = [];
+      const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      const waitFor = async (test: () => boolean, message: string) => { for (let i = 0; i < 80; i++) { if (test()) return; await wait(50); } throw new Error(message); };
+      const load = async (frame: HTMLIFrameElement, path: string) => {
+        frame.scrollIntoView({ block: 'center' });
+        const done = new Promise<void>((resolve, reject) => { const timer = setTimeout(() => reject(new Error(`Load timeout: ${path}`)), 15000); frame.addEventListener('load', () => { clearTimeout(timer); resolve(); }, { once: true }); });
+        frame.src = `${base}${path.replace(/^\//, '')}?qa=${Date.now()}-${Math.random()}`;
+        await done; await wait(120);
+      };
+      const menuChecks = async (doc: Document, win: Window) => {
+        const trigger = doc.getElementById('languageTrigger') as HTMLButtonElement;
+        const menu = doc.getElementById('languageMenu') as HTMLElement;
+        trigger.click(); await wait(40);
+        const rect = menu.getBoundingClientRect();
+        const items = [...menu.querySelectorAll<HTMLAnchorElement>('[data-language]')];
+        const hitTargets = items.every(item => { const r = item.getBoundingClientRect(); const hit = doc.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!hit && item.contains(hit); });
+        const checks = {
+          menuOpen: !menu.hidden && trigger.getAttribute('aria-expanded') === 'true',
+          insideViewport: rect.left >= -1 && rect.right <= win.innerWidth + 1,
+          tickerDoesNotIntercept: hitTargets,
+          threeOptions: items.length === 3
+        };
+        const active = menu.querySelector<HTMLElement>('[aria-current="true"]');
+        active?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await wait(20);
+        Object.assign(checks, { escapeCloses: menu.hidden && trigger.getAttribute('aria-expanded') === 'false', focusReturned: doc.activeElement === trigger });
+        trigger.click(); await wait(20); doc.body.dispatchEvent(new MouseEvent('click', { bubbles: true })); await wait(20);
+        Object.assign(checks, { outsideCloses: menu.hidden, hiddenNotFocusable: menu.hidden && !menu.contains(doc.activeElement) });
+        return checks;
+      };
+      const switchLanguage = async (frame: HTMLIFrameElement, lang: string) => {
+        const doc = frame.contentDocument!;
+        (doc.getElementById('languageTrigger') as HTMLButtonElement).click(); await wait(30);
+        const link = doc.querySelector<HTMLAnchorElement>(`#languageMenu [data-language="${lang}"]`)!;
+        const loaded = new Promise<void>((resolve, reject) => { const timer = setTimeout(() => reject(new Error(`Switch timeout: ${lang}`)), 12000); frame.addEventListener('load', () => { clearTimeout(timer); resolve(); }, { once: true }); });
+        link.click(); await loaded; await wait(100);
+        return frame.contentDocument!;
+      };
+      const add = (label: string, checks: Check) => results.push({ label, checks, pass: Object.values(checks).every(value => value === true || typeof value === 'string' || typeof value === 'number') });
+
+      try {
+        const sequence = frames[0];
+        await load(sequence, 'en/articles/');
+        let doc = sequence.contentDocument!, win = sequence.contentWindow!;
+        ['site-language', 'government-coverage', 'government-state', 'updates-category', 'updates-status', 'updates-verification', 'updates-sort'].forEach(key => win.localStorage.removeItem(key));
+        await load(sequence, 'en/articles/'); doc = sequence.contentDocument!; win = sequence.contentWindow!;
+        const level = doc.getElementById('levelFilter') as HTMLSelectElement, state = doc.getElementById('stateFilter') as HTMLSelectElement;
+        const defaultChecks = { defaultAllIndia: level.value === '', defaultState: state.value === '', stateHidden: (doc.getElementById('stateFilterGroup') as HTMLElement).hidden };
+        level.value = 'state'; level.dispatchEvent(new Event('change', { bubbles: true })); state.value = 'delhi'; state.dispatchEvent(new Event('change', { bubbles: true }));
+        add('independent filter persistence setup', { ...defaultChecks, levelStored: win.localStorage.getItem('government-coverage') === 'state', stateStored: win.localStorage.getItem('government-state') === 'delhi' });
+
+        const directions = [['bn', 'en-bn'], ['en', 'bn-en'], ['hi', 'en-hi'], ['bn', 'hi-bn'], ['hi', 'bn-hi'], ['en', 'hi-en']] as const;
+        for (const [lang, label] of directions) {
+          doc = await switchLanguage(sequence, lang); win = sequence.contentWindow!;
+          add(label, {
+            correctLang: doc.documentElement.lang === lang,
+            correctRoute: win.location.pathname.includes(`/${lang}/articles/`),
+            languageStored: win.localStorage.getItem('site-language') === lang,
+            levelPreserved: (doc.getElementById('levelFilter') as HTMLSelectElement).value === 'state',
+            statePreserved: (doc.getElementById('stateFilter') as HTMLSelectElement).value === 'delhi'
+          });
+        }
+        win.history.back(); await waitFor(() => win.location.pathname.includes('/hi/articles/'), 'Back navigation timeout'); await wait(100);
+        add('browser back', { correctLang: sequence.contentDocument!.documentElement.lang === 'hi', storageSynced: win.localStorage.getItem('site-language') === 'hi' });
+        win.history.forward(); await waitFor(() => win.location.pathname.includes('/en/articles/'), 'Forward navigation timeout'); await wait(100);
+        add('browser forward', { correctLang: sequence.contentDocument!.documentElement.lang === 'en', storageSynced: win.localStorage.getItem('site-language') === 'en' });
+        const reloaded = new Promise<void>(resolve => sequence.addEventListener('load', () => resolve(), { once: true })); win.location.reload(); await reloaded; await wait(100);
+        add('refresh persistence', { language: sequence.contentDocument!.documentElement.lang === 'en', state: (sequence.contentDocument!.getElementById('stateFilter') as HTMLSelectElement).value === 'delhi' });
+
+        for (const frame of frames) {
+          const width = Number(frame.dataset.width), locale = frame.dataset.locale || 'en', label = frame.dataset.label || `${width}`;
+          sequence.contentWindow!.localStorage.removeItem('government-coverage'); sequence.contentWindow!.localStorage.removeItem('government-state');
+          await load(frame, `${locale}/articles/`);
+          const caseDoc = frame.contentDocument!, caseWin = frame.contentWindow!;
+          const caseLevel = caseDoc.getElementById('levelFilter') as HTMLSelectElement, caseState = caseDoc.getElementById('stateFilter') as HTMLSelectElement;
+          const text = caseDoc.body.textContent || '';
+          const expected = locale === 'bn' ? ['ফিল্টার ও সাজানো', 'সারা ভারত', 'কেন্দ্রীয় সরকার', 'আসন্ন সময়সীমা', 'গোপনীয়তা নীতি', 'শর্তাবলি'] : locale === 'hi' ? ['फ़िल्टर और क्रमबद्ध करें', 'संपूर्ण भारत', 'केंद्र सरकार', 'आगामी अंतिम तिथियाँ', 'गोपनीयता नीति', 'नियम और शर्तें'] : ['Filters & sorting', 'All India', 'Central Government', 'Upcoming Deadlines', 'Privacy Policy', 'Terms'];
+          const menu = await menuChecks(caseDoc, caseWin);
+          add(label, {
+            exactWidth: caseWin.innerWidth === width,
+            noOverflow: caseDoc.documentElement.scrollWidth <= caseWin.innerWidth + 1,
+            correctLang: caseDoc.documentElement.lang === locale,
+            translatedUI: expected.every(value => text.includes(value)),
+            neutralGovernmentOptions: [...caseLevel.options].map(o => o.value).join(',') === ',central,state',
+            allRegions: caseState.options.length === 37,
+            neutralDefault: caseLevel.value === '' && caseState.value === '',
+            stateInsideViewport: caseState.getBoundingClientRect().right <= caseWin.innerWidth + 1,
+            ...menu
+          });
+          await load(frame, `${locale}/`);
+          const homeDoc = frame.contentDocument!, homeText = homeDoc.body.textContent || '';
+          const nationwide = locale === 'bn' ? 'সারা ভারতের সরকারি চাকরি' : locale === 'hi' ? 'पूरे भारत की सरकारी नौकरियों' : 'from across India';
+          add(`${label} homepage`, { nationwideMessage: homeText.includes(nationwide), noSpecialWestBengalBranding: !homeText.includes('West Bengal Jobs'), noOverflow: homeDoc.documentElement.scrollWidth <= frame.contentWindow!.innerWidth + 1 });
+        }
+
+        for (const [path, expected] of [['bn/privacy/', 'গোপনীয়তা নীতি'], ['hi/terms/', 'नियम और शर्तें'], ['en/editorial-policy/', 'Editorial Policy']] as const) {
+          await load(frames[2], path); const policyDoc = frames[2].contentDocument!;
+          add(`policy ${path}`, { correctTitle: policyDoc.querySelector('h1')?.textContent?.trim() === expected, correctLang: policyDoc.documentElement.lang === path.slice(0, 2), noOverflow: policyDoc.documentElement.scrollWidth <= frames[2].contentWindow!.innerWidth + 1 });
+        }
+      } catch (error) {
+        results.push({ label: 'harness', pass: false, checks: { error: error instanceof Error ? error.message : String(error) } });
+      }
+      const pass = results.every(result => result.pass);
+      document.getElementById('status')!.textContent = pass ? 'PASS' : 'FAIL';
+      document.getElementById('results')!.textContent = JSON.stringify(results, null, 2);
+      document.body.dataset.complete = 'true';
+    </script>
+    <style>body{margin:20px;background:#edf2f7;color:#17202e;font:14px/1.45 system-ui}h1{margin:0}#status{font-size:1.3rem;font-weight:800}pre{max-height:50vh;overflow:auto;padding:14px;border:1px solid #c8d3df;border-radius:12px;background:#fff;white-space:pre-wrap}#frames{display:grid;gap:18px;overflow:auto}iframe{display:block;max-width:none;border:2px solid #71849a;background:#fff}</style>
+  </body>
+</html>
