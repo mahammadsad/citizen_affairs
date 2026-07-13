@@ -16,7 +16,7 @@ const widths = [320, 360, 375, 390, 412, 430, 768, 1024];
     <div class="frames">
       {widths.map((width) => <iframe title={`${width}px test`} data-width={width} style={`width:${width}px;height:900px`} src={`${SITE.basePath}?qa=${width}`}></iframe>)}
     </div>
-    <script is:inline>
+    <script is:inline type="module">
       const widths = [320, 360, 375, 390, 412, 430, 768, 1024];
       const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
       const frames = [...document.querySelectorAll('iframe')];
