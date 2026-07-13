@@ -4,6 +4,7 @@ export function GET() {
   const body = [
     'User-agent: *',
     'Allow: /',
+    `Disallow: ${SITE.basePath}admin/`,
     '',
     `Sitemap: ${SITE.url}/sitemap.xml`,
     '',
