@@ -15,7 +15,7 @@ import { visit } from 'unist-util-visit';
  * architecture change. Deferring offscreen images and hinting async
  * decode is the safe, zero-risk win that applies universally instead.
  */
-export function rehypeImageAttrs() {
+export function rehypeImageAttrs({ base = '/' } = {}) {
   return (tree) => {
     visit(tree, 'element', (node) => {
       if (node.tagName !== 'img') return;
@@ -26,7 +26,11 @@ export function rehypeImageAttrs() {
       if (node.properties.decoding === undefined) {
         node.properties.decoding = 'async';
       }
+      const source = node.properties.src;
+      if (typeof source === 'string' && source.startsWith('/') && !source.startsWith('//')) {
+        const normalized = source.replace(/^\/sarkari-tathya-kendra\//, '/').replace(/^\/+/, '');
+        node.properties.src = `${base}${normalized}`;
+      }
     });
   };
 }
-

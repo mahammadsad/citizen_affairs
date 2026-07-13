@@ -1,10 +1,11 @@
 ---
-import { BRAND, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
+import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
 import Icon from './Icon.astro';
 import type { Locale } from '../i18n';
 import { localizedPath, ui } from '../i18n';
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
+const brandName = getBrandName(locale);
 const brandTagline = getBrandTagline(locale);
 const footerLinks = [
   { icon:'updates', label:t.latestNav, href:localizedPath(locale,'articles') },
@@ -26,15 +27,15 @@ const policies = [
 <footer class="site-footer" id="contact">
   <div class="container footer-grid">
     <section class="footer-intro">
-      <a class="footer-brand" href={localizedPath(locale)}><img src={SITE.logo} alt={`${BRAND.brandName} ${t.logo}`} width="48" height="48"/><span><strong>{BRAND.brandName}</strong><small>{brandTagline}</small></span></a>
-      <p>{t.disclaimerShort}</p><span class="demo-badge">{t.demoVersion}</span>
-      <div class="contact-card"><div><small>{t.contactUs}</small><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></div><button id="copyEmail" data-email={BRAND.contactEmail} data-copy={t.copyEmail} data-copied={t.copied} aria-label={t.copyEmail}><Icon name="copy"/><span>{t.copyEmail}</span></button></div>
+      <a class="footer-brand" href={localizedPath(locale)}><img src={SITE.logo} alt={`${brandName} ${t.logo}`} width="48" height="48"/><span><strong>{brandName}</strong><small>{brandTagline}</small></span></a>
+      <p>{t.disclaimerShort}</p>
+      <div class="contact-card"><div><small>{t.contactUs}</small><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></div><button id="copyEmail" data-email={BRAND.contactEmail} data-copy={t.copyEmail} data-copied={t.copied} aria-label={t.copyEmail}><Icon name="copy"/><span aria-live="polite">{t.copyEmail}</span></button></div>
     </section>
     <section><h3>{t.exploreFooter}</h3><nav class="footer-links">{footerLinks.map(link=><a href={link.href}><Icon name={link.icon}/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
     <section><h3>{t.trustPolicies}</h3><nav class="footer-links">{policies.map(link=><a href={link.href}><Icon name="check"/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
     <section><h3>{t.community}</h3><div class="community-cards"><a class="telegram" href={SOCIALS.telegram} target="_blank" rel="noopener"><Icon name="telegram"/><span><strong>Telegram</strong><small>{t.fastUpdateAlerts}</small></span><Icon name="external"/></a><a class="whatsapp" href={SOCIALS.whatsapp} target="_blank" rel="noopener"><Icon name="whatsapp"/><span><strong>WhatsApp</strong><small>{t.channelUpdates}</small></span><Icon name="external"/></a><a class="mcq" href={SOCIALS.telegramMCQ} target="_blank" rel="noopener"><Icon name="group"/><span><strong>MCQ Group</strong><small>{t.practiceCommunity}</small></span><Icon name="external"/></a></div></section>
   </div>
-  <div class="container footer-bottom"><span>© 2026 {BRAND.brandName}</span><span>{t.independentService} · {t.notGovernmentWebsite}</span><nav><a href={localizedPath(locale,'privacy')}>{t.privacy}</a><a href={localizedPath(locale,'terms')}>{t.terms}</a><a href="#languageTrigger" data-footer-language>{t.language}</a><a href="#top">↑ {t.backToTop}</a></nav></div>
+  <div class="container footer-bottom"><span>© 2026 {brandName}</span><span>{t.independentService} · {t.notGovernmentWebsite}</span><nav><a href={localizedPath(locale,'privacy')}>{t.privacy}</a><a href={localizedPath(locale,'terms')}>{t.terms}</a><a href="#languageTrigger" data-footer-language>{t.language}</a><a href="#top">↑ {t.backToTop}</a></nav></div>
 </footer>
 <script>
   const copy=document.getElementById('copyEmail');copy?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copy.dataset.email||'');const text=copy.querySelector('span');if(text){text.textContent=copy.dataset.copied||'Copied';setTimeout(()=>text.textContent=copy.dataset.copy||'Copy email',1600)}}catch{}});

@@ -5,15 +5,13 @@ import { localizedPath, type Locale, ui } from '../i18n';
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
 const articles = (await getLocalizedArticles(locale)).slice(0, 8);
-const demos = [t.tickerJobs, t.tickerSchemes, t.tickerExams];
-const items = articles.length
-  ? articles.map((article) => ({ title: article.data.title, href: localizedPath(locale, `articles/${article.data.urlSlug}`) }))
-  : demos.map((title) => ({ title, href: localizedPath(locale, 'articles') }));
+const items = articles.map((article) => ({ title: article.data.title, href: localizedPath(locale, `articles/${article.data.urlSlug}`) }));
 const loop = [...items, ...items];
 ---
 <div class="latest-ticker" aria-label={t.latestTicker}>
   <div class="ticker-label"><span class="ticker-live" aria-hidden="true"></span>{t.latestTicker}</div>
-  <div class="ticker-window">
+  <div class="ticker-window" aria-live="off">
+    {!items.length && <p class="ticker-empty">{t.tickerEmpty}</p>}
     <div class="ticker-loop">
       {loop.map((item, index) => <a href={item.href} aria-hidden={index >= items.length ? 'true' : undefined} tabindex={index >= items.length ? -1 : undefined}>{item.title}<span aria-hidden="true">•</span></a>)}
     </div>
@@ -24,6 +22,7 @@ const loop = [...items, ...items];
   .ticker-label{position:relative;z-index:2;flex:none;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#113b60;font-size:.78rem;font-weight:800;white-space:nowrap}
   .ticker-live{width:8px;height:8px;border-radius:50%;background:#45d071;box-shadow:0 0 0 4px rgba(69,208,113,.18)}
   .ticker-window{display:flex;align-items:center;overflow:hidden;flex:1}
+  .ticker-empty{padding-inline:1rem;color:#d6e6f3;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .ticker-loop{display:flex;align-items:center;width:max-content;animation:ticker-move 48s linear infinite;will-change:transform}
   .ticker-loop:hover,.ticker-loop:focus-within{animation-play-state:paused}
   .ticker-loop a{display:flex;align-items:center;gap:1.4rem;min-height:42px;padding-left:1.4rem;color:#e8f2fa;font-size:.84rem;white-space:nowrap;text-decoration:none}

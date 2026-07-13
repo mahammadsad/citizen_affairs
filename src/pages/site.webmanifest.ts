@@ -1,10 +1,10 @@
-import { BRAND, SITE } from '@utils/constants';
+import { BRAND, getBrandName, getBrandTagline, SITE } from '@utils/constants';
 
 export function GET() {
   return new Response(JSON.stringify({
-    name: BRAND.brandName,
+    name: getBrandName('en'),
     short_name: BRAND.brandShortName,
-    description: BRAND.brandTagline,
+    description: getBrandTagline('en'),
     lang: 'en',
     start_url: SITE.basePath,
     scope: SITE.basePath,

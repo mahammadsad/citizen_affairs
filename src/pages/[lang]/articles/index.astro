@@ -76,11 +76,11 @@ const alternateUrls = Object.fromEntries(locales.map(lang => [lang, `${SITE.url}
         </div>
       </details>
       <div class="listing-toolbar">
-        <span id="resultCount" data-template={t.updateCount} data-intl={dateLocale(locale)}>{formatUpdateCount(locale, articles.length)}</span>
+        <span id="resultCount" aria-live="polite" data-template={t.updateCount} data-intl={dateLocale(locale)}>{formatUpdateCount(locale, articles.length)}</span>
         <a href={localizedPath(locale, 'deadlines')}>{t.deadlines} →</a>
       </div>
       <div class="articles-grid" id="articleGrid">{articles.map((article) => <ArticleCard {article} {locale} />)}</div>
-      <p id="filteredEmpty" class="empty-state" hidden={articles.length > 0}>{t.noArticles}</p>
+      <p id="filteredEmpty" class="empty-state" aria-live="polite" hidden={articles.length > 0}>{t.noArticles}</p>
     </div>
   </section>
 </MainLayout>

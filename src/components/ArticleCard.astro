@@ -5,6 +5,7 @@ import { deadlineLabel, deadlineState } from '@lib/deadline';
 import { normalizeRegionLabel, regionName } from '@lib/regions';
 import Icon from './Icon.astro';
 import { dateLocale, localizedPath, type Locale, ui, verificationLabels } from '../i18n';
+import { resolveAssetPath } from '@utils/constants';
 
 export interface Props { article: CollectionEntry<'articles'>; locale: Locale; compact?: boolean; }
 const { article, locale, compact = false } = Astro.props;
@@ -19,9 +20,10 @@ const normalizedLevel = article.data.governmentLevel === 'central' ? 'central' :
 const stateId = article.data.state || (article.data.governmentLevel === 'west-bengal' ? 'west-bengal' : normalizeRegionLabel(article.data.regionLabel));
 const localizedRegion = regionName(stateId, locale);
 const levelLabel = normalizedLevel === 'central' ? t.centralGovernment : localizedRegion || article.data.regionLabel || (normalizedLevel === 'state' ? t.stateGovernments : '');
+const featuredImage = article.data.featuredImage ? resolveAssetPath(article.data.featuredImage) : undefined;
 ---
 <a href={localizedPath(locale, `articles/${article.data.urlSlug}`)} class:list={['article-card', { compact }]} data-category={article.data.category} data-level={normalizedLevel} data-state={stateId} data-status={state} data-verification={article.data.verificationStatus} data-date={displayDate.toISOString()} data-deadline={article.data.deadline?.toISOString() || ''}>
-  <div class="article-media">{article.data.featuredImage ? <img src={article.data.featuredImage} alt={article.data.featuredImageAlt || article.data.title} width="640" height="360" loading="lazy" decoding="async" /> : <div class="article-fallback"><Icon name={fallbackIcon[article.data.category] || 'updates'} size={48} /></div>} {levelLabel && <span class="level-label">{levelLabel}</span>}</div>
+  <div class="article-media">{featuredImage ? <img src={featuredImage} alt={article.data.featuredImageAlt || article.data.title} width="640" height="360" loading="lazy" decoding="async" /> : <div class="article-fallback"><Icon name={fallbackIcon[article.data.category] || 'updates'} size={48} /></div>} {levelLabel && <span class="level-label">{levelLabel}</span>}</div>
   <div class="article-card-body"><div class="article-card-meta"><span class="article-card-category">{categoryLabel}</span><span class={`verification-dot status-${article.data.verificationStatus}`}>{verificationLabels[locale][article.data.verificationStatus]}</span></div><h3>{article.data.title}</h3><p>{article.data.description}</p><div class="article-dates"><span>{article.data.updated ? t.updated : t.published}: {date}</span>{article.data.deadline && <span class={`deadline status-${state}`}>{deadlineLabel(state, locale)} · {new Intl.DateTimeFormat(dateLocale(locale), { day:'numeric', month:'short', year:'numeric' }).format(article.data.deadline)}</span>}</div><span class="article-link">{t.readMore}<Icon name="arrow" size={18} /></span></div>
 </a>
 <style>

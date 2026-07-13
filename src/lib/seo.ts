@@ -1,4 +1,4 @@
-import { BRAND, SITE } from '@utils/constants';
+import { getBrandName, SITE } from '@utils/constants';
 
 export interface SEOMeta {
   title: string;
@@ -19,6 +19,10 @@ export interface ArticleSchema {
   image?: string;
   datePublished: string;
   dateModified?: string;
+  mainEntityOfPage: {
+    '@type': string;
+    '@id': string;
+  };
   author: {
     '@type': string;
     name: string;
@@ -167,13 +171,17 @@ export function generateArticleSchema(article: {
     image: article.image,
     datePublished: article.datePublished.toISOString(),
     dateModified: article.dateModified?.toISOString() || article.datePublished.toISOString(),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': article.url,
+    },
     author: {
       '@type': 'Person',
       name: article.author,
     },
     publisher: {
       '@type': 'Organization',
-      name: BRAND.brandName,
+      name: getBrandName('en'),
       logo: {
         '@type': 'ImageObject',
         url: toAbsoluteUrl(SITE.logo, SITE.url),

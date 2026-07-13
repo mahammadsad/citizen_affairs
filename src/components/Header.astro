@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { categoryName } from '@lib/content';
-import { BRAND, getBrandTagline, SITE } from '@utils/constants';
+import { getBrandName, getBrandTagline, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
 import LatestTicker from './LatestTicker.astro';
 import Icon from './Icon.astro';
@@ -10,6 +10,7 @@ import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
 interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
 const { locale, alternateUrls = {} } = Astro.props;
 const t = ui(locale);
+const brandName = getBrandName(locale);
 const brandTagline = getBrandTagline(locale);
 const pathname = Astro.url.pathname;
 const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
@@ -31,9 +32,9 @@ const categoryEntries = (await getCollection('categories')).sort((a, b) => categ
 ---
 <header class="site-header">
   <nav class="navbar container" aria-label={t.primaryNav}>
-    <a href={localizedPath(locale)} class="brand" aria-label={`${BRAND.brandName} — ${t.home}`}>
-      <img src={SITE.logo} alt={`${BRAND.brandName} ${t.logo}`} class="brand-logo" width="46" height="46" />
-      <span class="brand-text"><span class="brand-name">{BRAND.brandName}</span><span class="brand-tagline">{brandTagline}</span></span>
+    <a href={localizedPath(locale)} class="brand" aria-label={`${brandName} — ${t.home}`}>
+      <img src={SITE.logo} alt={`${brandName} ${t.logo}`} class="brand-logo" width="46" height="46" />
+      <span class="brand-text"><span class="brand-name">{brandName}</span><span class="brand-tagline">{brandTagline}</span></span>
     </a>
     <ul class="nav-links">
       {desktopNav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
@@ -60,8 +61,8 @@ const categoryEntries = (await getCollection('categories')).sort((a, b) => categ
 <nav class="mobile-drawer" id="mobileMenu" aria-label={t.mobileNav} aria-hidden="true" hidden>
   <div class="drawer-head">
     <a href={localizedPath(locale)} class="drawer-brand">
-      <img src={SITE.logo} alt={`${BRAND.brandName} ${t.logo}`} width="42" height="42" />
-      <span><strong>{BRAND.brandName}</strong><small>{brandTagline}</small></span>
+      <img src={SITE.logo} alt={`${brandName} ${t.logo}`} width="42" height="42" />
+      <span><strong>{brandName}</strong><small>{brandTagline}</small></span>
     </a>
     <button class="drawer-close" id="menuClose" type="button" aria-label={t.closeMenu}><span aria-hidden="true">×</span></button>
   </div>
