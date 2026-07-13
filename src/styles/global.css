@@ -99,7 +99,6 @@ body {
   color: var(--color-text);
   background: var(--color-bg);
   transition: background var(--transition-base), color var(--transition-base);
-  overflow-x: hidden;
 }
 
 html[lang="hi"] body { font-family: "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif; }
@@ -160,6 +159,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
+select:focus-visible,
 summary:focus-visible {
   outline: 3px solid var(--color-orange);
   outline-offset: 3px;

@@ -1,9 +1,9 @@
 ---
 import '../styles/global.css';
 import '../styles/components.css';
-import { BRAND, SITE } from '@utils/constants';
+import { BRAND, getBrandTagline, SITE } from '@utils/constants';
 import { toAbsoluteUrl } from '@lib/seo';
-import { locales, type Locale } from '../i18n';
+import { locales, type Locale, ui } from '../i18n';
 
 export interface Props {
   title?: string;
@@ -29,7 +29,7 @@ const {
 
 const fullTitle = title === BRAND.brandName ? title : `${title} | ${BRAND.brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
-const ogImageAlt = `${BRAND.brandName} — ${BRAND.brandTagline}`;
+const ogImageAlt = `${BRAND.brandName} — ${getBrandTagline(locale)}`;
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -55,6 +55,7 @@ const organizationSchema = {
 };
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
+const t = ui(locale);
 ---
 <!doctype html>
 <html lang={locale} data-theme="light">
@@ -97,7 +98,7 @@ const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN'
     {extraSchemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
   <body id="top">
-    <a href="#main-content" class="skip-link">{locale === 'bn' ? 'মূল কনটেন্টে যান' : locale === 'hi' ? 'मुख्य सामग्री पर जाएँ' : 'Skip to main content'}</a>
+    <a href="#main-content" class="skip-link">{t.skipToContent}</a>
     <slot />
   </body>
 </html>

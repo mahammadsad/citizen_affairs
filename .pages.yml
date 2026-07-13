@@ -50,7 +50,12 @@ content:
             default: under-verification
             description: Select officially-confirmed only after checking an official government source.
             options:
-              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+              values:
+                - { value: officially-confirmed, label: "Officially Confirmed" }
+                - { value: under-verification, label: "Under Verification" }
+                - { value: corrected, label: "Corrected" }
+                - { value: withdrawn, label: "Withdrawn" }
+                - { value: closed, label: "Closed" }
           - { name: sourceUrls, label: Official source URLs, type: string, list: { min: 1 }, required: true, description: Add at least one official government source. }
           - { name: officialNoticeUrl, label: Official notice URL, type: string, required: false }
           - { name: applicationUrl, label: Application or service URL, type: string, required: false }
@@ -66,8 +71,53 @@ content:
             type: select
             required: false
             options:
-              values: [central, west-bengal, other-state]
-          - { name: regionLabel, label: State or region label, type: string, required: false }
+              values:
+                - { value: central, label: "Central Government" }
+                - { value: state, label: "State Government" }
+          - name: state
+            label: State or Union Territory
+            type: select
+            required: false
+            description: Select this only for State Government information.
+            options:
+              values:
+                - { value: andhra-pradesh, label: "Andhra Pradesh" }
+                - { value: arunachal-pradesh, label: "Arunachal Pradesh" }
+                - { value: assam, label: "Assam" }
+                - { value: bihar, label: "Bihar" }
+                - { value: chhattisgarh, label: "Chhattisgarh" }
+                - { value: goa, label: "Goa" }
+                - { value: gujarat, label: "Gujarat" }
+                - { value: haryana, label: "Haryana" }
+                - { value: himachal-pradesh, label: "Himachal Pradesh" }
+                - { value: jharkhand, label: "Jharkhand" }
+                - { value: karnataka, label: "Karnataka" }
+                - { value: kerala, label: "Kerala" }
+                - { value: madhya-pradesh, label: "Madhya Pradesh" }
+                - { value: maharashtra, label: "Maharashtra" }
+                - { value: manipur, label: "Manipur" }
+                - { value: meghalaya, label: "Meghalaya" }
+                - { value: mizoram, label: "Mizoram" }
+                - { value: nagaland, label: "Nagaland" }
+                - { value: odisha, label: "Odisha" }
+                - { value: punjab, label: "Punjab" }
+                - { value: rajasthan, label: "Rajasthan" }
+                - { value: sikkim, label: "Sikkim" }
+                - { value: tamil-nadu, label: "Tamil Nadu" }
+                - { value: telangana, label: "Telangana" }
+                - { value: tripura, label: "Tripura" }
+                - { value: uttar-pradesh, label: "Uttar Pradesh" }
+                - { value: uttarakhand, label: "Uttarakhand" }
+                - { value: west-bengal, label: "West Bengal" }
+                - { value: andaman-and-nicobar-islands, label: "Andaman and Nicobar Islands" }
+                - { value: chandigarh, label: "Chandigarh" }
+                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "Dadra and Nagar Haveli and Daman and Diu" }
+                - { value: delhi, label: "Delhi" }
+                - { value: jammu-and-kashmir, label: "Jammu and Kashmir" }
+                - { value: ladakh, label: "Ladakh" }
+                - { value: lakshadweep, label: "Lakshadweep" }
+                - { value: puducherry, label: "Puducherry" }
+          - { name: regionLabel, label: Specific region label, type: string, required: false, description: Optional. Use only when the information is for a region smaller than a state. }
           - { name: qualification, label: Eligibility or qualification, type: string, list: true, required: false }
           - { name: quickSummary, label: Quick summary points, type: string, list: true, required: false }
           - { name: importantDates, label: Important dates, type: string, list: true, required: false }
@@ -125,7 +175,12 @@ content:
             default: under-verification
             description: Official source যাচাই করার পরেই officially-confirmed নির্বাচন করুন।
             options:
-              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+              values:
+                - { value: officially-confirmed, label: "অফিসিয়ালভাবে নিশ্চিত" }
+                - { value: under-verification, label: "যাচাই চলছে" }
+                - { value: corrected, label: "সংশোধিত" }
+                - { value: withdrawn, label: "প্রত্যাহার করা হয়েছে" }
+                - { value: closed, label: "বন্ধ" }
           - { name: sourceUrls, label: অফিসিয়াল তথ্যসূত্র, type: string, list: { min: 1 }, required: true, description: অন্তত একটি official government source যোগ করুন। }
           - { name: officialNoticeUrl, label: অফিসিয়াল নোটিশ URL, type: string, required: false }
           - { name: applicationUrl, label: আবেদন বা পরিষেবা URL, type: string, required: false }
@@ -141,8 +196,53 @@ content:
             type: select
             required: false
             options:
-              values: [central, west-bengal, other-state]
-          - { name: regionLabel, label: রাজ্য বা অঞ্চল, type: string, required: false }
+              values:
+                - { value: central, label: "কেন্দ্রীয় সরকার" }
+                - { value: state, label: "রাজ্য সরকার" }
+          - name: state
+            label: রাজ্য বা কেন্দ্রশাসিত অঞ্চল
+            type: select
+            required: false
+            description: রাজ্য সরকারের তথ্য হলে এটি নির্বাচন করুন।
+            options:
+              values:
+                - { value: andhra-pradesh, label: "অন্ধ্রপ্রদেশ" }
+                - { value: arunachal-pradesh, label: "অরুণাচল প্রদেশ" }
+                - { value: assam, label: "অসম" }
+                - { value: bihar, label: "বিহার" }
+                - { value: chhattisgarh, label: "ছত্তিশগড়" }
+                - { value: goa, label: "গোয়া" }
+                - { value: gujarat, label: "গুজরাট" }
+                - { value: haryana, label: "হরিয়ানা" }
+                - { value: himachal-pradesh, label: "হিমাচল প্রদেশ" }
+                - { value: jharkhand, label: "ঝাড়খণ্ড" }
+                - { value: karnataka, label: "কর্ণাটক" }
+                - { value: kerala, label: "কেরালা" }
+                - { value: madhya-pradesh, label: "মধ্যপ্রদেশ" }
+                - { value: maharashtra, label: "মহারাষ্ট্র" }
+                - { value: manipur, label: "মণিপুর" }
+                - { value: meghalaya, label: "মেঘালয়" }
+                - { value: mizoram, label: "মিজোরাম" }
+                - { value: nagaland, label: "নাগাল্যান্ড" }
+                - { value: odisha, label: "ওডিশা" }
+                - { value: punjab, label: "পাঞ্জাব" }
+                - { value: rajasthan, label: "রাজস্থান" }
+                - { value: sikkim, label: "সিকিম" }
+                - { value: tamil-nadu, label: "তামিলনাড়ু" }
+                - { value: telangana, label: "তেলেঙ্গানা" }
+                - { value: tripura, label: "ত্রিপুরা" }
+                - { value: uttar-pradesh, label: "উত্তরপ্রদেশ" }
+                - { value: uttarakhand, label: "উত্তরাখণ্ড" }
+                - { value: west-bengal, label: "পশ্চিমবঙ্গ" }
+                - { value: andaman-and-nicobar-islands, label: "আন্দামান ও নিকোবর দ্বীপপুঞ্জ" }
+                - { value: chandigarh, label: "চণ্ডীগড়" }
+                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "দাদরা ও নগর হাভেলি এবং দমন ও দিউ" }
+                - { value: delhi, label: "দিল্লি" }
+                - { value: jammu-and-kashmir, label: "জম্মু ও কাশ্মীর" }
+                - { value: ladakh, label: "লাদাখ" }
+                - { value: lakshadweep, label: "লক্ষদ্বীপ" }
+                - { value: puducherry, label: "পুদুচেরি" }
+          - { name: regionLabel, label: নির্দিষ্ট অঞ্চলের নাম, type: string, required: false, description: তথ্যটি রাজ্যের চেয়ে ছোট কোনো অঞ্চলের জন্য হলে ব্যবহার করুন। }
           - { name: qualification, label: যোগ্যতা, type: string, list: true, required: false }
           - { name: quickSummary, label: সংক্ষিপ্ত সারাংশের পয়েন্ট, type: string, list: true, required: false }
           - { name: importantDates, label: গুরুত্বপূর্ণ তারিখ, type: string, list: true, required: false }
@@ -199,7 +299,12 @@ content:
             required: true
             default: under-verification
             options:
-              values: [officially-confirmed, under-verification, corrected, withdrawn, closed]
+              values:
+                - { value: officially-confirmed, label: "आधिकारिक रूप से पुष्टि" }
+                - { value: under-verification, label: "सत्यापन जारी" }
+                - { value: corrected, label: "सुधारा गया" }
+                - { value: withdrawn, label: "वापस लिया गया" }
+                - { value: closed, label: "बंद" }
           - { name: sourceUrls, label: आधिकारिक स्रोत URL, type: string, list: { min: 1 }, required: true }
           - { name: officialNoticeUrl, label: आधिकारिक सूचना URL, type: string, required: false }
           - { name: applicationUrl, label: आवेदन या सेवा URL, type: string, required: false }
@@ -215,8 +320,53 @@ content:
             type: select
             required: false
             options:
-              values: [central, west-bengal, other-state]
-          - { name: regionLabel, label: राज्य या क्षेत्र, type: string, required: false }
+              values:
+                - { value: central, label: "केंद्र सरकार" }
+                - { value: state, label: "राज्य सरकार" }
+          - name: state
+            label: राज्य या केंद्र शासित प्रदेश
+            type: select
+            required: false
+            description: राज्य सरकार की जानकारी होने पर इसे चुनें।
+            options:
+              values:
+                - { value: andhra-pradesh, label: "आंध्र प्रदेश" }
+                - { value: arunachal-pradesh, label: "अरुणाचल प्रदेश" }
+                - { value: assam, label: "असम" }
+                - { value: bihar, label: "बिहार" }
+                - { value: chhattisgarh, label: "छत्तीसगढ़" }
+                - { value: goa, label: "गोवा" }
+                - { value: gujarat, label: "गुजरात" }
+                - { value: haryana, label: "हरियाणा" }
+                - { value: himachal-pradesh, label: "हिमाचल प्रदेश" }
+                - { value: jharkhand, label: "झारखंड" }
+                - { value: karnataka, label: "कर्नाटक" }
+                - { value: kerala, label: "केरल" }
+                - { value: madhya-pradesh, label: "मध्य प्रदेश" }
+                - { value: maharashtra, label: "महाराष्ट्र" }
+                - { value: manipur, label: "मणिपुर" }
+                - { value: meghalaya, label: "मेघालय" }
+                - { value: mizoram, label: "मिज़ोरम" }
+                - { value: nagaland, label: "नागालैंड" }
+                - { value: odisha, label: "ओडिशा" }
+                - { value: punjab, label: "पंजाब" }
+                - { value: rajasthan, label: "राजस्थान" }
+                - { value: sikkim, label: "सिक्किम" }
+                - { value: tamil-nadu, label: "तमिलनाडु" }
+                - { value: telangana, label: "तेलंगाना" }
+                - { value: tripura, label: "त्रिपुरा" }
+                - { value: uttar-pradesh, label: "उत्तर प्रदेश" }
+                - { value: uttarakhand, label: "उत्तराखंड" }
+                - { value: west-bengal, label: "पश्चिम बंगाल" }
+                - { value: andaman-and-nicobar-islands, label: "अंडमान और निकोबार द्वीपसमूह" }
+                - { value: chandigarh, label: "चंडीगढ़" }
+                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "दादरा और नगर हवेली और दमन और दीव" }
+                - { value: delhi, label: "दिल्ली" }
+                - { value: jammu-and-kashmir, label: "जम्मू और कश्मीर" }
+                - { value: ladakh, label: "लद्दाख" }
+                - { value: lakshadweep, label: "लक्षद्वीप" }
+                - { value: puducherry, label: "पुदुचेरी" }
+          - { name: regionLabel, label: विशेष क्षेत्र का नाम, type: string, required: false, description: राज्य से छोटे किसी क्षेत्र के लिए ही उपयोग करें। }
           - { name: qualification, label: पात्रता, type: string, list: true, required: false }
           - { name: quickSummary, label: त्वरित सारांश बिंदु, type: string, list: true, required: false }
           - { name: importantDates, label: महत्वपूर्ण तिथियाँ, type: string, list: true, required: false }

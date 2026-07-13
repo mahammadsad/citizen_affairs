@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { REGION_IDS } from '../lib/regions';
 
 const optionalDate = z.preprocess(
   (value) => value === '' || value === null ? undefined : value,
@@ -31,7 +32,8 @@ const articlesCollection = defineCollection({
     applicationUrl: z.string().url().optional(),
     lastVerified: optionalDate,
     deadline: optionalDate,
-    governmentLevel: z.enum(['central', 'west-bengal', 'other-state']).optional(),
+    governmentLevel: z.enum(['central', 'state', 'west-bengal', 'other-state']).optional(),
+    state: z.enum(REGION_IDS).optional(),
     regionLabel: z.string().optional(),
     qualification: z.array(z.string()).default([]),
     quickSummary: z.array(z.string()).default([]),

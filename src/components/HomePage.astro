@@ -5,8 +5,8 @@ import Icon from './Icon.astro';
 import { getCollection } from 'astro:content';
 import { getLocalizedArticles, getUpcomingDeadlines, categoryDescription, categoryName } from '@lib/content';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
-import { BRAND, SITE, SOCIALS } from '@utils/constants';
-import { locales, localizedPath, type Locale, ui, verificationLabels, dateLocale } from '../i18n';
+import { SITE, SOCIALS } from '@utils/constants';
+import { formatUpdateCount, locales, localizedPath, type Locale, ui, verificationLabels, dateLocale } from '../i18n';
 
 const { locale, isRoot = false } = Astro.props as { locale: Locale; isRoot?: boolean };
 const t = ui(locale);
@@ -18,36 +18,37 @@ const featured = allArticles.find((article) => article.data.featured) || allArti
 const canonical = isRoot ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
 const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, lang === 'en' && isRoot ? `${SITE.url}/` : `${SITE.url}/${lang}/`])) as Record<Locale, string>;
 const iconMap: Record<string, string> = { jobs: 'briefcase', projects: 'schemes', exams: 'exams', notices: 'notices', affairs: 'services', materials: 'education' };
-const popularSearches = ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'West Bengal Jobs', 'Admit Cards', 'Results'];
+const popularSearches = t.popularSearchTerms;
 const popularCategories = categories.filter((category) => ['projects', 'affairs', 'materials'].includes(category.id));
+const featuredCategory = featured ? categories.find((category) => category.id === featured.data.category) : undefined;
 const formatter = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'short', day: 'numeric' });
 ---
-<MainLayout title={BRAND.brandName} description={t.heroDescription} {locale} {canonical} {alternateUrls}>
+<MainLayout title={t.nationwide} description={t.heroDescription} {locale} {canonical} {alternateUrls}>
   <section class="home-hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="hero-eyebrow"><i></i>{t.independent}</span>
+        <span class="hero-eyebrow"><i></i>{t.nationwide}</span>
         <h1>{t.heroTitle}</h1>
         <p>{t.heroDescription}</p>
         <form class="hero-search" id="heroSearch"><Icon name="search" /><input id="heroSearchInput" type="search" placeholder={t.searchPlaceholder} aria-label={t.search} /><button type="submit">{t.search}</button></form>
-        <div class="popular-chips" aria-label="Popular searches">{popularSearches.map((term) => <button type="button" data-search-term={term}>{term}</button>)}</div>
+        <div class="popular-chips" aria-label={t.popularSearches}>{popularSearches.map((term) => <button type="button" data-search-term={term}>{term}</button>)}</div>
         <div class="hero-actions"><a class="btn btn-primary" href={localizedPath(locale, 'articles')}>{t.explore}<Icon name="arrow" /></a><a class="btn btn-secondary" href={SOCIALS.telegram} target="_blank" rel="noopener">{t.joinTelegram}<Icon name="external" /></a></div>
         <div class="trust-row"><span><Icon name="check" />{t.verifiedSources}</span><span><Icon name="globe" />{t.threeLanguages}</span><span><strong>₹0</strong>{t.freeAccess}</span><span><Icon name="clock" />{t.regularlyUpdated}</span></div>
       </div>
       <aside class="featured-update">
         {featured ? <>
-          <div class="featured-image">{featured.data.featuredImage ? <img src={featured.data.featuredImage} alt={featured.data.featuredImageAlt || featured.data.title} width="640" height="360" /> : <div class="image-fallback"><Icon name={iconMap[featured.data.category] || 'updates'} size={58} /></div>}<span>{featured.data.featured ? 'Featured' : t.latest}</span></div>
-          <div class="featured-body"><div class="featured-badges"><span>{featured.data.category}</span><span>{verificationLabels[locale][featured.data.verificationStatus]}</span></div><h2>{featured.data.title}</h2><p>{featured.data.description}</p><dl>{featured.data.deadline && <div><dt>{t.deadlines}</dt><dd>{formatter.format(featured.data.deadline)} · {deadlineLabel(deadlineState(featured.data.deadline), locale)}</dd></div>}<div><dt>{t.updated}</dt><dd>{formatter.format(featured.data.updated || featured.data.date)}</dd></div></dl><div class="featured-actions"><a class="btn btn-primary btn-sm" href={localizedPath(locale, `articles/${featured.data.urlSlug}`)}>{t.readMore}</a>{featured.data.applicationUrl && <a class="btn btn-secondary btn-sm" href={featured.data.applicationUrl} target="_blank" rel="noopener">{t.apply}</a>}</div></div>
-        </> : <div class="demo-feature"><span>DEMO</span><div class="image-fallback"><Icon name="updates" size={64} /></div><h2>{locale === 'bn' ? 'প্রকাশিত Featured update এখানে দেখা যাবে' : locale === 'hi' ? 'प्रकाशित Featured update यहाँ दिखाई देगा' : 'A published featured update will appear here'}</h2><p>{locale === 'bn' ? 'CMS থেকে verified article প্রকাশ করলে এই card স্বয়ংক্রিয়ভাবে আপডেট হবে।' : locale === 'hi' ? 'CMS से सत्यापित लेख प्रकाशित करने पर यह कार्ड अपने आप अपडेट होगा।' : 'Publish a verified article through the CMS and this card updates automatically.'}</p></div>}
+          <div class="featured-image">{featured.data.featuredImage ? <img src={featured.data.featuredImage} alt={featured.data.featuredImageAlt || featured.data.title} width="640" height="360" /> : <div class="image-fallback"><Icon name={iconMap[featured.data.category] || 'updates'} size={58} /></div>}<span>{featured.data.featured ? t.featured : t.latest}</span></div>
+          <div class="featured-body"><div class="featured-badges"><span>{featuredCategory ? categoryName(featuredCategory, locale) : featured.data.category}</span><span>{verificationLabels[locale][featured.data.verificationStatus]}</span></div><h2>{featured.data.title}</h2><p>{featured.data.description}</p><dl>{featured.data.deadline && <div><dt>{t.deadline}</dt><dd>{formatter.format(featured.data.deadline)} · {deadlineLabel(deadlineState(featured.data.deadline), locale)}</dd></div>}<div><dt>{t.updated}</dt><dd>{formatter.format(featured.data.updated || featured.data.date)}</dd></div></dl><div class="featured-actions"><a class="btn btn-primary btn-sm" href={localizedPath(locale, `articles/${featured.data.urlSlug}`)}>{t.readMore}</a>{featured.data.applicationUrl && <a class="btn btn-secondary btn-sm" href={featured.data.applicationUrl} target="_blank" rel="noopener">{t.apply}</a>}</div></div>
+        </> : <div class="demo-feature"><span>{t.demo}</span><div class="image-fallback"><Icon name="updates" size={64} /></div><h2>{t.demoFeatureTitle}</h2><p>{t.demoFeatureBody}</p></div>}
       </aside>
     </div>
   </section>
 
-  <section class="section" id="categories"><div class="container"><div class="section-head"><span class="eyebrow">{t.categories}</span><h2>{t.whatWeCover}</h2></div><div class="category-grid">{categories.map((category) => { const count = allArticles.filter((article) => article.data.category === category.id).length; return <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}><span class="category-icon"><Icon name={iconMap[category.id] || 'book'} size={26} /></span><div><h3>{categoryName(category, locale)}</h3><p>{categoryDescription(category, locale)}</p><small>{count} {t.articleCount}</small></div><Icon name="arrow" /></a>; })}</div></div></section>
+  <section class="section" id="categories"><div class="container"><div class="section-head"><span class="eyebrow">{t.categories}</span><h2>{t.whatWeCover}</h2></div><div class="category-grid">{categories.map((category) => { const count = allArticles.filter((article) => article.data.category === category.id).length; return <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}><span class="category-icon"><Icon name={iconMap[category.id] || 'book'} size={26} /></span><div><h3>{categoryName(category, locale)}</h3><p>{categoryDescription(category, locale)}</p><small>{formatUpdateCount(locale, count)}</small></div><Icon name="arrow" /></a>; })}</div></div></section>
 
-  <section class="section section-alt"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow">{t.latest}</span><h2>{t.latest}</h2><p>{t.latestDescription}</p></div><a href={localizedPath(locale, 'articles')}>{t.viewAll}<Icon name="arrow" /></a></div>{latestArticles.length ? <div class="articles-grid">{latestArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <div class="demo-empty"><strong>DEMO</strong><p>{locale === 'bn' ? 'প্রকাশিত আপডেটগুলো এখানে দেখা যাবে।' : locale === 'hi' ? 'प्रकाशित अपडेट यहाँ दिखाई देंगे।' : 'Published updates will appear here.'}</p></div>}</div></section>
+  <section class="section section-alt"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow">{t.latest}</span><h2>{t.latest}</h2><p>{t.latestDescription}</p></div><a href={localizedPath(locale, 'articles')}>{t.viewAll}<Icon name="arrow" /></a></div>{latestArticles.length ? <div class="articles-grid">{latestArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <div class="demo-empty"><strong>{t.demo}</strong><p>{t.demoPublished}</p></div>}</div></section>
 
-  <section class="section"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow"><Icon name="clock" />{t.deadlines}</span><h2>{t.deadlines}</h2></div><a href={localizedPath(locale, 'deadlines')}>{t.viewAll}<Icon name="arrow" /></a></div>{upcoming.length ? <div class="deadline-grid">{upcoming.map((article) => <ArticleCard {article} {locale} compact />)}</div> : <div class="demo-empty"><strong>DEMO</strong><p>{locale === 'bn' ? 'Deadline-সহ article প্রকাশ করলে নিকটতম সময়সীমা এখানে আসবে।' : locale === 'hi' ? 'अंतिम तिथि वाला लेख प्रकाशित होने पर निकटतम तारीखें यहाँ आएँगी।' : 'Publish articles with deadlines and the nearest dates will appear here.'}</p></div>}</div></section>
+  <section class="section"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow"><Icon name="clock" />{t.deadlines}</span><h2>{t.deadlines}</h2></div><a href={localizedPath(locale, 'deadlines')}>{t.viewAll}<Icon name="arrow" /></a></div>{upcoming.length ? <div class="deadline-grid">{upcoming.map((article) => <ArticleCard {article} {locale} compact />)}</div> : <div class="demo-empty"><strong>{t.demo}</strong><p>{t.demoDeadlines}</p></div>}</div></section>
 
   <section class="section section-alt"><div class="container"><div class="section-head"><span class="eyebrow">{t.services}</span><h2>{t.popularServices}</h2></div><div class="service-grid">{popularCategories.map((category) => <a href={localizedPath(locale, `categories/${category.id}`)}><Icon name={iconMap[category.id] || 'services'} size={30} /><div><h3>{categoryName(category, locale)}</h3><p>{categoryDescription(category, locale)}</p></div><Icon name="arrow" /></a>)}</div></div></section>
 

@@ -1,20 +1,153 @@
 ---
 import MainLayout from '@layouts/MainLayout.astro';
 import ArticleCard from '@components/ArticleCard.astro';
-import { getLocalizedArticles } from '@lib/content';
-import { locales, type Locale, localizedPath, ui } from '../../../i18n';
+import { getCollection } from 'astro:content';
+import { categoryName, getLocalizedArticles } from '@lib/content';
+import { REGIONS } from '@lib/regions';
+import { dateLocale, formatUpdateCount, locales, type Locale, localizedPath, ui } from '../../../i18n';
 import { SITE } from '@utils/constants';
 
 export function getStaticPaths() { return locales.map((lang) => ({ params: { lang }, props: { locale: lang } })); }
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
 const articles = await getLocalizedArticles(locale);
+const categories = await getCollection('categories');
+const categoryOrder = ['jobs', 'projects', 'exams', 'materials', 'notices', 'affairs'];
+categories.sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
 const canonical = `${SITE.url}/${locale}/articles/`;
-const alternateUrls = Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/articles/`])) as Record<Locale,string>;
+const alternateUrls = Object.fromEntries(locales.map(lang => [lang, `${SITE.url}/${lang}/articles/`])) as Record<Locale, string>;
 ---
 <MainLayout title={t.articles} description={t.latestDescription} {locale} {canonical} {alternateUrls}>
-  <section class="listing-hero"><div class="container"><span class="eyebrow">{t.articles}</span><h1>{t.latest}</h1><p>{t.latestDescription}</p></div></section>
-  <section class="section"><div class="container"><details class="filter-panel"><summary>{locale==='bn'?'ফিল্টার ও সাজানো':locale==='hi'?'फ़िल्टर और क्रम':'Filters & sorting'}</summary><div class="filters"><select id="levelFilter" aria-label="Government level"><option value="">{locale==='bn'?'সব সরকার':locale==='hi'?'सभी सरकारें':'All governments'}</option><option value="central">Central Government</option><option value="west-bengal">West Bengal</option><option value="other-state">Other states</option></select><select id="categoryFilter" aria-label="Category"><option value="">{t.allCategories}</option>{['jobs','projects','exams','affairs','notices','materials'].map(id=><option value={id}>{id}</option>)}</select><select id="statusFilter" aria-label="Deadline status"><option value="">{locale==='bn'?'সব অবস্থা':locale==='hi'?'सभी स्थितियाँ':'All statuses'}</option><option value="open">Open</option><option value="closing-soon">Closing Soon</option><option value="urgent">3 days or fewer</option><option value="closed">Closed</option></select><select id="verificationFilter" aria-label="Verification"><option value="">{t.verification}</option><option value="officially-confirmed">Confirmed</option><option value="under-verification">Under Verification</option></select><select id="sortArticles" aria-label="Sort"><option value="latest">Latest</option><option value="deadline">Nearest Deadline</option></select></div></details><div class="listing-toolbar"><span id="resultCount">{articles.length} {t.articleCount}</span><a href={localizedPath(locale,'deadlines')}>{t.deadlines} →</a></div><div class="articles-grid" id="articleGrid">{articles.map((article) => <ArticleCard {article} {locale} />)}</div>{!articles.length && <p class="empty-state">{t.noArticles}</p>}<p id="filteredEmpty" class="empty-state" hidden>{t.noResults}</p></div></section>
+  <section class="listing-hero">
+    <div class="container"><span class="eyebrow">{t.articles}</span><h1>{t.latest}</h1><p>{t.latestDescription}</p></div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <details class="filter-panel">
+        <summary>{t.filtersAndSorting}</summary>
+        <div class="filters">
+          <label>
+            <span>{t.governmentLevel}</span>
+            <select id="levelFilter" aria-label={t.governmentLevel}>
+              <option value="">{t.allIndia}</option>
+              <option value="central">{t.centralGovernment}</option>
+              <option value="state">{t.stateGovernments}</option>
+            </select>
+          </label>
+          <label id="stateFilterGroup" hidden>
+            <span>{t.state}</span>
+            <select id="stateFilter" aria-label={t.state} disabled>
+              <option value="">{t.allStates}</option>
+              {REGIONS.map(region => <option value={region.id}>{region[locale]}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>{t.category}</span>
+            <select id="categoryFilter" aria-label={t.category}>
+              <option value="">{t.allCategories}</option>
+              {categories.map(category => <option value={category.id}>{categoryName(category, locale)}</option>)}
+            </select>
+          </label>
+          <label>
+            <span>{t.deadlineStatus}</span>
+            <select id="statusFilter" aria-label={t.deadlineStatus}>
+              <option value="">{t.allStatuses}</option>
+              <option value="open">{t.open}</option>
+              <option value="closing-soon">{t.closingSoon}</option>
+              <option value="urgent">{t.urgent}</option>
+              <option value="closed">{t.closed}</option>
+            </select>
+          </label>
+          <label>
+            <span>{t.verificationStatus}</span>
+            <select id="verificationFilter" aria-label={t.verificationStatus}>
+              <option value="">{t.verificationStatus}</option>
+              <option value="officially-confirmed">{t.confirmed}</option>
+              <option value="under-verification">{t.underVerification}</option>
+            </select>
+          </label>
+          <label>
+            <span>{t.sort}</span>
+            <select id="sortArticles" aria-label={t.sort}>
+              <option value="latest">{t.latest}</option>
+              <option value="deadline">{t.nearestDeadline}</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <div class="listing-toolbar">
+        <span id="resultCount" data-template={t.updateCount} data-intl={dateLocale(locale)}>{formatUpdateCount(locale, articles.length)}</span>
+        <a href={localizedPath(locale, 'deadlines')}>{t.deadlines} →</a>
+      </div>
+      <div class="articles-grid" id="articleGrid">{articles.map((article) => <ArticleCard {article} {locale} />)}</div>
+      <p id="filteredEmpty" class="empty-state" hidden={articles.length > 0}>{t.noArticles}</p>
+    </div>
+  </section>
 </MainLayout>
-<script>const grid=document.getElementById('articleGrid');const selects=[...document.querySelectorAll<HTMLSelectElement>('.filters select')];const apply=()=>{if(!grid)return;const [level,category,status,verification,sort]=selects.map(s=>s.value);const cards=[...grid.children] as HTMLElement[];let visible=0;cards.forEach(card=>{const show=(!level||card.dataset.level===level)&&(!category||card.dataset.category===category)&&(!status||card.dataset.status===status)&&(!verification||card.dataset.verification===verification);card.hidden=!show;if(show)visible++});cards.sort((a,b)=>sort==='deadline'?(Date.parse(a.dataset.deadline||'9999-12-31')-Date.parse(b.dataset.deadline||'9999-12-31')):(Date.parse(b.dataset.date||'')-Date.parse(a.dataset.date||''))).forEach(c=>grid.append(c));const count=document.getElementById('resultCount');if(count)count.textContent=String(visible);const empty=document.getElementById('filteredEmpty');if(empty)empty.hidden=visible>0};selects.forEach(s=>s.addEventListener('change',apply));</script>
-<style>.listing-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.08),rgba(var(--color-green-rgb),.06))}.listing-hero h1{font-size:clamp(2rem,5vw,3.5rem)}.listing-hero p{color:var(--color-text-muted);max-width:60ch}.filter-panel{margin-bottom:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px;padding:.8rem}.filter-panel summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}.filters{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;padding-top:.6rem}.filters select{min-height:44px;border:1px solid var(--color-border);border-radius:10px;padding:.5rem}.listing-toolbar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;color:var(--color-text-muted)}.listing-toolbar a{color:var(--color-primary);font-weight:700}.articles-grid{display:grid;gap:1.2rem}@media(min-width:680px){.articles-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:980px){.articles-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.filters{grid-template-columns:1fr}.filter-panel[open]{position:relative}}</style>
+
+<script>
+  const grid = document.getElementById('articleGrid');
+  const level = document.getElementById('levelFilter') as HTMLSelectElement | null;
+  const state = document.getElementById('stateFilter') as HTMLSelectElement | null;
+  const stateGroup = document.getElementById('stateFilterGroup') as HTMLLabelElement | null;
+  const category = document.getElementById('categoryFilter') as HTMLSelectElement | null;
+  const status = document.getElementById('statusFilter') as HTMLSelectElement | null;
+  const verification = document.getElementById('verificationFilter') as HTMLSelectElement | null;
+  const sort = document.getElementById('sortArticles') as HTMLSelectElement | null;
+  const controls = [level, state, category, status, verification, sort].filter(Boolean) as HTMLSelectElement[];
+  const storageKeys = ['government-coverage', 'government-state', 'updates-category', 'updates-status', 'updates-verification', 'updates-sort'];
+
+  const restore = () => {
+    controls.forEach((control, index) => {
+      try {
+        const value = localStorage.getItem(storageKeys[index]);
+        if (value !== null && [...control.options].some(option => option.value === value)) control.value = value;
+      } catch (_) {}
+    });
+  };
+
+  const apply = () => {
+    if (!grid || !level || !state || !category || !status || !verification || !sort) return;
+    const stateMode = level.value === 'state';
+    if (stateGroup) stateGroup.hidden = !stateMode;
+    state.disabled = !stateMode;
+    const cards = [...grid.children] as HTMLElement[];
+    let visible = 0;
+    cards.forEach(card => {
+      const show = (!level.value || card.dataset.level === level.value)
+        && (!stateMode || !state.value || card.dataset.state === state.value)
+        && (!category.value || card.dataset.category === category.value)
+        && (!status.value || card.dataset.status === status.value)
+        && (!verification.value || card.dataset.verification === verification.value);
+      card.hidden = !show;
+      if (show) visible++;
+    });
+    cards.sort((a, b) => sort.value === 'deadline'
+      ? Date.parse(a.dataset.deadline || '9999-12-31') - Date.parse(b.dataset.deadline || '9999-12-31')
+      : Date.parse(b.dataset.date || '') - Date.parse(a.dataset.date || '')
+    ).forEach(card => grid.append(card));
+    const count = document.getElementById('resultCount');
+    if (count) {
+      const number = new Intl.NumberFormat(count.dataset.intl || 'en-IN').format(visible);
+      count.textContent = (count.dataset.template || '{count} updates').replace('{count}', number);
+    }
+    const empty = document.getElementById('filteredEmpty');
+    if (empty) empty.hidden = visible > 0;
+  };
+
+  restore();
+  apply();
+  controls.forEach((control, index) => control.addEventListener('change', () => {
+    try { localStorage.setItem(storageKeys[index], control.value); } catch (_) {}
+    apply();
+  }));
+  window.addEventListener('pageshow', () => { restore(); apply(); });
+  window.addEventListener('popstate', apply);
+</script>
+
+<style>
+  .listing-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.08),rgba(var(--color-green-rgb),.06))}.listing-hero h1{font-size:clamp(2rem,5vw,3.5rem)}.listing-hero p{color:var(--color-text-muted);max-width:60ch}
+  .filter-panel{margin-bottom:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px;padding:.8rem}.filter-panel summary{cursor:pointer;font-weight:800;min-height:44px;display:flex;align-items:center}.filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;padding-top:.75rem}.filters label{display:grid;gap:.3rem;min-width:0}.filters label>span{font-size:.72rem;font-weight:700;color:var(--color-text-muted)}.filters select{width:100%;min-width:0;min-height:44px;border:1px solid var(--color-border);border-radius:10px;padding:.5rem;background:var(--color-surface);color:var(--color-text)}
+  .listing-toolbar{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;color:var(--color-text-muted)}.listing-toolbar a{color:var(--color-primary);font-weight:700}.articles-grid{display:grid;gap:1.2rem}
+  @media(min-width:680px){.articles-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:980px){.articles-grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.filters{grid-template-columns:1fr}.filter-panel[open]{position:relative}.filters select{font-size:1rem}}
+</style>

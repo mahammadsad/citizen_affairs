@@ -5,11 +5,7 @@ import { localizedPath, type Locale, ui } from '../i18n';
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
 const articles = (await getLocalizedArticles(locale)).slice(0, 8);
-const demos = locale === 'bn'
-  ? ['DEMO — সরকারি চাকরির আপডেট এখানে দেখা যাবে', 'DEMO — জনকল্যাণ প্রকল্পের আপডেট এখানে দেখা যাবে', 'DEMO — পরীক্ষার আপডেট এখানে দেখা যাবে']
-  : locale === 'hi'
-    ? ['DEMO — सरकारी नौकरी अपडेट यहाँ दिखाई देंगे', 'DEMO — कल्याण योजना अपडेट यहाँ दिखाई देंगे', 'DEMO — परीक्षा अपडेट यहाँ दिखाई देंगे']
-    : ['DEMO — Government job updates will appear here', 'DEMO — Welfare scheme updates will appear here', 'DEMO — Examination updates will appear here'];
+const demos = [t.tickerJobs, t.tickerSchemes, t.tickerExams];
 const items = articles.length
   ? articles.map((article) => ({ title: article.data.title, href: localizedPath(locale, `articles/${article.data.urlSlug}`) }))
   : demos.map((title) => ({ title, href: localizedPath(locale, 'articles') }));
@@ -24,7 +20,7 @@ const loop = [...items, ...items];
   </div>
 </div>
 <style>
-  .latest-ticker{height:42px;display:flex;background:#092b4b;color:#fff;overflow:hidden;border-top:1px solid rgba(255,255,255,.08)}
+  .latest-ticker{position:relative;z-index:1;height:42px;display:flex;background:#092b4b;color:#fff;overflow:hidden;contain:paint;border-top:1px solid rgba(255,255,255,.08)}
   .ticker-label{position:relative;z-index:2;flex:none;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#113b60;font-size:.78rem;font-weight:800;white-space:nowrap}
   .ticker-live{width:8px;height:8px;border-radius:50%;background:#45d071;box-shadow:0 0 0 4px rgba(69,208,113,.18)}
   .ticker-window{display:flex;align-items:center;overflow:hidden;flex:1}

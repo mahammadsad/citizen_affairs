@@ -5,7 +5,7 @@ import { ui } from '../i18n';
 
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const popular = ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'West Bengal Jobs', 'Admit Cards', 'Results'];
+const popular = t.popularSearchTerms;
 ---
 
 <div class="search-overlay" id="searchOverlay" data-index-url={`${SITE.basePath}${locale}/search-index.json`} data-hint={t.searchHint} data-empty={t.noResults} data-locale={locale} hidden>
@@ -18,10 +18,10 @@ const popular = ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'West Beng
       <button type="button" class="icon-btn" id="searchClose" aria-label={t.close}>×</button>
     </form>
     <div class="search-suggestions" id="searchSuggestions">
-      <strong>{locale === 'bn' ? 'জনপ্রিয় সার্চ' : locale === 'hi' ? 'लोकप्रिय खोज' : 'Popular searches'}</strong>
+      <strong>{t.popularSearches}</strong>
       <div>{popular.map((term) => <button type="button" data-search-term={term}>{term}</button>)}</div>
     </div>
-    <div class="recent-searches" id="recentSearches" hidden><strong>{locale === 'bn' ? 'সাম্প্রতিক সার্চ' : locale === 'hi' ? 'हाल की खोजें' : 'Recent searches'}</strong><div></div></div>
+    <div class="recent-searches" id="recentSearches" hidden><strong>{t.recentSearches}</strong><div></div></div>
     <div class="search-results" id="searchResults" aria-live="polite"><p>{t.searchHint}</p></div>
   </div>
 </div>
