@@ -1,0 +1,49 @@
+---
+import { SITE } from '@utils/constants';
+const cases = [
+  { width: 320, height: 720, locale: 'en' },
+  { width: 360, height: 780, locale: 'bn' },
+  { width: 375, height: 812, locale: 'hi' },
+  { width: 390, height: 844, locale: 'en' },
+  { width: 412, height: 915, locale: 'bn' },
+  { width: 430, height: 932, locale: 'hi' },
+  { width: 768, height: 1024, locale: 'en' },
+  { width: 1024, height: 768, locale: 'en' }
+];
+---
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"/><meta name="viewport" content="width=device-width"/><meta name="robots" content="noindex,nofollow"/><title>Pre-footer QA</title></head>
+  <body>
+    <main data-base={SITE.basePath}><h1>Pre-footer QA</h1><p id="status">Running…</p><pre id="results"></pre><div>{cases.map(item => <iframe title={`${item.width} ${item.locale}`} data-width={item.width} data-height={item.height} data-locale={item.locale} width={item.width} height={item.height}></iframe>)}</div></main>
+    <script>
+      type Result = { label: string; pass: boolean; checks: Record<string, boolean | number> };
+      const base=(document.querySelector('main') as HTMLElement).dataset.base||'/';
+      const frames=[...document.querySelectorAll<HTMLIFrameElement>('iframe')];
+      const results:Result[]=[];
+      const wait=(ms:number)=>new Promise(resolve=>setTimeout(resolve,ms));
+      const load=(frame:HTMLIFrameElement,url:string)=>new Promise<void>((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('load timeout')),12000);frame.addEventListener('load',()=>{clearTimeout(timer);resolve()},{once:true});frame.src=url});
+      try{
+        for(const frame of frames){
+          const width=Number(frame.dataset.width),locale=frame.dataset.locale||'en';
+          frame.scrollIntoView({block:'center'});await load(frame,`${base}${locale}/?prefooter-qa=${width}`);await wait(100);
+          const doc=frame.contentDocument!,win=frame.contentWindow!,card=doc.querySelector<HTMLElement>('.prefooter')!,actions=doc.querySelector<HTMLElement>('.prefooter-actions')!;
+          const rect=card.getBoundingClientRect(),links=[...actions.querySelectorAll<HTMLElement>('a')],left=rect.left,right=win.innerWidth-rect.right;
+          const checks={
+            exactWidth:win.innerWidth===width,
+            noDocumentOverflow:doc.documentElement.scrollWidth<=win.innerWidth,
+            cardInsideViewport:rect.left>=0&&rect.right<=win.innerWidth,
+            balancedGutters:Math.abs(left-right)<=1,
+            intendedGutter:width>940||Math.abs(left-16)<=1,
+            actionsInsideCard:links.every(link=>{const r=link.getBoundingClientRect();return r.left>=rect.left&&r.right<=rect.right&&r.top>=rect.top&&r.bottom<=rect.bottom}),
+            buttonsReadable:links.every(link=>link.offsetWidth>0&&link.offsetHeight>=44&&link.textContent!.trim().length>0),
+            noActionOverflow:actions.scrollWidth<=actions.clientWidth
+          };
+          results.push({label:`${width}px ${locale}`,checks,pass:Object.values(checks).every(Boolean)});
+        }
+      }catch(error){results.push({label:'harness',pass:false,checks:{error:false}})}
+      document.getElementById('status')!.textContent=results.every(result=>result.pass)?'PASS':'FAIL';document.getElementById('results')!.textContent=JSON.stringify(results,null,2);document.body.dataset.complete='true';
+    </script>
+    <style>body{font:14px/1.4 system-ui;margin:20px;background:#edf2f7;color:#17202e}h1{margin:0}#status{font-size:1.3rem;font-weight:800}pre{max-height:48vh;overflow:auto;padding:12px;background:#fff;border:1px solid #ccd5df;border-radius:10px;white-space:pre-wrap}main>div{display:grid;gap:18px;overflow:auto}iframe{display:block;max-width:none;border:2px solid #708399;background:#fff}</style>
+  </body>
+</html>
