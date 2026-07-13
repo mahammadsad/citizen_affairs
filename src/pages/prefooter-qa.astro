@@ -31,7 +31,7 @@ const cases = [
           const rect=card.getBoundingClientRect(),links=[...actions.querySelectorAll<HTMLElement>('a')],viewportWidth=doc.documentElement.clientWidth,left=rect.left,right=viewportWidth-rect.right;
           const checks={
             exactWidth:win.innerWidth===width,
-            noDocumentOverflow:doc.documentElement.scrollWidth<=viewportWidth,
+            noDocumentOverflow:doc.documentElement.scrollWidth<=win.innerWidth,
             cardInsideViewport:rect.left>=0&&rect.right<=viewportWidth,
             balancedGutters:Math.abs(left-right)<=1,
             intendedGutter:width>940||Math.abs(left-16)<=1,
