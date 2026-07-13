@@ -1,6 +1,6 @@
 media:
   input: public/uploads
-  output: /sarkari-tathya-kendra/uploads
+  output: /uploads
   rename: safe
   categories: [image, document]
 

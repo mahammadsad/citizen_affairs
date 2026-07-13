@@ -1,6 +1,6 @@
 ---
 import MainLayout from '@layouts/MainLayout.astro';
-import { BRAND, SITE } from '@utils/constants';
+import { BRAND, getBrandName, SITE } from '@utils/constants';
 import { policyCopy, type PolicyId } from '../../i18n/policies';
 import type { Locale } from '../../i18n';
 import { locales, ui } from '../../i18n';
@@ -12,7 +12,7 @@ export function getStaticPaths() {
 const { locale, policy } = Astro.props as { locale: Locale; policy: PolicyId };
 const t = ui(locale);
 const titles = { privacy: t.privacy, terms: t.terms, disclaimer: t.disclaimer };
-const copy = policyCopy(locale, BRAND.brandName, BRAND.contactEmail);
+const copy = policyCopy(locale, getBrandName(locale), BRAND.contactEmail);
 const canonical = `${SITE.url}/${locale}/${policy}/`;
 const alternateUrls = Object.fromEntries(locales.map(lang => [lang, `${SITE.url}/${lang}/${policy}/`])) as Record<Locale, string>;
 ---

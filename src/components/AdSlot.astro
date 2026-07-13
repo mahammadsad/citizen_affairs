@@ -1,15 +1,16 @@
 ---
 import { ADS } from '@utils/constants';
-interface Props { position: 'home-feed' | 'article-inline' | 'article-end'; }
-const { position } = Astro.props;
+import { type Locale, ui } from '../i18n';
+interface Props { position: 'home-feed' | 'article-inline' | 'article-end'; locale?: Locale; }
+const { position, locale = 'en' } = Astro.props;
+const t = ui(locale);
 ---
 {ADS.enabled && ADS.publisherId && (
-  <aside class="ad-slot" data-ad-position={position} aria-label="Advertisement">
-    <span>Advertisement</span>
+  <aside class="ad-slot" data-ad-position={position} aria-label={t.advertisement}>
+    <span>{t.advertisement}</span>
   </aside>
 )}
 
 <style>
   .ad-slot { min-height:120px; display:grid; place-items:center; border:1px dashed var(--color-border); border-radius:var(--radius-md); background:var(--color-surface); color:var(--color-text-muted); font-size:.72rem; margin-block:var(--space-4); }
 </style>
-

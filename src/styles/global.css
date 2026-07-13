@@ -6,6 +6,7 @@
   --color-green-rgb: 19, 138, 54;
   --color-green-text: #10742D;
   --color-orange: #F39C12;
+  --color-focus: #B45309;
   --color-orange-rgb: 243, 156, 18;
   --color-white: #FFFFFF;
   --color-light: #F5F7FA;
@@ -42,14 +43,14 @@
 
 @font-face {
   font-family: "Hind Siliguri";
-  src: url("/sarkari-tathya-kendra/assets/fonts/HindSiliguri-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/HindSiliguri-Regular.ttf") format("truetype");
   font-weight: 400 600;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Hind Siliguri";
-  src: url("/sarkari-tathya-kendra/assets/fonts/HindSiliguri-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/HindSiliguri-Bold.ttf") format("truetype");
   font-weight: 700;
   font-display: swap;
 }
@@ -161,7 +162,7 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 3px solid var(--color-orange);
+  outline: 3px solid var(--color-focus);
   outline-offset: 3px;
   border-radius: 4px;
 }

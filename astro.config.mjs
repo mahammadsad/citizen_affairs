@@ -15,7 +15,7 @@ export default defineConfig({
       theme: 'nord',
       wrap: true,
     },
-    rehypePlugins: [rehypeImageAttrs],
+    rehypePlugins: [[rehypeImageAttrs, { base }]],
   },
   vite: {
     ssr: {

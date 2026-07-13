@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 const { article } = Astro.props;
 const locale = article.data.language as Locale;
 const translations = await Promise.all(locales.map(async (lang) => [lang, await getArticleTranslation(article.data.translationKey, lang)] as const));
-const alternateUrls = Object.fromEntries(translations.map(([lang,entry]) => [lang, entry ? `${SITE.url}/${lang}/articles/${entry.data.urlSlug}/` : `${SITE.url}/${lang}/`])) as Record<Locale,string>;
+const alternateUrls = Object.fromEntries(translations.filter(([,entry]) => Boolean(entry)).map(([lang,entry]) => [lang, `${SITE.url}/${lang}/articles/${entry!.data.urlSlug}/`])) as Partial<Record<Locale,string>>;
 const canonical = article.data.canonical || `${SITE.url}/${locale}/articles/${article.data.urlSlug}/`;
 const related = await getRelatedArticles(locale, article.data.category, article.data.urlSlug);
 const { Content } = await article.render();

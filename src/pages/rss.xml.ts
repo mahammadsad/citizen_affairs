@@ -1,11 +1,11 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
-import { BRAND, SITE } from '@utils/constants';
+import { getBrandName, SITE } from '@utils/constants';
 
 export async function GET() {
   const articles = await getCollection('articles', ({ data }) => !data.draft);
   return rss({
-    title: BRAND.brandName,
+    title: getBrandName('en'),
     description: SITE.description,
     site: `${SITE.url}/`,
     items: articles.map((article) => ({

@@ -5,9 +5,9 @@ import { locales } from '../i18n';
 const escapeXml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
 export async function GET() {
-  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  const articles = await getCollection('articles', ({ data }) => !data.draft && data.verificationStatus !== 'withdrawn');
   const categories = await getCollection('categories');
-  const staticPaths = ['', ...locales.flatMap(locale => [`${locale}/`, `${locale}/articles/`, `${locale}/categories/`, `${locale}/deadlines/`, `${locale}/saved/`, `${locale}/editorial-policy/`, `${locale}/privacy/`, `${locale}/terms/`, `${locale}/disclaimer/`])];
+  const staticPaths = ['', ...locales.flatMap(locale => [locale === 'en' ? null : `${locale}/`, `${locale}/articles/`, `${locale}/categories/`, `${locale}/deadlines/`, `${locale}/editorial-policy/`, `${locale}/privacy/`, `${locale}/terms/`, `${locale}/disclaimer/`]).filter((path): path is string => Boolean(path))];
   const paths: Array<{ path: string; lastmod?: Date }> = [
     ...staticPaths.map((path) => ({ path })),
     ...articles.map((article) => ({ path: `${article.data.language}/articles/${article.data.urlSlug}/`, lastmod: article.data.updated ?? article.data.date })),

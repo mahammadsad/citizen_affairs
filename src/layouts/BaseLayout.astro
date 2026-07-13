@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/components.css';
-import { BRAND, getBrandTagline, SITE } from '@utils/constants';
+import { BRAND, getBrandName, getBrandTagline, SITE } from '@utils/constants';
 import { toAbsoluteUrl } from '@lib/seo';
 import { locales, type Locale, ui } from '../i18n';
 
@@ -14,40 +14,39 @@ export interface Props {
   structuredData?: object | object[];
   locale?: Locale;
   alternateUrls?: Partial<Record<Locale, string>>;
+  robots?: string;
 }
 
 const {
-  title = BRAND.brandName,
+  title,
   description = SITE.description,
   image = SITE.ogImage,
   canonical = Astro.url.href,
   ogType = 'website',
   structuredData,
   locale = 'en',
-  alternateUrls = {}
+  alternateUrls = {},
+  robots = 'index, follow'
 } = Astro.props;
 
-const fullTitle = title === BRAND.brandName ? title : `${title} | ${BRAND.brandName}`;
+const brandName = getBrandName(locale);
+const resolvedTitle = title || brandName;
+const fullTitle = resolvedTitle === brandName ? resolvedTitle : `${resolvedTitle} | ${brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
-const ogImageAlt = `${BRAND.brandName} — ${getBrandTagline(locale)}`;
+const ogImageAlt = `${brandName} — ${getBrandTagline(locale)}`;
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: BRAND.brandName,
+  name: brandName,
   alternateName: BRAND.brandShortName,
   url: SITE.url,
   description,
-  inLanguage: locales,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: `${SITE.url}/en/articles/?q={search_term_string}`,
-    'query-input': 'required name=search_term_string'
-  }
+  inLanguage: locales
 };
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: BRAND.brandName,
+  name: brandName,
   url: SITE.url,
   logo: toAbsoluteUrl(SITE.logo, SITE.url),
   email: BRAND.contactEmail,
@@ -68,18 +67,18 @@ const t = ui(locale);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
     {locales.map((lang) => alternateUrls[lang] && <link rel="alternate" hreflang={lang} href={alternateUrls[lang]} />)}
-    <link rel="alternate" hreflang="x-default" href={alternateUrls.en || `${SITE.url}/`} />
+    <link rel="alternate" hreflang="x-default" href={alternateUrls.en || canonical} />
     <link rel="manifest" href={`${SITE.basePath}site.webmanifest`} />
-    <link rel="alternate" type="application/rss+xml" title={`${BRAND.brandName} RSS`} href={`${SITE.basePath}rss.xml`} />
-    <link rel="icon" type="image/svg+xml" href={`${SITE.basePath}assets/logo-mark.svg`} />
+    <link rel="alternate" type="application/rss+xml" title={`${brandName} RSS`} href={`${SITE.basePath}rss.xml`} />
+    <link rel="icon" type="image/svg+xml" href={SITE.logo} />
     <link rel="icon" type="image/png" sizes="32x32" href={`${SITE.basePath}assets/favicon-32.png`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${SITE.basePath}assets/favicon-180.png`} />
     <meta name="theme-color" content="#0A4D8C" />
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content={BRAND.brandName} />
+    <meta property="og:site_name" content={brandName} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />

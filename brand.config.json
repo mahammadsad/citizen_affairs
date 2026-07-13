@@ -1,9 +1,12 @@
 {
-  "brandName": "Demo Brand",
-  "brandShortName": "Demo",
-  "brandTagline": "Verified updates, clearly explained",
+  "brandNameEn": "Sarkari Tathya Kendra",
+  "brandNameBn": "সরকারি তথ্যকেন্দ্র",
+  "brandNameHi": "सरकारी तथ्य केंद्र",
+  "brandShortName": "Tathya Kendra",
+  "brandTaglineEn": "Verified updates, clearly explained",
   "brandTaglineBn": "যাচাইকৃত আপডেট, সহজ ভাষায় ব্যাখ্যা",
   "brandTaglineHi": "सत्यापित अपडेट, स्पष्ट और सरल जानकारी",
+  "logo": "assets/logo-mark.svg",
   "domain": "",
   "contactEmail": "contact.mahammadsad@gmail.com"
 }
