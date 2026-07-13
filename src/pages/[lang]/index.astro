@@ -9,8 +9,3 @@ export function getStaticPaths() {
 const { locale } = Astro.props as { locale: Locale };
 ---
 <HomePage {locale} />
-
-<script is:inline>
-  try { localStorage.setItem('site-language', document.documentElement.lang); } catch (_) {}
-</script>
-

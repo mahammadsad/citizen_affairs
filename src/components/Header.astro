@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { categoryName } from '@lib/content';
-import { BRAND, SITE } from '@utils/constants';
+import { BRAND, getBrandTagline, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
 import LatestTicker from './LatestTicker.astro';
 import Icon from './Icon.astro';
@@ -10,6 +10,7 @@ import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
 interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
 const { locale, alternateUrls = {} } = Astro.props;
 const t = ui(locale);
+const brandTagline = getBrandTagline(locale);
 const pathname = Astro.url.pathname;
 const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
 const desktopNav = [
@@ -27,20 +28,12 @@ const quickLinks = [
 const categoryIcon: Record<string, string> = { jobs: 'briefcase', projects: 'schemes', exams: 'exams', materials: 'education', notices: 'notices', affairs: 'services' };
 const categoryOrder = ['jobs', 'projects', 'exams', 'materials', 'notices', 'affairs'];
 const categoryEntries = (await getCollection('categories')).sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
-const labels = {
-  primaryNav: locale === 'bn' ? 'প্রধান নেভিগেশন' : locale === 'hi' ? 'मुख्य नेविगेशन' : 'Primary navigation',
-  mobileNav: locale === 'bn' ? 'মোবাইল নেভিগেশন' : locale === 'hi' ? 'मोबाइल नेविगेशन' : 'Mobile navigation',
-  quick: locale === 'bn' ? 'দ্রুত লিঙ্ক' : locale === 'hi' ? 'त्वरित लिंक' : 'Quick links',
-  language: locale === 'bn' ? 'ভাষা' : locale === 'hi' ? 'भाषा' : 'Language',
-  close: locale === 'bn' ? 'মেনু বন্ধ করুন' : locale === 'hi' ? 'मेनू बंद करें' : 'Close menu',
-  theme: locale === 'bn' ? 'থিম পরিবর্তন' : locale === 'hi' ? 'थीम बदलें' : 'Change theme'
-};
 ---
 <header class="site-header">
-  <nav class="navbar container" aria-label={labels.primaryNav}>
+  <nav class="navbar container" aria-label={t.primaryNav}>
     <a href={localizedPath(locale)} class="brand" aria-label={`${BRAND.brandName} — ${t.home}`}>
-      <img src={SITE.logo} alt={`${BRAND.brandName} logo`} class="brand-logo" width="46" height="46" />
-      <span class="brand-text"><span class="brand-name">{BRAND.brandName}</span><span class="brand-tagline">{BRAND.brandTagline}</span></span>
+      <img src={SITE.logo} alt={`${BRAND.brandName} ${t.logo}`} class="brand-logo" width="46" height="46" />
+      <span class="brand-text"><span class="brand-name">{BRAND.brandName}</span><span class="brand-tagline">{brandTagline}</span></span>
     </a>
     <ul class="nav-links">
       {desktopNav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
@@ -48,15 +41,15 @@ const labels = {
     <div class="nav-actions">
       <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog"><Icon name="search" /></button>
       <div class="language-picker">
-        <button class="language-trigger" id="languageTrigger" aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu">
+        <button class="language-trigger" id="languageTrigger" aria-label={`${t.language}: ${localeMeta[locale].nativeName}`} aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu">
           <Icon name="globe" /><span class="language-code">{localeMeta[locale].code}</span><span class="chevron" aria-hidden="true">⌄</span>
         </button>
         <div class="language-menu" id="languageMenu" role="menu" hidden>
           {locales.map((lang) => <a role="menuitem" href={languageUrls[lang]} lang={lang} hreflang={lang} data-language={lang} aria-current={lang === locale ? 'true' : undefined}><span>{lang === locale ? '✓' : ''}</span>{localeMeta[lang].nativeName}</a>)}
         </div>
       </div>
-      <button class="icon-btn theme-toggle desktop-theme" aria-label={labels.theme}><Icon name="theme" /></button>
-      <button class="icon-btn menu-toggle" id="menuToggle" aria-label={t.menu} data-open-label={t.menu} data-close-label={labels.close} aria-expanded="false" aria-controls="mobileMenu"><Icon name="menu" /></button>
+      <button class="icon-btn theme-toggle desktop-theme" aria-label={t.changeTheme}><Icon name="theme" /></button>
+      <button class="icon-btn menu-toggle" id="menuToggle" aria-label={t.menu} data-open-label={t.menu} data-close-label={t.closeMenu} aria-expanded="false" aria-controls="mobileMenu"><Icon name="menu" /></button>
     </div>
   </nav>
   <LatestTicker {locale} />
@@ -64,18 +57,18 @@ const labels = {
 
 <!-- Kept outside the filtered sticky header so fixed positioning is viewport-relative. -->
 <div class="mobile-backdrop" id="mobileBackdrop" hidden></div>
-<nav class="mobile-drawer" id="mobileMenu" aria-label={labels.mobileNav} aria-hidden="true" hidden>
+<nav class="mobile-drawer" id="mobileMenu" aria-label={t.mobileNav} aria-hidden="true" hidden>
   <div class="drawer-head">
     <a href={localizedPath(locale)} class="drawer-brand">
-      <img src={SITE.logo} alt={`${BRAND.brandName} logo`} width="42" height="42" />
-      <span><strong>{BRAND.brandName}</strong><small>{BRAND.brandTagline}</small></span>
+      <img src={SITE.logo} alt={`${BRAND.brandName} ${t.logo}`} width="42" height="42" />
+      <span><strong>{BRAND.brandName}</strong><small>{brandTagline}</small></span>
     </a>
-    <button class="drawer-close" id="menuClose" type="button" aria-label={labels.close}><span aria-hidden="true">×</span></button>
+    <button class="drawer-close" id="menuClose" type="button" aria-label={t.closeMenu}><span aria-hidden="true">×</span></button>
   </div>
 
   <div class="drawer-scroll">
     <section aria-labelledby="quickLinksTitle">
-      <h2 id="quickLinksTitle">{labels.quick}</h2>
+      <h2 id="quickLinksTitle">{t.quickLinks}</h2>
       <ul class="drawer-quick-links">
         {quickLinks.map((item, index) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}><Icon name={index === 0 ? 'home' : index === 1 ? 'updates' : index === 2 ? 'clock' : 'bookmark'} /><span>{item.label}</span><Icon name="arrow" size={18} /></a></li>)}
       </ul>
@@ -93,7 +86,7 @@ const labels = {
     </section>
 
     <section aria-labelledby="languageLinksTitle">
-      <h2 id="languageLinksTitle">{labels.language}</h2>
+      <h2 id="languageLinksTitle">{t.language}</h2>
       <div class="drawer-languages">
         {locales.map((lang) => <a href={languageUrls[lang]} lang={lang} hreflang={lang} data-language={lang} aria-current={lang === locale ? 'true' : undefined}>{lang === locale && <span aria-hidden="true">✓</span>}{localeMeta[lang].nativeName}</a>)}
       </div>
@@ -102,7 +95,7 @@ const labels = {
     <div class="drawer-secondary-links">
       <a href={`${localizedPath(locale)}#about`}><Icon name="about" />{t.about}<Icon name="arrow" size={18} /></a>
       <a href={`${localizedPath(locale)}#contact`}><Icon name="mail" />{t.contact}<Icon name="arrow" size={18} /></a>
-      <button class="mobile-theme theme-toggle" type="button"><Icon name="theme" />{labels.theme}</button>
+      <button class="mobile-theme theme-toggle" type="button"><Icon name="theme" />{t.changeTheme}</button>
     </div>
   </div>
 </nav>
@@ -124,9 +117,17 @@ const labels = {
   let releaseFocusTrap: (() => void) | undefined;
   let originalBodyPaddingRight = '';
 
-  const closeLanguage = () => {
+  const closeLanguage = (restoreFocus = false) => {
+    const wasOpen = !languageMenu?.hasAttribute('hidden');
     languageMenu?.setAttribute('hidden', '');
     languageTrigger?.setAttribute('aria-expanded', 'false');
+    if (restoreFocus && wasOpen) languageTrigger?.focus();
+  };
+
+  const syncLanguagePreference = () => {
+    const current = document.documentElement.lang;
+    if (!['en', 'bn', 'hi'].includes(current)) return;
+    try { localStorage.setItem('site-language', current); } catch (_) {}
   };
 
   const finishClosingDrawer = () => {
@@ -178,17 +179,36 @@ const labels = {
 
   languageTrigger?.addEventListener('click', () => {
     const open = languageMenu?.hasAttribute('hidden');
-    if (open) languageMenu?.removeAttribute('hidden'); else languageMenu?.setAttribute('hidden', '');
+    if (open) {
+      languageMenu?.removeAttribute('hidden');
+      requestAnimationFrame(() => languageMenu?.querySelector<HTMLElement>('[aria-current="true"]')?.focus());
+    } else {
+      languageMenu?.setAttribute('hidden', '');
+    }
     languageTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
-  document.querySelectorAll('[data-language]').forEach((link) => link.addEventListener('click', () => {
-    try { localStorage.setItem('site-language', (link as HTMLElement).dataset.language || 'en'); } catch (_) {}
+  const languageItems = [...(languageMenu?.querySelectorAll<HTMLAnchorElement>('[role="menuitem"]') || [])];
+  languageMenu?.addEventListener('keydown', (event) => {
+    const current = languageItems.indexOf(document.activeElement as HTMLAnchorElement);
+    let next = current;
+    if (event.key === 'ArrowDown') next = (current + 1) % languageItems.length;
+    else if (event.key === 'ArrowUp') next = (current - 1 + languageItems.length) % languageItems.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = languageItems.length - 1;
+    else if (event.key === 'Escape') { event.preventDefault(); closeLanguage(true); return; }
+    else return;
+    event.preventDefault();
+    languageItems[next]?.focus();
+  });
+  document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => link.addEventListener('click', () => {
+    try { localStorage.setItem('site-language', link.dataset.language || 'en'); } catch (_) {}
+    closeLanguage();
   }));
   document.addEventListener('click', (event) => {
-    if (!(event.target as Element).closest('.language-picker')) closeLanguage();
+    if (!(event.target as Element).closest('.language-picker')) closeLanguage(true);
   });
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') { closeLanguage(); closeDrawer(); }
+    if (event.key === 'Escape') { closeLanguage(true); closeDrawer(); }
   });
   menuToggle?.addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
   menuClose?.addEventListener('click', () => closeDrawer());
@@ -197,8 +217,9 @@ const labels = {
   desktopQuery.addEventListener('change', (event) => { if (event.matches) closeDrawer(false); });
   window.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
   window.visualViewport?.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
-  window.addEventListener('popstate', () => closeDrawer(false));
-  window.addEventListener('pageshow', () => closeDrawer(false));
+  window.addEventListener('popstate', () => { closeLanguage(); closeDrawer(false); syncLanguagePreference(); });
+  window.addEventListener('pageshow', () => { closeLanguage(); closeDrawer(false); syncLanguagePreference(); });
+  syncLanguagePreference();
   document.querySelectorAll('.theme-toggle').forEach((button) => button.addEventListener('click', () => {
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
     root.dataset.theme = next;
@@ -209,8 +230,8 @@ const labels = {
 <style>
   .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
   [data-theme="dark"] .site-header{background:rgba(10,18,32,.9)}
-  .navbar{height:74px}.brand-logo{width:46px;height:46px}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
-  .language-picker{position:relative}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;right:0;top:calc(100% + .55rem);min-width:174px;padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg)}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
+  .navbar{position:relative;z-index:5;height:74px;overflow:visible}.brand-logo{width:46px;height:46px}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
+  .language-picker{position:relative;z-index:2}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;z-index:20;right:0;top:calc(100% + .55rem);min-width:174px;max-width:min(240px,calc(100vw - 1.5rem));padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg);pointer-events:auto;isolation:isolate}.language-menu[hidden]{display:none;pointer-events:none}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;min-height:44px;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
   .desktop-theme{display:none}
 
   .mobile-backdrop{position:fixed;inset:0;z-index:200;background:rgba(5,14,28,.58);opacity:1;visibility:visible;backdrop-filter:blur(2px)}

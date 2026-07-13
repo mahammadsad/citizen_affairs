@@ -5,6 +5,12 @@ export const GITHUB_PAGES_URL = 'https://mahammadsad.github.io/sarkari-tathya-ke
 export const SITE_URL = BRAND.domain ? BRAND.domain.replace(/\/$/, '') : GITHUB_PAGES_URL;
 export const BASE_PATH = BRAND.domain ? '/' : '/sarkari-tathya-kendra/';
 
+export function getBrandTagline(locale: 'en' | 'bn' | 'hi') {
+  if (locale === 'bn') return BRAND.brandTaglineBn;
+  if (locale === 'hi') return BRAND.brandTaglineHi;
+  return BRAND.brandTagline;
+}
+
 export const SITE = {
   name: BRAND.brandName,
   nameEn: BRAND.brandName,
@@ -13,9 +19,9 @@ export const SITE = {
   shortName: BRAND.brandShortName,
   tagline: BRAND.brandTagline,
   taglineEn: BRAND.brandTagline,
-  taglineBn: BRAND.brandTagline,
-  taglineHi: BRAND.brandTagline,
-  description: 'Government jobs, welfare schemes, exams, results and public-service updates explained from official sources in English, Bengali and Hindi.',
+  taglineBn: BRAND.brandTaglineBn,
+  taglineHi: BRAND.brandTaglineHi,
+  description: 'Verified Central and State Government jobs, welfare schemes, education, exams and public-service updates from across India.',
   url: SITE_URL,
   basePath: BASE_PATH,
   logo: `${BASE_PATH}assets/logo-mark.svg`,

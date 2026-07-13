@@ -11,66 +11,114 @@ export const localeMeta: Record<Locale, { name: string; nativeName: string; code
 
 export const isLocale = (value: string | undefined): value is Locale => locales.includes(value as Locale);
 
-const shared = {
-  privacy: 'Privacy Policy',
-  terms: 'Terms',
-  editorial: 'Editorial Policy'
-};
-
 export const UI = {
   en: {
-    ...shared,
     home: 'Home', latestNav: 'Latest Updates', articles: 'Updates', categories: 'Categories', about: 'About',
     services: 'Services', community: 'Community', contact: 'Contact', search: 'Search', close: 'Close', menu: 'Menu',
+    privacy: 'Privacy Policy', terms: 'Terms', editorial: 'Editorial Policy', disclaimer: 'Disclaimer',
     searchPlaceholder: 'Search jobs, schemes, admit cards, results…', searchHint: 'Search verified public information.', noResults: 'No matching information found.',
+    popularSearches: 'Popular searches', recentSearches: 'Recent searches',
+    popularSearchTerms: ['SSC', 'Railway', 'Scholarships', 'Ayushman Bharat', 'All India Jobs', 'Admit Cards', 'Results'],
     independent: 'Independent information platform', heroTitle: 'Verified Government Jobs, Schemes and Exam Updates',
-    heroDescription: 'Official-source updates from West Bengal and across India, explained clearly in English, Bengali and Hindi.',
+    heroDescription: 'Verified government jobs, schemes, education updates and public information from across India.',
+    nationwide: 'Government updates from across India', centralAndState: 'Central and State Government information',
     explore: 'Explore Latest Updates', joinTelegram: 'Join Telegram', joinWhatsApp: 'WhatsApp Updates', verifiedSources: 'Official sources',
     threeLanguages: 'Three languages', freeAccess: 'Free access', regularlyUpdated: 'Regularly updated', latest: 'Latest Updates',
     latestDescription: 'Clear summaries with verification status, dates and official sources.', viewAll: 'View all updates', whatWeCover: 'Browse by category',
+    categoriesDescription: 'Browse jobs, schemes, education, exams, notices and public services by topic.',
     howItWorks: 'How we verify information', stepDiscover: 'Official source', stepVerify: 'Fact check', stepExplain: 'Clear explanation', stepUpdate: 'Update tracking',
     communityTitle: 'Stay updated where you already are', disclaimerShort: 'Independent information platform. Not affiliated with any government department.',
     updated: 'Updated', published: 'Published', lastVerified: 'Last verified', source: 'Official source', apply: 'Official Website', readMore: 'View Details',
-    articleCount: 'updates', noArticles: 'No published updates here yet.', allCategories: 'All categories', backToUpdates: 'Back to updates', verification: 'Verification status',
-    closed: 'Closed', disclaimer: 'Disclaimer', deadlines: 'Upcoming Deadlines', saved: 'Saved articles', recent: 'Recently viewed', save: 'Save for later', savedLabel: 'Saved', share: 'Share',
+    noArticles: 'No published updates here yet.', allCategories: 'All categories', backToUpdates: 'Back to updates', verification: 'Verification status',
+    closed: 'Closed', deadlines: 'Upcoming Deadlines', saved: 'Saved articles', recent: 'Recently viewed', save: 'Save for later', savedLabel: 'Saved', share: 'Share',
     popularServices: 'Popular schemes and services', stayUpdated: 'Stay updated', stayUpdatedText: 'Receive important government information and deadline alerts.',
-    latestTicker: 'Latest Updates', demoVersion: 'Demo version', copyEmail: 'Copy email', copied: 'Copied', officialLinks: 'Official links and sources'
+    latestTicker: 'Latest Updates', demoVersion: 'Demo version', copyEmail: 'Copy email', copied: 'Copied', officialLinks: 'Official links and sources',
+    primaryNav: 'Primary navigation', mobileNav: 'Mobile navigation', quickLinks: 'Quick links', language: 'Language', closeMenu: 'Close menu', changeTheme: 'Change theme', skipToContent: 'Skip to main content', logo: 'logo',
+    filtersAndSorting: 'Filters & sorting', allIndia: 'All India', centralGovernment: 'Central Government', stateGovernments: 'State Governments', allStates: 'All States',
+    governmentLevel: 'Government coverage', state: 'State or Union Territory', category: 'Category', deadlineStatus: 'Deadline status', allStatuses: 'All statuses', verificationStatus: 'Verification status', sort: 'Sort updates',
+    open: 'Open', closingSoon: 'Closing Soon', urgent: '3 days or fewer', confirmed: 'Confirmed', underVerification: 'Under Verification', nearestDeadline: 'Nearest Deadline',
+    updateCount: '{count} updates', featured: 'Featured', demo: 'DEMO',
+    demoFeatureTitle: 'A published featured update will appear here', demoFeatureBody: 'Publish a verified article through the CMS and this card updates automatically.',
+    demoPublished: 'Published updates will appear here.', demoDeadlines: 'Publish articles with deadlines and the nearest dates will appear here.',
+    tickerJobs: 'DEMO — Government job updates will appear here', tickerSchemes: 'DEMO — Welfare scheme updates will appear here', tickerExams: 'DEMO — Examination updates will appear here',
+    contactUs: 'Contact us', exploreFooter: 'Explore', trustPolicies: 'Trust & Policies', telegramUpdates: 'Telegram Updates', whatsappUpdates: 'WhatsApp Updates',
+    fastUpdateAlerts: 'Fast update alerts', channelUpdates: 'Channel updates', practiceCommunity: 'Practice community', independentService: 'Independent information service', notGovernmentWebsite: 'Not a government website', backToTop: 'Back to top',
+    savedDescription: 'Articles saved on this device. No login required.', deadlinesDescription: 'Nearest valid deadlines appear first. Closed items remain clearly marked.',
+    deadline: 'Deadline', copyLink: 'Copy link', breadcrumb: 'Breadcrumb', checkOriginal: 'Check the original government document before making a decision.', sourceItem: 'Source',
+    quickSummary: 'Quick summary', importantDates: 'Important dates', eligibility: 'Eligibility', amount: 'Benefits, vacancies or amount', requiredDocuments: 'Required documents', updateHistory: 'Update history', relatedArticles: 'Related articles', faq: 'Frequently asked questions', primarySource: 'Primary source: Official notification or portal',
+    policyUpdated: 'Last updated: July 2026', publishingCorrections: 'Publishing and corrections', publishingCorrectionsText: 'Dates, amounts, vacancies and eligibility are checked against original government documents. Corrections and deadline changes are recorded in the article update history.'
   },
   bn: {
-    ...shared,
     home: 'হোম', latestNav: 'সর্বশেষ আপডেট', articles: 'আপডেট', categories: 'বিভাগ', about: 'আমাদের সম্পর্কে',
-    services: 'সেবা', community: 'কমিউনিটি', contact: 'যোগাযোগ', search: 'সার্চ', close: 'বন্ধ করুন', menu: 'মেনু',
+    services: 'পরিষেবা', community: 'কমিউনিটি', contact: 'যোগাযোগ', search: 'খুঁজুন', close: 'বন্ধ করুন', menu: 'মেনু',
+    privacy: 'গোপনীয়তা নীতি', terms: 'শর্তাবলি', editorial: 'সম্পাদকীয় নীতি', disclaimer: 'দায়ত্যাগ',
     searchPlaceholder: 'চাকরি, প্রকল্প, অ্যাডমিট কার্ড, ফলাফল খুঁজুন…', searchHint: 'যাচাইকৃত জনতথ্য খুঁজুন।', noResults: 'মিলছে এমন তথ্য পাওয়া যায়নি।',
+    popularSearches: 'জনপ্রিয় অনুসন্ধান', recentSearches: 'সাম্প্রতিক অনুসন্ধান',
+    popularSearchTerms: ['SSC', 'রেলওয়ে', 'স্কলারশিপ', 'Ayushman Bharat', 'সারা ভারতের চাকরি', 'অ্যাডমিট কার্ড', 'ফলাফল'],
     independent: 'স্বাধীন তথ্য প্ল্যাটফর্ম', heroTitle: 'যাচাইকৃত সরকারি চাকরি, প্রকল্প ও পরীক্ষার আপডেট',
-    heroDescription: 'পশ্চিমবঙ্গ ও সমগ্র ভারতের অফিসিয়াল সূত্রভিত্তিক আপডেট—English, বাংলা ও हिन्दी ভাষায় সহজ ব্যাখ্যা।',
+    heroDescription: 'সারা ভারতের সরকারি চাকরি, প্রকল্প, শিক্ষা ও জনসেবার গুরুত্বপূর্ণ যাচাইকৃত তথ্য।',
+    nationwide: 'সারা ভারতের সরকারি আপডেট', centralAndState: 'কেন্দ্রীয় ও রাজ্য সরকারের গুরুত্বপূর্ণ তথ্য',
     explore: 'সর্বশেষ আপডেট দেখুন', joinTelegram: 'Telegram-এ যুক্ত হন', joinWhatsApp: 'WhatsApp আপডেট', verifiedSources: 'অফিসিয়াল সূত্র',
     threeLanguages: 'তিনটি ভাষা', freeAccess: 'বিনামূল্যে', regularlyUpdated: 'নিয়মিত আপডেট', latest: 'সর্বশেষ আপডেট',
     latestDescription: 'যাচাইয়ের অবস্থা, গুরুত্বপূর্ণ তারিখ ও অফিসিয়াল সূত্রসহ সহজ সারাংশ।', viewAll: 'সব আপডেট দেখুন', whatWeCover: 'বিভাগ অনুযায়ী দেখুন',
-    howItWorks: 'যেভাবে তথ্য যাচাই করি', stepDiscover: 'অফিসিয়াল সূত্র', stepVerify: 'তথ্য যাচাই', stepExplain: 'সহজ ব্যাখ্যা', stepUpdate: 'আপডেট ট্র্যাকিং',
+    categoriesDescription: 'চাকরি, প্রকল্প, শিক্ষা, পরীক্ষা, নোটিশ ও জনপরিষেবার তথ্য বিষয় অনুযায়ী দেখুন।',
+    howItWorks: 'যেভাবে তথ্য যাচাই করি', stepDiscover: 'অফিসিয়াল সূত্র', stepVerify: 'তথ্য যাচাই', stepExplain: 'সহজ ব্যাখ্যা', stepUpdate: 'আপডেট অনুসরণ',
     communityTitle: 'আপনার পরিচিত প্ল্যাটফর্মেই আপডেট পান', disclaimerShort: 'স্বাধীন তথ্য প্ল্যাটফর্ম। কোনো সরকারি দপ্তরের সঙ্গে যুক্ত নয়।',
-    updated: 'আপডেট', published: 'প্রকাশিত', lastVerified: 'সর্বশেষ যাচাই', source: 'অফিসিয়াল সূত্র', apply: 'অফিসিয়াল ওয়েবসাইট', readMore: 'বিস্তারিত দেখুন',
-    articleCount: 'টি আপডেট', noArticles: 'এখানে এখনো কোনো তথ্য প্রকাশিত হয়নি।', allCategories: 'সব বিভাগ', backToUpdates: 'আপডেটে ফিরে যান', verification: 'যাচাইয়ের অবস্থা',
-    closed: 'বন্ধ', disclaimer: 'দাবিত্যাগ', deadlines: 'আসন্ন সময়সীমা', saved: 'সংরক্ষিত আর্টিকেল', recent: 'সম্প্রতি দেখা', save: 'পরে পড়ার জন্য রাখুন', savedLabel: 'সংরক্ষিত', share: 'শেয়ার',
-    popularServices: 'জনপ্রিয় প্রকল্প ও পরিষেবা', stayUpdated: 'আপডেট পেতে সঙ্গে থাকুন', stayUpdatedText: 'গুরুত্বপূর্ণ সরকারি তথ্য ও deadline alert পান।',
-    latestTicker: 'সর্বশেষ আপডেট', demoVersion: 'ডেমো সংস্করণ', copyEmail: 'ইমেইল কপি করুন', copied: 'কপি হয়েছে', officialLinks: 'অফিসিয়াল লিঙ্ক ও সূত্র'
+    updated: 'আপডেট হয়েছে', published: 'প্রকাশিত', lastVerified: 'সর্বশেষ যাচাই', source: 'অফিসিয়াল সূত্র', apply: 'অফিসিয়াল ওয়েবসাইট', readMore: 'বিস্তারিত দেখুন',
+    noArticles: 'এখানে এখনও কোনো আপডেট প্রকাশিত হয়নি।', allCategories: 'সব বিভাগ', backToUpdates: 'আপডেটে ফিরে যান', verification: 'যাচাইয়ের অবস্থা',
+    closed: 'বন্ধ', deadlines: 'আসন্ন সময়সীমা', saved: 'সংরক্ষিত নিবন্ধ', recent: 'সম্প্রতি দেখা', save: 'পরে পড়ার জন্য রাখুন', savedLabel: 'সংরক্ষিত', share: 'শেয়ার করুন',
+    popularServices: 'জনপ্রিয় প্রকল্প ও পরিষেবা', stayUpdated: 'আপডেট পেতে সঙ্গে থাকুন', stayUpdatedText: 'গুরুত্বপূর্ণ সরকারি তথ্য ও সময়সীমার সতর্কতা পান।',
+    latestTicker: 'সর্বশেষ আপডেট', demoVersion: 'ডেমো সংস্করণ', copyEmail: 'ইমেইল কপি করুন', copied: 'কপি হয়েছে', officialLinks: 'অফিসিয়াল লিঙ্ক ও সূত্র',
+    primaryNav: 'প্রধান নেভিগেশন', mobileNav: 'মোবাইল নেভিগেশন', quickLinks: 'দ্রুত লিঙ্ক', language: 'ভাষা', closeMenu: 'মেনু বন্ধ করুন', changeTheme: 'থিম পরিবর্তন করুন', skipToContent: 'মূল বিষয়বস্তুতে যান', logo: 'লোগো',
+    filtersAndSorting: 'ফিল্টার ও সাজানো', allIndia: 'সারা ভারত', centralGovernment: 'কেন্দ্রীয় সরকার', stateGovernments: 'রাজ্য সরকারসমূহ', allStates: 'সব রাজ্য',
+    governmentLevel: 'সরকারি ক্ষেত্র', state: 'রাজ্য বা কেন্দ্রশাসিত অঞ্চল', category: 'বিভাগ', deadlineStatus: 'সময়সীমার অবস্থা', allStatuses: 'সব অবস্থা', verificationStatus: 'যাচাইয়ের অবস্থা', sort: 'আপডেট সাজান',
+    open: 'চলমান', closingSoon: 'শীঘ্রই বন্ধ', urgent: '৩ দিন বা কম', confirmed: 'নিশ্চিত', underVerification: 'যাচাই চলছে', nearestDeadline: 'নিকটতম সময়সীমা',
+    updateCount: '{count}টি আপডেট', featured: 'বিশেষ আপডেট', demo: 'ডেমো',
+    demoFeatureTitle: 'প্রকাশিত বিশেষ আপডেট এখানে দেখা যাবে', demoFeatureBody: 'CMS থেকে যাচাইকৃত নিবন্ধ প্রকাশ করলে এই কার্ড স্বয়ংক্রিয়ভাবে আপডেট হবে।',
+    demoPublished: 'প্রকাশিত আপডেটগুলো এখানে দেখা যাবে।', demoDeadlines: 'সময়সীমাসহ নিবন্ধ প্রকাশ করলে নিকটতম তারিখগুলো এখানে দেখা যাবে।',
+    tickerJobs: 'ডেমো — সরকারি চাকরির আপডেট এখানে দেখা যাবে', tickerSchemes: 'ডেমো — জনকল্যাণ প্রকল্পের আপডেট এখানে দেখা যাবে', tickerExams: 'ডেমো — পরীক্ষার আপডেট এখানে দেখা যাবে',
+    contactUs: 'যোগাযোগ করুন', exploreFooter: 'দেখুন', trustPolicies: 'বিশ্বাস ও নীতি', telegramUpdates: 'Telegram আপডেট', whatsappUpdates: 'WhatsApp আপডেট',
+    fastUpdateAlerts: 'দ্রুত আপডেটের সতর্কতা', channelUpdates: 'চ্যানেলের আপডেট', practiceCommunity: 'অনুশীলন কমিউনিটি', independentService: 'স্বাধীন তথ্যসেবা', notGovernmentWebsite: 'সরকারি ওয়েবসাইট নয়', backToTop: 'উপরে যান',
+    savedDescription: 'এই ডিভাইসে সংরক্ষিত নিবন্ধ। লগইনের প্রয়োজন নেই।', deadlinesDescription: 'নিকটতম বৈধ সময়সীমা আগে দেখানো হয়েছে। বন্ধ হয়ে যাওয়া তথ্য স্পষ্টভাবে চিহ্নিত।',
+    deadline: 'শেষ তারিখ', copyLink: 'লিঙ্ক কপি করুন', breadcrumb: 'পৃষ্ঠার পথ', checkOriginal: 'কোনো সিদ্ধান্ত নেওয়ার আগে মূল সরকারি নথি যাচাই করুন।', sourceItem: 'সূত্র',
+    quickSummary: 'সংক্ষিপ্ত সারাংশ', importantDates: 'গুরুত্বপূর্ণ তারিখ', eligibility: 'যোগ্যতা', amount: 'সুবিধা, শূন্যপদ বা অর্থের পরিমাণ', requiredDocuments: 'প্রয়োজনীয় নথি', updateHistory: 'আপডেটের ইতিহাস', relatedArticles: 'সম্পর্কিত নিবন্ধ', faq: 'সাধারণ প্রশ্ন', primarySource: 'প্রাথমিক সূত্র: অফিসিয়াল বিজ্ঞপ্তি বা পোর্টাল',
+    policyUpdated: 'সর্বশেষ আপডেট: জুলাই ২০২৬', publishingCorrections: 'প্রকাশ ও সংশোধন', publishingCorrectionsText: 'তারিখ, অর্থের পরিমাণ, শূন্যপদ ও যোগ্যতা মূল সরকারি নথির সঙ্গে মিলিয়ে দেখা হয়। সংশোধনী বা সময়সীমা পরিবর্তিত হলে নিবন্ধের আপডেট ইতিহাসে তা যোগ করা হয়।'
   },
   hi: {
-    ...shared,
     home: 'होम', latestNav: 'नवीनतम अपडेट', articles: 'अपडेट', categories: 'श्रेणियाँ', about: 'हमारे बारे में',
     services: 'सेवाएँ', community: 'समुदाय', contact: 'संपर्क', search: 'खोजें', close: 'बंद करें', menu: 'मेनू',
+    privacy: 'गोपनीयता नीति', terms: 'नियम और शर्तें', editorial: 'संपादकीय नीति', disclaimer: 'अस्वीकरण',
     searchPlaceholder: 'नौकरियाँ, योजनाएँ, एडमिट कार्ड, परिणाम खोजें…', searchHint: 'सत्यापित सार्वजनिक जानकारी खोजें।', noResults: 'कोई मिलती-जुलती जानकारी नहीं मिली।',
+    popularSearches: 'लोकप्रिय खोजें', recentSearches: 'हाल की खोजें',
+    popularSearchTerms: ['SSC', 'रेलवे', 'छात्रवृत्तियाँ', 'Ayushman Bharat', 'पूरे भारत की नौकरियाँ', 'एडमिट कार्ड', 'परिणाम'],
     independent: 'स्वतंत्र सूचना मंच', heroTitle: 'सत्यापित सरकारी नौकरियाँ, योजनाएँ और परीक्षा अपडेट',
-    heroDescription: 'पश्चिम बंगाल और पूरे भारत की आधिकारिक-स्रोत जानकारी, English, বাংলা और हिन्दी में स्पष्ट रूप से समझाई गई।',
+    heroDescription: 'पूरे भारत की सरकारी नौकरियों, योजनाओं, शिक्षा और जनसेवाओं से जुड़ी सत्यापित जानकारी।',
+    nationwide: 'पूरे भारत से सरकारी अपडेट', centralAndState: 'केंद्र और राज्य सरकारों की महत्वपूर्ण जानकारी',
     explore: 'नवीनतम अपडेट देखें', joinTelegram: 'Telegram से जुड़ें', joinWhatsApp: 'WhatsApp अपडेट', verifiedSources: 'आधिकारिक स्रोत',
     threeLanguages: 'तीन भाषाएँ', freeAccess: 'निःशुल्क पहुँच', regularlyUpdated: 'नियमित अपडेट', latest: 'नवीनतम अपडेट',
     latestDescription: 'सत्यापन स्थिति, तारीखों और आधिकारिक स्रोतों के साथ स्पष्ट सारांश।', viewAll: 'सभी अपडेट देखें', whatWeCover: 'श्रेणी के अनुसार देखें',
-    howItWorks: 'हम जानकारी कैसे सत्यापित करते हैं', stepDiscover: 'आधिकारिक स्रोत', stepVerify: 'तथ्य जाँच', stepExplain: 'स्पष्ट व्याख्या', stepUpdate: 'अपडेट ट्रैकिंग',
+    categoriesDescription: 'नौकरियाँ, योजनाएँ, शिक्षा, परीक्षाएँ, सूचनाएँ और सार्वजनिक सेवाएँ विषय के अनुसार देखें।',
+    howItWorks: 'हम जानकारी कैसे सत्यापित करते हैं', stepDiscover: 'आधिकारिक स्रोत', stepVerify: 'तथ्य जाँच', stepExplain: 'स्पष्ट व्याख्या', stepUpdate: 'अपडेट की निगरानी',
     communityTitle: 'अपने पसंदीदा प्लेटफ़ॉर्म पर अपडेट पाएँ', disclaimerShort: 'स्वतंत्र सूचना मंच। किसी सरकारी विभाग से संबद्ध नहीं।',
-    updated: 'अपडेट', published: 'प्रकाशित', lastVerified: 'अंतिम सत्यापन', source: 'आधिकारिक स्रोत', apply: 'आधिकारिक वेबसाइट', readMore: 'विवरण देखें',
-    articleCount: 'अपडेट', noArticles: 'यहाँ अभी कोई अपडेट प्रकाशित नहीं है।', allCategories: 'सभी श्रेणियाँ', backToUpdates: 'अपडेट पर वापस जाएँ', verification: 'सत्यापन स्थिति',
-    closed: 'बंद', disclaimer: 'अस्वीकरण', deadlines: 'आगामी अंतिम तिथियाँ', saved: 'सहेजे गए लेख', recent: 'हाल में देखे गए', save: 'बाद के लिए सहेजें', savedLabel: 'सहेजा गया', share: 'साझा करें',
+    updated: 'अपडेट किया गया', published: 'प्रकाशित', lastVerified: 'अंतिम सत्यापन', source: 'आधिकारिक स्रोत', apply: 'आधिकारिक वेबसाइट', readMore: 'विवरण देखें',
+    noArticles: 'यहाँ अभी तक कोई अपडेट प्रकाशित नहीं हुआ है।', allCategories: 'सभी श्रेणियाँ', backToUpdates: 'अपडेट पर वापस जाएँ', verification: 'सत्यापन स्थिति',
+    closed: 'बंद', deadlines: 'आगामी अंतिम तिथियाँ', saved: 'सहेजे गए लेख', recent: 'हाल में देखे गए', save: 'बाद के लिए सहेजें', savedLabel: 'सहेजा गया', share: 'साझा करें',
     popularServices: 'लोकप्रिय योजनाएँ और सेवाएँ', stayUpdated: 'अपडेट पाते रहें', stayUpdatedText: 'महत्वपूर्ण सरकारी जानकारी और अंतिम तिथि अलर्ट पाएँ।',
-    latestTicker: 'नवीनतम अपडेट', demoVersion: 'डेमो संस्करण', copyEmail: 'ईमेल कॉपी करें', copied: 'कॉपी हो गया', officialLinks: 'आधिकारिक लिंक और स्रोत'
+    latestTicker: 'नवीनतम अपडेट', demoVersion: 'डेमो संस्करण', copyEmail: 'ईमेल कॉपी करें', copied: 'कॉपी हो गया', officialLinks: 'आधिकारिक लिंक और स्रोत',
+    primaryNav: 'मुख्य नेविगेशन', mobileNav: 'मोबाइल नेविगेशन', quickLinks: 'त्वरित लिंक', language: 'भाषा', closeMenu: 'मेनू बंद करें', changeTheme: 'थीम बदलें', skipToContent: 'मुख्य सामग्री पर जाएँ', logo: 'लोगो',
+    filtersAndSorting: 'फ़िल्टर और क्रमबद्ध करें', allIndia: 'संपूर्ण भारत', centralGovernment: 'केंद्र सरकार', stateGovernments: 'राज्य सरकारें', allStates: 'सभी राज्य',
+    governmentLevel: 'सरकारी क्षेत्र', state: 'राज्य या केंद्र शासित प्रदेश', category: 'श्रेणी', deadlineStatus: 'अंतिम तिथि की स्थिति', allStatuses: 'सभी स्थितियाँ', verificationStatus: 'सत्यापन स्थिति', sort: 'अपडेट क्रमबद्ध करें',
+    open: 'खुला', closingSoon: 'जल्द बंद', urgent: '3 दिन या कम', confirmed: 'पुष्टि की गई', underVerification: 'सत्यापन जारी', nearestDeadline: 'निकटतम अंतिम तिथि',
+    updateCount: '{count} अपडेट', featured: 'विशेष अपडेट', demo: 'डेमो',
+    demoFeatureTitle: 'प्रकाशित विशेष अपडेट यहाँ दिखाई देगा', demoFeatureBody: 'CMS से सत्यापित लेख प्रकाशित करने पर यह कार्ड अपने आप अपडेट होगा।',
+    demoPublished: 'प्रकाशित अपडेट यहाँ दिखाई देंगे।', demoDeadlines: 'अंतिम तिथि वाला लेख प्रकाशित होने पर निकटतम तारीखें यहाँ दिखाई देंगी।',
+    tickerJobs: 'डेमो — सरकारी नौकरी अपडेट यहाँ दिखाई देंगे', tickerSchemes: 'डेमो — कल्याण योजना अपडेट यहाँ दिखाई देंगे', tickerExams: 'डेमो — परीक्षा अपडेट यहाँ दिखाई देंगे',
+    contactUs: 'संपर्क करें', exploreFooter: 'देखें', trustPolicies: 'विश्वास और नीतियाँ', telegramUpdates: 'Telegram अपडेट', whatsappUpdates: 'WhatsApp अपडेट',
+    fastUpdateAlerts: 'त्वरित अपडेट अलर्ट', channelUpdates: 'चैनल अपडेट', practiceCommunity: 'अभ्यास समुदाय', independentService: 'स्वतंत्र सूचना सेवा', notGovernmentWebsite: 'सरकारी वेबसाइट नहीं', backToTop: 'ऊपर जाएँ',
+    savedDescription: 'इस डिवाइस पर सहेजे गए लेख। लॉगिन आवश्यक नहीं है।', deadlinesDescription: 'निकटतम वैध अंतिम तिथियाँ पहले दिखाई गई हैं। बंद मदें स्पष्ट रूप से चिह्नित हैं।',
+    deadline: 'अंतिम तिथि', copyLink: 'लिंक कॉपी करें', breadcrumb: 'पृष्ठ क्रम', checkOriginal: 'निर्णय लेने से पहले मूल सरकारी दस्तावेज़ जाँचें।', sourceItem: 'स्रोत',
+    quickSummary: 'त्वरित सारांश', importantDates: 'महत्वपूर्ण तिथियाँ', eligibility: 'पात्रता', amount: 'लाभ, रिक्तियाँ या राशि', requiredDocuments: 'आवश्यक दस्तावेज़', updateHistory: 'अपडेट इतिहास', relatedArticles: 'संबंधित लेख', faq: 'सामान्य प्रश्न', primarySource: 'प्राथमिक स्रोत: आधिकारिक सूचना या पोर्टल',
+    policyUpdated: 'अंतिम अपडेट: जुलाई 2026', publishingCorrections: 'प्रकाशन और सुधार', publishingCorrectionsText: 'तारीख, राशि, रिक्ति और पात्रता मूल सरकारी दस्तावेज़ से मिलाई जाती है। सुधार या अंतिम तिथि बदलने पर लेख के अपडेट इतिहास में बदलाव दर्ज किया जाता है।'
   }
 } as const;
 
@@ -89,6 +137,11 @@ export function replaceLocale(pathname: string, locale: Locale) {
 }
 
 export function dateLocale(locale: Locale) { return localeMeta[locale].intl; }
+
+export function formatUpdateCount(locale: Locale, count: number) {
+  const number = new Intl.NumberFormat(dateLocale(locale)).format(count);
+  return ui(locale).updateCount.replace('{count}', number);
+}
 
 export const verificationLabels = {
   en: { 'officially-confirmed': 'Officially Confirmed', 'under-verification': 'Under Verification', corrected: 'Corrected', withdrawn: 'Withdrawn', closed: 'Closed' },

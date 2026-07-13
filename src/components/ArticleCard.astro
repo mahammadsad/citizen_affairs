@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCategoryData, categoryName } from '@lib/content';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
+import { normalizeRegionLabel, regionName } from '@lib/regions';
 import Icon from './Icon.astro';
 import { dateLocale, localizedPath, type Locale, ui, verificationLabels } from '../i18n';
 
@@ -14,9 +15,12 @@ const displayDate = article.data.updated || article.data.date;
 const date = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'short', day: 'numeric' }).format(displayDate);
 const state = deadlineState(article.data.deadline);
 const fallbackIcon: Record<string,string> = { jobs:'briefcase', projects:'schemes', exams:'exams', notices:'notices', affairs:'services', materials:'education' };
-const levelLabel = article.data.regionLabel || (article.data.governmentLevel === 'central' ? (locale === 'bn' ? 'কেন্দ্রীয়' : locale === 'hi' ? 'केंद्र' : 'Central Government') : article.data.governmentLevel === 'west-bengal' ? 'West Bengal' : article.data.governmentLevel === 'other-state' ? (locale === 'bn' ? 'অন্যান্য রাজ্য' : locale === 'hi' ? 'अन्य राज्य' : 'Other State') : '');
+const normalizedLevel = article.data.governmentLevel === 'central' ? 'central' : article.data.governmentLevel ? 'state' : '';
+const stateId = article.data.state || (article.data.governmentLevel === 'west-bengal' ? 'west-bengal' : normalizeRegionLabel(article.data.regionLabel));
+const localizedRegion = regionName(stateId, locale);
+const levelLabel = normalizedLevel === 'central' ? t.centralGovernment : localizedRegion || article.data.regionLabel || (normalizedLevel === 'state' ? t.stateGovernments : '');
 ---
-<a href={localizedPath(locale, `articles/${article.data.urlSlug}`)} class:list={['article-card', { compact }]} data-category={article.data.category} data-level={article.data.governmentLevel || ''} data-status={state} data-verification={article.data.verificationStatus} data-date={displayDate.toISOString()} data-deadline={article.data.deadline?.toISOString() || ''}>
+<a href={localizedPath(locale, `articles/${article.data.urlSlug}`)} class:list={['article-card', { compact }]} data-category={article.data.category} data-level={normalizedLevel} data-state={stateId} data-status={state} data-verification={article.data.verificationStatus} data-date={displayDate.toISOString()} data-deadline={article.data.deadline?.toISOString() || ''}>
   <div class="article-media">{article.data.featuredImage ? <img src={article.data.featuredImage} alt={article.data.featuredImageAlt || article.data.title} width="640" height="360" loading="lazy" decoding="async" /> : <div class="article-fallback"><Icon name={fallbackIcon[article.data.category] || 'updates'} size={48} /></div>} {levelLabel && <span class="level-label">{levelLabel}</span>}</div>
   <div class="article-card-body"><div class="article-card-meta"><span class="article-card-category">{categoryLabel}</span><span class={`verification-dot status-${article.data.verificationStatus}`}>{verificationLabels[locale][article.data.verificationStatus]}</span></div><h3>{article.data.title}</h3><p>{article.data.description}</p><div class="article-dates"><span>{article.data.updated ? t.updated : t.published}: {date}</span>{article.data.deadline && <span class={`deadline status-${state}`}>{deadlineLabel(state, locale)} · {new Intl.DateTimeFormat(dateLocale(locale), { day:'numeric', month:'short', year:'numeric' }).format(article.data.deadline)}</span>}</div><span class="article-link">{t.readMore}<Icon name="arrow" size={18} /></span></div>
 </a>
