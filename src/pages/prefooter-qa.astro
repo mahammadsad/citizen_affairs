@@ -28,11 +28,11 @@ const cases = [
           const width=Number(frame.dataset.width),locale=frame.dataset.locale||'en';
           frame.scrollIntoView({block:'center'});await load(frame,`${base}${locale}/?prefooter-qa=${width}`);await wait(100);
           const doc=frame.contentDocument!,win=frame.contentWindow!,card=doc.querySelector<HTMLElement>('.prefooter')!,actions=doc.querySelector<HTMLElement>('.prefooter-actions')!;
-          const rect=card.getBoundingClientRect(),links=[...actions.querySelectorAll<HTMLElement>('a')],left=rect.left,right=win.innerWidth-rect.right;
+          const rect=card.getBoundingClientRect(),links=[...actions.querySelectorAll<HTMLElement>('a')],viewportWidth=doc.documentElement.clientWidth,left=rect.left,right=viewportWidth-rect.right;
           const checks={
             exactWidth:win.innerWidth===width,
-            noDocumentOverflow:doc.documentElement.scrollWidth<=win.innerWidth,
-            cardInsideViewport:rect.left>=0&&rect.right<=win.innerWidth,
+            noDocumentOverflow:doc.documentElement.scrollWidth<=viewportWidth,
+            cardInsideViewport:rect.left>=0&&rect.right<=viewportWidth,
             balancedGutters:Math.abs(left-right)<=1,
             intendedGutter:width>940||Math.abs(left-16)<=1,
             actionsInsideCard:links.every(link=>{const r=link.getBoundingClientRect();return r.left>=rect.left&&r.right<=rect.right&&r.top>=rect.top&&r.bottom<=rect.bottom}),
