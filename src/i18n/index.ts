@@ -135,6 +135,12 @@ export function trustPagePath(locale: Locale, page: TrustPageId) {
   return `${BASE_PATH}${prefix}${segment}/`;
 }
 
+export function authorProfilePath(locale: Locale, slug: string) {
+  const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : 'mahammad-sad';
+  const prefix = locale === 'en' ? '' : `${locale}/`;
+  return `${BASE_PATH}${prefix}authors/${safeSlug}/`;
+}
+
 export function replaceLocale(pathname: string, locale: Locale) {
   const path = pathname.startsWith(BASE_PATH) ? pathname.slice(BASE_PATH.length) : pathname.replace(/^\//, '');
   const segments = path.split('/').filter(Boolean);

@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import MainLayout from '@layouts/MainLayout.astro';
+import { generateBreadcrumbs } from '@lib/seo';
+import { getArticlesByAuthorSlug } from '@lib/content';
+import { getBrandName, resolveAssetPath, SITE } from '@utils/constants';
+import { authorProfilePath, locales, localizedPath, type Locale } from '../i18n';
+
+interface Props { locale: Locale; author: CollectionEntry<'authors'>; }
+const { locale, author } = Astro.props;
+const data = author.data;
+const brandName = getBrandName(locale);
+const route = authorProfilePath(locale, author.id);
+const canonical = new URL(route, SITE.url).href;
+const alternateUrls = Object.fromEntries(locales.map((language) => [language, new URL(authorProfilePath(language, author.id), SITE.url).href])) as Record<Locale, string>;
+const copy = {
+  en: { home: 'Home', profile: 'Author profile', role: 'Role', expertise: 'Areas of expertise', languages: 'Languages', method: 'Verification methodology', articles: 'Published articles', empty: 'No published articles in this language yet.' },
+  bn: { home: 'হোম', profile: 'লেখকের প্রোফাইল', role: 'ভূমিকা', expertise: 'দক্ষতার ক্ষেত্র', languages: 'ভাষা', method: 'তথ্য যাচাইয়ের পদ্ধতি', articles: 'প্রকাশিত নিবন্ধ', empty: 'এই ভাষায় এখনও কোনো নিবন্ধ প্রকাশিত হয়নি।' },
+  hi: { home: 'होम', profile: 'लेखक प्रोफ़ाइल', role: 'भूमिका', expertise: 'विशेषज्ञता के क्षेत्र', languages: 'भाषाएँ', method: 'सत्यापन पद्धति', articles: 'प्रकाशित लेख', empty: 'इस भाषा में अभी कोई लेख प्रकाशित नहीं हुआ है।' }
+}[locale];
+const authorArticles = (await getArticlesByAuthorSlug(author.id)).filter((article) => article.data.language === locale && article.data.verificationStatus !== 'withdrawn');
+const breadcrumbSchema = generateBreadcrumbs([{ name: copy.home, url: new URL(localizedPath(locale), SITE.url).href }, { name: data.name }]);
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: data.name,
+  url: canonical,
+  jobTitle: data.publicRole,
+  description: data.bio,
+  knowsAbout: data.areasOfExpertise,
+  worksFor: { '@type': 'Organization', name: brandName, url: SITE.url }
+};
+---
+<MainLayout title={`${data.name} — ${copy.profile}`} description={data.bio || `${data.name}, ${brandName}`} {locale} {canonical} {alternateUrls} structuredData={[personSchema, breadcrumbSchema]}>
+  <article class="author-page container">
+    <nav class="author-breadcrumbs" aria-label={copy.profile}><a href={localizedPath(locale)}>{copy.home}</a><span aria-hidden="true">›</span><span>{data.name}</span></nav>
+    <header class="author-header">
+      {data.image && <img src={resolveAssetPath(data.image)} alt="" width="112" height="112" />}
+      <span>{copy.profile}</span>
+      <h1>{data.name}</h1>
+      {data.publicRole && <p class="author-role">{data.publicRole}</p>}
+      {data.bio && <p class="author-bio">{data.bio}</p>}
+    </header>
+    <div class="author-details">
+      {data.areasOfExpertise.length > 0 && <section><h2>{copy.expertise}</h2><ul>{data.areasOfExpertise.map((item) => <li>{item}</li>)}</ul></section>}
+      {data.languages.length > 0 && <section><h2>{copy.languages}</h2><ul>{data.languages.map((item) => <li>{item.toUpperCase()}</li>)}</ul></section>}
+      {data.verificationMethodology && <section><h2>{copy.method}</h2><p>{data.verificationMethodology}</p></section>}
+    </div>
+    <section class="author-articles"><h2>{copy.articles}</h2>{authorArticles.length > 0 ? <div>{authorArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <p>{copy.empty}</p>}</section>
+  </article>
+</MainLayout>
+<style>
+  .author-page{max-width:960px;padding-block:2rem 5rem}.author-breadcrumbs{display:flex;gap:.5rem;flex-wrap:wrap;color:var(--color-text-muted);font-size:.84rem;margin-bottom:2rem}.author-breadcrumbs a{color:var(--color-primary);font-weight:700}.author-header{max-width:760px;margin-bottom:2rem}.author-header>span{display:block;color:var(--color-primary);font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:.76rem}.author-header img{display:block;border-radius:22px;border:1px solid var(--color-border);background:var(--color-surface);margin-bottom:1rem}.author-header h1{font-size:clamp(2.2rem,6vw,4rem);margin:.55rem 0}.author-role{font-weight:800;color:var(--color-primary)}.author-bio{font-size:1.1rem;line-height:1.8;color:var(--color-text-muted);margin-top:.8rem}.author-details{display:grid;gap:1rem}.author-details section,.author-articles{padding:1.3rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.author-details h2,.author-articles h2{font-size:1.25rem;margin-bottom:.6rem}.author-details ul{list-style:disc;margin-left:1.2rem;color:var(--color-text-muted)}.author-details p,.author-articles>p{color:var(--color-text-muted);line-height:1.75}.author-articles{margin-top:1rem}.author-articles>div{display:grid;gap:1rem;margin-top:1rem}@media(min-width:720px){.author-details{grid-template-columns:repeat(3,minmax(0,1fr))}.author-articles>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
