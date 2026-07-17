@@ -233,7 +233,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
 <style>
   .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
   [data-theme="dark"] .site-header{background:rgba(10,18,32,.9)}
-  .navbar{position:relative;z-index:5;height:74px;overflow:visible}.brand-logo{width:46px;height:46px;object-fit:contain}.brand-logo-horizontal{display:none;width:132px;height:auto}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
+  .navbar{position:relative;z-index:5;height:74px;overflow:visible}:global(.brand-logo){width:46px;height:46px;object-fit:contain}:global(.brand-logo-horizontal){display:none;width:132px;height:auto}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
   .language-picker{position:relative;z-index:2}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;z-index:20;right:0;top:calc(100% + .55rem);min-width:174px;max-width:min(240px,calc(100vw - 1.5rem));padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg);pointer-events:auto;isolation:isolate}.language-menu[hidden]{display:none;pointer-events:none}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;min-height:44px;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
   .desktop-theme{display:none}
 
@@ -244,7 +244,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
   .mobile-drawer.is-open{transform:none}
   .mobile-drawer[hidden],.mobile-backdrop[hidden]{display:none}
   .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:0 0 auto;min-height:74px;padding:max(.7rem,env(safe-area-inset-top)) 1rem .7rem;border-bottom:1px solid var(--color-border)}
-  .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}.drawer-brand-logo{display:block;width:132px;height:auto;max-height:56px;object-fit:contain}
+  .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}:global(.drawer-brand-logo){display:block;width:132px;height:auto;max-height:56px;object-fit:contain}
   .drawer-close{display:grid;place-items:center;flex:0 0 auto;width:44px;height:44px;border:1px solid var(--color-border);border-radius:50%;background:var(--color-surface-alt)}.drawer-close span{font-size:1.8rem;line-height:1;transform:translateY(-1px)}
   .drawer-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:1rem max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom))}
   .drawer-scroll section+section{margin-top:1.25rem}.drawer-scroll h2{font-family:var(--font-body);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--color-text-muted);margin:0 0 .55rem .25rem}
@@ -256,7 +256,8 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
   :global(body.menu-open){overflow:hidden;overscroll-behavior:none}
 
   @media(max-width:520px){.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
+  @media(max-width:420px){.language-picker{display:none}}
   @media(max-width:350px){.navbar{padding-inline:.7rem}.nav-actions{gap:.1rem}.mobile-drawer{width:100vw}.drawer-languages{grid-template-columns:1fr}}
-  @media(min-width:620px){.brand-logo-mobile{display:none}.brand-logo-horizontal{display:block}}
+  @media(min-width:620px){:global(.brand-logo-mobile){display:none}:global(.brand-logo-horizontal){display:block}}
   @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}}
 </style>
