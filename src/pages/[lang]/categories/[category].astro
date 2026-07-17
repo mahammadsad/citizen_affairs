@@ -5,10 +5,10 @@ import { getCollection } from 'astro:content';
 import { categoryDescription, categoryName, getLocalizedArticlesByCategory } from '@lib/content';
 import type { Locale } from '../../../i18n';
 import { formatUpdateCount, locales, localizedPath, ui } from '../../../i18n';
-import { SITE } from '@utils/constants';
+import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
 
 export async function getStaticPaths() {
-  const categories = await getCollection('categories');
+  const categories = (await getCollection('categories')).filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id));
   return locales.flatMap((locale) => categories.map((category) => ({ params: { lang: locale, category: category.id }, props: { locale, category } })));
 }
 const { locale, category } = Astro.props as { locale: Locale; category: any };

@@ -19,6 +19,21 @@ export function getBrandTagline(locale: BrandLocale = 'en') {
   return BRAND.brandTaglineEn;
 }
 
+export function getVerticalName(locale: BrandLocale = 'en') {
+  if (locale === 'bn') return BRAND.verticalNameBn;
+  if (locale === 'hi') return BRAND.verticalNameHi;
+  return BRAND.verticalNameEn;
+}
+
+export function getTransitionNotice(locale: BrandLocale = 'en') {
+  if (locale === 'bn') return BRAND.transitionNoticeBn;
+  if (locale === 'hi') return BRAND.transitionNoticeHi;
+  return BRAND.transitionNoticeEn;
+}
+
+export const ACTIVE_CATEGORY_IDS = BRAND.activeCategoryIds as readonly string[];
+export const isActiveCategory = (categoryId: string) => ACTIVE_CATEGORY_IDS.includes(categoryId);
+
 export function withBasePath(path = '') {
   return `${BASE_PATH}${path.replace(/^\/+/, '')}`;
 }
@@ -41,7 +56,7 @@ export const SITE = {
   taglineEn: BRAND.brandTaglineEn,
   taglineBn: BRAND.brandTaglineBn,
   taglineHi: BRAND.brandTaglineHi,
-  description: 'Verified Central and State Government jobs, welfare schemes, education, exams and public-service updates from across India.',
+  description: 'Verified Central and State Government jobs and welfare schemes, clearly explained with official sources.',
   url: SITE_URL,
   basePath: BASE_PATH,
   logo: withBasePath(BRAND.logo),

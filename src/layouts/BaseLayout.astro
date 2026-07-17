@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/components.css';
-import { BRAND, getBrandName, getBrandTagline, SITE } from '@utils/constants';
+import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
 import { toAbsoluteUrl } from '@lib/seo';
 import { locales, type Locale, ui } from '../i18n';
 
@@ -33,6 +33,7 @@ const brandName = getBrandName(locale);
 const resolvedTitle = title || brandName;
 const fullTitle = resolvedTitle === brandName ? resolvedTitle : `${resolvedTitle} | ${brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
+const ogImageType = ogImage.toLowerCase().endsWith('.png') ? 'image/png' : ogImage.toLowerCase().endsWith('.webp') ? 'image/webp' : 'image/jpeg';
 const ogImageAlt = `${brandName} — ${getBrandTagline(locale)}`;
 const websiteSchema = {
   '@context': 'https://schema.org',
@@ -41,16 +42,26 @@ const websiteSchema = {
   alternateName: BRAND.brandShortName,
   url: SITE.url,
   description,
-  inLanguage: locales
+  inLanguage: locales,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${SITE.url}/search/?q={search_term_string}`,
+    'query-input': 'required name=search_term_string'
+  }
 };
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: brandName,
+  name: getBrandName('en'),
+  alternateName: [BRAND.brandShortName, BRAND.verticalNameEn, BRAND.verticalNameBn, BRAND.verticalNameHi],
   url: SITE.url,
   logo: toAbsoluteUrl(SITE.logo, SITE.url),
   email: BRAND.contactEmail,
-  description
+  description,
+  sameAs: [SOCIALS.telegram, SOCIALS.whatsapp],
+  publishingPrinciples: `${SITE.url}/en/editorial-policy/`,
+  ethicsPolicy: `${SITE.url}/en/editorial-policy/`,
+  correctionsPolicy: `${SITE.url}/corrections/`
 };
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
@@ -83,7 +94,7 @@ const t = ui(locale);
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:secure_url" content={ogImage} />
-    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:type" content={ogImageType} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={ogImageAlt} />

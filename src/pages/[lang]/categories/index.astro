@@ -3,12 +3,12 @@ import MainLayout from '@layouts/MainLayout.astro';
 import { getCollection } from 'astro:content';
 import { categoryDescription, categoryName } from '@lib/content';
 import { locales, type Locale, localizedPath, ui } from '../../../i18n';
-import { SITE } from '@utils/constants';
+import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
 
 export function getStaticPaths() { return locales.map((lang) => ({ params: { lang }, props: { locale: lang } })); }
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const categories = await getCollection('categories');
+const categories = (await getCollection('categories')).filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id));
 const canonical = `${SITE.url}/${locale}/categories/`;
 const alternateUrls = Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/categories/`])) as Record<Locale,string>;
 ---

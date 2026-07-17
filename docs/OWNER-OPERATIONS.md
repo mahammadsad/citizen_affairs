@@ -1,0 +1,32 @@
+# Owner operations
+
+This is the shortest safe operating guide.
+
+## Publish an article
+
+1. Sign in at `/staff/` with an active Supabase staff account.
+2. Create a draft. Complete its Job or Scheme details, official sources and staff assignments in Supabase Studio until the fuller form UI is connected.
+3. A different editor, fact-checker and final reviewer record approvals for the current article version.
+4. Move the item to **Approved** with a written reason.
+5. A Publisher selects **Request publication**, enters a reason, and starts the protected build.
+6. GitHub opens a content pull request. Required checks must pass; branch protection controls merging.
+7. GitHub Pages deploys the merge. Only then does the callback set the database record to **Published**.
+
+If any factual field, source, deadline, Job detail or Scheme detail changes, the database increments the article version and invalidates old approvals. Review the new version again.
+
+## Everyday checks
+
+- Review overdue `next_review_date` items.
+- Close expired job applications instead of silently deleting them.
+- Check official-source links and changed PDFs.
+- Review correction reports; publish material corrections in the public log.
+- Keep Owner accounts for emergencies. Use a normal editorial role for daily work.
+
+## Never do these
+
+- Never send a Supabase secret key, service-role key, GitHub token or password in chat, email, Markdown or browser code.
+- Never mark an article Officially Confirmed without a primary official source and independent fact-check approval.
+- Never change an approved fact directly to avoid re-review.
+- Never claim a deployment succeeded until GitHub Pages and the publication event both say it succeeded.
+
+See [Troubleshooting](TROUBLESHOOTING.md) when a step fails.

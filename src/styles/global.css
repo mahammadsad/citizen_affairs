@@ -43,14 +43,14 @@
 
 @font-face {
   font-family: "Hind Siliguri";
-  src: url("../assets/fonts/HindSiliguri-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/HindSiliguri-Regular.ttf") format("truetype");
   font-weight: 400 600;
   font-display: swap;
 }
 
 @font-face {
   font-family: "Hind Siliguri";
-  src: url("../assets/fonts/HindSiliguri-Bold.ttf") format("truetype");
+  src: url("/assets/fonts/HindSiliguri-Bold.ttf") format("truetype");
   font-weight: 700;
   font-display: swap;
 }

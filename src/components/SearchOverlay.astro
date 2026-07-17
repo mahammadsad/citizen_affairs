@@ -11,9 +11,9 @@ const popular = t.popularSearchTerms;
 <div class="search-overlay" id="searchOverlay" data-index-url={`${SITE.basePath}${locale}/search-index.json`} data-hint={t.searchHint} data-empty={t.noResults} data-locale={locale} hidden>
   <div class="search-box" role="dialog" aria-modal="true" aria-labelledby="searchTitle">
     <h2 id="searchTitle" class="sr-only">{t.search}</h2>
-    <form id="searchForm" role="search">
+    <form id="searchForm" role="search" action={locale === 'en' ? `${SITE.basePath}search/` : `${SITE.basePath}${locale}/search/`}>
       <span aria-hidden="true">⌕</span>
-      <input type="search" id="searchInput" placeholder={t.searchPlaceholder} autocomplete="off" aria-label={t.search} />
+      <input type="search" id="searchInput" name="q" placeholder={t.searchPlaceholder} autocomplete="off" aria-label={t.search} />
       <kbd>/</kbd>
       <button type="button" class="icon-btn" id="searchClose" aria-label={t.close}>×</button>
     </form>
@@ -43,7 +43,7 @@ const popular = t.popularSearchTerms;
   const closeSearch=()=>{overlay?.setAttribute('hidden','');document.body.classList.remove('search-open');toggle?.focus()};
   toggle?.addEventListener('click',openSearch);close?.addEventListener('click',closeSearch);overlay?.addEventListener('click',e=>{if(e.target===overlay)closeSearch()});
   document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes((e.target as HTMLElement).tagName)){e.preventDefault();openSearch()}if(e.key==='Escape'&&!overlay?.hasAttribute('hidden'))closeSearch()});
-  document.getElementById('searchForm')?.addEventListener('submit',e=>e.preventDefault());input?.addEventListener('input',()=>runSearch(input.value));
+  input?.addEventListener('input',()=>runSearch(input.value));
   document.querySelectorAll<HTMLElement>('[data-search-term]').forEach(b=>b.addEventListener('click',()=>{if(input){input.value=b.dataset.searchTerm||'';runSearch(input.value);input.focus()}}));
 </script>
 

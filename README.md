@@ -1,93 +1,45 @@
-# Sarkari Tathya Kendra
+# Citizen Affairs India
 
-Sarkari Tathya Kendra is an independent, multilingual public-information website. It explains government jobs, welfare schemes, education, examinations, notices, and public services in clear language while linking readers to the original official source.
+Citizen Affairs India is a fast, static, multilingual public-information site focused initially on verified **Government Jobs** and **Welfare Schemes**. Sarkari Tathya Kendra remains the recognizable government-information vertical during the brand transition.
 
-The site is built with Astro 5, TypeScript, Markdown content collections, and Pages CMS. It is statically deployed to GitHub Pages and does not require a paid service or backend.
+The public site uses Astro, TypeScript and portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. Publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
 
-## Supported languages
+## Owner quick start
 
-- English at the site root
-- Bengali under `/bn/`
-- Hindi under `/hi/`
+1. Read [Owner operations](docs/OWNER-OPERATIONS.md).
+2. For a local site preview, install Node.js 22, then run `npm ci` and `npm run dev`.
+3. Before any pull request, run `npm run validate`.
+4. Do not put a secret key in a `PUBLIC_` variable or any browser file.
+5. Pages CMS is a temporary owner-only draft editor. It does not replace the approval system.
 
-Translated versions of one topic share a `translationKey`, allowing the language switcher and alternate-language SEO metadata to connect equivalent pages.
+## Main commands
 
-## Local development
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start the local Astro preview |
+| `npm run check` | Astro and TypeScript diagnostics |
+| `npm run validate:content` | Editorial, source, image and date gates |
+| `npm run build` | Generate the static site |
+| `npm run validate:html` | Validate routes, headings, metadata, JSON-LD and links |
+| `npm run validate` | Run the complete safe-publication check |
 
-Requirements: a current Node.js LTS release and npm.
+## Repository map
 
-```bash
-npm ci
-npm run check
-npm run type-check
-npm run build
-npm run dev
-```
+- `src/content/` — portable public article, author, category and correction records
+- `src/pages/` and `src/components/` — multilingual public website and private staff workspace shell
+- `scripts/` — content, HTML and approved-snapshot validation/export
+- `supabase/migrations/` — additive database schema, workflow rules and RLS
+- `supabase/functions/` — authenticated publication request and deployment callback
+- `.github/workflows/` — PR validation, Pages deployment and protected content export
+- `brand.config.json` — centralized brand, legacy vertical, domain and contact settings
+- `docs/` — owner, editorial, security, deployment and recovery guides
 
-`npm run dev` starts the Astro development server. `npm run build` creates the static site in `dist/` using the configured GitHub Pages base path.
+## Languages and launch scope
 
-## Publishing content
+English, Bengali and Hindi remain supported. Equivalent translations share one `translationKey`. Only the `jobs` and `projects` categories are active; future sections remain configured but hidden until they have an editorial owner and enough verified content.
 
-Articles live in:
+## Important status
 
-- `src/content/articles/en/`
-- `src/content/articles/bn/`
-- `src/content/articles/hi/`
+The repository contains the complete migration and integration code, but it is intentionally **not applied to either existing connected Supabase project** because neither is identified as the Citizen Affairs editorial project. Follow [Deployment](docs/DEPLOYMENT.md) after creating or explicitly selecting the correct project.
 
-Create content through Pages CMS or add a Markdown file with YAML frontmatter that satisfies `src/content/config.ts`.
-
-For a translated topic:
-
-1. Create one article in each required language folder.
-2. Give every translation the same `translationKey`.
-3. Use a lowercase English-letter `urlSlug` containing only letters, numbers, and hyphens.
-4. Add at least one primary official source URL.
-5. Set the correct language, author, category, publication date, last-verified date, and verification status.
-6. Leave `deadline` empty unless an official current document explicitly provides one.
-7. Keep `draft: true` until the article is complete and reviewed.
-
-Pages CMS commits published edits to `main`; the GitHub Actions workflow validates and deploys the resulting static site.
-
-## Article verification rules
-
-- Begin with a primary source: an official government portal, notification, order, or document.
-- Confirm changing facts such as dates, eligibility, fees, amounts, vacancies, application links, and status directly against that source.
-- Do not treat social posts, search snippets, copied notices, or third-party summaries as final authority.
-- Do not invent a deadline, vacancy count, benefit amount, announcement, or featured image.
-- Explain information in original language; do not copy substantial wording from a source.
-- Tell readers to review the original official document before applying, paying, uploading documents, or acting.
-- Record material updates and confirmed corrections in `updateHistory`.
-- Recheck every external link and update `lastVerified` during review.
-
-Use `officially-confirmed` only when the article's claims are directly supported by the linked official government source.
-
-## Publication and verification statuses
-
-- `draft: true`: Work in progress. Draft articles are excluded from normal listings, search, homepage cards, RSS, and the sitemap.
-- `officially-confirmed`: The material claims have been checked against a directly supporting official source.
-- `under-verification`: The article is not yet fully confirmed against a sufficient primary source.
-- `corrected`: A material factual error was fixed transparently. The change should be described in `updateHistory`.
-- `withdrawn`: The central claim cannot be supported or the article cannot be made reliably accurate. Withdrawn articles are removed from public discovery surfaces.
-- `closed`: A time-bound process is no longer open. Preserve the original official source and make the closed state clear.
-
-## GitHub Pages deployment
-
-The production site is configured for:
-
-`https://mahammadsad.github.io/sarkari-tathya-kendra`
-
-`.github/workflows/deploy.yml` installs dependencies, validates the project, builds the static output, and publishes it to GitHub Pages. `astro.config.mjs` and `src/utils/constants.ts` share the project base-path rules so internal links, canonical URLs, assets, RSS, and sitemap URLs work under `/sarkari-tathya-kendra/`.
-
-When moving to a custom domain, set `domain` in `brand.config.json` to the full origin without a trailing slash. The base path will then switch to `/`.
-
-## Branding configuration
-
-All public brand names, localized taglines, the logo path, domain, and contact email are centralized in `brand.config.json`.
-
-- `brandNameEn`, `brandNameBn`, and `brandNameHi` control localized full names.
-- `brandShortName` controls the short manifest/schema name.
-- `brandTaglineEn`, `brandTaglineBn`, and `brandTaglineHi` control localized taglines.
-- `logo` points to a public asset relative to the configured base path.
-- `contactEmail` is used by the footer and trust pages.
-
-Shared layouts and components must use `getBrandName`, `getBrandTagline`, `BRAND`, or `SITE` from `src/utils/constants.ts`; do not hardcode a public brand name in shared UI.
+Start with [Architecture](docs/ARCHITECTURE.md), [Editorial workflow](docs/EDITORIAL-WORKFLOW.md), and the [Implementation report](docs/IMPLEMENTATION-REPORT.md).

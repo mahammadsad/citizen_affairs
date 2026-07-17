@@ -1,0 +1,9 @@
+# Default owner until additional technical and language reviewers are appointed.
+* @mahammadsad
+
+/.github/ @mahammadsad
+/src/layouts/ @mahammadsad
+/src/content/config.ts @mahammadsad
+/src/i18n/ @mahammadsad
+/public/ @mahammadsad
+/supabase/migrations/ @mahammadsad

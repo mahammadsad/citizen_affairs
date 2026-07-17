@@ -1,13 +1,13 @@
 import { getCollection } from 'astro:content';
-import { SITE } from '@utils/constants';
+import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
 import { locales } from '../i18n';
 
 const escapeXml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
 export async function GET() {
-  const articles = await getCollection('articles', ({ data }) => !data.draft && data.verificationStatus !== 'withdrawn');
-  const categories = await getCollection('categories');
-  const staticPaths = ['', ...locales.flatMap(locale => [locale === 'en' ? null : `${locale}/`, `${locale}/articles/`, `${locale}/categories/`, `${locale}/deadlines/`, `${locale}/editorial-policy/`, `${locale}/privacy/`, `${locale}/terms/`, `${locale}/disclaimer/`]).filter((path): path is string => Boolean(path))];
+  const articles = await getCollection('articles', ({ data }) => !data.draft && ['published', 'corrected', 'closed'].includes(data.workflowStatus) && data.verificationStatus !== 'withdrawn' && ACTIVE_CATEGORY_IDS.includes(data.category));
+  const categories = (await getCollection('categories')).filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id));
+  const staticPaths = ['', 'search/', ...locales.flatMap(locale => [locale === 'en' ? null : `${locale}/`, `${locale}/articles/`, `${locale}/categories/`, `${locale}/deadlines/`, locale === 'en' ? null : `${locale}/search/`, `${locale}/editorial-policy/`, `${locale}/privacy/`, `${locale}/terms/`, `${locale}/disclaimer/`]).filter((path): path is string => Boolean(path))];
   const trustPaths = ['about/', 'contact/', 'authors/mahammad-sad/', 'corrections/', ...['bn', 'hi'].flatMap((locale) => [`${locale}/about/`, `${locale}/contact/`, `${locale}/authors/mahammad-sad/`, `${locale}/corrections/`])];
   const paths: Array<{ path: string; lastmod?: Date }> = [
     ...staticPaths.map((path) => ({ path })),
