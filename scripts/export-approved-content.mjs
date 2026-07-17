@@ -3,6 +3,8 @@ import path from 'node:path';
 import process from 'node:process';
 import { createClient } from '@supabase/supabase-js';
 import YAML from 'yaml';
+import { normalizePublicationDates, normalizePublishedBody, publicAuthorDocument, publicAuthorPath } from './lib/publication-export.mjs';
+import { promoteEditorialImage } from './lib/publication-image.mjs';
 
 const arg = (name) => process.argv[process.argv.indexOf(name) + 1];
 const articleId = arg('--article-id');
@@ -30,7 +32,10 @@ const scheme = article.content_type === 'scheme' ? await one('scheme_details', '
 const { data: sources, error: sourcesError } = await supabase.from('sources').select('*').eq('article_id', articleId).order('designation').order('created_at');
 if (sourcesError) throw new Error(`sources: ${sourcesError.message}`);
 const staffIds = [...new Set([article.author_id, article.assigned_editor_id, article.assigned_fact_checker_id, article.assigned_copy_reviewer_id, article.assigned_reviewer_id, article.assigned_publisher_id].filter(Boolean))];
-const { data: profiles, error: profilesError } = await supabase.from('staff_public_profiles').select('staff_id, slug, is_published').in('staff_id', staffIds);
+const { data: profiles, error: profilesError } = await supabase
+  .from('staff_public_profiles')
+  .select('staff_id, slug, display_name, public_role, biography, profile_image_path, areas_of_expertise, languages, verification_methodology, is_published')
+  .in('staff_id', staffIds);
 if (profilesError) throw new Error(`staff_public_profiles: ${profilesError.message}`);
 const profileById = new Map((profiles || []).map((profile) => [profile.staff_id, profile]));
 for (const staffId of staffIds) if (!profileById.get(staffId)?.is_published) throw new Error(`Staff member ${staffId} needs a published public profile before publication`);
@@ -44,6 +49,15 @@ const clean = (value) => {
   return value;
 };
 const validSourceTypes = new Set(['official-notification', 'official-portal', 'official-order', 'press-release', 'government-dataset', 'secondary']);
+const publicationDates = normalizePublicationDates(article, event);
+const publishedImage = await promoteEditorialImage({
+  supabase,
+  imagePath: article.featured_image_path,
+  imageAlt: article.featured_image_alt,
+  root: process.cwd(),
+  language: article.language,
+  slug: article.slug,
+});
 
 const frontmatter = clean({
   contentType: article.content_type,
@@ -54,8 +68,8 @@ const frontmatter = clean({
   urlSlug: article.slug,
   title: article.title,
   description: article.short_description,
-  date: iso(article.publication_date || event.requested_at),
-  updated: iso(article.updated_date),
+  date: publicationDates.published,
+  updated: publicationDates.updated,
   author: staffSlug(article.author_id),
   assignedEditor: staffSlug(article.assigned_editor_id),
   factCheckedBy: staffSlug(article.assigned_fact_checker_id),
@@ -67,8 +81,8 @@ const frontmatter = clean({
   category: section.slug,
   tags: article.tags || [],
   featured: article.featured,
-  featuredImage: article.featured_image_path?.startsWith('/uploads/') ? article.featured_image_path : undefined,
-  featuredImageAlt: article.featured_image_path?.startsWith('/uploads/') ? article.featured_image_alt : undefined,
+  ...publishedImage,
+  featuredImageAlt: article.featured_image_path ? article.featured_image_alt : undefined,
   draft: false,
   seoTitle: article.seo_title,
   seoDescription: article.seo_description,
@@ -120,5 +134,14 @@ const frontmatter = clean({
 const directory = path.join(process.cwd(), 'src', 'content', 'articles', article.language);
 const output = path.join(directory, `${article.slug}.md`);
 await mkdir(directory, { recursive: true });
-await writeFile(output, `---\n${YAML.stringify(frontmatter, { lineWidth: 0 }).trim()}\n---\n\n${article.body_markdown.trim()}\n`, 'utf8');
-process.stdout.write(`${output}\n`);
+await writeFile(output, `---\n${YAML.stringify(frontmatter, { lineWidth: 0 }).trim()}\n---\n\n${normalizePublishedBody(article.body_markdown, article.title)}`, 'utf8');
+
+const authorOutputs = [];
+for (const profile of profiles || []) {
+  const authorOutput = publicAuthorPath(process.cwd(), profile.slug);
+  await mkdir(path.dirname(authorOutput), { recursive: true });
+  await writeFile(authorOutput, `${JSON.stringify(publicAuthorDocument(profile), null, 2)}\n`, 'utf8');
+  authorOutputs.push(authorOutput);
+}
+
+process.stdout.write(`${[output, ...authorOutputs].join('\n')}\n`);

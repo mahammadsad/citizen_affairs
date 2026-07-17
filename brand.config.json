@@ -13,7 +13,11 @@
   "transitionNoticeBn": "Citizen Affairs India — পূর্বে সরকারি তথ্যকেন্দ্র",
   "transitionNoticeHi": "Citizen Affairs India — पूर्व में सरकारी तथ्य केंद्र",
   "activeCategoryIds": ["jobs", "projects"],
-  "logo": "assets/logo-mark.svg",
+  "logo": "assets/brand/citizen-affairs-circular.png",
+  "logoMonogram": "assets/brand/citizen-affairs-monogram.png",
+  "logoHorizontal": "assets/brand/citizen-affairs-horizontal.png",
+  "logoFull": "assets/brand/citizen-affairs-full-tagline.png",
+  "logoSocialCard": "assets/brand/citizen-affairs-social-card.png",
   "domain": "https://citizenaffairs.in",
   "contactEmail": "contact.mahammadsad@gmail.com"
 }

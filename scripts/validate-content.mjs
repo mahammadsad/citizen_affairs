@@ -4,10 +4,17 @@ import { parse } from 'yaml';
 
 const root = resolve(import.meta.dirname, '..');
 const contentRoot = join(root, 'src/content/articles');
+const authorRoot = join(root, 'src/content/authors');
 const publicRoot = join(root, 'public');
 const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
 const activeCategories = new Set(brand.activeCategoryIds);
 const errors = [];
+const authorExtensions = new Set(['.json', '.yaml', '.yml', '.toml']);
+const authorSlugs = new Set(
+  readdirSync(authorRoot, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && authorExtensions.has(extname(entry.name)))
+    .map((entry) => entry.name.slice(0, -extname(entry.name).length)),
+);
 
 function walk(directory, extension) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -51,6 +58,13 @@ for (const path of walk(contentRoot, '.md')) {
     if (!['en', 'bn', 'hi'].includes(data.language)) errors.push(`${file}: unsupported language`);
     if (!data.draft && !activeCategories.has(data.category)) errors.push(`${file}: inactive category must remain draft`);
     if (!data.draft && data.workflowStatus !== 'published') errors.push(`${file}: public content must have workflowStatus: published`);
+    for (const field of ['author', 'assignedEditor', 'factCheckedBy', 'copyReviewedBy', 'reviewedBy', 'publishedBy']) {
+      if (data[field] && !authorSlugs.has(data[field])) errors.push(`${file}: ${field} profile does not exist: ${data[field]}`);
+    }
+
+    const articleSource = readFileSync(path, 'utf8');
+    const articleBody = articleSource.replace(/^---\s*\n[\s\S]*?\n---(?:\s*\n|$)/, '');
+    if (/^#\s+/m.test(articleBody)) errors.push(`${file}: article body must not contain an h1; the article layout provides it`);
 
     const sourceCount = (data.sources?.length || 0) + (data.sourceUrls?.length || 0);
     if (!data.draft && sourceCount === 0) errors.push(`${file}: published factual content needs at least one source`);

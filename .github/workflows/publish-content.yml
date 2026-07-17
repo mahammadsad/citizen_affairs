@@ -43,26 +43,79 @@ jobs:
         run: npm ci
 
       - name: Export immutable content snapshot
-        run: node scripts/export-approved-content.mjs --article-id "$ARTICLE_ID" --event-id "$PUBLICATION_EVENT_ID"
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Content export failed" >> "$GITHUB_ENV"
+          node scripts/export-approved-content.mjs --article-id "$ARTICLE_ID" --event-id "$PUBLICATION_EVENT_ID"
 
-      - name: Validate snapshot and generated site
-        run: npm run validate
+      - name: Formatting validation
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Formatting validation failed" >> "$GITHUB_ENV"
+          npm run format:check
+
+      - name: Unit and security contract tests
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Unit or security contract tests failed" >> "$GITHUB_ENV"
+          npm test
+
+      - name: Astro type and content check
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Astro type or content check failed" >> "$GITHUB_ENV"
+          npm run check
+
+      - name: Editorial content validation
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Content schema validation failed" >> "$GITHUB_ENV"
+          npm run validate:content
+
+      - name: Production build
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Astro production build failed" >> "$GITHUB_ENV"
+          npm run build
+
+      - name: Generated HTML validation
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Generated HTML validation failed" >> "$GITHUB_ENV"
+          npm run validate:html
+
+      - name: Install visual-test browser
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Visual test browser installation failed" >> "$GITHUB_ENV"
+          npx playwright install chromium
+
+      - name: Mobile and desktop article visual tests
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Article image visual regression test failed" >> "$GITHUB_ENV"
+          npm run test:visual
+
+      - name: Upload article visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publication-visual-tests-${{ github.run_id }}
+          path: |
+            test-results
+            playwright-report
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Commit publication branch
         run: |
+          echo "PUBLICATION_FAILURE_REASON=Publication branch commit failed" >> "$GITHUB_ENV"
           git config user.name "Citizen Affairs Publisher"
           git config user.email "actions@users.noreply.github.com"
           git switch -c "publish/$PUBLICATION_EVENT_ID"
-          git add src/content/articles
+          git add src/content/articles src/content/authors public/uploads
           git commit -m "content: publish $ARTICLE_ID [publication:$PUBLICATION_EVENT_ID]"
           git push --set-upstream origin "publish/$PUBLICATION_EVENT_ID"
 
       - name: Open protected publication pull request
         run: |
+          echo "PUBLICATION_FAILURE_REASON=Publication pull request creation failed" >> "$GITHUB_ENV"
           gh pr create --base main --head "publish/$PUBLICATION_EVENT_ID" --title "content: approved publication [publication:$PUBLICATION_EVENT_ID]" --body "Automated portable content snapshot for approved article version $ARTICLE_VERSION. Publication event: $PUBLICATION_EVENT_ID. All normal checks and branch protection still apply."
           gh pr merge "publish/$PUBLICATION_EVENT_ID" --auto --squash || true
 
       - name: Record export failure
         if: failure() && env.SUPABASE_URL != '' && env.SUPABASE_SECRET_KEY != ''
         run: |
-          curl --fail-with-body --silent --show-error --request POST "$SUPABASE_URL/functions/v1/deployment-callback" --header "apikey: $SUPABASE_SECRET_KEY" --header "Content-Type: application/json" --data "{\"publication_event_id\":\"$PUBLICATION_EVENT_ID\",\"status\":\"failed\",\"github_run_id\":\"$GITHUB_RUN_ID\",\"error_message\":\"Content export, validation, or pull request creation failed\"}"
+          node -e "const body={publication_event_id:process.env.PUBLICATION_EVENT_ID,status:'failed',github_run_id:process.env.GITHUB_RUN_ID,error_message:process.env.PUBLICATION_FAILURE_REASON||'Protected publication workflow failed'};require('node:fs').writeFileSync('/tmp/publication-failure.json',JSON.stringify(body))"
+          curl --fail-with-body --silent --show-error --request POST "$SUPABASE_URL/functions/v1/deployment-callback" --header "apikey: $SUPABASE_SECRET_KEY" --header "Content-Type: application/json" --data @/tmp/publication-failure.json

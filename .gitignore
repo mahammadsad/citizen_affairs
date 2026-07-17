@@ -1,5 +1,7 @@
 # Ignore node modules and dependencies
 node_modules/
+__pycache__/
+*.py[cod]
 
 # Astro build output
 dist/
@@ -33,4 +35,3 @@ coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-

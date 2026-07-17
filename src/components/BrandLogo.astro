@@ -1,0 +1,31 @@
+---
+import { resolveAssetPath } from '@utils/constants';
+
+type Variant = 'full' | 'horizontal' | 'monogram' | 'circular';
+
+interface Props {
+  variant?: Variant;
+  alt?: string;
+  class?: string;
+  loading?: 'eager' | 'lazy';
+}
+
+const variants: Record<Variant, { src: string; width: number; height: number }> = {
+  full: { src: 'assets/brand/citizen-affairs-full-tagline.png', width: 1048, height: 380 },
+  horizontal: { src: 'assets/brand/citizen-affairs-horizontal.png', width: 372, height: 156 },
+  monogram: { src: 'assets/brand/citizen-affairs-monogram.png', width: 274, height: 253 },
+  circular: { src: 'assets/brand/citizen-affairs-circular.png', width: 265, height: 273 }
+};
+
+const { variant = 'horizontal', alt = 'Citizen Affairs', class: className, loading = 'eager' } = Astro.props;
+const asset = variants[variant];
+---
+<img
+  src={resolveAssetPath(asset.src)}
+  width={asset.width}
+  height={asset.height}
+  alt={alt}
+  class={className}
+  loading={loading}
+  decoding="async"
+/>

@@ -1,15 +1,18 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import BrandLogo from '@components/BrandLogo.astro';
 ---
 <BaseLayout title="Editorial workspace" description="Private Citizen Affairs India editorial workspace" robots="noindex, nofollow">
   <main class="workspace-shell">
     <section class="workspace-card" id="setupState" hidden>
+      <BrandLogo variant="horizontal" class="workspace-logo" />
       <p class="eyebrow">Citizen Affairs India</p>
       <h1>Editorial workspace setup required</h1>
       <p>Add <code>PUBLIC_SUPABASE_URL</code> and <code>PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> to the deployment environment. Never add a secret or service-role key.</p>
     </section>
 
     <section class="workspace-card auth-card" id="authState" hidden>
+      <BrandLogo variant="horizontal" class="workspace-logo" />
       <p class="eyebrow">Citizen Affairs India</p>
       <h1>Staff sign in</h1>
       <p>Drafts, verification notes and approvals remain private and are protected by database permissions.</p>
@@ -17,13 +20,40 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         <label>Email<input name="email" type="email" autocomplete="username" required /></label>
         <label>Password<input name="password" type="password" autocomplete="current-password" required /></label>
         <button type="submit">Sign in</button>
+        <button class="secondary" id="resetRequestButton" type="button">Reset password</button>
         <p class="form-status" id="authMessage" role="status"></p>
+      </form>
+    </section>
+
+    <section class="workspace-card auth-card" id="passwordState" hidden>
+      <BrandLogo variant="horizontal" class="workspace-logo" />
+      <p class="eyebrow">Protected account recovery</p>
+      <h1>Choose a new password</h1>
+      <form id="passwordForm">
+        <label>New password<input name="password" type="password" autocomplete="new-password" minlength="12" required /></label>
+        <label>Confirm password<input name="confirmation" type="password" autocomplete="new-password" minlength="12" required /></label>
+        <button type="submit">Update password</button>
+        <p class="form-status" id="passwordMessage" role="status"></p>
+      </form>
+    </section>
+
+    <section class="workspace-card auth-card" id="mfaState" hidden>
+      <BrandLogo variant="horizontal" class="workspace-logo" />
+      <p class="eyebrow">Required account protection</p>
+      <h1>Two-factor verification</h1>
+      <p id="mfaInstructions">Enter the current code from your authenticator app.</p>
+      <img id="mfaQr" class="mfa-qr" alt="Authenticator enrollment QR code" hidden />
+      <code id="mfaSecret" class="mfa-secret" hidden></code>
+      <form id="mfaForm">
+        <label>6-digit code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required /></label>
+        <button type="submit">Verify and continue</button>
+        <p class="form-status" id="mfaMessage" role="status"></p>
       </form>
     </section>
 
     <section class="workspace" id="dashboardState" hidden>
       <header class="workspace-header">
-        <div><p class="eyebrow">Private editorial workspace</p><h1>Welcome, <span id="staffName">staff member</span></h1><p id="staffRole"></p></div>
+        <div><BrandLogo variant="horizontal" class="workspace-logo" /><p class="eyebrow">Private editorial workspace</p><h1>Welcome, <span id="staffName">staff member</span></h1><p id="staffRole"></p></div>
         <button class="secondary" id="signOutButton" type="button">Sign out</button>
       </header>
 
@@ -55,6 +85,27 @@ import BaseLayout from '@layouts/BaseLayout.astro';
           </form>
         </section>
       </div>
+
+      <section class="panel automation-panel" aria-labelledby="automationTitle">
+        <div class="panel-heading">
+          <div><p class="eyebrow">Human-reviewed automation</p><h2 id="automationTitle">Research and draft queue</h2></div>
+          <button class="secondary" id="refreshAutomationButton" type="button">Refresh automation</button>
+        </div>
+        <p class="automation-notice">AI output is private and cannot publish itself. Critical unsupported claims block review.</p>
+        <div class="automation-metrics">
+          <article><strong id="topicCount">0</strong><span>Discovered topics</span></article>
+          <article><strong id="researchCount">0</strong><span>Research dossiers</span></article>
+          <article><strong id="blockedCount">0</strong><span>Fact-check blockers</span></article>
+          <article><strong id="automationRunCount">0</strong><span>Automation runs</span></article>
+        </div>
+        <div class="automation-grid">
+          <section><h3>Discovered topics and scores</h3><div class="automation-list" id="topicList"><p>Loading private topics…</p></div></section>
+          <section><h3>Research, evidence and drafts</h3><div class="automation-list" id="researchList"><p>Loading private research…</p></div></section>
+          <section><h3>Fact-check and image status</h3><div class="automation-list" id="factCheckList"><p>Loading private checks…</p></div></section>
+          <section><h3>Automation history</h3><div class="automation-list" id="automationList"><p>Loading run history…</p></div></section>
+        </div>
+        <p class="form-status" id="automationMessage" role="status"></p>
+      </section>
     </section>
     <dialog id="publishDialog" class="publish-dialog">
       <form id="publishForm" method="dialog">
@@ -62,7 +113,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
         <input type="hidden" name="article_id" />
         <label>Publication reason<textarea name="reason" required minlength="10" maxlength="500" placeholder="Explain why this approved version is ready to publish."></textarea></label>
         <p class="form-status" id="publishMessage" role="status"></p>
-        <div class="dialog-actions"><button class="secondary" id="cancelPublish" type="button">Cancel</button><button type="submit">Start protected build</button></div>
+        <div class="dialog-actions"><button class="secondary" id="cancelPublish" type="button">Cancel</button><button id="publishSubmit" type="submit">Start protected build</button></div>
       </form>
     </dialog>
   </main>
@@ -73,9 +124,11 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 
   const url = import.meta.env.PUBLIC_SUPABASE_URL;
   const key = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  const setupState = document.getElementById('setupState');
-  const authState = document.getElementById('authState');
-  const dashboardState = document.getElementById('dashboardState');
+    const setupState = document.getElementById('setupState');
+    const authState = document.getElementById('authState');
+    const passwordState = document.getElementById('passwordState');
+    const mfaState = document.getElementById('mfaState');
+    const dashboardState = document.getElementById('dashboardState');
 
   if (!url || !key) {
     setupState?.removeAttribute('hidden');
@@ -86,9 +139,36 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     const publishDialog = document.getElementById('publishDialog') as HTMLDialogElement | null;
     const publishForm = document.getElementById('publishForm') as HTMLFormElement | null;
     const publishMessage = document.getElementById('publishMessage');
+    const publishSubmit = document.getElementById('publishSubmit') as HTMLButtonElement | null;
+    const cancelPublish = document.getElementById('cancelPublish') as HTMLButtonElement | null;
+    let publicationInFlight = false;
+    let mfaFactorId = '';
 
-    const show = (state: 'auth' | 'dashboard') => {
+    const functionErrorMessage = async (error: unknown) => {
+      const fallback = error instanceof Error ? error.message : 'The protected publication request failed.';
+      const context = (error as { context?: Response } | null)?.context;
+      if (!(context instanceof Response)) return fallback;
+      try {
+        const payload = await context.clone().json() as { message?: string };
+        return payload.message || fallback;
+      } catch {
+        return fallback;
+      }
+    };
+
+    const setPublicationBusy = (busy: boolean) => {
+      publicationInFlight = busy;
+      if (publishSubmit) {
+        publishSubmit.disabled = busy;
+        publishSubmit.textContent = busy ? 'Starting protected build…' : 'Start protected build';
+      }
+      if (cancelPublish) cancelPublish.disabled = busy;
+    };
+
+    const show = (state: 'auth' | 'password' | 'mfa' | 'dashboard') => {
       authState?.toggleAttribute('hidden', state !== 'auth');
+      passwordState?.toggleAttribute('hidden', state !== 'password');
+      mfaState?.toggleAttribute('hidden', state !== 'mfa');
       dashboardState?.toggleAttribute('hidden', state !== 'dashboard');
     };
 
@@ -97,17 +177,166 @@ import BaseLayout from '@layouts/BaseLayout.astro';
       if (element) element.textContent = String(value);
     };
 
+    const prepareRequiredMfa = async () => {
+      const { data: assurance, error: assuranceError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      if (assuranceError) throw assuranceError;
+      if (assurance.currentLevel === 'aal2') return true;
+      show('mfa');
+      const message = document.getElementById('mfaMessage');
+      const instructions = document.getElementById('mfaInstructions');
+      const qr = document.getElementById('mfaQr') as HTMLImageElement | null;
+      const secret = document.getElementById('mfaSecret');
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors();
+      if (factorsError) throw factorsError;
+      const verified = factors.totp.find((factor) => factor.status === 'verified');
+      if (verified) {
+        mfaFactorId = verified.id;
+        if (instructions) instructions.textContent = 'Enter the current code from your authenticator app.';
+        qr?.setAttribute('hidden', '');
+        secret?.setAttribute('hidden', '');
+        return false;
+      }
+      const { data: enrollment, error: enrollmentError } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Citizen Affairs staff' });
+      if (enrollmentError) throw enrollmentError;
+      mfaFactorId = enrollment.id;
+      if (instructions) instructions.textContent = 'Scan this QR code in your authenticator app, then enter its 6-digit code.';
+      if (qr) { qr.src = enrollment.totp.qr_code; qr.removeAttribute('hidden'); }
+      if (secret) { secret.textContent = enrollment.totp.secret; secret.removeAttribute('hidden'); }
+      if (message) message.textContent = 'Two-factor authentication is required for this staff account.';
+      return false;
+    };
+
+    const textCard = (title: string, details: string[]) => {
+      const card = document.createElement('article');
+      const heading = document.createElement('h4'); heading.textContent = title;
+      card.append(heading);
+      for (const detail of details.filter(Boolean)) {
+        const paragraph = document.createElement('p'); paragraph.textContent = detail; card.append(paragraph);
+      }
+      return card;
+    };
+
+    const loadAutomation = async () => {
+      const message = document.getElementById('automationMessage');
+      if (message) message.textContent = '';
+      const [topicsResult, dossiersResult, generationsResult, checksResult, imagesResult, runsResult] = await Promise.all([
+        supabase.from('topic_candidates').select('id,normalized_topic,source_url,source_authority,status,freshness_label,deadline_urgency,topic_scores(total_score,search_demand_label)').order('discovered_at', { ascending: false }).limit(25),
+        supabase.from('research_dossiers').select('id,confidence,conflicts,missing_information,unverified_claims,research_model,completed_at').order('completed_at', { ascending: false }).limit(20),
+        supabase.from('article_generation_runs').select('id,dossier_id,status,model_name,prompt_version,sanitized_markdown,created_at').order('created_at', { ascending: false }).limit(20),
+        supabase.from('fact_check_runs').select('id,status,model_name,approval_blocked,critical_blockers,checked_at').order('created_at', { ascending: false }).limit(20),
+        supabase.from('thumbnail_assets').select('id,status,public_path,alt_text,width,height,byte_size,created_at').order('created_at', { ascending: false }).limit(20),
+        supabase.from('automation_runs').select('id,run_type,status,attempt,max_attempts,model_name,error_code,error_message,created_at,duration_ms').order('created_at', { ascending: false }).limit(25),
+      ]);
+      const failed = [topicsResult, dossiersResult, generationsResult, checksResult, imagesResult, runsResult].find((result) => result.error);
+      if (failed?.error) {
+        if (message) message.textContent = failed.error.code === '42501' ? 'Your role does not include private automation access.' : failed.error.message;
+        return;
+      }
+      const topics = topicsResult.data || [];
+      const dossiers = dossiersResult.data || [];
+      const generations = generationsResult.data || [];
+      const checks = checksResult.data || [];
+      const images = imagesResult.data || [];
+      const runs = runsResult.data || [];
+      setText('topicCount', topics.length);
+      setText('researchCount', dossiers.length);
+      setText('blockedCount', checks.filter((item) => item.approval_blocked).length);
+      setText('automationRunCount', runs.length);
+
+      const topicList = document.getElementById('topicList');
+      topicList?.replaceChildren();
+      if (!topics.length) topicList?.append(textCard('No topics yet', ['Official-source discovery has not produced a candidate.']));
+      for (const topic of topics) {
+        const scores = Array.isArray(topic.topic_scores) ? topic.topic_scores : [topic.topic_scores];
+        const score = scores[0];
+        const card = textCard(topic.normalized_topic, [
+          topic.source_authority + ' · ' + topic.status,
+          'Freshness: ' + (topic.freshness_label || 'unknown') + ' · Deadline: ' + (topic.deadline_urgency || 'none') + ' · Score: ' + (score?.total_score ?? 'pending') + ' · Demand: ' + (score?.search_demand_label || 'unknown'),
+        ]);
+        const source = document.createElement('a'); source.href = topic.source_url; source.target = '_blank'; source.rel = 'noopener noreferrer'; source.textContent = 'Open official source ↗'; card.append(source);
+        if (['discovered', 'research_failed'].includes(topic.status)) {
+          const queue = document.createElement('button'); queue.type = 'button'; queue.textContent = 'Queue research';
+          queue.addEventListener('click', async () => {
+            queue.disabled = true;
+            const { error: updateError } = await supabase.from('topic_candidates').update({ status: 'queued' }).eq('id', topic.id);
+            if (message) message.textContent = updateError ? updateError.message : 'Topic queued for the private worker.';
+            await loadAutomation();
+          });
+          card.append(queue);
+        }
+        if (topic.status === 'needs_review') {
+          const approve = document.createElement('button'); approve.type = 'button'; approve.textContent = 'Approve reviewed topic';
+          approve.addEventListener('click', async () => {
+            approve.disabled = true;
+            const { error: updateError } = await supabase.from('topic_candidates').update({ status: 'approved' }).eq('id', topic.id);
+            if (message) message.textContent = updateError ? updateError.message : 'Topic approved for editorial drafting; no article was published.';
+            await loadAutomation();
+          });
+          const reject = document.createElement('button'); reject.type = 'button'; reject.className = 'secondary'; reject.textContent = 'Reject topic';
+          reject.addEventListener('click', async () => {
+            reject.disabled = true;
+            const { error: updateError } = await supabase.from('topic_candidates').update({ status: 'rejected' }).eq('id', topic.id);
+            if (message) message.textContent = updateError ? updateError.message : 'Topic rejected.';
+            await loadAutomation();
+          });
+          card.append(approve, reject);
+        }
+        topicList?.append(card);
+      }
+
+      const researchList = document.getElementById('researchList'); researchList?.replaceChildren();
+      for (const dossier of dossiers) {
+        const generated = generations.find((item) => item.dossier_id === dossier.id);
+        const card = textCard('Dossier ' + dossier.id.slice(0, 8), [
+          'Confidence: ' + dossier.confidence + ' · ' + new Date(dossier.completed_at).toLocaleString(),
+          'Conflicts: ' + (dossier.conflicts?.length || 0) + ' · missing: ' + (dossier.missing_information?.length || 0) + ' · unverified: ' + (dossier.unverified_claims?.length || 0),
+          generated ? 'Draft: ' + generated.status + ' · ' + generated.model_name + ' · prompt ' + generated.prompt_version : 'Draft not generated',
+        ]);
+        if (generated?.sanitized_markdown) {
+          const preview = document.createElement('details'); const summary = document.createElement('summary'); summary.textContent = 'Preview generated Markdown';
+          const pre = document.createElement('pre'); pre.textContent = generated.sanitized_markdown.slice(0, 4000); preview.append(summary, pre); card.append(preview);
+        }
+        researchList?.append(card);
+      }
+      if (!dossiers.length) researchList?.append(textCard('No dossier yet', ['Research begins only for a queued official-source candidate.']));
+
+      const factList = document.getElementById('factCheckList'); factList?.replaceChildren();
+      for (const check of checks) factList?.append(textCard('Fact check ' + check.id.slice(0, 8), [
+        check.status + ' · ' + (check.approval_blocked ? 'BLOCKED' : 'eligible for human review'),
+        'Critical blockers: ' + (check.critical_blockers?.length || 0) + ' · model: ' + check.model_name,
+      ]));
+      for (const asset of images) factList?.append(textCard('Image ' + asset.status, [
+        asset.width + ' × ' + asset.height + ' · ' + Math.round(asset.byte_size / 1024) + ' KB', asset.alt_text, asset.public_path || 'Private editorial asset',
+      ]));
+      if (!checks.length && !images.length) factList?.append(textCard('No checks or images yet', ['Drafts remain private until independent verification completes.']));
+
+      const runList = document.getElementById('automationList'); runList?.replaceChildren();
+      for (const run of runs) runList?.append(textCard(run.run_type + ' · ' + run.status, [
+        'Attempt ' + run.attempt + '/' + run.max_attempts + ' · ' + (run.duration_ms ?? 0) + ' ms · ' + new Date(run.created_at).toLocaleString(),
+        run.error_message ? (run.error_code || 'error') + ': ' + run.error_message : (run.model_name || 'No model used'),
+      ]));
+      if (!runs.length) runList?.append(textCard('No automation history', ['Scheduled discovery remains disabled until explicitly configured.']));
+    };
+
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return show('auth');
       const [{ data: profile, error: profileError }, { data: articles, error: articleError }] = await Promise.all([
-        supabase.from('staff_profiles').select('full_name, account_status, department').eq('id', user.id).single(),
+        supabase.from('staff_profiles').select('full_name, account_status, department, two_factor_required').eq('id', user.id).single(),
         supabase.from('articles').select('id,title,slug,language,content_type,workflow_status,verification_status,updated_date,next_review_date,version').is('deleted_at', null).order('updated_date', { ascending: false }).limit(50),
       ]);
       if (profileError || profile?.account_status !== 'active') {
         await supabase.auth.signOut();
         if (authMessage) authMessage.textContent = 'Your staff account is not active. Contact an administrator.';
         return show('auth');
+      }
+      if (profile.two_factor_required) {
+        try {
+          if (!(await prepareRequiredMfa())) return;
+        } catch (error) {
+          if (authMessage) authMessage.textContent = error instanceof Error ? error.message : 'Two-factor verification could not start.';
+          return show('auth');
+        }
       }
       if (articleError) {
         if (authMessage) authMessage.textContent = articleError.message;
@@ -140,12 +369,14 @@ import BaseLayout from '@layouts/BaseLayout.astro';
             (publishForm.elements.namedItem('article_id') as HTMLInputElement).value = item.id;
             setText('publishArticleTitle', `${item.title} · version ${item.version}`);
             if (publishMessage) publishMessage.textContent = '';
+            setPublicationBusy(false);
             publishDialog.showModal();
           });
           card.append(publish);
         }
         list.append(card);
       }
+      await loadAutomation();
     };
 
     document.getElementById('signInForm')?.addEventListener('submit', async (event) => {
@@ -155,6 +386,41 @@ import BaseLayout from '@layouts/BaseLayout.astro';
       const { error } = await supabase.auth.signInWithPassword({ email: String(form.get('email')), password: String(form.get('password')) });
       if (error) { if (authMessage) authMessage.textContent = error.message; return; }
       if (authMessage) authMessage.textContent = '';
+      await loadDashboard();
+    });
+
+    document.getElementById('resetRequestButton')?.addEventListener('click', async () => {
+      const email = (document.querySelector('#signInForm input[name="email"]') as HTMLInputElement | null)?.value.trim();
+      if (!email) { if (authMessage) authMessage.textContent = 'Enter your staff email first.'; return; }
+      if (authMessage) authMessage.textContent = 'Sending a protected password-reset link…';
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.href.split(/[?#]/)[0] });
+      if (authMessage) authMessage.textContent = error ? error.message : 'If this is an active staff account, a reset link has been sent.';
+    });
+
+    document.getElementById('passwordForm')?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget as HTMLFormElement);
+      const password = String(form.get('password') || '');
+      const confirmation = String(form.get('confirmation') || '');
+      const message = document.getElementById('passwordMessage');
+      if (password !== confirmation) { if (message) message.textContent = 'The passwords do not match.'; return; }
+      if (message) message.textContent = 'Updating password…';
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) { if (message) message.textContent = error.message; return; }
+      if (message) message.textContent = 'Password updated. Loading your protected workspace…';
+      await loadDashboard();
+    });
+
+    document.getElementById('mfaForm')?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget as HTMLFormElement);
+      const message = document.getElementById('mfaMessage');
+      if (!mfaFactorId) { if (message) message.textContent = 'Authenticator setup expired. Sign in again.'; return; }
+      if (message) message.textContent = 'Verifying code…';
+      const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: mfaFactorId, code: String(form.get('code') || '') });
+      if (error) { if (message) message.textContent = error.message; return; }
+      (event.currentTarget as HTMLFormElement).reset();
+      if (message) message.textContent = '';
       await loadDashboard();
     });
 
@@ -180,32 +446,43 @@ import BaseLayout from '@layouts/BaseLayout.astro';
     });
 
     document.getElementById('refreshButton')?.addEventListener('click', loadDashboard);
+    document.getElementById('refreshAutomationButton')?.addEventListener('click', loadAutomation);
     publishForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
-      if (!publishForm.reportValidity()) return;
+      if (publicationInFlight || !publishForm.reportValidity()) return;
       const form = new FormData(publishForm);
+      setPublicationBusy(true);
       if (publishMessage) publishMessage.textContent = 'Checking approvals and starting the protected build…';
       const { data, error } = await supabase.functions.invoke('publish-content', { body: { article_id: form.get('article_id'), reason: form.get('reason') } });
-      if (error) { if (publishMessage) publishMessage.textContent = error.message; return; }
-      if (publishMessage) publishMessage.textContent = `Publication event ${data.publication_event_id} is building. The article will not be marked published until deployment succeeds.`;
+      if (error) {
+        if (publishMessage) publishMessage.textContent = await functionErrorMessage(error);
+        setPublicationBusy(false);
+        return;
+      }
+      if (publishMessage) publishMessage.textContent = data.message || `Publication event ${data.publication_event_id} is building. The article will not be marked published until deployment succeeds.`;
       window.setTimeout(() => { publishDialog?.close(); publishForm.reset(); loadDashboard(); }, 2400);
     });
-    document.getElementById('cancelPublish')?.addEventListener('click', () => { publishDialog?.close(); publishForm?.reset(); });
+    cancelPublish?.addEventListener('click', () => { if (!publicationInFlight) { publishDialog?.close(); publishForm?.reset(); setPublicationBusy(false); } });
     document.getElementById('signOutButton')?.addEventListener('click', async () => { await supabase.auth.signOut(); show('auth'); });
-    supabase.auth.onAuthStateChange((_event, session) => { if (!session) show('auth'); });
+    supabase.auth.onAuthStateChange((authEvent, session) => {
+      if (authEvent === 'PASSWORD_RECOVERY') show('password');
+      else if (!session) show('auth');
+    });
     loadDashboard();
   }
 </script>
 
 <style>
   .workspace-shell{min-height:100vh;padding:clamp(1rem,4vw,3rem);background:radial-gradient(circle at 10% 0,rgba(var(--color-primary-rgb),.12),transparent 32%),var(--color-bg)}
+  .workspace-logo{display:block;width:min(220px,70vw);height:auto;margin-bottom:1rem}
   .workspace,.workspace-card{width:min(1180px,100%);margin:auto}.workspace-card{max-width:560px;margin-top:8vh;padding:clamp(1.4rem,4vw,2.5rem);border:1px solid var(--color-border);border-radius:24px;background:var(--color-surface);box-shadow:var(--shadow-lg)}
   .workspace-card h1,.workspace-header h1{font-size:clamp(2rem,5vw,3.2rem);margin:.35rem 0}.workspace-card>p,.workspace-header p{color:var(--color-text-muted)}.eyebrow{color:var(--color-primary);font-size:.75rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
   .workspace-header,.panel-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem}.workspace-header{margin-bottom:1.5rem}.workspace-grid{display:grid;gap:1rem}.panel{min-width:0;padding:1.25rem;border:1px solid var(--color-border);border-radius:20px;background:var(--color-surface)}.panel h2{font-size:1.35rem;margin:.2rem 0 1rem}
+  .mfa-qr{display:block;width:min(240px,100%);height:auto;margin:1rem auto;border:10px solid #fff;border-radius:14px}.mfa-secret{display:block;max-width:100%;padding:.7rem;overflow-wrap:anywhere}.automation-panel{margin-top:1rem}.automation-notice{margin:-.4rem 0 1rem;color:var(--color-text-muted)}.automation-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-bottom:1rem}.automation-metrics article{display:flex;flex-direction:column;padding:.85rem;border-radius:14px;background:var(--color-surface-alt)}.automation-metrics strong{font-size:1.45rem;color:var(--color-primary)}.automation-metrics span{font-size:.75rem;color:var(--color-text-muted)}.automation-grid{display:grid;gap:1rem}.automation-grid>section{min-width:0;padding:1rem;border:1px solid var(--color-border);border-radius:15px}.automation-grid h3{font-size:1rem;margin-bottom:.7rem}.automation-list{display:grid;gap:.65rem;max-height:520px;overflow:auto}.automation-list article{display:grid;gap:.4rem;padding:.85rem;border-radius:12px;background:var(--color-bg)}.automation-list h4{font-size:.9rem}.automation-list p{font-size:.76rem;color:var(--color-text-muted)}.automation-list a{color:var(--color-primary);text-decoration:underline;font-size:.76rem}.automation-list button{justify-self:start;min-height:38px;font-size:.74rem}.automation-list pre{max-height:260px;overflow:auto;white-space:pre-wrap;font-size:.7rem}.automation-list summary{cursor:pointer;font-weight:800;font-size:.76rem}
   .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1rem}.metrics article{display:flex;flex-direction:column;padding:1rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.metrics strong{font-size:1.8rem;color:var(--color-primary)}.metrics span{color:var(--color-text-muted);font-size:.82rem}
-  form{display:grid;gap:.8rem;margin-top:1.2rem}label{display:grid;gap:.35rem;font-size:.82rem;font-weight:800}input,select,textarea{width:100%;min-height:46px;padding:.7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text)}textarea{min-height:90px;resize:vertical}button{min-height:46px;padding:.65rem 1rem;border-radius:10px;background:var(--color-primary);color:#fff;font-weight:850}.secondary{border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text)}.form-status{min-height:1.3em;color:var(--color-text-muted);font-size:.82rem}
+  form{display:grid;gap:.8rem;margin-top:1.2rem}label{display:grid;gap:.35rem;font-size:.82rem;font-weight:800}input,select,textarea{width:100%;min-height:46px;padding:.7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text)}textarea{min-height:90px;resize:vertical}button{min-height:46px;padding:.65rem 1rem;border-radius:10px;background:var(--color-primary);color:#fff;font-weight:850}button:disabled{cursor:wait;opacity:.65}.secondary{border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text)}.form-status{min-height:1.3em;color:var(--color-text-muted);font-size:.82rem}
   .article-list{display:grid;gap:.65rem}.article-list article{position:relative;padding:1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-bg)}.article-list h3{font-size:1rem}.article-list p{color:var(--color-text-muted);font-size:.78rem}.article-list span{display:inline-flex;margin-top:.5rem;padding:.25rem .55rem;border-radius:99px;background:rgba(var(--color-primary-rgb),.1);color:var(--color-primary);font-size:.68rem;font-weight:800}.publish-button{display:block;margin-top:.75rem;min-height:40px;font-size:.78rem}.publish-dialog{width:min(560px,calc(100% - 2rem));padding:0;border:1px solid var(--color-border);border-radius:20px;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lg)}.publish-dialog::backdrop{background:rgba(4,16,30,.72);backdrop-filter:blur(4px)}.publish-dialog form{padding:1.4rem}.publish-dialog h2{margin:.2rem 0}.publish-dialog div>p:not(.eyebrow){color:var(--color-text-muted)}.dialog-actions{display:flex;justify-content:flex-end;gap:.65rem}.dialog-actions button{min-width:130px}
   code{padding:.12rem .35rem;border-radius:5px;background:var(--color-surface-alt)}
-  @media(min-width:760px){.metrics{grid-template-columns:repeat(4,1fr)}.workspace-grid{grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr)}}
+  @media(min-width:760px){.metrics,.automation-metrics{grid-template-columns:repeat(4,1fr)}.workspace-grid{grid-template-columns:minmax(0,1.4fr) minmax(300px,.6fr)}.automation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:520px){.workspace-header,.panel-heading{align-items:flex-start;flex-direction:column}.workspace-header button,.panel-heading button{width:100%}}
 </style>
