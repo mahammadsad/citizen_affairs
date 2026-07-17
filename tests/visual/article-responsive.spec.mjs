@@ -16,6 +16,10 @@ for (const viewport of viewports) {
     await page.goto(articlePath, { waitUntil: 'networkidle' });
     const image = page.locator('.article-hero-image');
     await expect(image).toBeVisible();
+    await expect(page.locator('.brand img')).toHaveCount(1);
+    await expect(page.locator('#searchToggle')).toBeVisible();
+    await expect(page.locator('#languageTrigger')).toBeVisible();
+    if (viewport.width < 860) await expect(page.locator('#menuToggle')).toBeVisible();
 
     const measurements = await image.evaluate((element) => {
       const rect = element.getBoundingClientRect();
