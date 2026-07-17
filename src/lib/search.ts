@@ -34,4 +34,3 @@ export function searchItems(query: string, items: SearchItem[]): SearchItem[] {
     return keywords.some((keyword) => keyword.includes(q));
   });
 }
-

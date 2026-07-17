@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { categoryName } from '@lib/content';
-import { getBrandName, getBrandTagline, SITE } from '@utils/constants';
+import { ACTIVE_CATEGORY_IDS, getBrandName, getBrandTagline, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
 import LatestTicker from './LatestTicker.astro';
 import Icon from './Icon.astro';
@@ -16,20 +16,20 @@ const pathname = Astro.url.pathname;
 const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
 const desktopNav = [
   { label: t.home, href: localizedPath(locale), active: pathname === localizedPath(locale) || (locale === 'en' && pathname === SITE.basePath) },
+  { label: t.governmentJobs, href: localizedPath(locale, 'categories/jobs'), active: pathname.includes(`/${locale}/categories/jobs`) },
+  { label: t.welfareSchemes, href: localizedPath(locale, 'categories/projects'), active: pathname.includes(`/${locale}/categories/projects`) },
+  { label: t.deadlines, href: localizedPath(locale, 'deadlines'), active: pathname.includes(`/${locale}/deadlines`) },
   { label: t.latestNav, href: localizedPath(locale, 'articles'), active: pathname.includes(`/${locale}/articles`) },
-  { label: t.categories, href: localizedPath(locale, 'categories'), active: pathname.includes(`/${locale}/categories`) },
-  { label: t.about, href: trustPagePath(locale, 'about'), active: pathname === trustPagePath(locale, 'about') },
-  { label: t.contact, href: trustPagePath(locale, 'contact'), active: pathname === trustPagePath(locale, 'contact') }
 ];
 const quickLinks = [
-  desktopNav[0],
-  desktopNav[1],
-  { label: t.deadlines, href: localizedPath(locale, 'deadlines'), active: pathname.includes(`/${locale}/deadlines`) },
-  { label: t.saved, href: localizedPath(locale, 'saved'), active: pathname.includes(`/${locale}/saved`) }
+  { ...desktopNav[0], icon: 'home' },
+  { ...desktopNav[1], icon: 'briefcase' },
+  { ...desktopNav[3], icon: 'clock' },
+  { label: t.saved, href: localizedPath(locale, 'saved'), active: pathname.includes(`/${locale}/saved`), icon: 'bookmark' }
 ];
 const categoryIcon: Record<string, string> = { jobs: 'briefcase', projects: 'schemes', exams: 'exams', materials: 'education', notices: 'notices', affairs: 'services' };
 const categoryOrder = ['jobs', 'projects', 'exams', 'materials', 'notices', 'affairs'];
-const categoryEntries = (await getCollection('categories')).sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
+const categoryEntries = (await getCollection('categories')).filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id)).sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
 ---
 <header class="site-header">
   <nav class="navbar container" aria-label={t.primaryNav}>
@@ -72,7 +72,7 @@ const categoryEntries = (await getCollection('categories')).sort((a, b) => categ
     <section aria-labelledby="quickLinksTitle">
       <h2 id="quickLinksTitle">{t.quickLinks}</h2>
       <ul class="drawer-quick-links">
-        {quickLinks.map((item, index) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}><Icon name={index === 0 ? 'home' : index === 1 ? 'updates' : index === 2 ? 'clock' : 'bookmark'} /><span>{item.label}</span><Icon name="arrow" size={18} /></a></li>)}
+        {quickLinks.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}><Icon name={item.icon} /><span>{item.label}</span><Icon name="arrow" size={18} /></a></li>)}
       </ul>
     </section>
 
@@ -95,6 +95,8 @@ const categoryEntries = (await getCollection('categories')).sort((a, b) => categ
     </section>
 
     <div class="drawer-secondary-links">
+      <a href={localizedPath(locale, 'editorial-policy')}><Icon name="check" />{t.verificationMethod}<Icon name="arrow" size={18} /></a>
+      <a href={trustPagePath(locale, 'corrections')}><Icon name="notices" />{t.corrections}<Icon name="arrow" size={18} /></a>
       <a href={trustPagePath(locale, 'about')}><Icon name="about" />{t.about}<Icon name="arrow" size={18} /></a>
       <a href={trustPagePath(locale, 'contact')}><Icon name="mail" />{t.contact}<Icon name="arrow" size={18} /></a>
       <button class="mobile-theme theme-toggle" type="button"><Icon name="theme" />{t.changeTheme}</button>

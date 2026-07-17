@@ -1,5 +1,7 @@
 ---
 language: bn
+contentType: explainer
+workflowStatus: published
 translationKey: india-major-welfare-schemes-official-guide
 urlSlug: india-major-welfare-schemes-official-guide
 title: "ভারতের ১৪টি প্রধান কেন্দ্রীয় সরকারি প্রকল্প: বর্তমান তথ্য ও অফিসিয়াল লিংক"
@@ -9,9 +11,10 @@ description: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA, MGNR
 date: 2026-07-13
 updated: 2026-07-13
 lastVerified: 2026-07-13
+nextReviewDate: 2026-08-13
 author: admin
 category: projects
-verificationStatus: officially-confirmed
+verificationStatus: partially-confirmed
 sourceUrls:
   - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2203007
   - https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1980689
@@ -46,7 +49,8 @@ tags:
   - Jal Jeevan Mission
   - সরকারি প্রকল্পের অফিসিয়াল লিংক
 featured: true
-featuredImage: /uploads/chatgpt-image-jul-13-2026-070010-pm-1.png
+featuredImage: /uploads/india-major-welfare-schemes-1200.webp
+featuredImageAvif: /uploads/india-major-welfare-schemes-1200.avif
 featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত
   কেন্দ্রীয় প্রকল্পের যাচাইকৃত গাইডের সম্পাদকীয় গ্রাফিক
 draft: false

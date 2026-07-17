@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -19,9 +21,19 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      publication-event-id: ${{ steps.publication.outputs.id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Read publication event marker
+        id: publication
+        shell: bash
+        run: |
+          node -e "const{execSync}=require('node:child_process'),{appendFileSync}=require('node:fs');const m=execSync('git log -1 --pretty=%B',{encoding:'utf8'}).match(/\[publication:([0-9a-f-]{36})\]/i);appendFileSync(process.env.GITHUB_OUTPUT,'id='+(m?.[1]||'')+'\n')"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -29,14 +41,36 @@ jobs:
           node-version: "22"
           cache: npm
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.9.3
+
       - name: Install dependencies
         run: npm ci
 
       - name: Type and content check
         run: npm run check
 
+      - name: Formatting validation
+        run: npm run format:check
+
+      - name: Editorial security contract tests
+        run: npm test
+
+      - name: Edge Function type checks
+        run: |
+          deno check --node-modules-dir=manual --config supabase/functions/publish-content/deno.json supabase/functions/publish-content/index.ts
+          deno check --node-modules-dir=manual --config supabase/functions/deployment-callback/deno.json supabase/functions/deployment-callback/index.ts
+
+      - name: Editorial content validation
+        run: npm run validate:content
+
       - name: Build
         run: npm run build
+
+      - name: Generated HTML and route validation
+        run: npm run validate:html
 
       - name: Upload build output
         uses: actions/upload-pages-artifact@v3
@@ -45,11 +79,31 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page-url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  publication-feedback:
+    needs: [build, deploy]
+    if: always() && github.event_name == 'push' && needs.build.outputs.publication-event-id != ''
+    runs-on: ubuntu-latest
+    env:
+      PUBLICATION_EVENT_ID: ${{ needs.build.outputs.publication-event-id }}
+      PUBLICATION_STATUS: ${{ needs.build.result == 'success' && needs.deploy.result == 'success' && 'deployed' || 'failed' }}
+      DEPLOYMENT_URL: ${{ needs.deploy.outputs.page-url }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+    steps:
+      - name: Record deployment result
+        if: env.SUPABASE_URL != '' && env.SUPABASE_SECRET_KEY != ''
+        run: |
+          node -e "const body={publication_event_id:process.env.PUBLICATION_EVENT_ID,status:process.env.PUBLICATION_STATUS,github_run_id:process.env.GITHUB_RUN_ID,commit_sha:process.env.GITHUB_SHA,deployment_url:process.env.DEPLOYMENT_URL||null,error_message:process.env.PUBLICATION_STATUS==='failed'?'GitHub build or Pages deployment failed':null};require('node:fs').writeFileSync('/tmp/publication-callback.json',JSON.stringify(body))"
+          curl --fail-with-body --silent --show-error --request POST "$SUPABASE_URL/functions/v1/deployment-callback" --header "apikey: $SUPABASE_SECRET_KEY" --header "Content-Type: application/json" --data @/tmp/publication-callback.json

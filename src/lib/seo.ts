@@ -162,10 +162,11 @@ export function generateArticleSchema(article: {
   dateModified?: Date;
   author: string;
   url: string;
+  schemaType?: 'Article' | 'NewsArticle';
 }): ArticleSchema {
   return {
     '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
+    '@type': article.schemaType || 'Article',
     headline: article.title,
     description: article.description,
     image: article.image,

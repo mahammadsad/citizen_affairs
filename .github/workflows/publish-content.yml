@@ -1,0 +1,68 @@
+name: Export approved editorial content
+
+on:
+  repository_dispatch:
+    types: [publish-content]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: publication-${{ github.event.client_payload.article_id }}
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    env:
+      ARTICLE_ID: ${{ github.event.client_payload.article_id }}
+      ARTICLE_VERSION: ${{ github.event.client_payload.article_version }}
+      PUBLICATION_EVENT_ID: ${{ github.event.client_payload.publication_event_id }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+      GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
+    steps:
+      - name: Validate dispatch payload
+        run: |
+          node -e "const u=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;if(!u.test(process.env.ARTICLE_ID)||!u.test(process.env.PUBLICATION_EVENT_ID)||!/^[1-9][0-9]*$/.test(process.env.ARTICLE_VERSION))process.exit(1)"
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export immutable content snapshot
+        run: node scripts/export-approved-content.mjs --article-id "$ARTICLE_ID" --event-id "$PUBLICATION_EVENT_ID"
+
+      - name: Validate snapshot and generated site
+        run: npm run validate
+
+      - name: Commit publication branch
+        run: |
+          git config user.name "Citizen Affairs Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git switch -c "publish/$PUBLICATION_EVENT_ID"
+          git add src/content/articles
+          git commit -m "content: publish $ARTICLE_ID [publication:$PUBLICATION_EVENT_ID]"
+          git push --set-upstream origin "publish/$PUBLICATION_EVENT_ID"
+
+      - name: Open protected publication pull request
+        run: |
+          gh pr create --base main --head "publish/$PUBLICATION_EVENT_ID" --title "content: approved publication [publication:$PUBLICATION_EVENT_ID]" --body "Automated portable content snapshot for approved article version $ARTICLE_VERSION. Publication event: $PUBLICATION_EVENT_ID. All normal checks and branch protection still apply."
+          gh pr merge "publish/$PUBLICATION_EVENT_ID" --auto --squash || true
+
+      - name: Record export failure
+        if: failure() && env.SUPABASE_URL != '' && env.SUPABASE_SECRET_KEY != ''
+        run: |
+          curl --fail-with-body --silent --show-error --request POST "$SUPABASE_URL/functions/v1/deployment-callback" --header "apikey: $SUPABASE_SECRET_KEY" --header "Content-Type: application/json" --data "{\"publication_event_id\":\"$PUBLICATION_EVENT_ID\",\"status\":\"failed\",\"github_run_id\":\"$GITHUB_RUN_ID\",\"error_message\":\"Content export, validation, or pull request creation failed\"}"

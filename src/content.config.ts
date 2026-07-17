@@ -1,0 +1,197 @@
+import { defineCollection } from 'astro:content';
+import { glob } from 'astro/loaders';
+import { z } from 'astro/zod';
+import { REGION_IDS } from './lib/regions';
+
+const optionalDate = z.preprocess(
+  (value) => value === '' || value === null ? undefined : value,
+  z.coerce.date().optional(),
+);
+
+const structuredSource = z.object({
+  title: z.string(),
+  url: z.url(),
+  publishingAuthority: z.string(),
+  sourceType: z.enum(['official-notification', 'official-portal', 'official-order', 'press-release', 'government-dataset', 'secondary']),
+  designation: z.enum(['primary', 'secondary']).default('primary'),
+  documentNumber: z.string().optional(),
+  publicationDate: optionalDate,
+  accessedDate: z.coerce.date(),
+  archivedUrl: z.url().optional(),
+  notes: z.string().optional(),
+});
+
+const correctionRecord = z.object({
+  date: z.coerce.date(),
+  incorrectInformation: z.string(),
+  correctedInformation: z.string(),
+  reason: z.string(),
+  sourceUrl: z.url(),
+});
+
+const jobDetails = z.object({
+  recruitingOrganization: z.string(),
+  postName: z.string(),
+  notificationNumber: z.string(),
+  notificationDate: z.coerce.date(),
+  department: z.string().optional(),
+  employmentType: z.string().optional(),
+  totalVacancies: z.number().int().nonnegative(),
+  categoryWiseVacancies: z.record(z.string(), z.number().int().nonnegative()).default({}),
+  qualification: z.array(z.string()).min(1),
+  experienceRequirement: z.string().optional(),
+  minimumAge: z.number().int().nonnegative().optional(),
+  maximumAge: z.number().int().nonnegative().optional(),
+  ageCalculationDate: optionalDate,
+  ageRelaxation: z.array(z.string()).default([]),
+  salaryMinimum: z.number().nonnegative().optional(),
+  salaryMaximum: z.number().nonnegative().optional(),
+  salaryUnit: z.enum(['monthly', 'annual', 'stipend']).optional(),
+  payLevel: z.string().optional(),
+  applicationFee: z.array(z.string()).default([]),
+  feeExemptions: z.array(z.string()).default([]),
+  applicationStartDate: optionalDate,
+  applicationDeadline: z.coerce.date(),
+  correctionWindowDates: z.array(z.string()).default([]),
+  admitCardDate: optionalDate,
+  examinationDate: optionalDate,
+  resultDate: optionalDate,
+  selectionProcess: z.array(z.string()).min(1),
+  jobLocation: z.array(z.string()).default([]),
+  applicationMode: z.enum(['online', 'offline', 'both']),
+  officialNotificationUrl: z.url(),
+  officialApplicationUrl: z.url(),
+  recruitmentStatus: z.enum(['upcoming', 'open', 'closing-soon', 'closed', 'admit-card-released', 'examination-completed', 'result-published', 'cancelled', 'withdrawn']),
+});
+
+const schemeDetails = z.object({
+  schemeName: z.string(),
+  alternativeNames: z.array(z.string()).default([]),
+  ministry: z.string(),
+  department: z.string().optional(),
+  schemeLevel: z.enum(['central', 'state']),
+  launchDate: optionalDate,
+  targetBeneficiaries: z.array(z.string()).min(1),
+  benefitType: z.array(z.string()).min(1),
+  benefitAmount: z.string().optional(),
+  benefitFrequency: z.string().optional(),
+  minimumAge: z.number().int().nonnegative().optional(),
+  maximumAge: z.number().int().nonnegative().optional(),
+  incomeLimit: z.string().optional(),
+  residenceRequirement: z.string().optional(),
+  occupationRequirement: z.string().optional(),
+  eligibilityCriteria: z.array(z.string()).min(1),
+  exclusionConditions: z.array(z.string()).default([]),
+  requiredDocuments: z.array(z.string()).default([]),
+  applicationProcess: z.array(z.string()).min(1),
+  applicationMode: z.enum(['online', 'offline', 'both']),
+  officialPortal: z.url(),
+  helplineInformation: z.array(z.string()).default([]),
+  schemeStatus: z.enum(['active', 'temporarily-paused', 'application-open', 'application-closed', 'state-dependent', 'under-revision', 'discontinued', 'withdrawn']),
+  lastOfficialPolicyUpdate: optionalDate,
+});
+
+const articlesCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/articles' }),
+  schema: z.object({
+    contentType: z.enum(['job', 'scheme', 'explainer']).default('explainer'),
+    sourceRecordId: z.uuid().optional(),
+    publicationEventId: z.uuid().optional(),
+    language: z.enum(['en', 'bn', 'hi']),
+    translationKey: z.string(),
+    urlSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    title: z.string(),
+    description: z.string(),
+    date: z.coerce.date(),
+    updated: optionalDate,
+    author: z.string(),
+    assignedEditor: z.string().optional(),
+    factCheckedBy: z.string().optional(),
+    copyReviewedBy: z.string().optional(),
+    reviewedBy: z.string().optional(),
+    publishedBy: z.string().optional(),
+    workflowStatus: z.enum(['idea', 'assigned', 'draft', 'submitted', 'editorial-review', 'changes-requested', 'fact-checking', 'verification-failed', 'copy-review', 'final-review', 'approved', 'scheduled', 'published', 're-verification-due', 'updating', 'corrected', 'closed', 'withdrawn', 'archived']).default('draft'),
+    scheduledPublicationDate: optionalDate,
+    nextReviewDate: optionalDate,
+    category: z.string(),
+    tags: z.array(z.string()).default([]),
+    featured: z.boolean().default(false),
+    featuredImage: z.string().optional(),
+    featuredImageAvif: z.string().optional(),
+    featuredImageAlt: z.string().optional(),
+    draft: z.boolean().default(false),
+    seoTitle: z.string().optional(),
+    seoDescription: z.string().optional(),
+    canonical: z.string().optional(),
+    verificationStatus: z.enum(['officially-confirmed', 'partially-confirmed', 'under-verification', 'corrected', 'withdrawn', 'closed']).default('under-verification'),
+    sourceUrls: z.array(z.url()).default([]),
+    sources: z.array(structuredSource).default([]),
+    officialNoticeUrl: z.url().optional(),
+    applicationUrl: z.url().optional(),
+    lastVerified: optionalDate,
+    deadline: optionalDate,
+    governmentLevel: z.enum(['central', 'state', 'west-bengal', 'other-state']).optional(),
+    state: z.enum(REGION_IDS).optional(),
+    regionLabel: z.string().optional(),
+    qualification: z.array(z.string()).default([]),
+    quickSummary: z.array(z.string()).default([]),
+    importantDates: z.array(z.string()).default([]),
+    requiredDocuments: z.array(z.string()).default([]),
+    updateHistory: z.array(z.string()).default([]),
+    amountOrVacancies: z.string().optional(),
+    faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
+    correctionHistory: z.array(correctionRecord).default([]),
+    job: jobDetails.optional(),
+    scheme: schemeDetails.optional(),
+  }),
+});
+
+const authorsCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{json,yaml,yml,toml}', base: './src/content/authors' }),
+  schema: z.object({
+    name: z.string(),
+    bio: z.string().optional(),
+    image: z.string().optional(),
+    email: z.string().optional(),
+    twitter: z.string().optional(),
+    github: z.string().optional(),
+    publicRole: z.string().optional(),
+    areasOfExpertise: z.array(z.string()).default([]),
+    languages: z.array(z.string()).default([]),
+    verificationMethodology: z.string().optional(),
+  }),
+});
+
+const correctionsCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{json,yaml,yml,toml}', base: './src/content/corrections' }),
+  schema: z.object({
+    articleTitle: z.string(),
+    articleUrl: z.url(),
+    date: z.coerce.date(),
+    incorrectInformation: z.string(),
+    correctedInformation: z.string(),
+    reason: z.string(),
+    supportingSource: z.url(),
+    status: z.enum(['corrected', 'reviewing', 'withdrawn']),
+  }),
+});
+
+const categoriesCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{json,yaml,yml,toml}', base: './src/content/categories' }),
+  schema: z.object({
+    nameEn: z.string(),
+    nameBn: z.string(),
+    nameHi: z.string().optional(),
+    descriptionEn: z.string().optional(),
+    descriptionBn: z.string().optional(),
+    descriptionHi: z.string().optional(),
+    color: z.string().optional(),
+  }),
+});
+
+export const collections = {
+  articles: articlesCollection,
+  authors: authorsCollection,
+  categories: categoriesCollection,
+  corrections: correctionsCollection,
+};

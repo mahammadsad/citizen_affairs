@@ -1,5 +1,14 @@
 name: Mahammad Sad
+publicRole: Editor and Publisher
 bio: প্রোগ্রামার ও গণিতবিদ; AI automation, technology, business, startups, investing এবং computer science-এ আগ্রহী।
 image: /assets/logo-mark.svg
 email: contact.mahammadsad@gmail.com
 github: mahammadsad
+areasOfExpertise:
+  - Public-information publishing
+  - Technology and automation
+languages:
+  - Bengali
+  - English
+  - Hindi
+verificationMethodology: Official documents and government portals are checked before factual claims are marked as confirmed.

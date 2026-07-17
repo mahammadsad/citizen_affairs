@@ -9,6 +9,9 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import { slugify } from './seo';
 import type { Locale } from '../i18n';
+import { isActiveCategory } from '@utils/constants';
+
+const isPublicWorkflow = (status: CollectionEntry<'articles'>['data']['workflowStatus']) => ['published', 'corrected', 'closed'].includes(status);
 
 export async function getCategoryData(slug: string): Promise<CollectionEntry<'categories'> | undefined> {
   return getEntry('categories', slug);
@@ -47,7 +50,7 @@ export async function getArticlesByCategorySlug(categorySlug: string) {
 }
 
 export async function getLocalizedArticles(locale: Locale) {
-  const articles = await getCollection('articles', ({ data }) => !data.draft && data.language === locale && data.verificationStatus !== 'withdrawn');
+  const articles = await getCollection('articles', ({ data }) => !data.draft && isPublicWorkflow(data.workflowStatus) && data.language === locale && data.verificationStatus !== 'withdrawn' && isActiveCategory(data.category));
   return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
