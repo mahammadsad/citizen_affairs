@@ -16,4 +16,5 @@ test('responsive brand variants cross the Astro component style boundary', () =>
   assert.match(header, /:global\(\.brand-logo-horizontal\)\{display:none/);
   assert.match(header, /:global\(\.brand-logo-mobile\)\{display:none/);
   assert.match(header, /:global\(\.drawer-brand-logo\)/);
+  assert.match(header, /@media\(max-width:420px\)\{\.language-picker\{display:none\}\}/);
 });

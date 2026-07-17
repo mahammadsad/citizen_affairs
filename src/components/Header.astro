@@ -256,6 +256,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
   :global(body.menu-open){overflow:hidden;overscroll-behavior:none}
 
   @media(max-width:520px){.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
+  @media(max-width:420px){.language-picker{display:none}}
   @media(max-width:350px){.navbar{padding-inline:.7rem}.nav-actions{gap:.1rem}.mobile-drawer{width:100vw}.drawer-languages{grid-template-columns:1fr}}
   @media(min-width:620px){:global(.brand-logo-mobile){display:none}:global(.brand-logo-horizontal){display:block}}
   @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}}
