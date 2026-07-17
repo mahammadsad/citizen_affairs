@@ -12,9 +12,10 @@ test('article hero preserves the source aspect ratio at every viewport', () => {
   assert.doesNotMatch(layout, /\.article-hero-image\{[^}]*aspect-ratio:/);
 });
 
-test('responsive brand variants cross the Astro component style boundary', () => {
-  assert.match(header, /:global\(\.brand-logo-horizontal\)\{display:none/);
-  assert.match(header, /:global\(\.brand-logo-mobile\)\{display:none/);
+test('header uses one responsive logo and keeps the language control available on mobile', () => {
+  assert.equal((header.match(/<BrandLogo variant="horizontal"[^>]*class="header-brand-logo"/g) || []).length, 1);
+  assert.doesNotMatch(header, /class="brand-logo brand-logo-mobile"/);
+  assert.doesNotMatch(header, /max-width:420px[^}]*language-picker[^}]*display:none/);
+  assert.match(header, /:global\(\.header-brand-logo\)/);
   assert.match(header, /:global\(\.drawer-brand-logo\)/);
-  assert.match(header, /@media\(max-width:420px\)\{\.language-picker\{display:none\}\}/);
 });
