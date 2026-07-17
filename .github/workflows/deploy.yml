@@ -76,6 +76,21 @@ jobs:
       - name: Generated HTML and route validation
         run: npm run validate:html
 
+      - name: Install responsive-test browser
+        run: npx playwright install chromium
+
+      - name: Responsive article visual tests
+        run: npm run test:visual
+
+      - name: Upload responsive article evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: responsive-article-evidence-${{ github.run_id }}
+          path: test-results/**/article-*.png
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload build output
         uses: actions/upload-pages-artifact@v3
         with:
