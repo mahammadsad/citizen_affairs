@@ -1,17 +1,17 @@
 ---
 import { getCollection } from 'astro:content';
 import { categoryName } from '@lib/content';
-import { ACTIVE_CATEGORY_IDS, getBrandName, getBrandTagline, SITE } from '@utils/constants';
+import { ACTIVE_CATEGORY_IDS, getBrandName, SITE } from '@utils/constants';
 import SearchOverlay from './SearchOverlay.astro';
 import LatestTicker from './LatestTicker.astro';
 import Icon from './Icon.astro';
+import BrandLogo from './BrandLogo.astro';
 import { localeMeta, locales, localizedPath, trustPagePath, type Locale, ui } from '../i18n';
 
 interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
 const { locale, alternateUrls = {} } = Astro.props;
 const t = ui(locale);
 const brandName = getBrandName(locale);
-const brandTagline = getBrandTagline(locale);
 const pathname = Astro.url.pathname;
 const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
 const desktopNav = [
@@ -34,8 +34,8 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
 <header class="site-header">
   <nav class="navbar container" aria-label={t.primaryNav}>
     <a href={localizedPath(locale)} class="brand" aria-label={`${brandName} — ${t.home}`}>
-      <img src={SITE.logo} alt={`${brandName} ${t.logo}`} class="brand-logo" width="46" height="46" />
-      <span class="brand-text"><span class="brand-name">{brandName}</span><span class="brand-tagline">{brandTagline}</span></span>
+      <BrandLogo variant="monogram" alt={`${brandName} ${t.logo}`} class="brand-logo brand-logo-mobile" />
+      <BrandLogo variant="horizontal" alt={`${brandName} ${t.logo}`} class="brand-logo-horizontal" />
     </a>
     <ul class="nav-links">
       {desktopNav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
@@ -62,8 +62,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
 <nav class="mobile-drawer" id="mobileMenu" aria-label={t.mobileNav} aria-hidden="true" hidden>
   <div class="drawer-head">
     <a href={localizedPath(locale)} class="drawer-brand">
-      <img src={SITE.logo} alt={`${brandName} ${t.logo}`} width="42" height="42" />
-      <span><strong>{brandName}</strong><small>{brandTagline}</small></span>
+      <BrandLogo variant="horizontal" alt={`${brandName} ${t.logo}`} class="drawer-brand-logo" />
     </a>
     <button class="drawer-close" id="menuClose" type="button" aria-label={t.closeMenu}><span aria-hidden="true">×</span></button>
   </div>
@@ -234,7 +233,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
 <style>
   .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
   [data-theme="dark"] .site-header{background:rgba(10,18,32,.9)}
-  .navbar{position:relative;z-index:5;height:74px;overflow:visible}.brand-logo{width:46px;height:46px}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
+  .navbar{position:relative;z-index:5;height:74px;overflow:visible}.brand-logo{width:46px;height:46px;object-fit:contain}.brand-logo-horizontal{display:none;width:132px;height:auto}.nav-links{display:none}.nav-actions{display:flex;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
   .language-picker{position:relative;z-index:2}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;z-index:20;right:0;top:calc(100% + .55rem);min-width:174px;max-width:min(240px,calc(100vw - 1.5rem));padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg);pointer-events:auto;isolation:isolate}.language-menu[hidden]{display:none;pointer-events:none}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;min-height:44px;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
   .desktop-theme{display:none}
 
@@ -245,7 +244,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
   .mobile-drawer.is-open{transform:none}
   .mobile-drawer[hidden],.mobile-backdrop[hidden]{display:none}
   .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:0 0 auto;min-height:74px;padding:max(.7rem,env(safe-area-inset-top)) 1rem .7rem;border-bottom:1px solid var(--color-border)}
-  .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}.drawer-brand img{flex:0 0 auto}.drawer-brand span{display:flex;flex-direction:column;min-width:0}.drawer-brand strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.drawer-brand small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--color-text-muted);font-size:.7rem}
+  .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}.drawer-brand-logo{display:block;width:132px;height:auto;max-height:56px;object-fit:contain}
   .drawer-close{display:grid;place-items:center;flex:0 0 auto;width:44px;height:44px;border:1px solid var(--color-border);border-radius:50%;background:var(--color-surface-alt)}.drawer-close span{font-size:1.8rem;line-height:1;transform:translateY(-1px)}
   .drawer-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:1rem max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom))}
   .drawer-scroll section+section{margin-top:1.25rem}.drawer-scroll h2{font-family:var(--font-body);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--color-text-muted);margin:0 0 .55rem .25rem}
@@ -256,8 +255,8 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
   .mobile-theme{display:flex;align-items:center;gap:.7rem;width:100%;min-height:50px;padding:.65rem .75rem;border:1px solid var(--color-border);border-radius:12px;font-weight:700;background:var(--color-surface-alt)}
   :global(body.menu-open){overflow:hidden;overscroll-behavior:none}
 
-  @media(max-width:520px){.brand-text{display:none}.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
+  @media(max-width:520px){.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
   @media(max-width:350px){.navbar{padding-inline:.7rem}.nav-actions{gap:.1rem}.mobile-drawer{width:100vw}.drawer-languages{grid-template-columns:1fr}}
-  @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}.brand-tagline{display:none}}
-  @media(min-width:1080px){.brand-tagline{display:block}}
+  @media(min-width:620px){.brand-logo-mobile{display:none}.brand-logo-horizontal{display:block}}
+  @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}}
 </style>

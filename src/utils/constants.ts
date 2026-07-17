@@ -60,7 +60,7 @@ export const SITE = {
   url: SITE_URL,
   basePath: BASE_PATH,
   logo: withBasePath(BRAND.logo),
-  ogImage: withBasePath('assets/og-image.jpg'),
+  ogImage: withBasePath(BRAND.logoSocialCard),
   author: {
     name: 'Mahammad Sad',
     role: 'Programmer and Mathematician',
