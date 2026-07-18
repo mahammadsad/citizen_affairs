@@ -22,7 +22,7 @@ jobs:
       contents: read
     env:
       # Both values are browser-safe and intentionally compiled into the staff client.
-      PUBLIC_SUPABASE_URL: https://tbymfgorepzzewagivit.supabase.co
+      PUBLIC_SUPABASE_URL: https://tbymfgorepzzewagivit.supabase.co\n      PUBLIC_BUILD_COMMIT: ${{ github.sha }}
       PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_dgzHHR9U_rkvOdNqabWxZw_HaBjHex1
     outputs:
       publication-event-id: ${{ steps.publication.outputs.id }}
