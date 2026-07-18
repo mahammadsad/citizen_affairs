@@ -40,7 +40,7 @@ const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, lang === '
 const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
 ---
 
-<MainLayout title={copy.title} description={copy.description} {locale} {canonical} {alternateUrls}>
+<MainLayout title={copy.title} description={copy.description} {locale} {canonical} {alternateUrls} robots="noindex, follow">
   <section class="search-hero">
     <div class="container">
       <span class="eyebrow">{t.verifiedSources}</span>
@@ -64,7 +64,7 @@ const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
       <aside class="eligibility-note"><strong>{copy.eligibility}</strong></aside>
       <div class="result-heading"><p id="resultCount" aria-live="polite">{copy.loading}</p></div>
       <div class="search-page-results" id="searchPageResults" aria-live="polite" aria-busy="true"></div>
-      <noscript><p class="empty-search">JavaScript is required for the interactive static search. The rest of the website remains available without it.</p></noscript>
+      <noscript><p class="empty-search">{locale === 'bn' ? 'ইন্টার‌্যাক্টিভ অনুসন্ধানের জন্য জাভাস্ক্রিপ্ট প্রয়োজন। ওয়েবসাইটের বাকি অংশ এটি ছাড়াও ব্যবহার করা যাবে।' : locale === 'hi' ? 'इंटरैक्टिव खोज के लिए जावास्क्रिप्ट आवश्यक है। वेबसाइट का बाकी भाग इसके बिना भी उपलब्ध है।' : 'JavaScript is required for the interactive static search. The rest of the website remains available without it.'}</p></noscript>
     </div>
   </main>
 </MainLayout>

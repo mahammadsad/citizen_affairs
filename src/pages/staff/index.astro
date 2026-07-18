@@ -2,18 +2,18 @@
 import BaseLayout from '@layouts/BaseLayout.astro';
 import BrandLogo from '@components/BrandLogo.astro';
 ---
-<BaseLayout title="Editorial workspace" description="Private Citizen Affairs India editorial workspace" robots="noindex, nofollow">
+<BaseLayout title="Editorial workspace" description="Private Citizen Affairs editorial workspace" robots="noindex, nofollow">
   <main class="workspace-shell">
     <section class="workspace-card" id="setupState" hidden>
       <BrandLogo variant="horizontal" class="workspace-logo" />
-      <p class="eyebrow">Citizen Affairs India</p>
+      <p class="eyebrow">Citizen Affairs</p>
       <h1>Editorial workspace setup required</h1>
       <p>Add <code>PUBLIC_SUPABASE_URL</code> and <code>PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> to the deployment environment. Never add a secret or service-role key.</p>
     </section>
 
     <section class="workspace-card auth-card" id="authState" hidden>
       <BrandLogo variant="horizontal" class="workspace-logo" />
-      <p class="eyebrow">Citizen Affairs India</p>
+      <p class="eyebrow">Citizen Affairs</p>
       <h1>Staff sign in</h1>
       <p>Drafts, verification notes and approvals remain private and are protected by database permissions.</p>
       <form id="signInForm">

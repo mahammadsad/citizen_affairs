@@ -12,7 +12,7 @@ date: 2026-07-13
 updated: 2026-07-13
 lastVerified: 2026-07-13
 nextReviewDate: 2026-08-13
-author: admin
+author: mahammad-sad
 category: projects
 verificationStatus: partially-confirmed
 sourceUrls:
@@ -51,6 +51,10 @@ tags:
 featured: true
 featuredImage: /uploads/india-major-welfare-schemes-1200.webp
 featuredImageAvif: /uploads/india-major-welfare-schemes-1200.avif
+featuredImageSrcSet: /uploads/india-major-welfare-schemes-480.webp 480w, /uploads/india-major-welfare-schemes-768.webp 768w, /uploads/india-major-welfare-schemes-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/india-major-welfare-schemes-480.avif 480w, /uploads/india-major-welfare-schemes-768.avif 768w, /uploads/india-major-welfare-schemes-1200.avif 1200w
+featuredImageWidth: 1200
+featuredImageHeight: 675
 featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত
   কেন্দ্রীয় প্রকল্পের যাচাইকৃত গাইডের সম্পাদকীয় গ্রাফিক
 draft: false
@@ -81,7 +85,7 @@ faqs:
 ---
 ভারতের কেন্দ্রীয় সরকার স্বাস্থ্য, খাদ্য, বাসস্থান, কৃষি, কর্মসংস্থান, পুষ্টি, নারী ও শিশুসুরক্ষা এবং স্কুলশিক্ষার জন্য বহু কর্মসূচি পরিচালনা করে। তবে পুরোনো ব্লগ বা ভিডিও দেখে আবেদন করা নিরাপদ নয়, কারণ কয়েকটি প্রকল্পের মেয়াদ, সুবিধা, যোগ্যতা ও নাম সময়ের সঙ্গে বদলেছে।
 
-এই গাইডে ১৩ জুলাই ২০২৬ পর্যন্ত পাওয়া সরকারি তথ্যের ভিত্তিতে ১৪টি গুরুত্বপূর্ণ কর্মসূচির উদ্দেশ্য, উল্লেখযোগ্য আপডেট এবং অফিসিয়াল পোর্টাল দেওয়া হলো। **সরকারি তথ্যকেন্দ্র একটি স্বাধীন তথ্যপ্ল্যাটফর্ম; এটি কোনো সরকারি ওয়েবসাইট নয়।** আবেদন বা ব্যক্তিগত তথ্য দেওয়ার আগে সংশ্লিষ্ট সরকারি পোর্টাল ও স্থানীয় কর্তৃপক্ষের কাছে সর্বশেষ নিয়ম যাচাই করুন।
+এই গাইডে ১৩ জুলাই ২০২৬ পর্যন্ত পাওয়া সরকারি তথ্যের ভিত্তিতে ১৪টি গুরুত্বপূর্ণ কর্মসূচির উদ্দেশ্য, উল্লেখযোগ্য আপডেট এবং অফিসিয়াল পোর্টাল দেওয়া হলো। **সিটিজেন অ্যাফেয়ার্স একটি স্বাধীন তথ্যপ্ল্যাটফর্ম; এটি কোনো সরকারি ওয়েবসাইট নয়।** আবেদন বা ব্যক্তিগত তথ্য দেওয়ার আগে সংশ্লিষ্ট সরকারি পোর্টাল ও স্থানীয় কর্তৃপক্ষের কাছে সর্বশেষ নিয়ম যাচাই করুন।
 
 ## পুরোনো তথ্য থেকে গুরুত্বপূর্ণ কী বদলেছে?
 

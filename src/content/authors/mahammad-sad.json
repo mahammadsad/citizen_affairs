@@ -1,15 +1,18 @@
 {
   "name": "Mahammad Sad",
-  "bio": "Owner and editorial publisher of Citizen Affairs, responsible for final editorial oversight and publication governance.",
+  "bio": "Owner and editorial publisher of Citizen Affairs. He oversees source attribution, editorial approvals, corrections and the protected publication process for this independent public-information platform.",
   "publicRole": "Owner and Publisher",
   "areasOfExpertise": [
     "editorial governance",
     "public information verification",
-    "digital publishing"
+    "digital publishing",
+    "government jobs and welfare-scheme information"
   ],
   "languages": [
     "en",
-    "bn"
+    "bn",
+    "hi"
   ],
-  "verificationMethodology": "Reviews source attribution, editorial approvals, verification status and publication readiness before release."
+  "verificationMethodology": "Checks material claims against primary notifications or official government portals, verifies that the author and fact-checker are independent, records the last-verified date and requires corrections to preserve an audit trail.",
+  "email": "contact.mahammadsad@gmail.com"
 }

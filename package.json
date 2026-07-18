@@ -1,5 +1,5 @@
 {
-  "name": "sarkari-tathya-kendra",
+  "name": "citizen-affairs",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -13,12 +13,14 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "type-check": "tsc --noEmit",
+    "type-check": "astro sync && tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "validate:content": "node scripts/validate-content.mjs",
     "validate:html": "node scripts/validate-html.mjs",
     "thumbnail": "node scripts/render-thumbnail.mjs",
     "test:visual": "playwright test",
+    "test:production": "playwright test --config playwright.production.config.mjs",
+    "audit:secrets": "node scripts/scan-secrets.mjs",
     "validate": "npm run format:check && npm test && npm run check && npm run validate:content && npm run build && npm run validate:html",
     "format": "node scripts/format-check.mjs --write",
     "format:check": "node scripts/format-check.mjs"
@@ -26,6 +28,7 @@
   "dependencies": {
     "@astrojs/markdown-remark": "7.2.1",
     "@astrojs/rss": "^4.0.19",
+    "@axe-core/playwright": "4.10.2",
     "@playwright/test": "1.58.2",
     "@supabase/supabase-js": "2.110.7",
     "astro": "7.1.1",

@@ -7,10 +7,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+permissions: {}
 
 # Only one deploy runs at a time; queued runs wait rather than being cancelled,
 # so a build never gets interrupted mid-deploy.
@@ -21,6 +18,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       # Both values are browser-safe and intentionally compiled into the staff client.
       PUBLIC_SUPABASE_URL: https://tbymfgorepzzewagivit.supabase.co
@@ -29,7 +28,7 @@ jobs:
       publication-event-id: ${{ steps.publication.outputs.id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           fetch-depth: 2
 
@@ -40,13 +39,13 @@ jobs:
           node -e "const{execSync}=require('node:child_process'),{appendFileSync}=require('node:fs');const m=execSync('git log -1 --pretty=%B',{encoding:'utf8'}).match(/\[publication:([0-9a-f-]{36})\]/i);appendFileSync(process.env.GITHUB_OUTPUT,'id='+(m?.[1]||'')+'\n')"
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
           cache: npm
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed
         with:
           deno-version: v2.9.3
 
@@ -54,7 +53,7 @@ jobs:
         run: npm ci
 
       - name: Type and content check
-        run: npm run check
+        run: npm run type-check && npm run check
 
       - name: Formatting validation
         run: npm run format:check
@@ -76,6 +75,12 @@ jobs:
       - name: Generated HTML and route validation
         run: npm run validate:html
 
+      - name: Scan generated frontend for private credentials
+        run: npm run audit:secrets
+
+      - name: Dependency vulnerability audit
+        run: npm audit --audit-level=high
+
       - name: Install responsive-test browser
         run: npx playwright install chromium
 
@@ -84,7 +89,7 @@ jobs:
 
       - name: Upload responsive article evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: responsive-article-evidence-${{ github.run_id }}
           path: test-results/**/article-*.png
@@ -92,7 +97,8 @@ jobs:
           retention-days: 14
 
       - name: Upload build output
-        uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
         with:
           path: ./dist
 
@@ -100,6 +106,9 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -108,15 +117,43 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+
+  production-smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Verify deployed production
+        env:
+          PRODUCTION_URL: https://citizenaffairs.in
+        run: npm run test:production
+      - name: Retain production screenshots and report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: production-smoke-${{ github.run_id }}
+          path: |
+            test-results/
+            production-smoke-report/
+          if-no-files-found: warn
+          retention-days: 14
 
   publication-feedback:
-    needs: [build, deploy]
+    needs: [build, deploy, production-smoke]
     if: always() && github.event_name == 'push' && needs.build.outputs.publication-event-id != ''
     runs-on: ubuntu-latest
     env:
       PUBLICATION_EVENT_ID: ${{ needs.build.outputs.publication-event-id }}
-      PUBLICATION_STATUS: ${{ needs.build.result == 'success' && needs.deploy.result == 'success' && 'deployed' || 'failed' }}
+      PUBLICATION_STATUS: ${{ needs.build.result == 'success' && needs.deploy.result == 'success' && needs.production-smoke.result == 'success' && 'deployed' || 'failed' }}
       DEPLOYMENT_URL: ${{ needs.deploy.outputs.page-url }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}

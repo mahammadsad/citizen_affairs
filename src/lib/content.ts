@@ -100,6 +100,6 @@ export async function getRelatedArticles(locale: Locale, category: string, exclu
 }
 
 export async function getArticlesByAuthorSlug(authorSlug: string) {
-  const articles = await getCollection('articles', ({ data }) => !data.draft);
+  const articles = await getCollection('articles', ({ data }) => !data.draft && isPublicWorkflow(data.workflowStatus) && data.verificationStatus !== 'withdrawn' && isActiveCategory(data.category));
   return articles.filter((article) => article.data.author === authorSlug);
 }
