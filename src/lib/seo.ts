@@ -67,6 +67,13 @@ export function toAbsoluteUrl(path: string, siteUrl: string): string {
   return `${origin}${path}`;
 }
 
+export function normalizeCanonicalUrl(value: string, siteUrl: string): string {
+  const production = new URL(siteUrl);
+  const incoming = new URL(value, production);
+  const pathname = incoming.pathname === '/' ? '/' : `${incoming.pathname.replace(/\/+$/, '')}/`;
+  return `${production.origin}${pathname}`;
+}
+
 export function generateMeta(seo: SEOMeta) {
   const {
     title,

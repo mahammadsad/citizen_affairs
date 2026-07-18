@@ -30,6 +30,9 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+production-smoke-report/
 
 # Logs
 npm-debug.log*

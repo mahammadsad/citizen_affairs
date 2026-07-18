@@ -53,6 +53,15 @@ for (const inactive of ['exams', 'materials', 'notices', 'affairs']) {
   if (existsSync(join(dist, 'en/categories', inactive))) errors.push(`inactive category was generated: ${inactive}`);
 }
 
+const homepage = readFileSync(join(dist, 'index.html'), 'utf8');
+const sitemap = readFileSync(join(dist, 'sitemap.xml'), 'utf8');
+if ((homepage.match(/class="header-brand-logo"/g) || []).length !== 1) errors.push('homepage must contain exactly one header logo');
+if (/Citizen Affairs Publication System Test/i.test(homepage + sitemap)) errors.push('technical publication test content entered production discovery output');
+if (/Sarkari Tathya Kendra|সরকারি তথ্যকেন্দ্র/i.test(homepage)) errors.push('legacy brand is visible on the homepage');
+if (!existsSync(join(dist, '404.html'))) errors.push('custom 404.html was not generated');
+if (!/noindex,\s*nofollow/i.test(readFileSync(join(dist, 'staff/index.html'), 'utf8'))) errors.push('staff workspace must be noindex, nofollow');
+if (/\/search\//.test(sitemap)) errors.push('internal search route must not appear in sitemap');
+
 if (errors.length) {
   console.error(`Generated HTML validation failed with ${errors.length} error(s):\n- ${[...new Set(errors)].join('\n- ')}`);
   process.exit(1);

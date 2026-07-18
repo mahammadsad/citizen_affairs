@@ -1,5 +1,5 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-  <title id="title">সরকারি তথ্যকেন্দ্র</title>
+  <title id="title">Citizen Affairs</title>
   <desc id="desc">Verified information document symbol</desc>
   <defs>
     <linearGradient id="bg" x1="70" y1="42" x2="448" y2="472" gradientUnits="userSpaceOnUse">
@@ -29,4 +29,3 @@
   <circle cx="342" cy="350" r="74" fill="#138A36" stroke="#FFFFFF" stroke-width="14"/>
   <path d="M305 350L329 374L381 322" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
-

@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import '../styles/components.css';
 import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
-import { toAbsoluteUrl } from '@lib/seo';
+import { normalizeCanonicalUrl, toAbsoluteUrl } from '@lib/seo';
 import { locales, type Locale, ui } from '../i18n';
 
 export interface Props {
@@ -30,6 +30,8 @@ const {
 } = Astro.props;
 
 const brandName = getBrandName(locale);
+const resolvedCanonical = normalizeCanonicalUrl(canonical, SITE.url);
+const resolvedAlternateUrls = Object.fromEntries(Object.entries(alternateUrls).map(([lang, url]) => [lang, url ? normalizeCanonicalUrl(url, SITE.url) : undefined])) as Partial<Record<Locale, string>>;
 const resolvedTitle = title || brandName;
 const fullTitle = resolvedTitle === brandName ? resolvedTitle : `${resolvedTitle} | ${brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
@@ -53,7 +55,7 @@ const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: getBrandName('en'),
-  alternateName: [BRAND.brandShortName, BRAND.verticalNameEn, BRAND.verticalNameBn, BRAND.verticalNameHi],
+  alternateName: [BRAND.brandNameBn, BRAND.brandNameHi],
   url: SITE.url,
   logo: toAbsoluteUrl(SITE.logo, SITE.url),
   email: BRAND.contactEmail,
@@ -71,6 +73,7 @@ const t = ui(locale);
 <html lang={locale} data-theme="light">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://tbymfgorepzzewagivit.supabase.co; form-action 'self' mailto:; upgrade-insecure-requests" />
     <script is:inline>
       (() => { try { const saved = localStorage.getItem('theme'); const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = theme; } catch (_) {} })();
     </script>
@@ -79,9 +82,11 @@ const t = ui(locale);
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
     <meta name="robots" content={robots} />
-    <link rel="canonical" href={canonical} />
-    {locales.map((lang) => alternateUrls[lang] && <link rel="alternate" hreflang={lang} href={alternateUrls[lang]} />)}
-    <link rel="alternate" hreflang="x-default" href={alternateUrls.en || canonical} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="x-build-commit" content={import.meta.env.PUBLIC_BUILD_COMMIT || 'local'} />
+    <link rel="canonical" href={resolvedCanonical} />
+    {locales.map((lang) => resolvedAlternateUrls[lang] && <link rel="alternate" hreflang={lang} href={resolvedAlternateUrls[lang]} />)}
+    <link rel="alternate" hreflang="x-default" href={resolvedAlternateUrls.en || resolvedCanonical} />
     <link rel="manifest" href={`${SITE.basePath}site.webmanifest`} />
     <link rel="alternate" type="application/rss+xml" title={`${brandName} RSS`} href={`${SITE.basePath}rss.xml`} />
     <link rel="icon" type="image/png" sizes="32x32" href={`${SITE.basePath}assets/favicon-32.png`} />
@@ -98,7 +103,7 @@ const t = ui(locale);
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={ogImageAlt} />
-    <meta property="og:url" content={canonical} />
+    <meta property="og:url" content={resolvedCanonical} />
     <meta property="og:locale" content={ogLocale} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />

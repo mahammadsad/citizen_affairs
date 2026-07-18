@@ -1,6 +1,6 @@
-# Citizen Affairs India
+# Citizen Affairs
 
-Citizen Affairs India is a fast, static, multilingual public-information site focused initially on verified **Government Jobs** and **Welfare Schemes**. Sarkari Tathya Kendra remains the recognizable government-information vertical during the brand transition.
+Citizen Affairs is a fast, static, multilingual and independent public-information site focused initially on verified **Government Jobs** and **Welfare Schemes**. It is not a government department, an official government website or affiliated with a political party.
 
 The public site uses Astro, TypeScript and portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. Publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
 

@@ -40,7 +40,7 @@ const categoryEntries = (await getCollection('categories')).filter((category) =>
       {desktopNav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
     </ul>
     <div class="nav-actions">
-      <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog"><Icon name="search" /></button>
+      <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog" aria-controls="searchOverlay" aria-expanded="false"><Icon name="search" /></button>
       <div class="language-picker">
         <button class="language-trigger" id="languageTrigger" aria-label={`${t.language}: ${localeMeta[locale].nativeName}`} aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu">
           <Icon name="globe" /><span class="language-code">{localeMeta[locale].code}</span><span class="chevron" aria-hidden="true">⌄</span>

@@ -11,7 +11,7 @@ export default defineConfig({
     colorScheme: 'light',
   },
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1',
+    command: 'python3 -m http.server 4321 --bind 127.0.0.1 --directory dist',
     url: 'http://127.0.0.1:4321/bn/articles/india-major-welfare-schemes-official-guide/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

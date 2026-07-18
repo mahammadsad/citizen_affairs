@@ -42,9 +42,9 @@ const pageSchema = page === 'author' ? {
   inLanguage: locale,
   isPartOf: { '@type': 'WebSite', name: brandName, url: SITE.url }
 };
-const authorEntry = page === 'author' ? await getEntry('authors', 'admin') : undefined;
+const authorEntry = page === 'author' ? await getEntry('authors', 'mahammad-sad') : undefined;
 const authorArticles = page === 'author'
-  ? (await getArticlesByAuthorSlug('admin')).filter((article) => article.data.language === locale && article.data.verificationStatus !== 'withdrawn')
+  ? (await getArticlesByAuthorSlug('mahammad-sad')).filter((article) => article.data.language === locale && article.data.verificationStatus !== 'withdrawn')
   : [];
 const correctionsEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.reportTitle} — ${brandName}`)}`;
 const updateEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.suggestTitle} — ${brandName}`)}`;

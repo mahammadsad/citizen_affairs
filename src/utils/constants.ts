@@ -19,12 +19,6 @@ export function getBrandTagline(locale: BrandLocale = 'en') {
   return BRAND.brandTaglineEn;
 }
 
-export function getVerticalName(locale: BrandLocale = 'en') {
-  if (locale === 'bn') return BRAND.verticalNameBn;
-  if (locale === 'hi') return BRAND.verticalNameHi;
-  return BRAND.verticalNameEn;
-}
-
 export function getTransitionNotice(locale: BrandLocale = 'en') {
   if (locale === 'bn') return BRAND.transitionNoticeBn;
   if (locale === 'hi') return BRAND.transitionNoticeHi;
@@ -56,7 +50,7 @@ export const SITE = {
   taglineEn: BRAND.brandTaglineEn,
   taglineBn: BRAND.brandTaglineBn,
   taglineHi: BRAND.brandTaglineHi,
-  description: 'Verified Central and State Government jobs and welfare schemes, clearly explained with official sources.',
+  description: BRAND.description,
   url: SITE_URL,
   basePath: BASE_PATH,
   logo: withBasePath(BRAND.logo),
