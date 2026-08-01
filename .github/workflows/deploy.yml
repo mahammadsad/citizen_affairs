@@ -136,6 +136,7 @@ jobs:
       - name: Verify deployed production
         env:
           PRODUCTION_URL: https://citizenaffairs.in
+          EXPECTED_BUILD_COMMIT: ${{ github.sha }}
         run: npm run test:production
       - name: Retain production screenshots and report
         if: always()
