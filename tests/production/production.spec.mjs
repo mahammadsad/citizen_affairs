@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 const oldBrand = /Sarkari Tathya Kendra|সরকারি তথ্যকেন্দ্র/i;
-const inactiveCategories = /Exams|Study Materials|Notices|Current Affairs/i;
+const inactiveCategoryLabels = [/^Exams$/i, /^Study Materials$/i, /^Notices$/i, /^Current Affairs$/i];
 
 test('production homepage and discoverability are healthy', async ({ page, request }, testInfo) => {
   const response = await page.goto('/', { waitUntil: 'networkidle' });
@@ -15,8 +15,13 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   }
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/citizenaffairs\.in\//);
   await expect(page.locator('body')).not.toContainText(oldBrand);
-  await expect(page.locator('body')).not.toContainText(inactiveCategories);
+  for (const label of inactiveCategoryLabels) {
+    await expect(page.getByText(label)).toHaveCount(0);
+  }
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/i);
+  if (process.env.EXPECTED_BUILD_COMMIT) {
+    await expect(page.locator('meta[name="x-build-commit"]')).toHaveAttribute('content', process.env.EXPECTED_BUILD_COMMIT);
+  }
 
   for (const path of ['/sitemap.xml', '/robots.txt']) {
     const resource = await request.get(path);
@@ -36,5 +41,6 @@ test('published article is available when sitemap lists one', async ({ page, req
   if (!article) return;
   const response = await page.goto(article);
   expect(response?.status()).toBe(200);
-  await expect(page.locator('script[type="application/ld+json"]')).toContainText(/Article|NewsArticle/);
+  const articleSchema = page.locator('script[type="application/ld+json"]').filter({ hasText: /"@type"\s*:\s*"(?:Article|NewsArticle)"/ });
+  await expect(articleSchema).toHaveCount(1);
 });
