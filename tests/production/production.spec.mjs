@@ -2,6 +2,17 @@ import { expect, test } from '@playwright/test';
 
 const oldBrand = /Sarkari Tathya Kendra|সরকারি তথ্যকেন্দ্র/i;
 const inactiveCategoryLabels = [/^Exams$/i, /^Study Materials$/i, /^Notices$/i, /^Current Affairs$/i];
+const collectSchemaTypes = (value) => {
+  const queue = Array.isArray(value) ? [...value] : [value];
+  const types = [];
+  for (const node of queue) {
+    if (!node || typeof node !== 'object') continue;
+    const nodeTypes = Array.isArray(node['@type']) ? node['@type'] : [node['@type']];
+    types.push(...nodeTypes.filter((type) => typeof type === 'string'));
+    if (Array.isArray(node['@graph'])) queue.push(...node['@graph']);
+  }
+  return types;
+};
 
 test('production homepage and discoverability are healthy', async ({ page, request }, testInfo) => {
   const response = await page.goto('/', { waitUntil: 'networkidle' });
@@ -41,6 +52,7 @@ test('published article is available when sitemap lists one', async ({ page, req
   if (!article) return;
   const response = await page.goto(article);
   expect(response?.status()).toBe(200);
-  const articleSchema = page.locator('script[type="application/ld+json"]').filter({ hasText: /"@type"\s*:\s*"(?:Article|NewsArticle)"/ });
-  await expect(articleSchema).toHaveCount(1);
+  const schemas = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((source) => JSON.parse(source));
+  const articleTypes = schemas.flatMap(collectSchemaTypes).filter((type) => type === 'Article' || type === 'NewsArticle');
+  expect(articleTypes).toHaveLength(1);
 });
