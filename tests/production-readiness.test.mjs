@@ -138,11 +138,12 @@ test('deployment keeps PRs test-only and requires post-deployment smoke tests', 
   assert.match(workflow, /EXPECTED_BUILD_COMMIT: \$\{\{ github\.sha \}\}/);
 });
 
-test('production smoke assertions are scoped to exact labels and one article schema', () => {
+test('production smoke assertions use exact labels and parse every JSON-LD block', () => {
   const smoke = read('tests/production/production.spec.mjs');
   assert.doesNotMatch(smoke, /locator\('body'\)\)\.not\.toContainText\(inactiveCategories\)/);
   assert.match(smoke, /\^Notices\$/);
   assert.match(smoke, /meta\[name="x-build-commit"\]/);
-  assert.match(smoke, /filter\(\{ hasText: \/"@type"/);
-  assert.match(smoke, /articleSchema\)\.toHaveCount\(1\)/);
+  assert.doesNotMatch(smoke, /filter\(\{ hasText:/);
+  assert.match(smoke, /allTextContents\(\)\)\.map\(\(source\) => JSON\.parse\(source\)\)/);
+  assert.match(smoke, /expect\(articleTypes\)\.toHaveLength\(1\)/);
 });
