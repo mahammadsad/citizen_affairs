@@ -21,10 +21,11 @@ jobs:
     permissions:
       contents: read
     env:
-      # Both values are browser-safe and intentionally compiled into the staff client.
-      PUBLIC_SUPABASE_URL: https://tbymfgorepzzewagivit.supabase.co
       PUBLIC_BUILD_COMMIT: ${{ github.sha }}
-      PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_dgzHHR9U_rkvOdNqabWxZw_HaBjHex1
+      # The deleted editorial backend must stay disconnected until a replacement
+      # project has passed its security and deployment checks.
+      PUBLIC_SUPABASE_URL: ${{ vars.SUPABASE_INTEGRATION_ENABLED == 'true' && vars.PUBLIC_SUPABASE_URL || '' }}
+      PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_INTEGRATION_ENABLED == 'true' && vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY || '' }}
     outputs:
       publication-event-id: ${{ steps.publication.outputs.id }}
     steps:
@@ -151,7 +152,7 @@ jobs:
 
   publication-feedback:
     needs: [build, deploy, production-smoke]
-    if: always() && github.event_name == 'push' && needs.build.outputs.publication-event-id != ''
+    if: always() && github.event_name == 'push' && vars.SUPABASE_INTEGRATION_ENABLED == 'true' && needs.build.outputs.publication-event-id != ''
     runs-on: ubuntu-latest
     env:
       PUBLICATION_EVENT_ID: ${{ needs.build.outputs.publication-event-id }}

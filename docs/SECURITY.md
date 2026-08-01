@@ -1,5 +1,7 @@
 # Security guide
 
+The Supabase controls below describe the required replacement-project posture. No production Supabase project is currently connected, and the integration switch remains off.
+
 - RLS is enabled on every editorial table; `anon` has no editorial data grants.
 - User authorization is stored in database role assignments, never editable user metadata.
 - Security-definer helpers live in a non-exposed `private` schema, set a safe search path and have explicit execute grants.

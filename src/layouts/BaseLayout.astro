@@ -67,13 +67,24 @@ const organizationSchema = {
 };
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
+const publicSupabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseOrigin = (() => {
+  if (!publicSupabaseUrl) return '';
+  try {
+    const url = new URL(publicSupabaseUrl);
+    return url.protocol === 'https:' ? url.origin : '';
+  } catch {
+    return '';
+  }
+})();
+const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''}; form-action 'self' mailto:; upgrade-insecure-requests`;
 const t = ui(locale);
 ---
 <!doctype html>
 <html lang={locale} data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://tbymfgorepzzewagivit.supabase.co; form-action 'self' mailto:; upgrade-insecure-requests" />
+    <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
     <script is:inline>
       (() => { try { const saved = localStorage.getItem('theme'); const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = theme; } catch (_) {} })();
     </script>

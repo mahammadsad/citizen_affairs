@@ -3,12 +3,12 @@
 ## What is backed up
 
 - Git stores every published portable Markdown snapshot and code version.
-- Supabase database backups cover drafts, approvals, audit history and publication events according to the selected plan.
+- No live Supabase database currently exists. For a future replacement, database backups must cover drafts, approvals, audit history and publication events according to the selected plan.
 - Private Storage needs a separate periodic export if it is not covered by the chosen recovery plan.
 
 ## Minimum routine
 
-- Export the database with `supabase db dump` before migrations and at a regular interval.
+- After a replacement is provisioned, export the database with `supabase db dump` before later migrations and at a regular interval.
 - Store encrypted backups outside the live project and test a restore quarterly.
 - Keep a copy of private editorial assets with matching paths.
 - Never store database dumps or secret-containing configuration in this public repository.
