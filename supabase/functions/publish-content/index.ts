@@ -10,7 +10,7 @@ const json = (body: unknown, status = 200) => Response.json(body, { status, head
 const failure = (error: string, message: string, status: number) => json({ error, message }, status);
 const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-// Replace `any` with generated database types after the dedicated project exists.
+// Replace `any` with refreshed generated database types in a separate type-only change.
 const secured = withSupabase<any>({ auth: "user" }, async (req, ctx) => {
   if (req.method !== "POST") return failure("method_not_allowed", "Only POST publication requests are accepted.", 405);
   const payload = await req.json().catch(() => ({}));
@@ -66,7 +66,7 @@ const secured = withSupabase<any>({ auth: "user" }, async (req, ctx) => {
   }
 
   const owner = Deno.env.get("GITHUB_OWNER") || "mahammadsad";
-  const repository = Deno.env.get("GITHUB_REPOSITORY") || "sarkari-tathya-kendra";
+  const repository = Deno.env.get("GITHUB_REPOSITORY") || "citizen_affairs";
   const token = Deno.env.get("GITHUB_DISPATCH_TOKEN");
   if (!token) {
     await ctx.supabaseAdmin.from("publication_events").update({ status: "failed", error_message: "GITHUB_DISPATCH_TOKEN is not configured", completed_at: new Date().toISOString() }).eq("id", event.id);

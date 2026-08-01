@@ -12,9 +12,13 @@ Confirm the account is active, has a role, and is assigned to the article or hol
 
 Read the database error. Common causes are self-approval, missing current-version approvals, missing primary source, incomplete Job/Scheme details, missing staff attribution, a stale article version or an expired deadline still marked open.
 
+## Publication auto-merge fails
+
+Read the sanitized failure in the `Export approved editorial content` run. Confirm repository auto-merge is enabled only with an up-to-date required `build` check, force pushes and deletion disabled, and the editorial token has Contents/Pull Requests write plus Administration read access. The workflow closes an unmerged PR and marks the event Failed; repair the named cause and request publication again.
+
 ## Publication stays Building
 
-Open the publication GitHub Actions run and PR. Confirm the three GitHub/Supabase secrets are configured, the fine-grained token can create PRs, branch protection checks ran, the PR merged and Pages deployed. A missing callback secret cannot finalize the event.
+Open the publication run and PR in `mahammadsad/citizen_affairs`. A correctly repaired workflow does not ignore merge failures: it waits for required checks and the protected merge, then fails explicitly if either does not complete. Confirm the Supabase callback secrets are configured because a workflow without callback credentials cannot finalize the database event.
 
 ## Build fails
 

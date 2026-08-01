@@ -53,7 +53,7 @@ export interface BreadcrumbSchema {
  *
  * Site-relative asset paths in this project (SITE.ogImage, SITE.logo, CMS
  * image uploads, etc.) already include the GitHub Pages base path, e.g.
- * "/sarkari-tathya-kendra/assets/og-image.jpg". SITE.url *also* already
+ * "/citizen_affairs/assets/og-image.jpg". SITE.url *also* already
  * includes that same base path. Naively concatenating SITE.url + path
  * therefore duplicates the repo path in every generated absolute URL
  * (og:image, JSON-LD logos, etc. all did this before this fix).

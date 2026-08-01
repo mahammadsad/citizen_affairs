@@ -8,7 +8,7 @@ const safeText = (value: unknown, fallback: string) => String(value || fallback)
   .slice(0, 500);
 
 export default {
-  // Replace `any` with generated database types after the dedicated project exists.
+  // Replace `any` with refreshed generated database types in a separate type-only change.
   fetch: withSupabase<any>({ auth: "secret" }, async (req, ctx) => {
     if (req.method !== "POST") return failure("method_not_allowed", "Only POST deployment callbacks are accepted.", 405);
     const body = await req.json().catch(() => ({}));
