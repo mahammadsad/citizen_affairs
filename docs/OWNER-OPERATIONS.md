@@ -2,7 +2,13 @@
 
 This is the shortest safe operating guide.
 
+## Current availability
+
+The public website is live, but there is no production Supabase project. Staff sign-in, database drafts, topic discovery and automated publication are intentionally unavailable. Continue using Pages CMS only for temporary repository drafts; every new CMS article remains `draft: true` and cannot bypass review.
+
 ## Publish an article
+
+The steps below apply only after a replacement Supabase project has passed the deployment and security checklist and `SUPABASE_INTEGRATION_ENABLED` has been deliberately enabled.
 
 1. Sign in at `/staff/` with an active Supabase staff account.
 2. Create a draft. Complete its Job or Scheme details, official sources and staff assignments in Supabase Studio until the fuller form UI is connected.

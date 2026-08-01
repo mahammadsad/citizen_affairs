@@ -52,6 +52,42 @@ test('custom-domain and repository Pages paths remain distinct', () => {
   assert.match(constants, /BRAND\.domain \? '\/'/);
 });
 
+test('deleted Supabase production integration remains disconnected and fail-closed', () => {
+  const deletedProject = 'tbymfgorepzzewagivit';
+  const activeFiles = [
+    'README.md',
+    'src/layouts/BaseLayout.astro',
+    'src/pages/staff/index.astro',
+    '.github/workflows/deploy.yml',
+    '.github/workflows/publish-content.yml',
+    '.github/workflows/topic-discovery.yml',
+    'docs/ARCHITECTURE.md',
+    'docs/BACKUP-RECOVERY.md',
+    'docs/DATABASE.md',
+    'docs/DEPLOYMENT.md',
+    'docs/ENVIRONMENT.md',
+    'docs/IMPLEMENTATION-REPORT.md',
+    'docs/OWNER-OPERATIONS.md',
+    'docs/SECURITY.md',
+    'docs/TROUBLESHOOTING.md',
+  ];
+  for (const file of activeFiles) {
+    assert.doesNotMatch(read(file), new RegExp(deletedProject, 'i'), `${file} references the deleted Supabase project`);
+  }
+
+  const deploy = read('.github/workflows/deploy.yml');
+  assert.match(deploy, /vars\.SUPABASE_INTEGRATION_ENABLED == 'true' && vars\.PUBLIC_SUPABASE_URL/);
+  assert.match(deploy, /vars\.SUPABASE_INTEGRATION_ENABLED == 'true' && vars\.PUBLIC_SUPABASE_PUBLISHABLE_KEY/);
+  assert.doesNotMatch(deploy, /PUBLIC_SUPABASE_URL:\s*https:\/\//);
+  assert.doesNotMatch(deploy, /PUBLIC_SUPABASE_PUBLISHABLE_KEY:\s*sb_/);
+  assert.match(read('.github/workflows/publish-content.yml'), /if: vars\.SUPABASE_INTEGRATION_ENABLED == 'true'/);
+
+  const discovery = read('.github/workflows/topic-discovery.yml');
+  assert.match(discovery, /if: vars\.SUPABASE_INTEGRATION_ENABLED == 'true' && vars\.AUTOMATION_ENABLED == 'true'/);
+  assert.doesNotMatch(discovery, /^\s*schedule:/m);
+  assert.match(read('src/pages/staff/index.astro'), /Editorial workspace temporarily unavailable/);
+});
+
 test('Pages CMS creates protected drafts with a real author', () => {
   const cms = parse(read('.pages.yml'));
   const articleGroup = cms.content.find((entry) => entry.name === 'articles');

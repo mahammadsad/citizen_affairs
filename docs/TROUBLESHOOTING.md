@@ -1,8 +1,8 @@
 # Troubleshooting
 
-## Staff page says setup required
+## Staff workspace says temporarily unavailable
 
-Add only `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` to the site build environment, then rebuild.
+This is the expected safe state while no production Supabase project exists. Do not restore values from the deleted project. A replacement must complete the database, RLS, role, Edge Function and unauthenticated-request checks before the integration switch is enabled.
 
 ## A staff member sees no articles
 
@@ -19,6 +19,8 @@ Read the sanitized failure in the `Export approved editorial content` run. Confi
 ## Publication stays Building
 
 Open the publication run and PR in `mahammadsad/citizen_affairs`. A correctly repaired workflow does not ignore merge failures: it waits for required checks and the protected merge, then fails explicitly if either does not complete. Confirm the Supabase callback secrets are configured because a workflow without callback credentials cannot finalize the database event.
+
+If no replacement Supabase project has been enabled, no new publication event should exist and the publication workflow remains skipped by design.
 
 ## Build fails
 

@@ -2,7 +2,7 @@
 
 Citizen Affairs is a fast, static, multilingual and independent public-information site focused initially on verified **Government Jobs** and **Welfare Schemes**. It is not a government department, an official government website or affiliated with a political party.
 
-The public site uses Astro, TypeScript and portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. Publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
+The public site uses Astro, TypeScript and portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. When that optional editorial backend is enabled, publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
 
 ## Owner quick start
 
@@ -42,8 +42,8 @@ English, Bengali and Hindi remain supported. Equivalent translations share one `
 
 The active repository is `mahammadsad/citizen_affairs`. Production uses the custom domain `https://citizenaffairs.in`; the repository Pages fallback is `https://mahammadsad.github.io/citizen_affairs/`.
 
-The deployed public build targets the dedicated Supabase project `tbymfgorepzzewagivit`. The production integration release records the seven versioned migrations in `supabase/migrations/` and both Edge Functions as deployed. Treat the live migration list, function versions and secret stores as external production state: compare them before a database or function release, never reapply completed migrations and never copy secret values into this repository.
+No live Supabase project is currently configured. The previous project was deleted, so the deployed site does not receive Supabase browser variables, the staff workspace is unavailable, scheduled topic discovery is disabled and database-backed publication is fail-closed. The seven versioned migrations and both Edge Functions remain in the repository as a reviewed blueprint for a future replacement project; they are not evidence of a live deployment.
 
-Pages CMS remains a temporary, draft-only editor. Protected publication uses repository pull requests and records an article as published only after merge, Pages deployment and the production smoke test all succeed.
+Pages CMS remains a temporary, draft-only editor for repository drafts. The protected database publication design remains in source, but it is inactive until a replacement Supabase project is explicitly provisioned and verified.
 
 Start with [Architecture](docs/ARCHITECTURE.md), [Editorial workflow](docs/EDITORIAL-WORKFLOW.md), and the [Implementation report](docs/IMPLEMENTATION-REPORT.md).

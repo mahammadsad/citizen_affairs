@@ -4,11 +4,11 @@
 
 GitHub Actions validates pull requests and deploys `main` to GitHub Pages. The production origin is `https://citizenaffairs.in`, `public/CNAME` contains `citizenaffairs.in`, and the repository fallback is `https://mahammadsad.github.io/citizen_affairs/`. Keep the Pages source on **GitHub Actions**. The site reads its canonical origin from `brand.config.json`, so production uses `/` while a build without the custom domain uses `/citizen_affairs/`.
 
-## Current editorial production target
+## Current editorial production state
 
-The dedicated project reference is `tbymfgorepzzewagivit`. The recorded production release includes all seven migration files currently under `supabase/migrations/` and the `publish-content` and `deployment-callback` Edge Functions. Before changing production, compare the live migration list and deployed function versions with this repository. Do not reapply an existing migration.
+There is no live Citizen Affairs Supabase project. The previous project was deleted. GitHub Pages therefore builds without Supabase browser variables, `/staff/` shows an unavailable state, scheduled topic discovery is disabled, and publication/callback jobs require the unset `SUPABASE_INTEGRATION_ENABLED=true` repository variable before they can run.
 
-For a function-only release, deploy only the changed function, preserve its authentication mode and then verify an unauthenticated request fails closed. Set the non-secret GitHub values to `mahammadsad` and `citizen_affairs`; do not rotate or print the dispatch token during a repository-name repair.
+The migration and Edge Function files are reusable source, not a claim that any database or function is deployed. To activate a replacement, provision a dedicated project, review and apply the migrations once, run database advisors and role tests, deploy both functions with their existing authentication modes, verify unauthenticated requests fail closed, configure the documented variables and secrets without printing them, and only then set `SUPABASE_INTEGRATION_ENABLED=true`. Set the non-secret function values to `mahammadsad` and `citizen_affairs`.
 
 ## Protected GitHub publication
 
@@ -18,4 +18,4 @@ For a function-only release, deploy only the changed function, preserve its auth
 4. If auto-merge is later enabled, keep the required checks enforced. The workflow verifies repository and branch settings, requests squash auto-merge, waits for required checks and confirms the PR actually merged.
 5. GitHub Pages must remain configured to deploy through GitHub Actions with the custom domain intact.
 
-The callback sets an article to Published only after the PR merge triggers a successful build, GitHub Pages deployment and production smoke test. Failed exports, rejected auto-merge, failed checks, unmerged PRs, deployments or smoke tests set the publication event to Failed. Duplicate requests for the same active article version remain idempotent.
+When a replacement backend is safely enabled, the callback sets an article to Published only after the PR merge triggers a successful build, GitHub Pages deployment and production smoke test. Failed exports, rejected auto-merge, failed checks, unmerged PRs, deployments or smoke tests set the publication event to Failed. Duplicate requests for the same active article version remain idempotent.

@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   export:
+    if: vars.SUPABASE_INTEGRATION_ENABLED == 'true'
     runs-on: ubuntu-latest
     env:
       ARTICLE_ID: ${{ github.event.client_payload.article_id }}

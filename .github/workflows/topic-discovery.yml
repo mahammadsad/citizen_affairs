@@ -1,9 +1,9 @@
 name: Private topic discovery
 
+# Scheduled discovery is intentionally disabled while no production editorial
+# database exists. A replacement integration must be reviewed before restoring it.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "17 1,7,13,19 * * *"
 
 permissions:
   contents: read
@@ -14,6 +14,7 @@ concurrency:
 
 jobs:
   discover:
+    if: vars.SUPABASE_INTEGRATION_ENABLED == 'true' && vars.AUTOMATION_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -33,7 +34,6 @@ jobs:
         run: python -m pytest -q
 
       - name: Discover official-source topics
-        if: vars.AUTOMATION_ENABLED == 'true'
         working-directory: automation
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
