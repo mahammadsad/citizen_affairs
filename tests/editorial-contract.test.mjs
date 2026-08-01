@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const migration = await readFile('supabase/migrations/20260717143337_editorial_foundation.sql', 'utf8');
 const contentSchema = await readFile('src/content.config.ts', 'utf8');
+const supabaseConfig = await readFile('supabase/config.toml', 'utf8');
 const publishFunction = await readFile('supabase/functions/publish-content/index.ts', 'utf8');
 const callbackFunction = await readFile('supabase/functions/deployment-callback/index.ts', 'utf8');
 
@@ -38,4 +39,6 @@ test('publishing uses user auth and secret-only deployment feedback', () => {
   assert.match(publishFunction, /GITHUB_DISPATCH_TOKEN/);
   assert.match(callbackFunction, /auth: "secret"/);
   assert.match(callbackFunction, /workflow_status: "published"/);
+  assert.match(supabaseConfig, /\[functions\.publish-content\][\s\S]*?verify_jwt = false/);
+  assert.match(supabaseConfig, /\[functions\.deployment-callback\][\s\S]*?verify_jwt = false/);
 });
