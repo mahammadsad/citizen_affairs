@@ -30,7 +30,7 @@ content:
           - { name: updated, label: Updated date, type: date, required: false }
           - { name: lastVerified, label: Last verified date, type: date, required: false }
           - { name: deadline, label: Application deadline, type: date, required: false, description: Leave blank when the article has no deadline. }
-          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
           - name: category
             label: Category
             type: select
@@ -63,7 +63,7 @@ content:
           - { name: featured, label: Feature on homepage, type: boolean, default: false }
           - { name: featuredImage, label: Featured image, type: image, required: false }
           - { name: featuredImageAlt, label: Image description, type: string, required: false, description: Describe the image for visually impaired readers. }
-          - { name: draft, label: Keep hidden as draft, type: boolean, default: true, description: New content must remain a draft. Final publication will move to the controlled editorial workflow. }
+          - { name: draft, label: Keep hidden as draft, type: boolean, default: true, hidden: true, required: true, description: New content must remain a draft. Final publication will move to the controlled editorial workflow. }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: governmentLevel
@@ -155,7 +155,7 @@ content:
           - { name: updated, label: আপডেটের তারিখ, type: date, required: false }
           - { name: lastVerified, label: সর্বশেষ যাচাইয়ের তারিখ, type: date, required: false }
           - { name: deadline, label: আবেদনের শেষ তারিখ, type: date, required: false, description: কোনো deadline না থাকলে ফাঁকা রাখুন। }
-          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
           - name: category
             label: বিভাগ
             type: select
@@ -188,7 +188,7 @@ content:
           - { name: featured, label: Homepage-এ বিশেষভাবে দেখান, type: boolean, default: false }
           - { name: featuredImage, label: Featured image, type: image, required: false }
           - { name: featuredImageAlt, label: ছবির বর্ণনা, type: string, required: false, description: দৃষ্টিপ্রতিবন্ধী পাঠকের জন্য ছবিটি সংক্ষেপে বর্ণনা করুন। }
-          - { name: draft, label: Draft হিসেবে website থেকে লুকিয়ে রাখুন, type: boolean, default: true, description: নতুন লেখা Draft রাখুন। চূড়ান্ত প্রকাশ নিয়ন্ত্রিত সম্পাদকীয় workflow থেকে হবে। }
+          - { name: draft, label: Draft হিসেবে website থেকে লুকিয়ে রাখুন, type: boolean, default: true, hidden: true, required: true, description: নতুন লেখা Draft রাখুন। চূড়ান্ত প্রকাশ নিয়ন্ত্রিত সম্পাদকীয় workflow থেকে হবে। }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: governmentLevel
@@ -280,7 +280,7 @@ content:
           - { name: updated, label: अपडेट तिथि, type: date, required: false }
           - { name: lastVerified, label: अंतिम सत्यापन तिथि, type: date, required: false }
           - { name: deadline, label: आवेदन की अंतिम तिथि, type: date, required: false }
-          - { name: author, label: Author, type: string, default: admin, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
           - name: category
             label: श्रेणी
             type: select
@@ -312,7 +312,7 @@ content:
           - { name: featured, label: Homepage पर दिखाएँ, type: boolean, default: false }
           - { name: featuredImage, label: Featured image, type: image, required: false }
           - { name: featuredImageAlt, label: चित्र विवरण, type: string, required: false }
-          - { name: draft, label: Draft के रूप में छिपाएँ, type: boolean, default: true, description: नई सामग्री Draft ही रखें। अंतिम प्रकाशन नियंत्रित संपादकीय workflow से होगा। }
+          - { name: draft, label: Draft के रूप में छिपाएँ, type: boolean, default: true, hidden: true, required: true, description: नई सामग्री Draft ही रखें। अंतिम प्रकाशन नियंत्रित संपादकीय workflow से होगा। }
           - { name: seoTitle, label: SEO title, type: string, required: false }
           - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: governmentLevel
@@ -406,7 +406,8 @@ content:
 
 settings:
   content:
-    merge: direct
+    # Preserve controlled workflow fields that this temporary draft editor does not expose.
+    merge: true
   commit:
     identity: user
     templates:

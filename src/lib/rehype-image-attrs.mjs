@@ -28,7 +28,7 @@ export function rehypeImageAttrs({ base = '/' } = {}) {
       }
       const source = node.properties.src;
       if (typeof source === 'string' && source.startsWith('/') && !source.startsWith('//')) {
-        const normalized = source.replace(/^\/sarkari-tathya-kendra\//, '/').replace(/^\/+/, '');
+        const normalized = source.replace(/^\/citizen_affairs\//, '/').replace(/^\/+/, '');
         node.properties.src = `${base}${normalized}`;
       }
     });

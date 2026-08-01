@@ -2,8 +2,8 @@ import brand from '@brand';
 type BrandLocale = 'en' | 'bn' | 'hi';
 
 export const BRAND = brand;
-export const GITHUB_PAGES_URL = 'https://mahammadsad.github.io/sarkari-tathya-kendra';
-const GITHUB_REPOSITORY_BASE = '/sarkari-tathya-kendra/';
+export const GITHUB_PAGES_URL = 'https://mahammadsad.github.io/citizen_affairs';
+const GITHUB_REPOSITORY_BASE = '/citizen_affairs/';
 export const SITE_URL = BRAND.domain ? BRAND.domain.replace(/\/$/, '') : GITHUB_PAGES_URL;
 export const BASE_PATH = BRAND.domain ? '/' : GITHUB_REPOSITORY_BASE;
 

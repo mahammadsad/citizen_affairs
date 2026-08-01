@@ -14,12 +14,18 @@
 - Expanded GitHub Actions, CODEOWNERS, PR template and owner-focused documentation.
 - Astro 7 content-layer migration with Node 22.12+ and a zero-vulnerability production dependency audit.
 
-## Deliberately not activated
+## Production integration state
 
-- No migration or function was applied to the two connected Supabase projects because neither is identified as Citizen Affairs.
-- No production secret, staff identity, invented source, placeholder job/scheme or fabricated profile was created.
-- Pages CMS remains temporary and owner-only; it defaults to draft.
+- The public GitHub Pages build targets the dedicated Supabase project `tbymfgorepzzewagivit` and the custom domain `https://citizenaffairs.in`.
+- The production release record includes all seven versioned migrations in `supabase/migrations/` and both Edge Functions. Live history must be compared before another migration or function deployment; completed migrations must not be reapplied.
+- No production secret is stored in the repository. Required secret names and non-secret variables are documented separately.
+- Pages CMS remains temporary, owner-only and draft-only. It uses the real `mahammad-sad` author record, hides `draft: true` for new entries and preserves protected fields outside its editing schema.
+- Protected publication remains human-approved and database-gated. GitHub can only deliver an already-approved snapshot; Supabase becomes Published only after merge, deployment and production smoke validation.
 
-## Next production steps
+## Operations verified on 1 August 2026
 
-Create/select the dedicated Supabase project, apply and security-test the migration, configure secrets, turn off public sign-up, create real staff accounts, configure branch protection and run a full Writer → Editor → Fact Checker → Publisher test. Then complete production browser, screen-reader, Lighthouse and deployed-link checks before publishing real factual content.
+- The active repository is `mahammadsad/citizen_affairs`; `main` was at `0b11fd4c93d21a8256ac9b3fd17bc0bfd4f4477b` before this repair.
+- GitHub Pages is enabled and the public site serves the custom domain. The last merged PR validation passed.
+- Repository auto-merge was disabled. The repaired workflow therefore fails closed until safe auto-merge is enabled with required checks still enforced.
+- Scheduled topic-discovery validation was failing because `pytest` could not resolve the local `app` package; the workflow now uses `python -m pytest` and pins its actions.
+- Production Edge Function variables and deployed source must be rechecked in the dedicated Supabase project after this repository repair. Secret values must never be copied into an issue, pull request, log or document.

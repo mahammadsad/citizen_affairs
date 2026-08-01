@@ -28,13 +28,13 @@ jobs:
           node -e "const u=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;if(!u.test(process.env.ARTICLE_ID)||!u.test(process.env.PUBLICATION_EVENT_ID)||!/^[1-9][0-9]*$/.test(process.env.ARTICLE_VERSION))process.exit(1)"
 
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
           token: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
           cache: npm
@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload article visual evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: publication-visual-tests-${{ github.run_id }}
           path: |
@@ -109,13 +109,117 @@ jobs:
           git push --set-upstream origin "publish/$PUBLICATION_EVENT_ID"
 
       - name: Open protected publication pull request
+        id: publication-pr
         run: |
           echo "PUBLICATION_FAILURE_REASON=Publication pull request creation failed" >> "$GITHUB_ENV"
-          gh pr create --base main --head "publish/$PUBLICATION_EVENT_ID" --title "content: approved publication [publication:$PUBLICATION_EVENT_ID]" --body "Automated portable content snapshot for approved article version $ARTICLE_VERSION. Publication event: $PUBLICATION_EVENT_ID. All normal checks and branch protection still apply."
-          gh pr merge "publish/$PUBLICATION_EVENT_ID" --auto --squash || true
+          pr_url="$(gh pr create --base main --head "publish/$PUBLICATION_EVENT_ID" --title "content: approved publication [publication:$PUBLICATION_EVENT_ID]" --body "Automated portable content snapshot for approved article version $ARTICLE_VERSION. Publication event: $PUBLICATION_EVENT_ID. All normal checks and branch protection still apply.")"
+          pr_number="${pr_url##*/}"
+          if [[ ! "$pr_number" =~ ^[1-9][0-9]*$ || "$pr_url" != "https://github.com/$GITHUB_REPOSITORY/pull/$pr_number" ]]; then
+            echo "::error::GitHub did not return a valid publication pull request number and URL."
+            exit 1
+          fi
+          {
+            echo "number=$pr_number"
+            echo "url=$pr_url"
+          } >> "$GITHUB_OUTPUT"
+          echo "Publication pull request: #$pr_number ($pr_url)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Request and verify protected squash auto-merge
+        env:
+          PUBLICATION_PR_NUMBER: ${{ steps.publication-pr.outputs.number }}
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Protected publication auto-merge was not accepted" >> "$GITHUB_ENV"
+          if ! auto_merge_enabled="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.allow_auto_merge')"; then
+            echo "::error::Repository auto-merge configuration could not be verified."
+            exit 1
+          fi
+          if [[ "$auto_merge_enabled" != "true" ]]; then
+            echo "::error::Repository auto-merge is disabled; the publication pull request will not be left in an ambiguous building state."
+            exit 1
+          fi
+          if ! gh api "repos/$GITHUB_REPOSITORY/branches/main/protection" > /tmp/main-protection.json; then
+            echo "::error::Main branch protection could not be verified with the editorial GitHub token."
+            exit 1
+          fi
+          if ! jq -e '.required_status_checks != null and .required_status_checks.strict == true' /tmp/main-protection.json > /dev/null; then
+            echo "::error::Main must require up-to-date status checks before publication auto-merge."
+            exit 1
+          fi
+          if ! jq -e '[.required_status_checks.contexts[]?, .required_status_checks.checks[]?.context] | any(. == "build")' /tmp/main-protection.json > /dev/null; then
+            echo "::error::Main does not require the protected build check."
+            exit 1
+          fi
+          if jq -e '(.allow_force_pushes.enabled // false) or (.allow_deletions.enabled // false)' /tmp/main-protection.json > /dev/null; then
+            echo "::error::Main protection must forbid force pushes and branch deletion."
+            exit 1
+          fi
+          if ! gh pr merge "$PUBLICATION_PR_NUMBER" --auto --squash; then
+            echo "::error::GitHub rejected the protected squash auto-merge request."
+            exit 1
+          fi
+          if ! merge_state="$(gh pr view "$PUBLICATION_PR_NUMBER" --json autoMergeRequest,state,url)"; then
+            echo "::error::The publication pull request state could not be verified."
+            exit 1
+          fi
+          if ! jq -e '(.state == "OPEN" and .autoMergeRequest.mergeMethod == "SQUASH") or .state == "MERGED"' <<< "$merge_state" > /dev/null; then
+            echo "::error::GitHub did not record the requested squash auto-merge."
+            exit 1
+          fi
+
+      - name: Wait for required checks and protected merge
+        timeout-minutes: 30
+        env:
+          PUBLICATION_PR_NUMBER: ${{ steps.publication-pr.outputs.number }}
+        run: |
+          echo "PUBLICATION_FAILURE_REASON=Publication pull request checks or protected merge failed" >> "$GITHUB_ENV"
+          check_count=0
+          for attempt in $(seq 1 30); do
+            if check_count="$(gh pr view "$PUBLICATION_PR_NUMBER" --json statusCheckRollup --jq '.statusCheckRollup | length')" && [[ "$check_count" -gt 0 ]]; then
+              break
+            fi
+            sleep 10
+          done
+          if [[ "$check_count" -eq 0 ]]; then
+            echo "::error::No validation checks were registered for the publication pull request."
+            exit 1
+          fi
+          if ! gh pr checks "$PUBLICATION_PR_NUMBER" --required --watch --fail-fast --interval 10; then
+            echo "::error::A required publication pull request check failed or was cancelled."
+            exit 1
+          fi
+          for attempt in $(seq 1 120); do
+            pr_state="$(gh pr view "$PUBLICATION_PR_NUMBER" --json state --jq '.state')"
+            if [[ "$pr_state" == "MERGED" ]]; then
+              echo "Protected publication pull request #$PUBLICATION_PR_NUMBER merged after required checks." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            if [[ "$pr_state" == "CLOSED" ]]; then
+              echo "::error::The publication pull request closed without merging."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "::error::Required checks passed, but the publication pull request did not merge; review or merge approval may still be required."
+          exit 1
+
+      - name: Close an unmerged publication pull request after failure
+        if: (failure() || cancelled()) && steps.publication-pr.outputs.number != ''
+        env:
+          PUBLICATION_PR_NUMBER: ${{ steps.publication-pr.outputs.number }}
+        run: |
+          if ! pr_state="$(gh pr view "$PUBLICATION_PR_NUMBER" --json state --jq '.state')"; then
+            echo "::warning::The failed publication pull request state could not be read for cleanup."
+            exit 0
+          fi
+          if [[ "$pr_state" == "OPEN" ]]; then
+            if ! gh pr close "$PUBLICATION_PR_NUMBER" --delete-branch --comment "Automated publication stopped because protected auto-merge or required validation did not complete safely. The Supabase publication event will be marked failed and may be retried after the configuration is repaired."; then
+              echo "::error::The failed publication pull request could not be closed safely."
+              exit 1
+            fi
+          fi
 
       - name: Record export failure
-        if: failure() && env.SUPABASE_URL != '' && env.SUPABASE_SECRET_KEY != ''
+        if: (failure() || cancelled()) && env.SUPABASE_URL != '' && env.SUPABASE_SECRET_KEY != ''
         run: |
           node -e "const body={publication_event_id:process.env.PUBLICATION_EVENT_ID,status:'failed',github_run_id:process.env.GITHUB_RUN_ID,error_message:process.env.PUBLICATION_FAILURE_REASON||'Protected publication workflow failed'};require('node:fs').writeFileSync('/tmp/publication-failure.json',JSON.stringify(body))"
           curl --fail-with-body --silent --show-error --request POST "$SUPABASE_URL/functions/v1/deployment-callback" --header "apikey: $SUPABASE_SECRET_KEY" --header "Content-Type: application/json" --data @/tmp/publication-failure.json

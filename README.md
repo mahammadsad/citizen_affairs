@@ -40,6 +40,10 @@ English, Bengali and Hindi remain supported. Equivalent translations share one `
 
 ## Important status
 
-The repository contains the complete migration and integration code, but it is intentionally **not applied to either existing connected Supabase project** because neither is identified as the Citizen Affairs editorial project. Follow [Deployment](docs/DEPLOYMENT.md) after creating or explicitly selecting the correct project.
+The active repository is `mahammadsad/citizen_affairs`. Production uses the custom domain `https://citizenaffairs.in`; the repository Pages fallback is `https://mahammadsad.github.io/citizen_affairs/`.
+
+The deployed public build targets the dedicated Supabase project `tbymfgorepzzewagivit`. The production integration release records the seven versioned migrations in `supabase/migrations/` and both Edge Functions as deployed. Treat the live migration list, function versions and secret stores as external production state: compare them before a database or function release, never reapply completed migrations and never copy secret values into this repository.
+
+Pages CMS remains a temporary, draft-only editor. Protected publication uses repository pull requests and records an article as published only after merge, Pages deployment and the production smoke test all succeed.
 
 Start with [Architecture](docs/ARCHITECTURE.md), [Editorial workflow](docs/EDITORIAL-WORKFLOW.md), and the [Implementation report](docs/IMPLEMENTATION-REPORT.md).

@@ -3,9 +3,9 @@ import { unified } from '@astrojs/markdown-remark';
 import { rehypeImageAttrs } from './src/lib/rehype-image-attrs.mjs';
 import brand from './brand.config.json' with { type: 'json' };
 
-const githubPagesUrl = 'https://mahammadsad.github.io/sarkari-tathya-kendra';
+const githubPagesUrl = 'https://mahammadsad.github.io/citizen_affairs';
 const site = brand.domain ? brand.domain.replace(/\/$/, '') : githubPagesUrl;
-const base = brand.domain ? '/' : '/sarkari-tathya-kendra/';
+const base = brand.domain ? '/' : '/citizen_affairs/';
 
 export default defineConfig({
   site,
