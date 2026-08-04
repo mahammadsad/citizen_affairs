@@ -70,7 +70,11 @@ function attributeValues(source, names) {
 }
 
 function pageIds(source) {
-  return new Set(attributeValues(source, ['id', 'name']));
+  const ids = new Set();
+  for (const match of source.matchAll(/\b(?:id|name)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi)) {
+    ids.add(match[1] ?? match[2] ?? match[3] ?? '');
+  }
+  return ids;
 }
 
 function collectHtmlReferences(source) {
