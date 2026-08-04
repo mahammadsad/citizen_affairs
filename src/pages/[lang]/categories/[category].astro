@@ -1,11 +1,11 @@
 ---
-import MainLayout from '@layouts/MainLayout.astro';
-import CategoryPortal from '@components/CategoryPortal.astro';
+import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
+import CategoryPortal from '@components/CategoryPortal.astro';
+import MainLayout from '@layouts/MainLayout.astro';
 import { categoryDescription, categoryName, getLocalizedArticlesByCategory } from '@lib/content';
-import type { Locale } from '../../../i18n';
-import { locales } from '../../../i18n';
 import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
+import { locales, type Locale } from '../../../i18n';
 
 export async function getStaticPaths() {
   const categories = (await getCollection('categories')).filter((category) =>
@@ -19,7 +19,10 @@ export async function getStaticPaths() {
   );
 }
 
-const { locale, category } = Astro.props;
+const { locale, category } = Astro.props as {
+  locale: Locale;
+  category: CollectionEntry<'categories'>;
+};
 const articles = await getLocalizedArticlesByCategory(locale, category.id);
 const name = categoryName(category, locale);
 const description = categoryDescription(category, locale) || name;
