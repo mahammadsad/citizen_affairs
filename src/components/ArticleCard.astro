@@ -5,29 +5,349 @@ import { deadlineLabel, deadlineState } from '@lib/deadline';
 import { normalizeRegionLabel, regionName } from '@lib/regions';
 import Icon from './Icon.astro';
 import { dateLocale, localizedPath, type Locale, ui, verificationLabels } from '../i18n';
-import { resolveAssetPath } from '@utils/constants';
 
-export interface Props { article: CollectionEntry<'articles'>; locale: Locale; compact?: boolean; }
+export interface Props {
+  article: CollectionEntry<'articles'>;
+  locale: Locale;
+  compact?: boolean;
+}
+
 const { article, locale, compact = false } = Astro.props;
 const category = await getCategoryData(article.data.category);
 const categoryLabel = category ? categoryName(category, locale) : article.data.category;
 const t = ui(locale);
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
 const displayDate = article.data.updated || article.data.date;
-const date = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'short', day: 'numeric' }).format(displayDate);
+const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
 const state = deadlineState(article.data.deadline);
-const fallbackIcon: Record<string,string> = { jobs:'briefcase', projects:'schemes', exams:'exams', notices:'notices', affairs:'services', materials:'education' };
-const normalizedLevel = article.data.governmentLevel === 'central' ? 'central' : article.data.governmentLevel ? 'state' : '';
-const stateId = article.data.state || (article.data.governmentLevel === 'west-bengal' ? 'west-bengal' : normalizeRegionLabel(article.data.regionLabel));
+const normalizedLevel =
+  article.data.governmentLevel === 'central' ? 'central' : article.data.governmentLevel ? 'state' : '';
+const stateId =
+  article.data.state ||
+  (article.data.governmentLevel === 'west-bengal'
+    ? 'west-bengal'
+    : normalizeRegionLabel(article.data.regionLabel));
 const localizedRegion = regionName(stateId, locale);
-const levelLabel = normalizedLevel === 'central' ? t.centralGovernment : localizedRegion || article.data.regionLabel || (normalizedLevel === 'state' ? t.stateGovernments : '');
-const featuredImage = article.data.featuredImage ? resolveAssetPath(article.data.featuredImage) : undefined;
-const featuredImageAvif = article.data.featuredImageAvif ? resolveAssetPath(article.data.featuredImageAvif) : undefined;
+const levelLabel =
+  normalizedLevel === 'central'
+    ? t.centralGovernment
+    : localizedRegion || article.data.regionLabel || (normalizedLevel === 'state' ? t.stateGovernments : '');
+
+const copy = {
+  en: {
+    vacancies: 'Vacancies',
+    qualification: 'Qualification',
+    salary: 'Salary',
+    benefit: 'Benefit',
+    forWhom: 'For',
+    institution: 'Institution',
+    programme: 'Programme',
+    provider: 'Provider',
+    service: 'Service',
+    action: 'Action',
+    deadline: 'Last date',
+    status: 'Status',
+    official: 'Official source',
+    updated: 'Updated',
+    application: 'Application'
+  },
+  bn: {
+    vacancies: 'শূন্যপদ',
+    qualification: 'যোগ্যতা',
+    salary: 'বেতন',
+    benefit: 'সুবিধা',
+    forWhom: 'যাদের জন্য',
+    institution: 'প্রতিষ্ঠান',
+    programme: 'কোর্স',
+    provider: 'প্রদানকারী',
+    service: 'পরিষেবা',
+    action: 'করণীয়',
+    deadline: 'শেষ তারিখ',
+    status: 'স্ট্যাটাস',
+    official: 'অফিসিয়াল সূত্র',
+    updated: 'আপডেট',
+    application: 'আবেদন'
+  },
+  hi: {
+    vacancies: 'रिक्तियाँ',
+    qualification: 'योग्यता',
+    salary: 'वेतन',
+    benefit: 'लाभ',
+    forWhom: 'किसके लिए',
+    institution: 'संस्थान',
+    programme: 'कार्यक्रम',
+    provider: 'प्रदाता',
+    service: 'सेवा',
+    action: 'कार्रवाई',
+    deadline: 'अंतिम तिथि',
+    status: 'स्थिति',
+    official: 'आधिकारिक स्रोत',
+    updated: 'अपडेट',
+    application: 'आवेदन'
+  }
+}[locale];
+
+const facts: Array<{ label: string; value: string }> = [];
+let statusText = article.data.deadline
+  ? deadlineLabel(state, locale)
+  : verificationLabels[locale][article.data.verificationStatus];
+let officialUrl = article.data.officialNoticeUrl || article.data.applicationUrl;
+
+if (article.data.job) {
+  facts.push({ label: copy.vacancies, value: article.data.job.totalVacancies.toLocaleString(locale) });
+  facts.push({ label: copy.qualification, value: article.data.job.qualification[0] });
+  if (article.data.job.salaryMinimum || article.data.job.salaryMaximum) {
+    const minimum = article.data.job.salaryMinimum ? `₹${article.data.job.salaryMinimum.toLocaleString(locale)}` : '';
+    const maximum = article.data.job.salaryMaximum ? `₹${article.data.job.salaryMaximum.toLocaleString(locale)}` : '';
+    facts.push({ label: copy.salary, value: [minimum, maximum].filter(Boolean).join(' – ') });
+  }
+  statusText = article.data.job.recruitmentStatus.replaceAll('-', ' ');
+  officialUrl = article.data.job.officialNotificationUrl;
+} else if (article.data.scheme) {
+  facts.push({
+    label: copy.benefit,
+    value: article.data.scheme.benefitAmount || article.data.scheme.benefitType[0]
+  });
+  facts.push({ label: copy.forWhom, value: article.data.scheme.targetBeneficiaries[0] });
+  facts.push({ label: copy.application, value: article.data.scheme.applicationMode });
+  statusText = article.data.scheme.schemeStatus.replaceAll('-', ' ');
+  officialUrl = article.data.scheme.officialPortal;
+} else if (article.data.admission) {
+  facts.push({ label: copy.institution, value: article.data.admission.institution });
+  facts.push({ label: copy.programme, value: article.data.admission.programme });
+  facts.push({ label: copy.qualification, value: article.data.admission.eligibilityCriteria[0] });
+  statusText = article.data.admission.admissionStatus.replaceAll('-', ' ');
+  officialUrl = article.data.admission.officialProspectusUrl;
+} else if (article.data.scholarship) {
+  facts.push({ label: copy.provider, value: article.data.scholarship.provider });
+  facts.push({ label: copy.benefit, value: article.data.scholarship.benefitAmount });
+  facts.push({ label: copy.forWhom, value: article.data.scholarship.targetStudents[0] });
+  statusText = article.data.scholarship.scholarshipStatus.replaceAll('-', ' ');
+  officialUrl = article.data.scholarship.officialPortal;
+} else if (article.data.service) {
+  facts.push({ label: copy.service, value: article.data.service.serviceName });
+  facts.push({ label: copy.action, value: article.data.service.serviceActions.join(', ').replaceAll('-', ' ') });
+  if (article.data.service.processingTime) {
+    facts.push({ label: copy.status, value: article.data.service.processingTime });
+  }
+  statusText = article.data.service.serviceStatus.replaceAll('-', ' ');
+  officialUrl = article.data.service.officialPortal;
+} else {
+  if (article.data.amountOrVacancies) facts.push({ label: t.amount, value: article.data.amountOrVacancies });
+  if (article.data.qualification[0]) facts.push({ label: copy.qualification, value: article.data.qualification[0] });
+  if (article.data.quickSummary[0]) facts.push({ label: copy.status, value: article.data.quickSummary[0] });
+}
+
+if (article.data.deadline && !facts.some((fact) => fact.label === copy.deadline)) {
+  facts.push({ label: copy.deadline, value: formatter.format(article.data.deadline) });
+}
+
+const visibleFacts = facts.slice(0, compact ? 2 : 4);
+const statusClass = article.data.deadline
+  ? `deadline-${state}`
+  : `verification-${article.data.verificationStatus}`;
 ---
-<a href={localizedPath(locale, `articles/${article.data.urlSlug}`)} class:list={['article-card', { compact }]} data-category={article.data.category} data-level={normalizedLevel} data-state={stateId} data-status={state} data-verification={article.data.verificationStatus} data-date={displayDate.toISOString()} data-deadline={article.data.deadline?.toISOString() || ''}>
-  <div class="article-media">{featuredImage ? <picture>{featuredImageAvif&&<source srcset={featuredImageAvif} type="image/avif"/>}<img src={featuredImage} alt={article.data.featuredImageAlt || article.data.title} width="640" height="360" loading="lazy" decoding="async" /></picture> : <div class="article-fallback"><Icon name={fallbackIcon[article.data.category] || 'updates'} size={48} /></div>} {levelLabel && <span class="level-label">{levelLabel}</span>}</div>
-  <div class="article-card-body"><div class="article-card-meta"><span class="article-card-category">{categoryLabel}</span><span class={`verification-dot status-${article.data.verificationStatus}`}>{verificationLabels[locale][article.data.verificationStatus]}</span></div><h3>{article.data.title}</h3><p>{article.data.description}</p><div class="article-dates"><span>{article.data.updated ? t.updated : t.published}: {date}</span>{article.data.deadline && <span class={`deadline status-${state}`}>{deadlineLabel(state, locale)} · {new Intl.DateTimeFormat(dateLocale(locale), { day:'numeric', month:'short', year:'numeric' }).format(article.data.deadline)}</span>}</div><span class="article-link">{t.readMore}<Icon name="arrow" size={18} /></span></div>
-</a>
+
+<article class:list={['utility-card', { compact }]}>
+  <div class="utility-card-top">
+    <div class="utility-card-context">
+      <span>{categoryLabel}</span>
+      {levelLabel && <span>{levelLabel}</span>}
+    </div>
+    <span class:list={['utility-status', statusClass]}>{statusText}</span>
+  </div>
+
+  <div class="utility-card-main">
+    <p class="utility-verification">
+      <Icon name="check" size={14} />{verificationLabels[locale][article.data.verificationStatus]}
+    </p>
+    <h3><a href={route(`articles/${article.data.urlSlug}`)}>{article.data.title}</a></h3>
+    {!compact && <p class="utility-description">{article.data.description}</p>}
+
+    {visibleFacts.length > 0 && (
+      <dl class="utility-facts">
+        {visibleFacts.map((fact) => (
+          <div>
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </div>
+
+  <div class="utility-card-footer">
+    <span><Icon name="clock" size={15} />{copy.updated}: {formatter.format(displayDate)}</span>
+    <div>
+      {officialUrl && (
+        <a href={officialUrl} target="_blank" rel="noopener noreferrer">
+          {copy.official}<Icon name="external" size={16} />
+        </a>
+      )}
+      <a class="utility-details" href={route(`articles/${article.data.urlSlug}`)}>
+        {t.readMore}<Icon name="arrow" size={17} />
+      </a>
+    </div>
+  </div>
+</article>
+
 <style>
-  .article-media picture{display:block;height:100%}
-  .article-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;min-height:100%;transition:transform var(--transition-base),box-shadow var(--transition-base),border-color var(--transition-base)}.article-card:hover,.article-card:focus-visible{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:rgba(var(--color-primary-rgb),.3)}.article-media{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#092b4b,var(--color-primary))}.article-media img{width:100%;height:100%;object-fit:cover}.article-fallback{height:100%;display:grid;place-items:center;color:#fff}.level-label{position:absolute;left:.75rem;top:.75rem;padding:.3rem .6rem;background:rgba(9,43,75,.88);color:#fff;border-radius:999px;font-size:.68rem;font-weight:800}.article-card-body{padding:1.1rem;display:flex;flex-direction:column;flex:1}.article-card-meta{display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-bottom:.65rem}.article-card-category{font-size:.7rem;font-weight:800;color:var(--color-primary);text-transform:uppercase}.verification-dot{font-size:.67rem;font-weight:800;color:var(--color-text-muted);display:flex;align-items:center;gap:.3rem}.verification-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--color-orange)}.status-officially-confirmed::before{background:var(--color-green)}.status-withdrawn::before,.status-closed::before{background:#7f8a99}.article-card h3{font-size:1.08rem;color:var(--color-text);margin-bottom:.4rem}.article-card p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--color-text-muted);font-size:.9rem;margin-bottom:1rem}.article-dates{display:grid;gap:.35rem;margin-top:auto;font-size:.75rem;color:var(--color-text-muted)}.deadline{width:max-content;padding:.2rem .5rem;border-radius:999px;font-weight:800}.deadline.status-open{color:#0b6b2a;background:rgba(var(--color-green-rgb),.1)}.deadline.status-closing-soon{color:#9a5600;background:rgba(var(--color-orange-rgb),.13)}.deadline.status-urgent{color:#b42318;background:rgba(180,35,24,.1)}.deadline.status-closed{color:#667085;background:var(--color-surface-alt)}.article-link{display:flex;align-items:center;gap:.25rem;margin-top:.8rem;color:var(--color-primary);font-weight:800;font-size:.84rem}.compact{display:grid;grid-template-columns:110px 1fr}.compact .article-media{aspect-ratio:auto;min-height:100%}.compact .article-card-body{padding:1rem}.compact p{display:none}@media(max-width:440px){.compact{grid-template-columns:90px 1fr}.compact .verification-dot{display:none}}
+  .utility-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 11px;
+    background: var(--color-surface);
+  }
+  .utility-card:hover { border-color: rgba(var(--color-primary-rgb), .55); }
+  .utility-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    min-height: 42px;
+    padding: .55rem .85rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-alt);
+  }
+  .utility-card-context {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem .75rem;
+    color: var(--color-primary);
+    font-size: .66rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+  }
+  .utility-card-context span + span { color: var(--color-text-muted); }
+  .utility-status {
+    flex: 0 0 auto;
+    padding: .22rem .48rem;
+    border-radius: 999px;
+    background: rgba(var(--color-primary-rgb), .09);
+    color: var(--color-primary);
+    font-size: .64rem;
+    font-weight: 850;
+    text-transform: capitalize;
+  }
+  .deadline-open,
+  .verification-officially-confirmed {
+    background: rgba(var(--color-green-rgb), .1);
+    color: var(--color-green-text);
+  }
+  .deadline-closing-soon,
+  .deadline-urgent {
+    background: rgba(var(--color-orange-rgb), .13);
+    color: #9a5600;
+  }
+  .deadline-closed,
+  .verification-closed,
+  .verification-withdrawn {
+    background: var(--color-surface-alt);
+    color: var(--color-text-muted);
+  }
+  .utility-card-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1rem;
+  }
+  .utility-verification {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    margin: 0 0 .45rem;
+    color: var(--color-green-text);
+    font-size: .67rem;
+    font-weight: 800;
+  }
+  .utility-card h3 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: 1.08rem;
+    line-height: 1.35;
+  }
+  .utility-card h3 a:hover { color: var(--color-primary); }
+  .utility-description {
+    display: -webkit-box;
+    margin: .45rem 0 .85rem;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: .86rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .utility-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem;
+    margin-top: auto;
+    padding-top: .85rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .utility-facts div {
+    min-width: 0;
+    padding: .55rem;
+    border-radius: 8px;
+    background: var(--color-surface-alt);
+  }
+  .utility-facts dt {
+    margin-bottom: .12rem;
+    color: var(--color-text-muted);
+    font-size: .62rem;
+    font-weight: 750;
+  }
+  .utility-facts dd {
+    overflow: hidden;
+    font-size: .77rem;
+    font-weight: 820;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+  }
+  .utility-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .7rem .85rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: .68rem;
+  }
+  .utility-card-footer > span,
+  .utility-card-footer a {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+  }
+  .utility-card-footer > div {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+  .utility-card-footer a {
+    color: var(--color-primary);
+    font-weight: 820;
+  }
+  .compact .utility-description { display: none; }
+  .compact .utility-card-main { padding: .85rem; }
+  .compact .utility-card-footer > div a:first-child { display: none; }
+
+  @media (max-width: 520px) {
+    .utility-facts { grid-template-columns: 1fr; }
+    .utility-card-footer {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
 </style>
