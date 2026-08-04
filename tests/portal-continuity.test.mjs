@@ -6,14 +6,13 @@ const layout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 const continuity = await readFile('src/components/PortalContinuity.astro', 'utf8');
 const runtime = await readFile('src/components/PortalRuntime.astro', 'utf8');
 
-test('portal continuity appears only on locale home routes', () => {
-  assert.match(layout, /PortalContinuity/);
-  assert.match(layout, /\['\/', '\/en', '\/bn', '\/hi'\]/);
-  assert.match(layout, /isPortalHome &&/);
-  assert.match(layout, /portal-continuity-wrap/);
+test('homepage opens with primary portal content instead of a personal continuity panel', () => {
+  assert.doesNotMatch(layout, /PortalContinuity/);
+  assert.doesNotMatch(layout, /portal-continuity-wrap/);
+  assert.match(layout, /<main id="main-content">\s*<slot \/>/);
 });
 
-test('homepage task continuity stays private to browser storage', () => {
+test('task continuity remains private to browser storage when used in dedicated action views', () => {
   assert.match(continuity, /saved-articles/);
   assert.match(continuity, /recently-viewed/);
   assert.match(continuity, /localStorage\.getItem/);
@@ -23,7 +22,7 @@ test('homepage task continuity stays private to browser storage', () => {
   assert.doesNotMatch(continuity, /innerHTML/);
 });
 
-test('continuity guidance is localized and links to action destinations', () => {
+test('continuity guidance stays localized and points to dedicated action destinations', () => {
   assert.match(continuity, /Continue your tasks/);
   assert.match(continuity, /আপনার কাজ চালিয়ে যান/);
   assert.match(continuity, /अपना काम जारी रखें/);
