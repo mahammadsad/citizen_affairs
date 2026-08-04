@@ -11,7 +11,7 @@
   --color-focus: #d97706;
   --color-light: #f7f9fc;
   --color-text: #172033;
-  --color-text-muted: #667085;
+  --color-text-muted: #5b6472;
   --color-border: #e4e7ec;
   --color-surface: #ffffff;
   --color-bg: #f7f9fc;
@@ -229,6 +229,14 @@ main .trust-box {
     var(--color-surface);
 }
 
+main .verification-timeline li > span {
+  color: #477b77 !important;
+}
+
+[data-theme="dark"] main .verification-timeline li > span {
+  color: #63d5ca !important;
+}
+
 ::selection {
   background: rgba(var(--color-green-rgb), .25);
   color: var(--color-text);
@@ -259,16 +267,17 @@ main .trust-box {
   }
 
   :where(.site-header) .brand {
-    flex-basis: 126px;
+    flex-basis: clamp(88px, 27vw, 112px);
   }
 
   :where(.site-header) .header-brand-logo {
-    width: 122px;
-    max-height: 48px;
+    width: clamp(88px, 27vw, 112px);
+    max-height: 46px;
   }
 
-  :where(.site-header) .language-picker {
-    display: none;
+  :where(.site-header) .language-trigger {
+    min-width: 44px;
+    padding-inline: .5rem;
   }
 
   :where(.site-header) .nav-actions {
