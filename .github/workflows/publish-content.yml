@@ -29,7 +29,7 @@ jobs:
           node -e "const u=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;if(!u.test(process.env.ARTICLE_ID)||!u.test(process.env.PUBLICATION_EVENT_ID)||!/^[1-9][0-9]*$/.test(process.env.ARTICLE_VERSION))process.exit(1)"
 
       - name: Checkout main
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
           token: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
