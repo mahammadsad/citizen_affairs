@@ -8,253 +8,686 @@ import Icon from './Icon.astro';
 import BrandLogo from './BrandLogo.astro';
 import { localeMeta, locales, localizedPath, trustPagePath, type Locale, ui } from '../i18n';
 
-interface Props { locale: Locale; alternateUrls?: Partial<Record<Locale, string>>; }
+interface Props {
+  locale: Locale;
+  alternateUrls?: Partial<Record<Locale, string>>;
+}
+
 const { locale, alternateUrls = {} } = Astro.props;
 const t = ui(locale);
 const brandName = getBrandName(locale);
 const pathname = Astro.url.pathname;
-const languageUrls = Object.fromEntries(locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])) as Record<Locale, string>;
-const desktopNav = [
-  { label: t.home, href: localizedPath(locale), active: pathname === localizedPath(locale) || (locale === 'en' && pathname === SITE.basePath) },
-  { label: t.governmentJobs, href: localizedPath(locale, 'categories/jobs'), active: pathname.includes(`/${locale}/categories/jobs`) },
-  { label: t.welfareSchemes, href: localizedPath(locale, 'categories/projects'), active: pathname.includes(`/${locale}/categories/projects`) },
-  { label: t.deadlines, href: localizedPath(locale, 'deadlines'), active: pathname.includes(`/${locale}/deadlines`) },
-  { label: t.latestNav, href: localizedPath(locale, 'articles'), active: pathname.includes(`/${locale}/articles`) },
-];
-const quickLinks = [
-  { ...desktopNav[0], icon: 'home' },
-  { ...desktopNav[1], icon: 'briefcase' },
-  { ...desktopNav[3], icon: 'clock' },
-  { label: t.saved, href: localizedPath(locale, 'saved'), active: pathname.includes(`/${locale}/saved`), icon: 'bookmark' }
-];
-const categoryIcon: Record<string, string> = { jobs: 'briefcase', projects: 'schemes', exams: 'exams', materials: 'education', notices: 'notices', affairs: 'services' };
-const categoryOrder = ['jobs', 'projects', 'exams', 'materials', 'notices', 'affairs'];
-const categoryEntries = (await getCollection('categories')).filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id)).sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
+const languageUrls = Object.fromEntries(
+  locales.map((lang) => [lang, alternateUrls[lang] || localizedPath(lang)])
+) as Record<Locale, string>;
+
+const labels = {
+  en: {
+    education: 'Education',
+    schemes: 'Schemes',
+    services: 'Citizen Services',
+    guides: 'Guides',
+    menuHeading: 'Explore Citizen Affairs',
+    menuDescription: 'Verified opportunities, benefits, deadlines and public services.',
+    search: 'Search',
+    alerts: 'Notices & Alerts'
+  },
+  bn: {
+    education: 'শিক্ষা',
+    schemes: 'প্রকল্প',
+    services: 'নাগরিক পরিষেবা',
+    guides: 'গাইড',
+    menuHeading: 'সিটিজেন অ্যাফেয়ার্স দেখুন',
+    menuDescription: 'যাচাইকৃত সুযোগ, সুবিধা, শেষ তারিখ ও জনপরিষেবা।',
+    search: 'খুঁজুন',
+    alerts: 'নোটিশ ও সতর্কতা'
+  },
+  hi: {
+    education: 'शिक्षा',
+    schemes: 'योजनाएँ',
+    services: 'नागरिक सेवाएँ',
+    guides: 'गाइड',
+    menuHeading: 'सिटिजन अफेयर्स देखें',
+    menuDescription: 'सत्यापित अवसर, लाभ, अंतिम तिथियाँ और सार्वजनिक सेवाएँ।',
+    search: 'खोजें',
+    alerts: 'नोटिस और अलर्ट'
+  }
+}[locale];
+
+const navItems = [
+  { label: t.governmentJobs, href: localizedPath(locale, 'categories/jobs'), icon: 'briefcase', key: 'jobs' },
+  { label: labels.education, href: localizedPath(locale, 'categories/exams'), icon: 'education', key: 'exams' },
+  { label: labels.schemes, href: localizedPath(locale, 'categories/projects'), icon: 'schemes', key: 'projects' },
+  { label: labels.services, href: localizedPath(locale, 'categories/affairs'), icon: 'services', key: 'affairs' },
+  { label: t.deadlines, href: localizedPath(locale, 'deadlines'), icon: 'clock', key: 'deadlines' },
+  { label: labels.guides, href: localizedPath(locale, 'categories/guides'), icon: 'updates', key: 'guides' }
+].map((item) => ({
+  ...item,
+  active:
+    item.key === 'deadlines'
+      ? pathname.includes('/deadlines')
+      : pathname.includes(`/categories/${item.key}`)
+}));
+
+const categoryIcon: Record<string, string> = {
+  jobs: 'briefcase',
+  projects: 'schemes',
+  exams: 'education',
+  materials: 'education',
+  notices: 'notices',
+  affairs: 'services',
+  guides: 'updates'
+};
+const categoryOrder = ['jobs', 'exams', 'materials', 'projects', 'affairs', 'notices', 'guides'];
+const categoryEntries = (await getCollection('categories'))
+  .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
+  .sort((a, b) => categoryOrder.indexOf(a.id) - categoryOrder.indexOf(b.id));
+const homeActive = pathname === localizedPath(locale) || (locale === 'en' && pathname === SITE.basePath);
 ---
-<header class="site-header">
-  <nav class="navbar container" aria-label={t.primaryNav}>
-    <a href={localizedPath(locale)} class="brand" aria-label={`${brandName} — ${t.home}`}>
-      <BrandLogo variant="horizontal" alt={`${brandName} ${t.logo}`} class="header-brand-logo" />
+
+<header class="site-header portal-header">
+  <nav class="navbar container portal-navbar-inner" aria-label={t.primaryNav}>
+    <a
+      href={localizedPath(locale)}
+      class="brand portal-brand"
+      aria-label={`${brandName} — ${t.home}`}
+      aria-current={homeActive ? 'page' : undefined}
+    >
+      <BrandLogo
+        variant="horizontal"
+        alt={`${brandName} ${t.logo}`}
+        class="header-brand-logo portal-brand-logo"
+      />
     </a>
-    <ul class="nav-links">
-      {desktopNav.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a></li>)}
+
+    <ul class="portal-desktop-nav">
+      {navItems.map((item) => (
+        <li>
+          <a href={item.href} aria-current={item.active ? 'page' : undefined}>{item.label}</a>
+        </li>
+      ))}
     </ul>
-    <div class="nav-actions">
-      <button class="icon-btn" id="searchToggle" aria-label={t.search} aria-haspopup="dialog" aria-controls="searchOverlay" aria-expanded="false"><Icon name="search" /></button>
-      <div class="language-picker">
-        <button class="language-trigger" id="languageTrigger" aria-label={`${t.language}: ${localeMeta[locale].nativeName}`} aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu">
-          <Icon name="globe" /><span class="language-code">{localeMeta[locale].code}</span><span class="chevron" aria-hidden="true">⌄</span>
-        </button>
-        <div class="language-menu" id="languageMenu" role="menu" hidden>
-          {locales.map((lang) => <a role="menuitem" href={languageUrls[lang]} lang={lang} hreflang={lang} data-language={lang} aria-current={lang === locale ? 'true' : undefined}><span>{lang === locale ? '✓' : ''}</span>{localeMeta[lang].nativeName}</a>)}
+
+    <div class="portal-header-actions">
+      <button
+        class="portal-icon-button"
+        id="searchToggle"
+        type="button"
+        aria-label={t.search}
+        aria-haspopup="dialog"
+        aria-controls="searchOverlay"
+        aria-expanded="false"
+      >
+        <Icon name="search" />
+      </button>
+
+      <details class="portal-language-picker">
+        <summary aria-label={`${t.language}: ${localeMeta[locale].nativeName}`}>
+          <Icon name="globe" />
+          <span>{localeMeta[locale].code}</span>
+        </summary>
+        <div class="portal-language-panel">
+          {locales.map((lang) => (
+            <a
+              href={languageUrls[lang]}
+              lang={lang}
+              hreflang={lang}
+              data-language={lang}
+              aria-current={lang === locale ? 'true' : undefined}
+            >
+              <span aria-hidden="true">{lang === locale ? '✓' : ''}</span>
+              {localeMeta[lang].nativeName}
+            </a>
+          ))}
         </div>
-      </div>
-      <button class="icon-btn theme-toggle desktop-theme" aria-label={t.changeTheme}><Icon name="theme" /></button>
-      <button class="icon-btn menu-toggle" id="menuToggle" aria-label={t.menu} data-open-label={t.menu} data-close-label={t.closeMenu} aria-expanded="false" aria-controls="mobileMenu"><Icon name="menu" /></button>
+      </details>
+
+      <button
+        class="portal-icon-button portal-theme-toggle theme-toggle"
+        type="button"
+        aria-label={t.changeTheme}
+      >
+        <Icon name="theme" />
+      </button>
     </div>
   </nav>
   <LatestTicker {locale} />
 </header>
 
-<!-- Kept outside the filtered sticky header so fixed positioning is viewport-relative. -->
-<div class="mobile-backdrop" id="mobileBackdrop" hidden></div>
-<nav class="mobile-drawer" id="mobileMenu" aria-label={t.mobileNav} aria-hidden="true" hidden>
-  <div class="drawer-head">
-    <a href={localizedPath(locale)} class="drawer-brand">
-      <BrandLogo variant="horizontal" alt={`${brandName} ${t.logo}`} class="drawer-brand-logo" />
-    </a>
-    <button class="drawer-close" id="menuClose" type="button" aria-label={t.closeMenu}><span aria-hidden="true">×</span></button>
-  </div>
-
-  <div class="drawer-scroll">
-    <section aria-labelledby="quickLinksTitle">
-      <h2 id="quickLinksTitle">{t.quickLinks}</h2>
-      <ul class="drawer-quick-links">
-        {quickLinks.map((item) => <li><a href={item.href} aria-current={item.active ? 'page' : undefined}><Icon name={item.icon} /><span>{item.label}</span><Icon name="arrow" size={18} /></a></li>)}
-      </ul>
-    </section>
-
-    <section aria-labelledby="categoryLinksTitle">
-      <h2 id="categoryLinksTitle">{t.categories}</h2>
-      <ul class="drawer-category-links">
-        {categoryEntries.map((category) => {
-          const href = localizedPath(locale, `categories/${category.id}`);
-          const active = pathname.includes(`/${locale}/categories/${category.id}`);
-          return <li><a href={href} aria-current={active ? 'page' : undefined}><span class="drawer-category-icon"><Icon name={categoryIcon[category.id] || 'categories'} /></span><span>{categoryName(category, locale)}</span><Icon name="arrow" size={18} /></a></li>;
-        })}
-      </ul>
-    </section>
-
-    <section aria-labelledby="languageLinksTitle">
-      <h2 id="languageLinksTitle">{t.language}</h2>
-      <div class="drawer-languages">
-        {locales.map((lang) => <a href={languageUrls[lang]} lang={lang} hreflang={lang} data-language={lang} aria-current={lang === locale ? 'true' : undefined}>{lang === locale && <span aria-hidden="true">✓</span>}{localeMeta[lang].nativeName}</a>)}
-      </div>
-    </section>
-
-    <div class="drawer-secondary-links">
-      <a href={localizedPath(locale, 'editorial-policy')}><Icon name="check" />{t.verificationMethod}<Icon name="arrow" size={18} /></a>
-      <a href={trustPagePath(locale, 'corrections')}><Icon name="notices" />{t.corrections}<Icon name="arrow" size={18} /></a>
-      <a href={trustPagePath(locale, 'about')}><Icon name="about" />{t.about}<Icon name="arrow" size={18} /></a>
-      <a href={trustPagePath(locale, 'contact')}><Icon name="mail" />{t.contact}<Icon name="arrow" size={18} /></a>
-      <button class="mobile-theme theme-toggle" type="button"><Icon name="theme" />{t.changeTheme}</button>
-    </div>
-  </div>
-</nav>
-
 <SearchOverlay {locale} />
 
+<nav class="portal-mobile-bottom" aria-label={t.mobileNav}>
+  <a href={localizedPath(locale)} aria-current={homeActive ? 'page' : undefined}>
+    <Icon name="home" size={21} />
+    <span>{t.home}</span>
+  </a>
+  <a href={localizedPath(locale, 'search')}>
+    <Icon name="search" size={21} />
+    <span>{labels.search}</span>
+  </a>
+  <a href={localizedPath(locale, 'deadlines')} aria-current={pathname.includes('/deadlines') ? 'page' : undefined}>
+    <Icon name="clock" size={21} />
+    <span>{t.deadlines}</span>
+  </a>
+  <a href={localizedPath(locale, 'saved')} aria-current={pathname.includes('/saved') ? 'page' : undefined}>
+    <Icon name="bookmark" size={21} />
+    <span>{t.saved}</span>
+  </a>
+
+  <details class="portal-mobile-menu">
+    <summary>
+      <Icon name="menu" size={21} />
+      <span>{t.menu}</span>
+    </summary>
+    <div class="portal-mobile-panel">
+      <div class="portal-mobile-head">
+        <div>
+          <strong>{labels.menuHeading}</strong>
+          <p>{labels.menuDescription}</p>
+        </div>
+        <button type="button" class="portal-mobile-close" aria-label={t.closeMenu}>×</button>
+      </div>
+
+      <nav aria-label={t.categories}>
+        {categoryEntries.map((category) => {
+          const href = localizedPath(locale, `categories/${category.id}`);
+          const active = pathname.includes(`/categories/${category.id}`);
+          return (
+            <a href={href} aria-current={active ? 'page' : undefined}>
+              <span><Icon name={categoryIcon[category.id] || 'categories'} size={20} /></span>
+              <strong>{categoryName(category, locale)}</strong>
+              <Icon name="arrow" size={17} />
+            </a>
+          );
+        })}
+        <a href={localizedPath(locale, 'articles')}>
+          <span><Icon name="updates" size={20} /></span>
+          <strong>{t.latestNav}</strong>
+          <Icon name="arrow" size={17} />
+        </a>
+      </nav>
+
+      <div class="portal-mobile-languages" aria-label={t.language}>
+        {locales.map((lang) => (
+          <a
+            href={languageUrls[lang]}
+            lang={lang}
+            hreflang={lang}
+            data-language={lang}
+            aria-current={lang === locale ? 'true' : undefined}
+          >
+            {localeMeta[lang].nativeName}
+          </a>
+        ))}
+      </div>
+
+      <div class="portal-mobile-secondary">
+        <a href={localizedPath(locale, 'editorial-policy')}><Icon name="check" size={18} />{t.verificationMethod}</a>
+        <a href={trustPagePath(locale, 'corrections')}><Icon name="notices" size={18} />{t.corrections}</a>
+        <a href={trustPagePath(locale, 'about')}><Icon name="about" size={18} />{t.about}</a>
+        <a href={trustPagePath(locale, 'contact')}><Icon name="mail" size={18} />{t.contact}</a>
+      </div>
+    </div>
+  </details>
+</nav>
+
 <script>
-  import { trapFocus } from '@lib/focusTrap';
-
   const root = document.documentElement;
-  const languageTrigger = document.getElementById('languageTrigger');
-  const languageMenu = document.getElementById('languageMenu');
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const menuClose = document.getElementById('menuClose');
-  const mobileBackdrop = document.getElementById('mobileBackdrop');
-  const desktopQuery = window.matchMedia('(min-width: 860px)');
-  let drawerOpen = false;
-  let releaseFocusTrap: (() => void) | undefined;
-  let originalBodyPaddingRight = '';
-
-  const closeLanguage = (restoreFocus = false) => {
-    const wasOpen = !languageMenu?.hasAttribute('hidden');
-    languageMenu?.setAttribute('hidden', '');
-    languageTrigger?.setAttribute('aria-expanded', 'false');
-    if (restoreFocus && wasOpen) languageTrigger?.focus();
-  };
-
   const syncLanguagePreference = () => {
-    const current = document.documentElement.lang;
+    const current = root.lang;
     if (!['en', 'bn', 'hi'].includes(current)) return;
-    try { localStorage.setItem('site-language', current); } catch (_) {}
+    try {
+      localStorage.setItem('site-language', current);
+    } catch (_) {}
   };
 
-  const finishClosingDrawer = () => {
-    if (drawerOpen) return;
-    mobileMenu?.setAttribute('hidden', '');
-    mobileBackdrop?.setAttribute('hidden', '');
-  };
-
-  const closeDrawer = (restoreFocus = true) => {
-    if (!drawerOpen && mobileMenu?.hasAttribute('hidden')) return;
-    drawerOpen = false;
-    mobileMenu?.classList.remove('is-open');
-    mobileBackdrop?.classList.remove('is-open');
-    mobileMenu?.setAttribute('aria-hidden', 'true');
-    menuToggle?.setAttribute('aria-expanded', 'false');
-    if (menuToggle instanceof HTMLElement) menuToggle.setAttribute('aria-label', menuToggle.dataset.openLabel || 'Menu');
-    document.body.classList.remove('menu-open');
-    document.body.style.paddingRight = originalBodyPaddingRight;
-    releaseFocusTrap?.();
-    releaseFocusTrap = undefined;
-    finishClosingDrawer();
-    if (restoreFocus && menuToggle instanceof HTMLElement && !desktopQuery.matches) menuToggle.focus();
-  };
-
-  const openDrawer = () => {
-    if (desktopQuery.matches || drawerOpen) return;
-    closeLanguage();
-    drawerOpen = true;
-    mobileMenu?.removeAttribute('hidden');
-    mobileBackdrop?.removeAttribute('hidden');
-    mobileMenu?.setAttribute('aria-hidden', 'false');
-    menuToggle?.setAttribute('aria-expanded', 'true');
-    if (menuToggle instanceof HTMLElement) menuToggle.setAttribute('aria-label', menuToggle.dataset.closeLabel || 'Close menu');
-    originalBodyPaddingRight = document.body.style.paddingRight;
-    const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-    if (scrollbarGap) {
-      const currentPadding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0;
-      document.body.style.paddingRight = `${currentPadding + scrollbarGap}px`;
-    }
-    document.body.classList.add('menu-open');
-    if (!drawerOpen) return;
-    mobileMenu?.classList.add('is-open');
-    mobileBackdrop?.classList.add('is-open');
-    if (mobileMenu instanceof HTMLElement) {
-      releaseFocusTrap = trapFocus(mobileMenu);
-      menuClose?.focus();
-    }
-  };
-
-  languageTrigger?.addEventListener('click', () => {
-    const open = languageMenu?.hasAttribute('hidden');
-    if (open) {
-      languageMenu?.removeAttribute('hidden');
-      requestAnimationFrame(() => languageMenu?.querySelector<HTMLElement>('[aria-current="true"]')?.focus());
-    } else {
-      languageMenu?.setAttribute('hidden', '');
-    }
-    languageTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  document.querySelectorAll<HTMLElement>('.theme-toggle').forEach((button) => {
+    button.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch (_) {}
+    });
   });
-  const languageItems = [...(languageMenu?.querySelectorAll<HTMLAnchorElement>('[role="menuitem"]') || [])];
-  languageMenu?.addEventListener('keydown', (event) => {
-    const current = languageItems.indexOf(document.activeElement as HTMLAnchorElement);
-    let next = current;
-    if (event.key === 'ArrowDown') next = (current + 1) % languageItems.length;
-    else if (event.key === 'ArrowUp') next = (current - 1 + languageItems.length) % languageItems.length;
-    else if (event.key === 'Home') next = 0;
-    else if (event.key === 'End') next = languageItems.length - 1;
-    else if (event.key === 'Escape') { event.preventDefault(); closeLanguage(true); return; }
-    else return;
-    event.preventDefault();
-    languageItems[next]?.focus();
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => {
+    link.addEventListener('click', () => {
+      try {
+        localStorage.setItem('site-language', link.dataset.language || 'en');
+      } catch (_) {}
+    });
   });
-  document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => link.addEventListener('click', () => {
-    try { localStorage.setItem('site-language', link.dataset.language || 'en'); } catch (_) {}
-    closeLanguage();
-  }));
-  document.addEventListener('click', (event) => {
-    if (!(event.target as Element).closest('.language-picker')) closeLanguage(true);
+
+  document.querySelectorAll<HTMLDetailsElement>('.portal-mobile-menu').forEach((menu) => {
+    const close = menu.querySelector<HTMLButtonElement>('.portal-mobile-close');
+    close?.addEventListener('click', () => {
+      menu.open = false;
+      menu.querySelector<HTMLElement>('summary')?.focus();
+    });
+    menu.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+      link.addEventListener('click', () => {
+        menu.open = false;
+      });
+    });
   });
+
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') { closeLanguage(true); closeDrawer(); }
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll<HTMLDetailsElement>('details[open]').forEach((details) => {
+      details.open = false;
+    });
   });
-  menuToggle?.addEventListener('click', () => drawerOpen ? closeDrawer() : openDrawer());
-  menuClose?.addEventListener('click', () => closeDrawer());
-  mobileBackdrop?.addEventListener('click', () => closeDrawer());
-  mobileMenu?.querySelectorAll('a[href]').forEach((link) => link.addEventListener('click', () => closeDrawer(false)));
-  desktopQuery.addEventListener('change', (event) => { if (event.matches) closeDrawer(false); });
-  window.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
-  window.visualViewport?.addEventListener('resize', () => { if (desktopQuery.matches) closeDrawer(false); });
-  window.addEventListener('popstate', () => { closeLanguage(); closeDrawer(false); syncLanguagePreference(); });
-  window.addEventListener('pageshow', () => { closeLanguage(); closeDrawer(false); syncLanguagePreference(); });
+
+  window.addEventListener('pageshow', syncLanguagePreference);
   syncLanguagePreference();
-  document.querySelectorAll('.theme-toggle').forEach((button) => button.addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch (_) {}
-  }));
 </script>
 
 <style>
-  .site-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--color-border)}
-  [data-theme="dark"] .site-header{background:rgba(10,18,32,.9)}
-  .navbar{position:relative;z-index:5;height:74px;overflow:visible;gap:.5rem}.brand{flex:0 1 132px;min-width:0;overflow:hidden}:global(.header-brand-logo){display:block;width:clamp(104px,34vw,132px);max-width:100%;height:auto;max-height:56px;object-fit:contain}.nav-links{display:none}.nav-actions{display:flex;flex:0 0 auto;align-items:center;gap:.25rem}.icon-btn,.language-trigger{min-width:44px;min-height:44px}
-  .language-picker{position:relative;z-index:2}.language-trigger{display:flex;align-items:center;justify-content:center;gap:.35rem;padding:0 .65rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-weight:800}.chevron{font-size:.8rem}.language-menu{position:absolute;z-index:20;right:0;top:calc(100% + .55rem);min-width:174px;max-width:min(240px,calc(100vw - 1.5rem));padding:.45rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;box-shadow:var(--shadow-lg);pointer-events:auto;isolation:isolate}.language-menu[hidden]{display:none;pointer-events:none}.language-menu a{display:grid;grid-template-columns:20px 1fr;gap:.5rem;align-items:center;min-height:44px;padding:.65rem .75rem;border-radius:10px;font-weight:700}.language-menu a:hover,.language-menu a:focus-visible,.language-menu a[aria-current="true"]{background:var(--color-surface-alt);color:var(--color-primary)}
-  .desktop-theme{display:none}
+  .portal-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(16px);
+  }
 
-  .mobile-backdrop{position:fixed;inset:0;z-index:200;background:rgba(5,14,28,.58);opacity:1;visibility:visible;backdrop-filter:blur(2px)}
-  .mobile-backdrop.is-open{opacity:1;visibility:visible}
-  .mobile-drawer{position:fixed;inset-block:0;inset-inline-end:0;z-index:210;width:min(90vw,390px);max-width:100vw;height:100vh;max-height:100vh;display:flex;flex-direction:column;background:var(--color-surface);border-inline-start:1px solid var(--color-border);box-shadow:-18px 0 48px rgba(4,18,36,.24);transform:none;overflow:hidden;contain:layout style;isolation:isolate}
-  @supports (height:100dvh){.mobile-drawer{height:100dvh;max-height:100dvh}}
-  .mobile-drawer.is-open{transform:none}
-  .mobile-drawer[hidden],.mobile-backdrop[hidden]{display:none}
-  .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex:0 0 auto;min-height:74px;padding:max(.7rem,env(safe-area-inset-top)) 1rem .7rem;border-bottom:1px solid var(--color-border)}
-  .drawer-brand{display:flex;align-items:center;gap:.65rem;min-width:0}:global(.drawer-brand-logo){display:block;width:132px;height:auto;max-height:56px;object-fit:contain}
-  .drawer-close{display:grid;place-items:center;flex:0 0 auto;width:44px;height:44px;border:1px solid var(--color-border);border-radius:50%;background:var(--color-surface-alt)}.drawer-close span{font-size:1.8rem;line-height:1;transform:translateY(-1px)}
-  .drawer-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:1rem max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom))}
-  .drawer-scroll section+section{margin-top:1.25rem}.drawer-scroll h2{font-family:var(--font-body);font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--color-text-muted);margin:0 0 .55rem .25rem}
-  .drawer-quick-links,.drawer-category-links{display:grid;gap:.4rem}.drawer-quick-links a,.drawer-category-links a,.drawer-secondary-links>a{display:grid;grid-template-columns:24px minmax(0,1fr) 18px;align-items:center;gap:.7rem;min-height:50px;padding:.65rem .75rem;border:1px solid transparent;border-radius:12px;font-weight:700;line-height:1.3}.drawer-quick-links a:hover,.drawer-quick-links a:focus-visible,.drawer-category-links a:hover,.drawer-category-links a:focus-visible,.drawer-secondary-links>a:hover,.drawer-secondary-links>a:focus-visible{background:var(--color-surface-alt);border-color:var(--color-border)}.drawer-quick-links a[aria-current="page"],.drawer-category-links a[aria-current="page"]{color:var(--color-primary);background:rgba(var(--color-primary-rgb),.09);border-color:rgba(var(--color-primary-rgb),.18)}
-  .drawer-category-icon{display:grid;place-items:center;color:var(--color-primary)}
-  .drawer-languages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}.drawer-languages a{display:flex;align-items:center;justify-content:center;gap:.3rem;min-height:46px;padding:.5rem;border:1px solid var(--color-border);border-radius:11px;font-weight:700}.drawer-languages a[aria-current="true"]{color:var(--color-primary);background:rgba(var(--color-primary-rgb),.09);border-color:rgba(var(--color-primary-rgb),.25)}
-  .drawer-secondary-links{display:grid;gap:.35rem;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--color-border)}
-  .mobile-theme{display:flex;align-items:center;gap:.7rem;width:100%;min-height:50px;padding:.65rem .75rem;border:1px solid var(--color-border);border-radius:12px;font-weight:700;background:var(--color-surface-alt)}
-  :global(body.menu-open){overflow:hidden;overscroll-behavior:none}
+  :global(html[data-theme='dark']) .portal-header {
+    background: rgba(15, 27, 46, .97);
+  }
 
-  @media(max-width:520px){.language-code,.chevron{display:none}.language-trigger{width:44px;padding:0}.navbar{padding-inline:1rem}}
-  @media(max-width:350px){.navbar{padding-inline:.7rem}.nav-actions{gap:.1rem}.mobile-drawer{width:100vw}.drawer-languages{grid-template-columns:1fr}}
-  @media(min-width:860px){.nav-links{display:flex}.menu-toggle{display:none}.desktop-theme{display:inline-flex}.mobile-drawer,.mobile-backdrop{display:none!important}}
+  .portal-navbar-inner {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: clamp(.7rem, 2vw, 1.6rem);
+    height: 64px;
+    overflow: visible;
+  }
+
+  .portal-brand {
+    display: flex;
+    align-items: center;
+    flex: 0 0 150px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  :global(.portal-brand-logo) {
+    width: 148px;
+    max-height: 40px;
+  }
+
+  .portal-desktop-nav {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    align-self: stretch;
+    gap: clamp(.2rem, .7vw, .65rem);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .portal-desktop-nav li,
+  .portal-desktop-nav a {
+    display: flex;
+    align-items: center;
+  }
+
+  .portal-desktop-nav a {
+    position: relative;
+    padding: 0 .55rem;
+    color: var(--color-text);
+    font-size: clamp(.78rem, .72rem + .16vw, .9rem);
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .portal-desktop-nav a::after {
+    content: '';
+    position: absolute;
+    inset-inline: .55rem;
+    bottom: 0;
+    height: 3px;
+    border-radius: 999px 999px 0 0;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transition: transform .16s ease;
+  }
+
+  .portal-desktop-nav a:hover,
+  .portal-desktop-nav a:focus-visible,
+  .portal-desktop-nav a[aria-current='page'] {
+    color: var(--color-primary);
+  }
+
+  .portal-desktop-nav a:hover::after,
+  .portal-desktop-nav a:focus-visible::after,
+  .portal-desktop-nav a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .portal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: .25rem;
+    flex: 0 0 auto;
+  }
+
+  .portal-icon-button,
+  .portal-language-picker > summary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 .65rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .portal-icon-button:hover,
+  .portal-language-picker > summary:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .portal-language-picker {
+    position: relative;
+  }
+
+  .portal-language-picker > summary {
+    list-style: none;
+    cursor: pointer;
+    font-size: .78rem;
+    font-weight: 800;
+  }
+
+  .portal-language-picker > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .portal-language-panel {
+    position: absolute;
+    top: calc(100% + .5rem);
+    inset-inline-end: 0;
+    z-index: 20;
+    min-width: 180px;
+    padding: .4rem;
+    border: 1px solid var(--color-border);
+    border-radius: 11px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .portal-language-panel a {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: center;
+    gap: .45rem;
+    min-height: 44px;
+    padding: .6rem .7rem;
+    border-radius: 8px;
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .portal-language-panel a:hover,
+  .portal-language-panel a[aria-current='true'] {
+    background: var(--color-surface-alt);
+    color: var(--color-primary);
+  }
+
+  .portal-mobile-bottom {
+    display: none;
+  }
+
+  @media (max-width: 1080px) {
+    .portal-desktop-nav a {
+      padding-inline: .35rem;
+      font-size: .76rem;
+    }
+
+    .portal-desktop-nav a::after {
+      inset-inline: .35rem;
+    }
+  }
+
+  @media (max-width: 859px) {
+    :global(body) {
+      padding-bottom: calc(66px + env(safe-area-inset-bottom));
+    }
+
+    .portal-navbar-inner {
+      height: 64px;
+      padding-inline: .9rem;
+    }
+
+    .portal-brand {
+      flex-basis: min(47vw, 158px);
+    }
+
+    :global(.portal-brand-logo) {
+      width: min(46vw, 156px);
+      max-height: 38px;
+    }
+
+    .portal-desktop-nav {
+      display: none;
+    }
+
+    .portal-header-actions {
+      margin-inline-start: auto;
+      gap: .1rem;
+    }
+
+    .portal-language-picker > summary span {
+      display: none;
+    }
+
+    .portal-language-picker > summary {
+      width: 44px;
+      padding: 0;
+    }
+
+    .portal-mobile-bottom {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 180;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      min-height: calc(64px + env(safe-area-inset-bottom));
+      padding: .35rem .3rem env(safe-area-inset-bottom);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface);
+      box-shadow: 0 -8px 24px rgba(8, 20, 36, .08);
+    }
+
+    .portal-mobile-bottom > a,
+    .portal-mobile-menu > summary {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .15rem;
+      min-width: 0;
+      min-height: 56px;
+      padding: .25rem .1rem;
+      border-radius: 8px;
+      color: var(--color-text);
+      font-size: .65rem;
+      font-weight: 750;
+      line-height: 1.1;
+      text-align: center;
+    }
+
+    .portal-mobile-bottom > a[aria-current='page'],
+    .portal-mobile-bottom > a:hover,
+    .portal-mobile-menu > summary:hover,
+    .portal-mobile-menu[open] > summary {
+      color: var(--color-primary);
+      background: rgba(var(--color-primary-rgb), .08);
+    }
+
+    .portal-mobile-menu {
+      min-width: 0;
+    }
+
+    .portal-mobile-menu > summary {
+      list-style: none;
+      cursor: pointer;
+    }
+
+    .portal-mobile-menu > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .portal-mobile-panel {
+      position: fixed;
+      inset-inline: .65rem;
+      bottom: calc(68px + env(safe-area-inset-bottom));
+      z-index: 190;
+      max-height: min(72vh, 650px);
+      overflow-y: auto;
+      padding: .9rem;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      box-shadow: 0 22px 60px rgba(4, 18, 36, .28);
+    }
+
+    .portal-mobile-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .2rem .2rem .85rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .portal-mobile-head strong {
+      display: block;
+      color: var(--color-text);
+      font-size: 1rem;
+    }
+
+    .portal-mobile-head p {
+      margin-top: .25rem;
+      color: var(--color-text-muted);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+
+    .portal-mobile-close {
+      flex: 0 0 auto;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      background: var(--color-surface-alt);
+      color: var(--color-text);
+      font-size: 1.5rem;
+      line-height: 1;
+    }
+
+    .portal-mobile-panel nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .45rem;
+      padding-block: .8rem;
+    }
+
+    .portal-mobile-panel nav a {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      align-items: center;
+      gap: .5rem;
+      min-height: 54px;
+      padding: .55rem .6rem;
+      border: 1px solid var(--color-border);
+      border-radius: 9px;
+      background: var(--color-surface-alt);
+      color: var(--color-text);
+      font-size: .78rem;
+      line-height: 1.25;
+    }
+
+    .portal-mobile-panel nav a > span {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(var(--color-primary-rgb), .1);
+      color: var(--color-primary);
+    }
+
+    .portal-mobile-panel nav a[aria-current='page'] {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .portal-mobile-languages {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .4rem;
+      padding-top: .8rem;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .portal-mobile-languages a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: .4rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      color: var(--color-text);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+
+    .portal-mobile-languages a[aria-current='true'] {
+      border-color: var(--color-primary);
+      background: rgba(var(--color-primary-rgb), .08);
+      color: var(--color-primary);
+    }
+
+    .portal-mobile-secondary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .25rem .6rem;
+      padding-top: .75rem;
+    }
+
+    .portal-mobile-secondary a {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      min-height: 38px;
+      color: var(--color-text-muted);
+      font-size: .72rem;
+      font-weight: 650;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .portal-header-actions .portal-icon-button:first-child {
+      display: none;
+    }
+
+    .portal-mobile-panel nav {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
