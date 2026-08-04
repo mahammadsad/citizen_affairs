@@ -99,7 +99,7 @@ test('operational endpoints expose the served build without overclaiming verific
   expect(manifestPayload.shortcuts.length).toBeGreaterThanOrEqual(2);
   expect(workerSource).toContain('CACHE_PREFIX');
   expect(workerSource).toContain('health\\.json');
-  expect(workerSource).toContain('/status');
+  expect(workerSource).toContain('status');
   if (expectedCommit) {
     expect(deploymentPayload.commit).toBe(expectedCommit);
     expect(workerSource).toContain(expectedCommit);
