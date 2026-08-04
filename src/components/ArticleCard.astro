@@ -95,7 +95,7 @@ const copy = {
 }[locale];
 
 const facts: Array<{ label: string; value: string }> = [];
-let statusText = article.data.deadline
+let statusText: string = article.data.deadline
   ? deadlineLabel(state, locale)
   : verificationLabels[locale][article.data.verificationStatus];
 let officialUrl = article.data.officialNoticeUrl || article.data.applicationUrl;
