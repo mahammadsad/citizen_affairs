@@ -6,6 +6,7 @@ __pycache__/
 # Astro build output
 dist/
 .astro/
+.artifacts/
 
 # Environment variables
 .env
