@@ -1,0 +1,26 @@
+---
+import { SITE } from '@utils/constants';
+
+interface Props {
+  target: string;
+  title?: string;
+}
+
+const { target, title = 'Continue to Citizen Affairs' } = Astro.props;
+const normalizedTarget = target.startsWith('/') ? target : `/${target}`;
+const canonical = `${SITE.url}${normalizedTarget}`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0;url=${normalizedTarget}`} />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <p><a href={normalizedTarget}>{title}</a></p>
+  </body>
+</html>
