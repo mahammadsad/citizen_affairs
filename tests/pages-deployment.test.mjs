@@ -16,8 +16,8 @@ test('production deployments no longer share one queue with pull request validat
 });
 
 test('the static build exposes an exact deployment marker', () => {
+  assert.match(marker, /export const prerender = true/);
   assert.match(marker, /PUBLIC_BUILD_COMMIT/);
-  assert.match(marker, /deployment\.json/);
   assert.match(marker, /service: 'citizen-affairs'/);
   assert.match(marker, /Cache-Control/);
 });
