@@ -1,0 +1,117 @@
+---
+import Icon from './Icon.astro';
+import { dateLocale, type Locale } from '../i18n';
+
+interface CorrectionRecord {
+  date: Date;
+  incorrectInformation: string;
+  correctedInformation: string;
+  reason: string;
+  sourceUrl: string;
+}
+
+interface Props {
+  locale: Locale;
+  updateHistory?: string[];
+  correctionHistory?: CorrectionRecord[];
+}
+
+const { locale, updateHistory = [], correctionHistory = [] } = Astro.props;
+const copy = {
+  en: {
+    eyebrow: 'Transparency record',
+    title: 'Updates and corrections',
+    intro: 'Material changes are recorded so you can see how this information evolved.',
+    updates: 'Update history',
+    corrections: 'Published corrections',
+    wrong: 'Previous information',
+    corrected: 'Corrected information',
+    reason: 'Why it changed',
+    source: 'Supporting official source'
+  },
+  bn: {
+    eyebrow: 'স্বচ্ছতার রেকর্ড',
+    title: 'আপডেট ও সংশোধন',
+    intro: 'গুরুত্বপূর্ণ পরিবর্তনগুলি নথিভুক্ত করা হয়, যাতে তথ্যটি কীভাবে বদলেছে তা দেখা যায়।',
+    updates: 'আপডেটের ইতিহাস',
+    corrections: 'প্রকাশিত সংশোধন',
+    wrong: 'আগের তথ্য',
+    corrected: 'সংশোধিত তথ্য',
+    reason: 'কেন পরিবর্তন হয়েছে',
+    source: 'সমর্থনকারী অফিসিয়াল সূত্র'
+  },
+  hi: {
+    eyebrow: 'पारदर्शिता रिकॉर्ड',
+    title: 'अपडेट और सुधार',
+    intro: 'महत्वपूर्ण बदलाव दर्ज किए जाते हैं ताकि आप देख सकें कि जानकारी कैसे बदली।',
+    updates: 'अपडेट इतिहास',
+    corrections: 'प्रकाशित सुधार',
+    wrong: 'पहले दी गई जानकारी',
+    corrected: 'सुधारी गई जानकारी',
+    reason: 'बदलाव का कारण',
+    source: 'समर्थक आधिकारिक स्रोत'
+  }
+}[locale];
+const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+{(updateHistory.length > 0 || correctionHistory.length > 0) && (
+  <section class="change-history" id="article-updates" aria-labelledby="change-history-title">
+    <header>
+      <p><Icon name="updates" size={16} />{copy.eyebrow}</p>
+      <h2 id="change-history-title">{copy.title}</h2>
+      <span>{copy.intro}</span>
+    </header>
+
+    {updateHistory.length > 0 && (
+      <div class="update-log">
+        <h3>{copy.updates}</h3>
+        <ol>{updateHistory.map((item) => <li>{item}</li>)}</ol>
+      </div>
+    )}
+
+    {correctionHistory.length > 0 && (
+      <div class="correction-log">
+        <h3>{copy.corrections}</h3>
+        {correctionHistory.map((record) => (
+          <article>
+            <time datetime={record.date.toISOString()}>{formatter.format(record.date)}</time>
+            <dl>
+              <div><dt>{copy.wrong}</dt><dd>{record.incorrectInformation}</dd></div>
+              <div><dt>{copy.corrected}</dt><dd>{record.correctedInformation}</dd></div>
+              <div><dt>{copy.reason}</dt><dd>{record.reason}</dd></div>
+            </dl>
+            <a href={record.sourceUrl} target="_blank" rel="noopener noreferrer">
+              {copy.source}<Icon name="external" size={16} />
+            </a>
+          </article>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  .change-history { margin: 2rem 0; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); overflow: hidden; }
+  .change-history > header { padding: 1.15rem 1.25rem; border-bottom: 1px solid var(--color-border); background: var(--color-surface-alt); }
+  .change-history > header p { display: flex; align-items: center; gap: .4rem; margin: 0 0 .35rem; color: var(--color-primary); font-size: .7rem; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+  .change-history h2 { margin: 0; font-size: 1.35rem; }
+  .change-history > header span { display: block; margin-top: .35rem; color: var(--color-text-muted); font-size: .85rem; }
+  .update-log, .correction-log { padding: 1.2rem 1.25rem; }
+  .correction-log { border-top: 1px solid var(--color-border); }
+  .change-history h3 { margin: 0 0 .75rem; font-size: 1rem; }
+  .update-log ol { margin: 0 0 0 1.2rem; list-style: decimal; }
+  .update-log li { margin: .45rem 0; font-size: .86rem; line-height: 1.55; }
+  .correction-log article { padding: 1rem 0; border-top: 1px solid var(--color-border); }
+  .correction-log article:first-of-type { border-top: 0; padding-top: 0; }
+  .correction-log time { display: inline-block; margin-bottom: .65rem; color: var(--color-primary); font-size: .72rem; font-weight: 850; }
+  .correction-log dl { display: grid; gap: .6rem; margin: 0; }
+  .correction-log dl div { padding: .7rem; border-radius: 9px; background: var(--color-bg); }
+  .correction-log dt { color: var(--color-text-muted); font-size: .67rem; font-weight: 750; }
+  .correction-log dd { margin-top: .2rem; font-size: .84rem; line-height: 1.5; }
+  .correction-log a { display: inline-flex; align-items: center; gap: .35rem; margin-top: .75rem; color: var(--color-primary); font-size: .78rem; font-weight: 800; }
+</style>
