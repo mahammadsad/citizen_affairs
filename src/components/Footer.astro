@@ -4,47 +4,347 @@ import Icon from './Icon.astro';
 import BrandLogo from './BrandLogo.astro';
 import type { Locale } from '../i18n';
 import { localizedPath, trustPagePath, ui } from '../i18n';
+
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
 const brandName = getBrandName(locale);
+
 const footerLinks = [
-  { icon:'updates', label:t.latestNav, href:localizedPath(locale,'articles') },
-  { icon:'clock', label:t.deadlines, href:localizedPath(locale,'deadlines') },
-  { icon:'categories', label:t.categories, href:localizedPath(locale,'categories') },
-  { icon:'bookmark', label:t.saved, href:localizedPath(locale,'saved') },
-  { icon:'about', label:t.about, href:trustPagePath(locale,'about') },
-  { icon:'mail', label:t.contact, href:trustPagePath(locale,'contact') }
+  { icon: 'updates', label: t.latestNav, href: localizedPath(locale, 'articles') },
+  { icon: 'clock', label: t.deadlines, href: localizedPath(locale, 'deadlines') },
+  { icon: 'categories', label: t.categories, href: localizedPath(locale, 'categories') },
+  { icon: 'bookmark', label: t.saved, href: localizedPath(locale, 'saved') },
+  { icon: 'about', label: t.about, href: trustPagePath(locale, 'about') },
+  { icon: 'mail', label: t.contact, href: trustPagePath(locale, 'contact') }
 ];
+
 const policies = [
-  { label:t.editorial, href:localizedPath(locale,'editorial-policy') },
-  { label:t.corrections, href:trustPagePath(locale,'corrections') },
-  { label:t.privacy, href:localizedPath(locale,'privacy') },
-  { label:t.terms, href:localizedPath(locale,'terms') },
-  { label:t.disclaimer, href:localizedPath(locale,'disclaimer') }
+  { label: t.editorial, href: localizedPath(locale, 'editorial-policy') },
+  { label: t.corrections, href: trustPagePath(locale, 'corrections') },
+  { label: t.privacy, href: localizedPath(locale, 'privacy') },
+  { label: t.terms, href: localizedPath(locale, 'terms') },
+  { label: t.disclaimer, href: localizedPath(locale, 'disclaimer') }
+];
+
+const communityLinks = [
+  { className: 'telegram', label: 'Telegram', detail: t.fastUpdateAlerts, icon: 'telegram', href: SOCIALS.telegram },
+  { className: 'whatsapp', label: 'WhatsApp', detail: t.channelUpdates, icon: 'whatsapp', href: SOCIALS.whatsapp },
+  { className: 'mcq', label: 'MCQ Group', detail: t.practiceCommunity, icon: 'group', href: SOCIALS.telegramMCQ }
 ];
 ---
+
 <section class="prefooter container" aria-labelledby="stayUpdatedTitle">
-  <div><span>{t.stayUpdated}</span><h2 id="stayUpdatedTitle">{t.stayUpdatedText}</h2></div>
-  <div class="prefooter-actions"><a href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer"><Icon name="telegram" />{t.telegramUpdates}</a><a href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" />{t.whatsappUpdates}</a></div>
-</section>
-<footer class="site-footer" id="contact">
-  <div class="container footer-grid">
-    <section class="footer-intro">
-      <a class="footer-brand" href={localizedPath(locale)}><BrandLogo variant="full" alt={`${brandName} ${t.logo}`} class="footer-brand-logo" /></a>
-      <p>{t.disclaimerShort}</p>
-      <div class="contact-card"><div><small>{t.contactUs}</small><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></div><button id="copyEmail" data-email={BRAND.contactEmail} data-copy={t.copyEmail} data-copied={t.copied} aria-label={t.copyEmail}><Icon name="copy"/><span aria-live="polite">{t.copyEmail}</span></button></div>
-    </section>
-    <section><h3>{t.exploreFooter}</h3><nav class="footer-links">{footerLinks.map(link=><a href={link.href}><Icon name={link.icon}/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
-    <section><h3>{t.trustPolicies}</h3><nav class="footer-links">{policies.map(link=><a href={link.href}><Icon name="check"/><span>{link.label}</span><Icon name="arrow"/></a>)}</nav></section>
-    <section><h3>{t.community}</h3><div class="community-cards"><a class="telegram" href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer"><Icon name="telegram"/><span><strong>Telegram</strong><small>{t.fastUpdateAlerts}</small></span><Icon name="external"/></a><a class="whatsapp" href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp"/><span><strong>WhatsApp</strong><small>{t.channelUpdates}</small></span><Icon name="external"/></a><a class="mcq" href={SOCIALS.telegramMCQ} target="_blank" rel="noopener noreferrer"><Icon name="group"/><span><strong>MCQ Group</strong><small>{t.practiceCommunity}</small></span><Icon name="external"/></a></div></section>
+  <div>
+    <span>{t.stayUpdated}</span>
+    <h2 id="stayUpdatedTitle">{t.stayUpdatedText}</h2>
   </div>
-  <div class="container footer-bottom"><span>© 2026 {brandName}</span><span>{t.independentService} · {t.notGovernmentWebsite}</span><nav><a href={localizedPath(locale,'privacy')}>{t.privacy}</a><a href={localizedPath(locale,'terms')}>{t.terms}</a><a href="#languageTrigger" data-footer-language>{t.language}</a><a href="#top">↑ {t.backToTop}</a></nav></div>
+  <div class="prefooter-actions">
+    <a href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer">
+      <Icon name="telegram" />{t.telegramUpdates}
+    </a>
+    <a href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer">
+      <Icon name="whatsapp" />{t.whatsappUpdates}
+    </a>
+  </div>
+</section>
+
+<footer class="site-footer" id="contact">
+  <div class="container footer-main">
+    <section class="footer-intro">
+      <a class="footer-brand" href={localizedPath(locale)}>
+        <BrandLogo variant="full" alt={`${brandName} ${t.logo}`} class="footer-brand-logo" loading="lazy" />
+      </a>
+      <p>{t.disclaimerShort}</p>
+      <div class="contact-card">
+        <div>
+          <small>{t.contactUs}</small>
+          <a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a>
+        </div>
+        <button
+          id="copyEmail"
+          data-email={BRAND.contactEmail}
+          data-copy={t.copyEmail}
+          data-copied={t.copied}
+          aria-label={t.copyEmail}
+        >
+          <Icon name="copy" />
+          <span aria-live="polite">{t.copyEmail}</span>
+        </button>
+      </div>
+    </section>
+
+    <div class="footer-desktop-columns">
+      <section>
+        <h3>{t.exploreFooter}</h3>
+        <nav class="footer-links">
+          {footerLinks.map((link) => (
+            <a href={link.href}><Icon name={link.icon} /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
+          ))}
+        </nav>
+      </section>
+      <section>
+        <h3>{t.trustPolicies}</h3>
+        <nav class="footer-links">
+          {policies.map((link) => (
+            <a href={link.href}><Icon name="check" /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
+          ))}
+        </nav>
+      </section>
+      <section>
+        <h3>{t.community}</h3>
+        <div class="community-cards">
+          {communityLinks.map((link) => (
+            <a class={link.className} href={link.href} target="_blank" rel="noopener noreferrer">
+              <Icon name={link.icon} />
+              <span><strong>{link.label}</strong><small>{link.detail}</small></span>
+              <Icon name="external" size={17} />
+            </a>
+          ))}
+        </div>
+      </section>
+    </div>
+
+    <div class="footer-mobile-groups">
+      <details>
+        <summary>{t.exploreFooter}<Icon name="arrow" size={18} /></summary>
+        <nav>
+          {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+        </nav>
+      </details>
+      <details>
+        <summary>{t.trustPolicies}<Icon name="arrow" size={18} /></summary>
+        <nav>
+          {policies.map((link) => <a href={link.href}>{link.label}</a>)}
+        </nav>
+      </details>
+      <details>
+        <summary>{t.community}<Icon name="arrow" size={18} /></summary>
+        <nav>
+          {communityLinks.map((link) => (
+            <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<Icon name="external" size={16} /></a>
+          ))}
+        </nav>
+      </details>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <div>
+      <strong>© 2026 {brandName}</strong>
+      <span>{t.independentService} · {t.notGovernmentWebsite}</span>
+    </div>
+    <nav>
+      <a href={localizedPath(locale, 'privacy')}>{t.privacy}</a>
+      <a href={localizedPath(locale, 'terms')}>{t.terms}</a>
+      <a href="#languageTrigger" data-footer-language>{t.language}</a>
+      <a href="#top">↑ {t.backToTop}</a>
+    </nav>
+  </div>
 </footer>
+
 <script>
-  const copy=document.getElementById('copyEmail');copy?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(copy.dataset.email||'');const text=copy.querySelector('span');if(text){text.textContent=copy.dataset.copied||'Copied';setTimeout(()=>text.textContent=copy.dataset.copy||'Copy email',1600)}}catch{}});
-  document.querySelector('[data-footer-language]')?.addEventListener('click',event=>{event.preventDefault();document.getElementById('languageTrigger')?.click()});
+  const copy = document.getElementById('copyEmail');
+  copy?.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(copy.dataset.email || '');
+      const text = copy.querySelector('span');
+      if (text) {
+        text.textContent = copy.dataset.copied || 'Copied';
+        setTimeout(() => (text.textContent = copy.dataset.copy || 'Copy email'), 1600);
+      }
+    } catch {}
+  });
+
+  document.querySelector('[data-footer-language]')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    document.getElementById('languageTrigger')?.click();
+  });
 </script>
+
 <style>
-  :global(.footer-brand-logo){display:block;width:100%;height:auto}
-  .prefooter{transform:translateY(2rem);position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;padding:1.5rem 1.7rem;border-radius:22px;background:linear-gradient(135deg,#0a4d8c,#126f9e);color:#fff;box-shadow:var(--shadow-lg)}.prefooter span{font-weight:800}.prefooter h2{color:#fff;font-size:clamp(1.1rem,2vw,1.55rem);margin-top:.2rem}.prefooter-actions{display:flex;gap:.6rem;flex-wrap:wrap}.prefooter-actions a{display:flex;align-items:center;gap:.5rem;min-height:44px;padding:.65rem .85rem;border-radius:12px;background:rgba(255,255,255,.14);font-weight:800}.site-footer{background:var(--footer-bg);color:#d9e8f5;padding:5.4rem 0 1.5rem}.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.15fr;gap:2rem}.footer-brand{display:flex;align-items:center;width:min(100%,330px);padding:.45rem;background:#fff;border-radius:14px}.footer-brand-logo{display:block;width:100%;height:auto}.footer-intro>p{margin:1rem 0;color:#bdd0e1;max-width:42ch}.site-footer h3{color:#fff;font-size:1rem;margin-bottom:.75rem}.footer-links{display:grid;gap:.4rem}.footer-links a,.community-cards a{display:grid;grid-template-columns:22px 1fr 18px;align-items:center;gap:.55rem;min-height:46px;padding:.65rem;border-radius:11px}.footer-links a:hover,.footer-links a:focus-visible{background:var(--footer-card)}.community-cards{display:grid;gap:.55rem}.community-cards a.telegram{background:rgba(42,171,238,.11)}.community-cards a.whatsapp{background:rgba(37,211,102,.10)}.community-cards a.mcq{background:rgba(167,139,250,.10)}.community-cards span{display:flex;flex-direction:column}.community-cards small{color:#bdd0e1}.contact-card{margin-top:1rem;padding:.75rem;border-radius:13px;background:var(--footer-card);display:flex;align-items:center;justify-content:space-between;gap:.6rem;overflow:hidden}.contact-card div{min-width:0;display:flex;flex-direction:column}.contact-card a{overflow-wrap:anywhere;color:#fff}.contact-card button{flex:0 0 auto;display:flex;align-items:center;gap:.35rem;min-height:44px;padding:.45rem;color:#fff}.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.14);margin-top:2.2rem;padding-top:1.2rem;font-size:.78rem;color:#b9d1e5}.footer-bottom nav{display:flex;flex-wrap:wrap;gap:1rem}.site-footer a:hover{color:#fff}@media(max-width:940px){.footer-grid{grid-template-columns:1fr 1fr}.prefooter{width:calc(100% - 2rem);margin-inline:auto}}@media(max-width:620px){.prefooter{align-items:flex-start;flex-direction:column}.prefooter-actions{width:100%}.prefooter-actions a{flex:1}.footer-grid{grid-template-columns:1fr}.footer-bottom{align-items:flex-start;flex-direction:column}.contact-card button span{display:none}}
+  :global(.footer-brand-logo) { display: block; width: 100%; height: auto; }
+
+  .prefooter {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    transform: translateY(2rem);
+    padding: 1.35rem 1.55rem;
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 22px;
+    background:
+      radial-gradient(circle at 10% 0, rgba(14, 165, 154, .35), transparent 38%),
+      linear-gradient(135deg, #0b1d3a, #102c50);
+    color: #fff;
+    box-shadow: 0 24px 60px rgba(11, 29, 58, .24);
+  }
+  .prefooter span { color: #63d5ca; font-size: .8rem; font-weight: 850; }
+  .prefooter h2 { margin-top: .2rem; color: #fff; font-size: clamp(1.1rem, 2vw, 1.5rem); }
+  .prefooter-actions { display: flex; flex-wrap: wrap; gap: .6rem; }
+  .prefooter-actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    min-height: 46px;
+    padding: .65rem .9rem;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 13px;
+    background: rgba(255, 255, 255, .09);
+    font-weight: 800;
+  }
+  .prefooter-actions a:hover,
+  .prefooter-actions a:focus-visible { background: rgba(255, 255, 255, .17); }
+
+  .site-footer {
+    padding: 5.4rem 0 1.5rem;
+    background:
+      radial-gradient(circle at 90% 0, rgba(14, 165, 154, .09), transparent 28%),
+      #07172e;
+    color: #d9e8f5;
+  }
+  .footer-main {
+    display: grid;
+    grid-template-columns: minmax(260px, 1.15fr) minmax(0, 2fr);
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+  .footer-brand {
+    display: flex;
+    width: min(100%, 340px);
+    padding: .7rem;
+    border-radius: 17px;
+    background: #fff;
+  }
+  .footer-intro > p {
+    max-width: 45ch;
+    margin: 1.1rem 0;
+    color: #b9cee0;
+  }
+  .contact-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .65rem;
+    overflow: hidden;
+    max-width: 440px;
+    padding: .8rem;
+    border: 1px solid rgba(255, 255, 255, .1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .065);
+  }
+  .contact-card div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+  }
+  .contact-card small { color: #8fb0ca; }
+  .contact-card a { overflow-wrap: anywhere; color: #fff; }
+  .contact-card button {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 44px;
+    padding: .45rem .6rem;
+    border-radius: 10px;
+    color: #fff;
+  }
+  .contact-card button:hover,
+  .contact-card button:focus-visible { background: rgba(255, 255, 255, .1); }
+
+  .footer-desktop-columns {
+    display: grid;
+    grid-template-columns: .9fr .95fr 1.2fr;
+    gap: 1.4rem;
+  }
+  .site-footer h3 { margin-bottom: .8rem; color: #fff; font-size: 1rem; }
+  .footer-links,
+  .community-cards { display: grid; gap: .35rem; }
+  .footer-links a,
+  .community-cards a {
+    display: grid;
+    grid-template-columns: 21px minmax(0, 1fr) 17px;
+    align-items: center;
+    gap: .55rem;
+    min-height: 46px;
+    padding: .6rem .65rem;
+    border-radius: 11px;
+    color: #d7e6f2;
+  }
+  .footer-links a:hover,
+  .footer-links a:focus-visible,
+  .community-cards a:hover,
+  .community-cards a:focus-visible { background: rgba(255, 255, 255, .07); color: #fff; }
+  .community-cards a.telegram { background: rgba(42, 171, 238, .09); }
+  .community-cards a.whatsapp { background: rgba(37, 211, 102, .08); }
+  .community-cards a.mcq { background: rgba(14, 165, 154, .08); }
+  .community-cards span { display: flex; flex-direction: column; }
+  .community-cards small { color: #9fbad0; }
+
+  .footer-mobile-groups { display: none; }
+  .footer-bottom {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    color: #9fbad0;
+    font-size: .78rem;
+  }
+  .footer-bottom > div { display: grid; gap: .15rem; }
+  .footer-bottom strong { color: #fff; }
+  .footer-bottom nav { display: flex; flex-wrap: wrap; gap: 1rem; }
+  .footer-bottom a:hover,
+  .footer-bottom a:focus-visible { color: #fff; }
+
+  @media (max-width: 940px) {
+    .prefooter { width: calc(100% - 2rem); margin-inline: auto; }
+    .footer-main { grid-template-columns: 1fr; }
+    .footer-desktop-columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 620px) {
+    .prefooter {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 1.2rem;
+    }
+    .prefooter-actions { width: 100%; }
+    .prefooter-actions a { flex: 1; justify-content: center; }
+    .site-footer { padding-top: 5rem; }
+    .footer-main { gap: 1.4rem; }
+    .footer-brand { width: min(100%, 280px); }
+    .footer-intro > p { font-size: .9rem; }
+    .contact-card { max-width: none; }
+    .contact-card button span { display: none; }
+    .footer-desktop-columns { display: none; }
+    .footer-mobile-groups { display: grid; border-top: 1px solid rgba(255, 255, 255, .12); }
+    .footer-mobile-groups details { border-bottom: 1px solid rgba(255, 255, 255, .12); }
+    .footer-mobile-groups summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 54px;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 800;
+      list-style: none;
+    }
+    .footer-mobile-groups summary::-webkit-details-marker { display: none; }
+    .footer-mobile-groups details[open] summary svg { transform: rotate(90deg); }
+    .footer-mobile-groups nav { display: grid; gap: .15rem; padding: 0 0 .8rem; }
+    .footer-mobile-groups nav a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 44px;
+      padding: .45rem .25rem;
+      color: #bfd2e2;
+    }
+    .footer-bottom { align-items: flex-start; flex-direction: column; }
+  }
 </style>

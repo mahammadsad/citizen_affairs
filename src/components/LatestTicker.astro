@@ -1,34 +1,104 @@
 ---
 import { getLocalizedArticles } from '@lib/content';
 import { localizedPath, type Locale, ui } from '../i18n';
+import Icon from './Icon.astro';
 
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const articles = (await getLocalizedArticles(locale)).slice(0, 8);
-const items = articles.map((article) => ({ title: article.data.title, href: localizedPath(locale, `articles/${article.data.urlSlug}`) }));
-const loop = [...items, ...items];
+const articles = (await getLocalizedArticles(locale)).slice(0, 3);
+const lead = articles[0];
 ---
-<div class="latest-ticker" aria-label={t.latestTicker}>
-  <div class="ticker-label"><span class="ticker-live" aria-hidden="true"></span>{t.latestTicker}</div>
-  <div class="ticker-window" aria-live="off">
-    {!items.length && <p class="ticker-empty">{t.tickerEmpty}</p>}
-    <div class="ticker-loop">
-      {loop.map((item, index) => <a href={item.href} aria-hidden={index >= items.length ? 'true' : undefined} tabindex={index >= items.length ? -1 : undefined}>{item.title}<span aria-hidden="true">•</span></a>)}
-    </div>
+<div class="latest-bar" aria-label={t.latestTicker}>
+  <span class="latest-label"><span class="latest-dot" aria-hidden="true"></span>{t.latestTicker}</span>
+  <div class="latest-message">
+    {lead ? (
+      <a href={localizedPath(locale, `articles/${lead.data.urlSlug}`)}>
+        <strong>{lead.data.title}</strong>
+        <Icon name="arrow" size={17} />
+      </a>
+    ) : (
+      <span>{t.tickerEmpty}</span>
+    )}
   </div>
+  {lead && <a class="latest-all" href={localizedPath(locale, 'articles')}>{t.viewAll}<Icon name="arrow" size={16} /></a>}
 </div>
+
 <style>
-  .latest-ticker{position:relative;z-index:1;height:42px;display:flex;background:#092b4b;color:#fff;overflow:hidden;contain:paint;border-top:1px solid rgba(255,255,255,.08)}
-  .ticker-label{position:relative;z-index:2;flex:none;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#113b60;color:#fff;font-size:.78rem;font-weight:800;white-space:nowrap}
-  .ticker-live{width:8px;height:8px;border-radius:50%;background:#45d071;box-shadow:0 0 0 4px rgba(69,208,113,.18)}
-  .ticker-window{display:flex;align-items:center;overflow:hidden;flex:1}
-  .ticker-empty{padding-inline:1rem;color:#d6e6f3;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ticker-loop{display:flex;align-items:center;width:max-content;animation:ticker-move 48s linear infinite;will-change:transform}
-  .ticker-loop:hover,.ticker-loop:focus-within{animation-play-state:paused}
-  .ticker-loop a{display:flex;align-items:center;gap:1.4rem;min-height:42px;padding-left:1.4rem;color:#e8f2fa;font-size:.84rem;white-space:nowrap;text-decoration:none}
-  .ticker-loop a span{color:#7fb4d9}
-  .ticker-loop a:focus-visible{outline:2px solid #f6b73c;outline-offset:-3px}
-  @keyframes ticker-move{to{transform:translateX(-50%)}}
-  @media(max-width:560px){.ticker-label{font-size:0;width:48px;justify-content:center;padding:0}.ticker-live{margin:0}.ticker-loop a{font-size:.8rem}}
-  @media(prefers-reduced-motion:reduce){.ticker-window{overflow-x:auto}.ticker-loop{animation:none}.ticker-loop a[aria-hidden="true"]{display:none}}
+  .latest-bar {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 42px;
+    background: #0b1d3a;
+    color: #fff;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+  .latest-label {
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: 0 1rem;
+    background: #102c50;
+    font-size: .76rem;
+    font-weight: 850;
+    white-space: nowrap;
+  }
+  .latest-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0ea59a;
+    box-shadow: 0 0 0 4px rgba(14, 165, 154, .17);
+  }
+  .latest-message {
+    min-width: 0;
+    padding: 0 1rem;
+    color: #dbe8f4;
+    font-size: .82rem;
+  }
+  .latest-message a {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    min-height: 42px;
+    min-width: 0;
+  }
+  .latest-message strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #fff;
+    font-weight: 650;
+  }
+  .latest-message svg { flex: 0 0 auto; color: #0ea59a; }
+  .latest-all {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    min-height: 42px;
+    padding: 0 1rem;
+    border-left: 1px solid rgba(255, 255, 255, .13);
+    color: #fff;
+    font-size: .76rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .latest-message a:hover strong,
+  .latest-message a:focus-visible strong,
+  .latest-all:hover,
+  .latest-all:focus-visible { color: #63d5ca; }
+
+  @media (max-width: 620px) {
+    .latest-bar { grid-template-columns: 46px minmax(0, 1fr); }
+    .latest-label {
+      justify-content: center;
+      padding: 0;
+      font-size: 0;
+    }
+    .latest-all { display: none; }
+    .latest-message { padding: 0 .75rem; }
+  }
 </style>

@@ -5,69 +5,748 @@ import Icon from './Icon.astro';
 import { getCollection } from 'astro:content';
 import { getLocalizedArticles, getUpcomingDeadlines, categoryDescription, categoryName } from '@lib/content';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
-import { ACTIVE_CATEGORY_IDS, resolveAssetPath, SITE, SOCIALS } from '@utils/constants';
-import { formatUpdateCount, locales, localizedPath, trustPagePath, type Locale, ui, verificationLabels, dateLocale } from '../i18n';
+import { ACTIVE_CATEGORY_IDS, resolveAssetPath, SITE } from '@utils/constants';
+import {
+  formatUpdateCount,
+  locales,
+  localizedPath,
+  trustPagePath,
+  type Locale,
+  ui,
+  verificationLabels,
+  dateLocale
+} from '../i18n';
 
 const { locale } = Astro.props as { locale: Locale; isRoot?: boolean };
 const t = ui(locale);
 const allArticles = await getLocalizedArticles(locale);
-const hasPublishedContent = allArticles.length > 0;
 const latestArticles = allArticles.slice(0, 6);
 const categories = await getCollection('categories');
 const activeCategories = categories.filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id));
 const upcoming = await getUpcomingDeadlines(locale, 4);
 const featured = allArticles.find((article) => article.data.featured) || allArticles[0];
-const canonical = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
-const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, lang === 'en' ? `${SITE.url}/` : `${SITE.url}/${lang}/`])) as Record<Locale, string>;
-const iconMap: Record<string, string> = { jobs: 'briefcase', projects: 'schemes', exams: 'exams', notices: 'notices', affairs: 'services', materials: 'education' };
-const popularSearches = t.popularSearchTerms;
-const popularCategories = activeCategories;
 const featuredCategory = featured ? categories.find((category) => category.id === featured.data.category) : undefined;
-const formatter = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'short', day: 'numeric' });
-const resolveSrcSet = (value?: string) => value?.split(',').map((entry) => { const [url, width] = entry.trim().split(/\s+/); return `${resolveAssetPath(url)} ${width}`; }).join(', ');
+const hasPublishedContent = allArticles.length > 0;
+const verifiedCount = allArticles.filter((article) => article.data.verificationStatus === 'officially-confirmed').length;
+const canonical = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
+const alternateUrls = Object.fromEntries(
+  locales.map((lang) => [lang, lang === 'en' ? `${SITE.url}/` : `${SITE.url}/${lang}/`])
+) as Record<Locale, string>;
+const iconMap: Record<string, string> = {
+  jobs: 'briefcase',
+  projects: 'schemes',
+  exams: 'exams',
+  notices: 'notices',
+  affairs: 'services',
+  materials: 'education'
+};
+const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric'
+});
+const resolveSrcSet = (value?: string) =>
+  value
+    ?.split(',')
+    .map((entry) => {
+      const [url, width] = entry.trim().split(/\s+/);
+      return `${resolveAssetPath(url)} ${width}`;
+    })
+    .join(', ');
+
+const copy = {
+  en: {
+    kicker: 'Independent public-information platform',
+    heroNote: 'Official sources first. Clear explanations. Transparent corrections.',
+    quickJobs: 'Government jobs',
+    quickSchemes: 'Welfare schemes',
+    quickDeadlines: 'Upcoming deadlines',
+    verified: 'Officially verified',
+    published: 'Published guides',
+    activeTopics: 'Active sections',
+    thisWeek: 'Important this week',
+    noFeaturedTitle: 'Start with trusted information',
+    noFeaturedBody:
+      'Browse focused guides for government jobs and welfare schemes while new verified updates are prepared.',
+    latestIntro: 'Recently verified information, presented with source and update details.',
+    emptyLatestTitle: 'More verified updates are being prepared',
+    emptyLatestBody:
+      'The site stays intentionally selective: an update is published only after its source and status are recorded.',
+    promiseSources: 'Official-source links',
+    promiseDates: 'Last-verified dates',
+    promiseCorrections: 'Transparent corrections',
+    deadlineIntro: 'Do not miss the application and registration dates that matter.',
+    processTitle: 'A clearer way to use public information',
+    processBody:
+      'Every guide is designed to help you understand the update, verify the source and take the correct next step.',
+    learnMethod: 'Read our verification method',
+    browseAll: 'Browse all updates'
+  },
+  bn: {
+    kicker: 'স্বাধীন জনতথ্য প্ল্যাটফর্ম',
+    heroNote: 'আগে অফিসিয়াল সূত্র। সহজ ব্যাখ্যা। স্বচ্ছ সংশোধন।',
+    quickJobs: 'সরকারি চাকরি',
+    quickSchemes: 'কল্যাণমূলক প্রকল্প',
+    quickDeadlines: 'আসন্ন শেষ তারিখ',
+    verified: 'অফিসিয়ালি যাচাইকৃত',
+    published: 'প্রকাশিত গাইড',
+    activeTopics: 'সক্রিয় বিভাগ',
+    thisWeek: 'এই সপ্তাহের গুরুত্বপূর্ণ তথ্য',
+    noFeaturedTitle: 'বিশ্বস্ত তথ্য দিয়ে শুরু করুন',
+    noFeaturedBody:
+      'নতুন যাচাইকৃত আপডেট প্রস্তুত হওয়ার সময় সরকারি চাকরি ও কল্যাণমূলক প্রকল্পের গাইড দেখুন।',
+    latestIntro: 'সূত্র, যাচাই ও আপডেটের তারিখসহ সাম্প্রতিক তথ্য।',
+    emptyLatestTitle: 'আরও যাচাইকৃত আপডেট প্রস্তুত হচ্ছে',
+    emptyLatestBody:
+      'প্রতিটি তথ্যের সূত্র ও যাচাইয়ের অবস্থা নথিভুক্ত হওয়ার পরেই তা প্রকাশ করা হয়।',
+    promiseSources: 'অফিসিয়াল সূত্রের লিঙ্ক',
+    promiseDates: 'সর্বশেষ যাচাইয়ের তারিখ',
+    promiseCorrections: 'স্বচ্ছ সংশোধন',
+    deadlineIntro: 'গুরুত্বপূর্ণ আবেদন ও নিবন্ধনের শেষ তারিখ মিস করবেন না।',
+    processTitle: 'জনতথ্য ব্যবহারের আরও পরিষ্কার উপায়',
+    processBody:
+      'প্রতিটি গাইড তথ্যটি বোঝা, সূত্র যাচাই করা এবং সঠিক পরবর্তী পদক্ষেপ নিতে সাহায্য করে।',
+    learnMethod: 'যাচাই পদ্ধতি পড়ুন',
+    browseAll: 'সব আপডেট দেখুন'
+  },
+  hi: {
+    kicker: 'स्वतंत्र जन-सूचना मंच',
+    heroNote: 'पहले आधिकारिक स्रोत। स्पष्ट व्याख्या। पारदर्शी सुधार।',
+    quickJobs: 'सरकारी नौकरियाँ',
+    quickSchemes: 'कल्याण योजनाएँ',
+    quickDeadlines: 'आगामी अंतिम तिथियाँ',
+    verified: 'आधिकारिक रूप से सत्यापित',
+    published: 'प्रकाशित गाइड',
+    activeTopics: 'सक्रिय अनुभाग',
+    thisWeek: 'इस सप्ताह की महत्वपूर्ण जानकारी',
+    noFeaturedTitle: 'विश्वसनीय जानकारी से शुरुआत करें',
+    noFeaturedBody:
+      'नई सत्यापित जानकारी तैयार होने तक सरकारी नौकरियों और कल्याण योजनाओं की उपयोगी गाइड देखें।',
+    latestIntro: 'स्रोत, सत्यापन और अपडेट की तारीख के साथ हाल की जानकारी।',
+    emptyLatestTitle: 'और सत्यापित अपडेट तैयार किए जा रहे हैं',
+    emptyLatestBody:
+      'किसी जानकारी को उसके स्रोत और सत्यापन स्थिति दर्ज होने के बाद ही प्रकाशित किया जाता है।',
+    promiseSources: 'आधिकारिक स्रोत लिंक',
+    promiseDates: 'अंतिम सत्यापन तारीख',
+    promiseCorrections: 'पारदर्शी सुधार',
+    deadlineIntro: 'महत्वपूर्ण आवेदन और पंजीकरण की अंतिम तिथियाँ न चूकें।',
+    processTitle: 'जन-सूचना उपयोग करने का अधिक स्पष्ट तरीका',
+    processBody:
+      'हर गाइड आपको जानकारी समझने, स्रोत जाँचने और सही अगला कदम लेने में मदद करती है।',
+    learnMethod: 'हमारी सत्यापन पद्धति पढ़ें',
+    browseAll: 'सभी अपडेट देखें'
+  }
+}[locale];
 ---
+
 <MainLayout title={t.nationwide} description={t.heroDescription} {locale} {canonical} {alternateUrls}>
   <section class="home-hero">
     <div class="container hero-grid">
       <div class="hero-copy">
-        <span class="hero-eyebrow"><i></i>{t.nationwide}</span>
+        <span class="hero-kicker"><span aria-hidden="true"></span>{copy.kicker}</span>
         <h1>{t.heroTitle}</h1>
-        <p>{t.heroDescription}</p>
-        <form class="hero-search" action={locale === 'en' ? localizedPath(locale, 'search').replace('/en/', '/') : localizedPath(locale, 'search')}><Icon name="search" /><input name="q" type="search" placeholder={t.searchPlaceholder} aria-label={t.search} /><button type="submit">{t.search}</button></form>
-        <div class="popular-chips" aria-label={t.popularSearches}>{popularSearches.map((term) => <button type="button" data-search-term={term}>{term}</button>)}</div>
-        <div class="hero-actions"><a class="btn btn-primary" href={localizedPath(locale, 'articles')}>{t.explore}<Icon name="arrow" /></a><a class="btn btn-secondary" href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer">{t.joinTelegram}<Icon name="external" /></a></div>
-        <div class="trust-row"><span><Icon name="check" />{t.verifiedSources}</span><span><Icon name="globe" />{t.threeLanguages}</span><span><strong>₹0</strong>{t.freeAccess}</span><span><Icon name="clock" />{t.regularlyUpdated}</span></div>
+        <p class="hero-description">{t.heroDescription}</p>
+
+        <form
+          class="hero-search"
+          action={locale === 'en' ? localizedPath(locale, 'search').replace('/en/', '/') : localizedPath(locale, 'search')}
+        >
+          <Icon name="search" />
+          <input name="q" type="search" placeholder={t.searchPlaceholder} aria-label={t.search} />
+          <button type="submit">{t.search}</button>
+        </form>
+
+        <nav class="hero-quick-links" aria-label={t.categories}>
+          <a href={localizedPath(locale, 'categories/jobs')}><Icon name="briefcase" size={18} />{copy.quickJobs}</a>
+          <a href={localizedPath(locale, 'categories/projects')}><Icon name="schemes" size={18} />{copy.quickSchemes}</a>
+          <a href={localizedPath(locale, 'deadlines')}><Icon name="clock" size={18} />{copy.quickDeadlines}</a>
+        </nav>
+
+        <p class="hero-note"><Icon name="check" size={18} />{copy.heroNote}</p>
       </div>
-      <aside class="featured-update">
-        {featured ? <>
-          <div class="featured-image">{featured.data.featuredImage ? <picture>{featured.data.featuredImageAvif&&<source srcset={resolveSrcSet(featured.data.featuredImageAvifSrcSet)||resolveAssetPath(featured.data.featuredImageAvif)} sizes="(max-width: 980px) calc(100vw - 2rem), 520px" type="image/avif"/>}<img src={resolveAssetPath(featured.data.featuredImage)} srcset={resolveSrcSet(featured.data.featuredImageSrcSet)} sizes="(max-width: 980px) calc(100vw - 2rem), 520px" alt={featured.data.featuredImageAlt || featured.data.title} width={featured.data.featuredImageWidth || 1200} height={featured.data.featuredImageHeight || 675} fetchpriority="high" decoding="async" /></picture> : <div class="image-fallback"><Icon name={iconMap[featured.data.category] || 'updates'} size={58} /></div>}<span>{featured.data.featured ? t.featured : t.latest}</span></div>
-          <div class="featured-body"><div class="featured-badges"><span>{featuredCategory ? categoryName(featuredCategory, locale) : featured.data.category}</span><span>{verificationLabels[locale][featured.data.verificationStatus]}</span></div><h2>{featured.data.title}</h2><p>{featured.data.description}</p><dl>{featured.data.deadline && <div><dt>{t.deadline}</dt><dd>{formatter.format(featured.data.deadline)} · {deadlineLabel(deadlineState(featured.data.deadline), locale)}</dd></div>}<div><dt>{t.updated}</dt><dd>{formatter.format(featured.data.updated || featured.data.date)}</dd></div></dl><div class="featured-actions"><a class="btn btn-primary btn-sm" href={localizedPath(locale, `articles/${featured.data.urlSlug}`)}>{t.readMore}</a>{featured.data.applicationUrl && <a class="btn btn-secondary btn-sm" href={featured.data.applicationUrl} target="_blank" rel="noopener noreferrer">{t.apply}</a>}</div></div>
-        </> : <div class="empty-feature"><div class="image-fallback"><Icon name="updates" size={64} /></div><h2>{t.featuredEmptyTitle}</h2><p>{t.featuredEmptyBody}</p><div class="featured-actions"><a class="btn btn-primary btn-sm" href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer">{t.telegramUpdates}<Icon name="external" /></a><a class="btn btn-secondary btn-sm" href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer">{t.whatsappUpdates}<Icon name="external" /></a></div></div>}
+
+      <aside class="featured-update" aria-label={copy.thisWeek}>
+        {featured ? (
+          <>
+            <div class="featured-image">
+              {featured.data.featuredImage ? (
+                <picture>
+                  {featured.data.featuredImageAvif && (
+                    <source
+                      srcset={
+                        resolveSrcSet(featured.data.featuredImageAvifSrcSet) ||
+                        resolveAssetPath(featured.data.featuredImageAvif)
+                      }
+                      sizes="(max-width: 980px) calc(100vw - 2rem), 520px"
+                      type="image/avif"
+                    />
+                  )}
+                  <img
+                    src={resolveAssetPath(featured.data.featuredImage)}
+                    srcset={resolveSrcSet(featured.data.featuredImageSrcSet)}
+                    sizes="(max-width: 980px) calc(100vw - 2rem), 520px"
+                    alt={featured.data.featuredImageAlt || featured.data.title}
+                    width={featured.data.featuredImageWidth || 1200}
+                    height={featured.data.featuredImageHeight || 675}
+                    fetchpriority="high"
+                    decoding="async"
+                  />
+                </picture>
+              ) : (
+                <div class="image-fallback"><Icon name={iconMap[featured.data.category] || 'updates'} size={64} /></div>
+              )}
+              <span>{featured.data.featured ? t.featured : t.latest}</span>
+            </div>
+            <div class="featured-body">
+              <div class="featured-badges">
+                <span>{featuredCategory ? categoryName(featuredCategory, locale) : featured.data.category}</span>
+                <span><Icon name="check" size={14} />{verificationLabels[locale][featured.data.verificationStatus]}</span>
+              </div>
+              <h2>{featured.data.title}</h2>
+              <p>{featured.data.description}</p>
+              <dl>
+                {featured.data.deadline && (
+                  <div>
+                    <dt>{t.deadline}</dt>
+                    <dd>{formatter.format(featured.data.deadline)} · {deadlineLabel(deadlineState(featured.data.deadline), locale)}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>{t.updated}</dt>
+                  <dd>{formatter.format(featured.data.updated || featured.data.date)}</dd>
+                </div>
+              </dl>
+              <div class="featured-actions">
+                <a class="btn btn-primary btn-sm" href={localizedPath(locale, `articles/${featured.data.urlSlug}`)}>
+                  {t.readMore}<Icon name="arrow" size={18} />
+                </a>
+                {featured.data.applicationUrl && (
+                  <a
+                    class="btn btn-secondary btn-sm"
+                    href={featured.data.applicationUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t.apply}<Icon name="external" size={18} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div class="empty-showcase">
+            <span class="empty-showcase-icon"><Icon name="check" size={38} /></span>
+            <span class="eyebrow">{copy.thisWeek}</span>
+            <h2>{copy.noFeaturedTitle}</h2>
+            <p>{copy.noFeaturedBody}</p>
+            <div class="empty-showcase-links">
+              <a href={localizedPath(locale, 'categories/jobs')}>{copy.quickJobs}<Icon name="arrow" size={18} /></a>
+              <a href={localizedPath(locale, 'categories/projects')}>{copy.quickSchemes}<Icon name="arrow" size={18} /></a>
+            </div>
+          </div>
+        )}
       </aside>
+    </div>
+
+    <div class="container hero-metrics" aria-label={t.verifiedSources}>
+      <div><strong>{verifiedCount}</strong><span>{copy.verified}</span></div>
+      <div><strong>{allArticles.length}</strong><span>{copy.published}</span></div>
+      <div><strong>{activeCategories.length}</strong><span>{copy.activeTopics}</span></div>
     </div>
   </section>
 
-  <section class="section" id="categories"><div class="container"><div class="section-head"><span class="eyebrow">{t.categories}</span><h2>{t.whatWeCover}</h2></div><div class="category-grid">{activeCategories.map((category) => { const count = allArticles.filter((article) => article.data.category === category.id).length; return <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}><span class="category-icon"><Icon name={iconMap[category.id] || 'book'} size={26} /></span><div><h3>{categoryName(category, locale)}</h3><p>{categoryDescription(category, locale)}</p>{count > 0 && <small>{formatUpdateCount(locale, count)}</small>}</div><Icon name="arrow" /></a>; })}</div></div></section>
+  <section class="section category-section" id="categories">
+    <div class="container">
+      <div class="section-heading-row">
+        <div class="section-head">
+          <span class="eyebrow">{t.categories}</span>
+          <h2>{t.whatWeCover}</h2>
+        </div>
+        <a href={localizedPath(locale, 'categories')}>{t.viewAll}<Icon name="arrow" size={18} /></a>
+      </div>
+      <div class="category-grid">
+        {activeCategories.map((category) => {
+          const count = allArticles.filter((article) => article.data.category === category.id).length;
+          return (
+            <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}>
+              <span class="category-icon"><Icon name={iconMap[category.id] || 'book'} size={28} /></span>
+              <div>
+                <h3>{categoryName(category, locale)}</h3>
+                <p>{categoryDescription(category, locale)}</p>
+                <small>{count > 0 ? formatUpdateCount(locale, count) : t.regularlyUpdated}</small>
+              </div>
+              <Icon name="arrow" size={20} />
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
 
-  {hasPublishedContent && <section class="section section-alt"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow">{t.latest}</span><h2>{t.latest}</h2><p>{t.latestDescription}</p></div><a href={localizedPath(locale, 'articles')}>{t.viewAll}<Icon name="arrow" /></a></div><div class="articles-grid">{latestArticles.map((article) => <ArticleCard {article} {locale} />)}</div></div></section>}
+  <section class="section section-alt latest-section">
+    <div class="container">
+      <div class="section-heading-row">
+        <div class="section-head">
+          <span class="eyebrow">{t.latest}</span>
+          <h2>{t.latest}</h2>
+          <p>{copy.latestIntro}</p>
+        </div>
+        {hasPublishedContent && (
+          <a href={localizedPath(locale, 'articles')}>{copy.browseAll}<Icon name="arrow" size={18} /></a>
+        )}
+      </div>
 
-  {upcoming.length > 0 && <section class="section"><div class="container"><div class="section-heading-row"><div class="section-head"><span class="eyebrow"><Icon name="clock" />{t.deadlines}</span><h2>{t.deadlines}</h2></div><a href={localizedPath(locale, 'deadlines')}>{t.viewAll}<Icon name="arrow" /></a></div><div class="deadline-grid">{upcoming.map((article) => <ArticleCard {article} {locale} compact />)}</div></div></section>}
+      {hasPublishedContent ? (
+        <div class="articles-grid">{latestArticles.map((article) => <ArticleCard {article} {locale} />)}</div>
+      ) : (
+        <div class="editorial-empty-state">
+          <div>
+            <span class="empty-state-icon"><Icon name="services" size={32} /></span>
+            <h3>{copy.emptyLatestTitle}</h3>
+            <p>{copy.emptyLatestBody}</p>
+          </div>
+          <ul>
+            <li><Icon name="external" size={18} />{copy.promiseSources}</li>
+            <li><Icon name="clock" size={18} />{copy.promiseDates}</li>
+            <li><Icon name="check" size={18} />{copy.promiseCorrections}</li>
+          </ul>
+          <a class="btn btn-primary btn-sm" href={localizedPath(locale, 'categories')}>
+            {t.categories}<Icon name="arrow" size={18} />
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
 
-  {hasPublishedContent && <section class="section section-alt"><div class="container"><div class="section-head"><span class="eyebrow">{t.services}</span><h2>{t.popularServices}</h2></div><div class="service-grid">{popularCategories.map((category) => <a href={localizedPath(locale, `categories/${category.id}`)}><Icon name={iconMap[category.id] || 'services'} size={30} /><div><h3>{categoryName(category, locale)}</h3><p>{categoryDescription(category, locale)}</p></div><Icon name="arrow" /></a>)}</div></div></section>}
+  {upcoming.length > 0 && (
+    <section class="section deadline-section">
+      <div class="container">
+        <div class="section-heading-row">
+          <div class="section-head">
+            <span class="eyebrow"><Icon name="clock" size={18} />{t.deadlines}</span>
+            <h2>{t.deadlines}</h2>
+            <p>{copy.deadlineIntro}</p>
+          </div>
+          <a href={localizedPath(locale, 'deadlines')}>{t.viewAll}<Icon name="arrow" size={18} /></a>
+        </div>
+        <div class="deadline-grid">{upcoming.map((article) => <ArticleCard {article} {locale} compact />)}</div>
+      </div>
+    </section>
+  )}
 
-  <section class="section verification-section" id="about"><div class="container"><div class="verification-heading"><span class="eyebrow">{t.independent}</span><h2>{t.howItWorks}</h2><p>{t.disclaimerShort}</p></div><ol class="verification-timeline"><li><span>01</span><Icon name="services" /><strong>{t.stepDiscover}</strong></li><li><span>02</span><Icon name="check" /><strong>{t.stepVerify}</strong></li><li><span>03</span><Icon name="book" /><strong>{t.stepExplain}</strong></li><li><span>04</span><Icon name="clock" /><strong>{t.stepUpdate}</strong></li></ol><div class="independence-note"><Icon name="about" /><div><strong>{t.independent}</strong><span>{t.disclaimerShort}</span><a href={trustPagePath(locale, 'about')}>{t.learnMoreAbout}<Icon name="arrow" size={18} /></a></div></div></div></section>
-
-  <section class="community-section" id="community"><div class="container community-inner"><div><span class="eyebrow">{t.community}</span><h2>{t.communityTitle}</h2></div><div class="community-buttons"><a href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer"><Icon name="telegram" />Telegram<Icon name="external" /></a><a href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer"><Icon name="whatsapp" />WhatsApp<Icon name="external" /></a><a href={SOCIALS.telegramMCQ} target="_blank" rel="noopener noreferrer"><Icon name="group" />MCQ Group<Icon name="external" /></a></div></div></section>
+  <section class="section verification-section" id="about">
+    <div class="container verification-layout">
+      <div class="verification-heading">
+        <span class="eyebrow">{t.independent}</span>
+        <h2>{copy.processTitle}</h2>
+        <p>{copy.processBody}</p>
+        <a href={localizedPath(locale, 'editorial-policy')}>
+          {copy.learnMethod}<Icon name="arrow" size={18} />
+        </a>
+      </div>
+      <ol class="verification-timeline">
+        <li><span>01</span><Icon name="services" /><strong>{t.stepDiscover}</strong></li>
+        <li><span>02</span><Icon name="check" /><strong>{t.stepVerify}</strong></li>
+        <li><span>03</span><Icon name="book" /><strong>{t.stepExplain}</strong></li>
+        <li><span>04</span><Icon name="clock" /><strong>{t.stepUpdate}</strong></li>
+      </ol>
+      <div class="independence-note">
+        <Icon name="about" size={28} />
+        <div>
+          <strong>{t.independent}</strong>
+          <span>{t.disclaimerShort}</span>
+          <a href={trustPagePath(locale, 'about')}>{t.learnMoreAbout}<Icon name="arrow" size={18} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
 </MainLayout>
 
-<script>
-  const openSearch = (term = '') => { const button = document.getElementById('searchToggle'); button?.click(); setTimeout(() => { const input = document.getElementById('searchInput') as HTMLInputElement | null; if (input) { input.value = term; input.dispatchEvent(new Event('input')); } }, 80); };
-  document.querySelectorAll('[data-search-term]').forEach((chip) => chip.addEventListener('click', () => openSearch((chip as HTMLElement).dataset.searchTerm || '')));
-</script>
 <style>
-  .featured-image picture{display:block;height:100%}
-  .home-hero{padding:clamp(2.5rem,6vw,5.5rem) 0;background:radial-gradient(circle at 90% 0,rgba(var(--color-primary-rgb),.12),transparent 35%),linear-gradient(135deg,var(--color-surface),var(--color-bg))}.hero-grid{display:grid;gap:2rem;align-items:center}.hero-copy h1{font-size:clamp(2.25rem,5vw,4.5rem);line-height:1.06;letter-spacing:-.035em;max-width:17ch}.hero-copy>p{font-size:1.1rem;color:var(--color-text-muted);max-width:65ch;margin:1rem 0}.hero-eyebrow{display:inline-flex;gap:.5rem;align-items:center;margin-bottom:1rem;color:var(--color-green-text);font-weight:800}.hero-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--color-green)}.hero-search{display:flex;align-items:center;gap:.65rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px;padding:.45rem .45rem .45rem 1rem;max-width:700px;box-shadow:var(--shadow-md)}.hero-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;padding:.7rem 0}.hero-search button{min-height:44px;padding:0 1.2rem;border-radius:12px;background:var(--color-primary);color:#fff;font-weight:800}.popular-chips{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}.popular-chips button{min-height:36px;padding:.35rem .75rem;border-radius:999px;background:var(--color-surface-alt);border:1px solid var(--color-border);font-size:.78rem}.hero-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin:1.5rem 0}.trust-row{display:flex;gap:1rem;flex-wrap:wrap}.trust-row span{display:flex;align-items:center;gap:.35rem;color:var(--color-text-muted);font-size:.8rem}.trust-row svg,.trust-row strong{color:var(--color-green-text)}.featured-update{background:var(--color-surface);border:1px solid var(--color-border);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-lg)}.featured-image{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,var(--color-navy),var(--color-primary))}.featured-image img{width:100%;height:100%;object-fit:cover}.featured-image>span{position:absolute;top:1rem;left:1rem;padding:.35rem .7rem;border-radius:999px;background:#fff;color:#092b4b;font-size:.72rem;font-weight:900}.image-fallback{height:100%;display:grid;place-items:center;color:#fff}.featured-body,.empty-feature{padding:1.35rem}.featured-badges{display:flex;justify-content:space-between;gap:.6rem;font-size:.7rem;color:var(--color-green-text);font-weight:800}.featured-body h2,.empty-feature h2{font-size:1.4rem;margin:.65rem 0}.featured-body p,.empty-feature p{color:var(--color-text-muted)}.featured-body dl{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}.featured-body dt{font-size:.68rem;color:var(--color-text-muted)}.featured-body dd{font-weight:800;font-size:.82rem}.featured-actions{display:flex;gap:.6rem;flex-wrap:wrap}.empty-feature .image-fallback{height:190px;border-radius:16px;background:linear-gradient(135deg,var(--color-navy),var(--color-primary));margin-bottom:1rem}.empty-feature .btn{margin-top:1rem}.category-grid,.articles-grid,.deadline-grid,.service-grid{display:grid;gap:1rem}.category-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;background:var(--color-surface);border:1px solid var(--color-border);border-radius:18px;padding:1.25rem;transition:.2s}.category-card:hover,.category-card:focus-visible{transform:translateY(-3px);box-shadow:var(--shadow-md)}.category-icon{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;background:rgba(var(--color-primary-rgb),.1);color:var(--color-primary)}.category-card h3{font-size:1.05rem}.category-card p{font-size:.85rem;color:var(--color-text-muted);line-height:1.45}.category-card small{color:var(--color-green-text);font-weight:700}.section-heading-row{display:flex;align-items:end;justify-content:space-between;gap:1rem}.section-heading-row>a{display:flex;align-items:center;gap:.3rem;color:var(--color-primary);font-weight:800;margin-bottom:var(--space-5)}.empty-state{display:flex;align-items:center;justify-content:center;gap:.75rem;min-height:130px;padding:2rem;border:1px dashed var(--color-border);border-radius:18px;text-align:center;color:var(--color-text-muted);background:var(--color-surface)}.empty-state svg{flex:0 0 auto;color:var(--color-primary)}.service-grid>a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1rem;align-items:center;padding:1.2rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px}.service-grid>a>svg:first-child{color:var(--color-primary)}.service-grid p{font-size:.82rem;color:var(--color-text-muted)}.verification-heading{text-align:center;max-width:680px;margin:auto}.verification-timeline{display:grid;gap:1rem;margin:2rem 0}.verification-timeline li{display:grid;grid-template-columns:auto auto 1fr;gap:.8rem;align-items:center;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px}.verification-timeline li>span{color:var(--color-primary);font-weight:900}.verification-timeline svg{color:var(--color-green-text)}.independence-note{display:flex;gap:.8rem;align-items:center;max-width:700px;margin:auto;padding:1rem;border-radius:16px;background:rgba(var(--color-orange-rgb),.1);border:1px solid rgba(var(--color-orange-rgb),.25)}.independence-note div{display:flex;flex-direction:column}.independence-note span{font-size:.86rem;color:var(--color-text-muted)}.independence-note a{display:inline-flex;align-items:center;gap:.35rem;width:max-content;margin-top:.45rem;color:var(--color-primary);font-weight:800}.community-section{padding:3rem 0;background:linear-gradient(135deg,#092b4b,#113b60);color:#fff}.community-inner{display:grid;gap:1.5rem;align-items:center}.community-inner h2{color:#fff}.community-buttons{display:grid;gap:.65rem}.community-buttons a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;min-height:52px;padding:.75rem 1rem;border-radius:14px;background:rgba(255,255,255,.1)}
-  @media(min-width:680px){.category-grid,.deadline-grid{grid-template-columns:repeat(2,1fr)}.articles-grid{grid-template-columns:repeat(2,1fr)}.service-grid{grid-template-columns:repeat(3,1fr)}.verification-timeline{grid-template-columns:repeat(2,1fr)}.community-inner{grid-template-columns:1fr 1fr}}
-  @media(min-width:960px){.hero-grid{grid-template-columns:1.15fr .85fr}.category-grid,.articles-grid{grid-template-columns:repeat(3,1fr)}.verification-timeline{grid-template-columns:repeat(4,1fr)}.verification-timeline li{grid-template-columns:1fr;text-align:center;justify-items:center}.community-inner{grid-template-columns:1fr auto}.community-buttons{grid-template-columns:repeat(3,1fr)}}
-  @media(max-width:540px){.hero-search button{font-size:0;width:44px;padding:0}.hero-search button::after{content:'→';font-size:1rem}.section-heading-row{align-items:start}.section-heading-row>a{font-size:.8rem}.trust-row{display:grid;grid-template-columns:1fr 1fr}}
+  .home-hero {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(3rem, 7vw, 6.5rem) 0 1.5rem;
+    background:
+      radial-gradient(circle at 88% 8%, rgba(var(--color-primary-rgb), .16), transparent 30%),
+      radial-gradient(circle at 4% 92%, rgba(var(--color-green-rgb), .10), transparent 28%),
+      linear-gradient(150deg, var(--color-surface), var(--color-bg));
+  }
+  .home-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(var(--color-primary-rgb), .035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--color-primary-rgb), .035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: linear-gradient(to bottom, #000, transparent 78%);
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  .hero-copy { max-width: 720px; }
+  .hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .65rem;
+    margin-bottom: 1.2rem;
+    color: var(--color-green-text);
+    font-weight: 800;
+    font-size: .84rem;
+    letter-spacing: .02em;
+  }
+  .hero-kicker span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-green);
+    box-shadow: 0 0 0 5px rgba(var(--color-green-rgb), .12);
+  }
+  .hero-copy h1 {
+    max-width: 15ch;
+    font-size: clamp(2.55rem, 6.4vw, 5.15rem);
+    line-height: 1.01;
+    letter-spacing: -.045em;
+  }
+  .hero-description {
+    max-width: 62ch;
+    margin: 1.25rem 0 1.5rem;
+    color: var(--color-text-muted);
+    font-size: clamp(1.05rem, 1rem + .35vw, 1.24rem);
+  }
+  .hero-search {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .7rem;
+    max-width: 710px;
+    padding: .5rem .5rem .5rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: var(--color-surface);
+    box-shadow: 0 18px 46px rgba(11, 29, 58, .11);
+  }
+  .hero-search > svg { color: var(--color-primary); }
+  .hero-search input {
+    width: 100%;
+    min-width: 0;
+    padding: .75rem 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+  }
+  .hero-search button {
+    min-height: 48px;
+    padding: 0 1.4rem;
+    border-radius: 13px;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 800;
+  }
+  .hero-quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-top: .85rem;
+  }
+  .hero-quick-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    min-height: 42px;
+    padding: .45rem .8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .62);
+    color: var(--color-text);
+    font-size: .82rem;
+    font-weight: 750;
+  }
+  [data-theme="dark"] .hero-quick-links a { background: rgba(16, 26, 44, .72); }
+  .hero-note {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 1.2rem;
+    color: var(--color-text-muted);
+    font-size: .86rem;
+  }
+  .hero-note svg { color: var(--color-green-text); }
+
+  .featured-update {
+    overflow: hidden;
+    border: 1px solid rgba(var(--color-primary-rgb), .15);
+    border-radius: 28px;
+    background: var(--color-surface);
+    box-shadow: 0 28px 70px rgba(11, 29, 58, .15);
+  }
+  .featured-image {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(135deg, var(--color-navy), var(--color-primary));
+  }
+  .featured-image picture,
+  .featured-image img { width: 100%; height: 100%; }
+  .featured-image img { object-fit: cover; }
+  .featured-image > span {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: .4rem .75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .94);
+    color: #0b1d3a;
+    font-size: .72rem;
+    font-weight: 900;
+    box-shadow: var(--shadow-sm);
+  }
+  .image-fallback {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: #fff;
+  }
+  .featured-body { padding: clamp(1.25rem, 3vw, 1.75rem); }
+  .featured-badges {
+    display: flex;
+    justify-content: space-between;
+    gap: .7rem;
+    color: var(--color-green-text);
+    font-size: .72rem;
+    font-weight: 850;
+  }
+  .featured-badges span { display: inline-flex; align-items: center; gap: .35rem; }
+  .featured-body h2 {
+    margin: .8rem 0 .6rem;
+    font-size: clamp(1.35rem, 2vw, 1.75rem);
+    line-height: 1.28;
+  }
+  .featured-body > p { color: var(--color-text-muted); }
+  .featured-body dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .8rem 1.4rem;
+    margin: 1.1rem 0;
+  }
+  .featured-body dt { color: var(--color-text-muted); font-size: .7rem; }
+  .featured-body dd { font-size: .85rem; font-weight: 800; }
+  .featured-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+
+  .empty-showcase { padding: clamp(1.8rem, 5vw, 3rem); }
+  .empty-showcase-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    margin-bottom: 1.3rem;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-green));
+    color: #fff;
+    box-shadow: 0 18px 35px rgba(var(--color-primary-rgb), .2);
+  }
+  .empty-showcase h2 { margin-bottom: .7rem; font-size: clamp(1.55rem, 3vw, 2.15rem); }
+  .empty-showcase p { color: var(--color-text-muted); }
+  .empty-showcase-links { display: grid; gap: .6rem; margin-top: 1.5rem; }
+  .empty-showcase-links a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 50px;
+    padding: .75rem .9rem;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface-alt);
+    font-weight: 800;
+  }
+
+  .hero-metrics {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: clamp(2rem, 5vw, 4rem);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, .78);
+    backdrop-filter: blur(14px);
+  }
+  [data-theme="dark"] .hero-metrics { background: rgba(16, 26, 44, .76); }
+  .hero-metrics div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .65rem;
+    min-height: 76px;
+    padding: .85rem 1rem;
+    text-align: center;
+  }
+  .hero-metrics div + div { border-left: 1px solid var(--color-border); }
+  .hero-metrics strong { color: var(--color-primary); font-size: 1.45rem; }
+  .hero-metrics span { color: var(--color-text-muted); font-size: .8rem; font-weight: 700; }
+
+  .section-heading-row {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+  .section-heading-row > a,
+  .verification-heading > a {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: var(--color-primary);
+    font-weight: 800;
+  }
+  .section-heading-row > a { margin-bottom: var(--space-5); }
+  .category-grid,
+  .articles-grid,
+  .deadline-grid { display: grid; gap: 1rem; }
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .category-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 148px;
+    padding: 1.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: var(--color-surface);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  }
+  .category-card:hover,
+  .category-card:focus-visible {
+    transform: translateY(-4px);
+    border-color: rgba(var(--color-primary-rgb), .35);
+    box-shadow: var(--shadow-md);
+  }
+  .category-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 17px;
+    background: linear-gradient(145deg, rgba(var(--color-primary-rgb), .14), rgba(var(--color-green-rgb), .09));
+    color: var(--color-primary);
+  }
+  .category-card h3 { font-size: 1.15rem; }
+  .category-card p { margin-top: .25rem; color: var(--color-text-muted); font-size: .88rem; line-height: 1.5; }
+  .category-card small { display: block; margin-top: .45rem; color: var(--color-green-text); font-weight: 750; }
+  .category-card > svg { color: var(--color-text-muted); }
+
+  .editorial-empty-state {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, .8fr) auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(1.4rem, 4vw, 2.4rem);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .empty-state-icon {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    margin-bottom: .9rem;
+    border-radius: 17px;
+    background: rgba(var(--color-primary-rgb), .1);
+    color: var(--color-primary);
+  }
+  .editorial-empty-state h3 { margin-bottom: .35rem; font-size: 1.35rem; }
+  .editorial-empty-state p { color: var(--color-text-muted); }
+  .editorial-empty-state ul { display: grid; gap: .7rem; }
+  .editorial-empty-state li { display: flex; align-items: center; gap: .55rem; font-size: .88rem; font-weight: 700; }
+  .editorial-empty-state li svg { color: var(--color-green-text); }
+
+  .verification-section {
+    background:
+      linear-gradient(135deg, rgba(var(--color-primary-rgb), .08), rgba(var(--color-green-rgb), .08)),
+      var(--color-surface);
+  }
+  .verification-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: start;
+  }
+  .verification-heading h2 { margin-bottom: .8rem; font-size: clamp(1.9rem, 4vw, 3rem); }
+  .verification-heading p { color: var(--color-text-muted); }
+  .verification-heading > a { margin-top: 1.2rem; }
+  .verification-timeline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .9rem;
+  }
+  .verification-timeline li {
+    position: relative;
+    display: grid;
+    min-height: 150px;
+    padding: 1.15rem;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: var(--color-surface);
+  }
+  .verification-timeline li > span {
+    position: absolute;
+    top: .75rem;
+    right: .85rem;
+    color: rgba(var(--color-primary-rgb), .25);
+    font-size: 1.4rem;
+    font-weight: 900;
+  }
+  .verification-timeline svg { color: var(--color-primary); }
+  .verification-timeline strong { align-self: end; }
+  .independence-note {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: .9rem;
+    padding: 1.1rem 1.25rem;
+    border: 1px solid rgba(var(--color-green-rgb), .25);
+    border-radius: 18px;
+    background: rgba(var(--color-green-rgb), .07);
+  }
+  .independence-note > svg { flex: 0 0 auto; color: var(--color-green-text); }
+  .independence-note div { display: grid; gap: .15rem; }
+  .independence-note span { color: var(--color-text-muted); }
+  .independence-note a { display: inline-flex; align-items: center; gap: .35rem; margin-top: .35rem; color: var(--color-primary); font-weight: 800; }
+
+  @media (min-width: 840px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(360px, .75fr); }
+    .articles-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .deadline-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (max-width: 839px) {
+    .articles-grid,
+    .deadline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .editorial-empty-state { grid-template-columns: 1fr; }
+    .editorial-empty-state .btn { width: max-content; }
+    .verification-layout { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) {
+    .home-hero { padding-top: 2.5rem; }
+    .hero-copy h1 { font-size: clamp(2.35rem, 12vw, 3.35rem); }
+    .hero-search { grid-template-columns: auto minmax(0, 1fr); }
+    .hero-search button { grid-column: 1 / -1; width: 100%; }
+    .hero-quick-links { display: grid; grid-template-columns: 1fr; }
+    .hero-quick-links a { justify-content: space-between; border-radius: 13px; }
+    .hero-metrics { grid-template-columns: 1fr; }
+    .hero-metrics div { justify-content: flex-start; }
+    .hero-metrics div + div { border-left: 0; border-top: 1px solid var(--color-border); }
+    .category-grid,
+    .articles-grid,
+    .deadline-grid { grid-template-columns: 1fr; }
+    .category-card { min-height: 0; padding: 1.1rem; }
+    .section-heading-row { align-items: flex-start; }
+    .section-heading-row > a { margin-bottom: var(--space-5); font-size: .86rem; }
+    .verification-timeline { grid-template-columns: 1fr; }
+    .verification-timeline li { min-height: 122px; }
+  }
 </style>
