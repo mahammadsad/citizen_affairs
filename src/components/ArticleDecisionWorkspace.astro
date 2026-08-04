@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import OfficialActionLink from './OfficialActionLink.astro';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
 import { dateLocale, type Locale, verificationLabels } from '../i18n';
 
@@ -52,6 +53,8 @@ const copy = {
     sources: 'Official sources',
     notice: 'Read official notice',
     apply: 'Open official application',
+    handoff: 'Check the official destination',
+    handoffBody: 'The destination domain, connection security and verification freshness are shown before you leave Citizen Affairs.',
     summary: 'At a glance',
     dates: 'Important dates',
     eligibility: 'Eligibility',
@@ -60,7 +63,7 @@ const copy = {
     benefit: 'Benefit or amount',
     amount: 'Amount or key figure',
     before: 'Before you act',
-    beforeBody: 'Confirm the latest deadline, eligibility and instructions on the official government page. Citizen Affairs explains the information but does not accept or process applications.'
+    beforeBody: 'Confirm the latest deadline, eligibility and instructions on the official government page. Citizen Affairs explains the information but does not accept or process applications. Never share an OTP with another person.'
   },
   bn: {
     eyebrow: 'সিদ্ধান্ত নেওয়ার কর্মক্ষেত্র',
@@ -72,6 +75,8 @@ const copy = {
     sources: 'অফিসিয়াল সূত্র',
     notice: 'অফিসিয়াল বিজ্ঞপ্তি পড়ুন',
     apply: 'অফিসিয়াল আবেদন খুলুন',
+    handoff: 'অফিসিয়াল গন্তব্য যাচাই করুন',
+    handoffBody: 'Citizen Affairs থেকে বের হওয়ার আগে গন্তব্য ডোমেইন, সংযোগের নিরাপত্তা ও যাচাইয়ের সতেজতা দেখানো হচ্ছে।',
     summary: 'এক নজরে',
     dates: 'গুরুত্বপূর্ণ তারিখ',
     eligibility: 'যোগ্যতা',
@@ -80,7 +85,7 @@ const copy = {
     benefit: 'সুবিধা বা অর্থের পরিমাণ',
     amount: 'পরিমাণ বা গুরুত্বপূর্ণ সংখ্যা',
     before: 'পদক্ষেপ নেওয়ার আগে',
-    beforeBody: 'সর্বশেষ শেষ তারিখ, যোগ্যতা ও নির্দেশনা অফিসিয়াল সরকারি পেজে আবার নিশ্চিত করুন। Citizen Affairs তথ্যটি সহজ করে, কিন্তু কোনো আবেদন গ্রহণ বা প্রক্রিয়া করে না।'
+    beforeBody: 'সর্বশেষ শেষ তারিখ, যোগ্যতা ও নির্দেশনা অফিসিয়াল সরকারি পেজে আবার নিশ্চিত করুন। Citizen Affairs তথ্যটি সহজ করে, কিন্তু কোনো আবেদন গ্রহণ বা প্রক্রিয়া করে না। অন্য কোনো ব্যক্তির সঙ্গে OTP শেয়ার করবেন না।'
   },
   hi: {
     eyebrow: 'निर्णय कार्यक्षेत्र',
@@ -92,6 +97,8 @@ const copy = {
     sources: 'आधिकारिक स्रोत',
     notice: 'आधिकारिक सूचना पढ़ें',
     apply: 'आधिकारिक आवेदन खोलें',
+    handoff: 'आधिकारिक गंतव्य जाँचें',
+    handoffBody: 'Citizen Affairs छोड़ने से पहले गंतव्य डोमेन, कनेक्शन सुरक्षा और सत्यापन की ताज़गी दिखाई जाती है।',
     summary: 'एक नज़र में',
     dates: 'महत्वपूर्ण तिथियाँ',
     eligibility: 'पात्रता',
@@ -100,7 +107,7 @@ const copy = {
     benefit: 'लाभ या राशि',
     amount: 'राशि या प्रमुख संख्या',
     before: 'कार्रवाई करने से पहले',
-    beforeBody: 'नवीनतम अंतिम तिथि, पात्रता और निर्देश आधिकारिक सरकारी पेज पर फिर से जाँचें। Citizen Affairs जानकारी समझाता है, लेकिन आवेदन स्वीकार या संसाधित नहीं करता।'
+    beforeBody: 'नवीनतम अंतिम तिथि, पात्रता और निर्देश आधिकारिक सरकारी पेज पर फिर से जाँचें। Citizen Affairs जानकारी समझाता है, लेकिन आवेदन स्वीकार या संसाधित नहीं करता। किसी अन्य व्यक्ति के साथ OTP साझा न करें।'
   }
 }[locale];
 
@@ -147,18 +154,34 @@ const hasFacts = Boolean(
   </dl>
 
   {(officialNoticeUrl || applicationUrl) && (
-    <div class="decision-actions" aria-label={copy.title}>
-      {applicationUrl && (
-        <a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">
-          {copy.apply}<Icon name="external" size={17} />
-        </a>
-      )}
-      {officialNoticeUrl && (
-        <a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">
-          {copy.notice}<Icon name="external" size={17} />
-        </a>
-      )}
-    </div>
+    <section class="decision-handoff" data-action-safety aria-labelledby="official-handoff-title">
+      <header>
+        <h3 id="official-handoff-title"><Icon name="external" size={18} />{copy.handoff}</h3>
+        <p>{copy.handoffBody}</p>
+      </header>
+      <div class="decision-actions" aria-label={copy.title}>
+        {applicationUrl && (
+          <OfficialActionLink
+            locale={locale}
+            url={applicationUrl}
+            label={copy.apply}
+            {lastVerified}
+            variant="primary"
+            actionType="application"
+          />
+        )}
+        {officialNoticeUrl && (
+          <OfficialActionLink
+            locale={locale}
+            url={officialNoticeUrl}
+            label={copy.notice}
+            {lastVerified}
+            variant="secondary"
+            actionType="notice"
+          />
+        )}
+      </div>
+    </section>
   )}
 
   {hasFacts && (
@@ -238,8 +261,13 @@ const hasFacts = Boolean(
   .decision-status div:last-child { border-right: 0; }
   .decision-status dt { color: var(--color-text-muted); font-size: .67rem; font-weight: 750; }
   .decision-status dd { margin-top: .2rem; font-size: .82rem; font-weight: 850; }
-  .decision-actions { display: flex; flex-wrap: wrap; gap: .65rem; padding: 1rem 1.25rem 0; }
-  .decision-actions a { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+  .decision-handoff { padding: 1rem 1.25rem 0; }
+  .decision-handoff > header { margin-bottom: .8rem; }
+  .decision-handoff h3 { display: flex; align-items: center; gap: .45rem; margin: 0; font-size: .98rem; }
+  .decision-handoff h3 svg { color: var(--color-primary); }
+  .decision-handoff header p { margin: .3rem 0 0; color: var(--color-text-muted); font-size: .78rem; }
+  .decision-actions { display: grid; gap: .85rem; }
+  .decision-actions :global(.official-action-wrap) { min-width: 0; }
   .decision-grid { display: grid; gap: .8rem; padding: 1.25rem; }
   .decision-grid section { min-width: 0; padding: 1rem; border: 1px solid var(--color-border); border-radius: 11px; background: var(--color-bg); }
   .decision-grid h3 { display: flex; align-items: center; gap: .45rem; margin: 0 0 .55rem; font-size: .95rem; }
@@ -252,12 +280,12 @@ const hasFacts = Boolean(
   .decision-warning strong { font-size: .83rem; }
   .decision-warning p { margin: .2rem 0 0; color: var(--color-text-muted); font-size: .78rem; line-height: 1.5; }
   @media (min-width: 720px) {
+    .decision-actions,
     .decision-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .decision-amount { grid-column: 1 / -1; }
   }
   @media (max-width: 520px) {
     .decision-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .decision-status div:nth-child(2n) { border-right: 0; }
-    .decision-actions a { width: 100%; }
   }
 </style>
