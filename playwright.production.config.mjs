@@ -4,14 +4,18 @@ export default defineConfig({
   testDir: './tests/production',
   timeout: 180_000,
   retries: 1,
-  reporter: [['line'], ['html', { outputFolder: 'production-smoke-report', open: 'never' }]],
+  reporter: [
+    ['line'],
+    ['html', { outputFolder: 'production-smoke-report', open: 'never' }],
+    ['json', { outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_NAME || 'production-results.json' }]
+  ],
   use: {
     baseURL: process.env.PRODUCTION_URL || 'https://citizenaffairs.in',
     trace: 'retain-on-failure',
-    screenshot: 'only-on-failure',
+    screenshot: 'only-on-failure'
   },
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['Pixel 5'] } },
-  ],
+    { name: 'mobile', use: { ...devices['Pixel 5'] } }
+  ]
 });
