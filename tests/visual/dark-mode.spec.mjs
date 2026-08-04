@@ -24,33 +24,47 @@ const contrast = (foreground, background) => {
 const seriousViolations = (results) =>
   results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact || ''));
 
-test('Bengali mobile dark mode keeps the homepage and drawer readable', async ({ page }, testInfo) => {
+test('Bengali mobile dark mode keeps the homepage, branding and drawer readable', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.home-hero')).toBeVisible();
+  await expect(page.locator('.header-brand-logo')).toHaveAttribute('src', /citizen-affairs-horizontal-dark\.svg$/);
+  await expect(page.locator('.footer-brand-logo')).toHaveAttribute('src', /citizen-affairs-full-dark\.svg$/);
+  await expect(page.locator('.prefooter')).toBeHidden();
 
   const colours = await page.evaluate(() => {
     const header = document.querySelector('.site-header');
+    const navbar = document.querySelector('.site-header .navbar');
+    const headerBrand = document.querySelector('.site-header .brand');
     const headerIcon = document.querySelector('#searchToggle');
     const search = document.querySelector('.hero-search');
     const input = document.querySelector('.hero-search input');
     const quickLink = document.querySelector('.hero-quick-links a');
-    if (!header || !headerIcon || !search || !input || !quickLink) throw new Error('Dark mode test selectors are missing');
+    const footerBrand = document.querySelector('.site-footer .footer-brand');
+    if (!header || !navbar || !headerBrand || !headerIcon || !search || !input || !quickLink || !footerBrand) {
+      throw new Error('Dark mode test selectors are missing');
+    }
 
     return {
       headerBackground: getComputedStyle(header).backgroundColor,
+      headerHeight: navbar.getBoundingClientRect().height,
+      headerBrandBackground: getComputedStyle(headerBrand).backgroundColor,
       headerIcon: getComputedStyle(headerIcon).color,
       searchBackground: getComputedStyle(search).backgroundColor,
       inputText: getComputedStyle(input).color,
       placeholder: getComputedStyle(input, '::placeholder').color,
       quickBackground: getComputedStyle(quickLink).backgroundColor,
       quickText: getComputedStyle(quickLink).color,
+      footerBrandBackground: getComputedStyle(footerBrand).backgroundColor,
     };
   });
 
+  expect(colours.headerHeight).toBeLessThanOrEqual(60);
+  expect(colours.headerBrandBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(colours.footerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(contrast(colours.headerIcon, colours.headerBackground)).toBeGreaterThanOrEqual(3);
   expect(contrast(colours.inputText, colours.searchBackground)).toBeGreaterThanOrEqual(4.5);
   expect(contrast(colours.placeholder, colours.searchBackground)).toBeGreaterThanOrEqual(4.5);
@@ -64,6 +78,7 @@ test('Bengali mobile dark mode keeps the homepage and drawer readable', async ({
   const drawer = page.locator('#mobileMenu');
   await expect(drawer).toBeVisible();
   await expect(drawer).toHaveAttribute('aria-hidden', 'false');
+  await expect(drawer.locator('.drawer-brand-logo')).toHaveAttribute('src', /citizen-affairs-horizontal-dark\.svg$/);
 
   const drawerColours = await page.evaluate(() => {
     const drawer = document.querySelector('#mobileMenu');
@@ -78,7 +93,7 @@ test('Bengali mobile dark mode keeps the homepage and drawer readable', async ({
   });
 
   expect(contrast(drawerColours.labelText, drawerColours.drawerBackground)).toBeGreaterThanOrEqual(4.5);
-  expect(luminance(rgb(drawerColours.brandBackground))).toBeGreaterThan(0.9);
+  expect(drawerColours.brandBackground).toBe('rgba(0, 0, 0, 0)');
 
   axe = await new AxeBuilder({ page }).include('#mobileMenu').analyze();
   expect(seriousViolations(axe)).toEqual([]);
