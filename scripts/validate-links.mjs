@@ -39,8 +39,12 @@ function decodePathname(pathname) {
 function targetFileFor(pathname, files) {
   const clean = decodePathname(pathname).replace(/^\/+/, '');
   if (!clean) return files.has('index.html') ? 'index.html' : undefined;
+  const withoutTrailingSlash = clean.replace(/\/+$/, '');
   const candidates = pathname.endsWith('/')
-    ? [`${clean.replace(/\/+$/, '')}/index.html`]
+    ? [
+        extname(withoutTrailingSlash) ? withoutTrailingSlash : '',
+        `${withoutTrailingSlash}/index.html`
+      ].filter(Boolean)
     : [clean, `${clean}/index.html`, extname(clean) ? '' : `${clean}.html`].filter(Boolean);
   return candidates.find((candidate) => files.has(candidate));
 }
@@ -51,19 +55,28 @@ function pageUrlFor(file) {
   return `${siteOrigin}/${file}`;
 }
 
+function attributeValues(source, names) {
+  const values = [];
+  const attributePattern = new RegExp(
+    `(?:^|\\s)(${names.join('|')})\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
+    'gi'
+  );
+  for (const tag of source.matchAll(/<[^>]+>/g)) {
+    for (const match of tag[0].matchAll(attributePattern)) {
+      values.push(match[2] ?? match[3] ?? match[4] ?? '');
+    }
+  }
+  return values;
+}
+
 function pageIds(source) {
-  const ids = new Set();
-  for (const match of source.matchAll(/\b(?:id|name)=["']([^"']+)["']/gi)) ids.add(match[1]);
-  return ids;
+  return new Set(attributeValues(source, ['id', 'name']));
 }
 
 function collectHtmlReferences(source) {
-  const values = [];
-  for (const match of source.matchAll(/\b(?:href|src|action|poster)=["']([^"']*)["']/gi)) {
-    values.push(match[1]);
-  }
-  for (const match of source.matchAll(/\bsrcset=["']([^"']+)["']/gi)) {
-    for (const candidate of match[1].split(',')) values.push(candidate.trim().split(/\s+/)[0]);
+  const values = attributeValues(source, ['href', 'src', 'action', 'poster']);
+  for (const srcset of attributeValues(source, ['srcset'])) {
+    for (const candidate of srcset.split(',')) values.push(candidate.trim().split(/\s+/)[0]);
   }
   return values;
 }
@@ -128,7 +141,9 @@ for (const path of cssFiles) {
   const file = toRelative(path);
   const source = readFileSync(path, 'utf8');
   const sourceUrl = `${siteOrigin}/${posix.join(dirname(file).replaceAll('\\', '/'), 'placeholder.css')}`;
-  for (const value of collectCssReferences(source)) validateReference(value, file, sourceUrl);
+  for (const value of collectCssReferences(source)) {
+    if (!value.startsWith('#')) validateReference(value, file, sourceUrl);
+  }
 }
 
 const report = {
