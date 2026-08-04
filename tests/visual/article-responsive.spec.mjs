@@ -17,10 +17,23 @@ for (const viewport of viewports) {
     await page.goto(articlePath, { waitUntil: 'networkidle' });
     const image = page.locator('.article-hero-image');
     await expect(image).toBeVisible();
-    await expect(page.locator('.brand img')).toHaveCount(1);
-    await expect(page.locator('#searchToggle')).toBeVisible();
-    await expect(page.locator('#languageTrigger')).toBeVisible();
-    if (viewport.width < 860) await expect(page.locator('#menuToggle')).toBeVisible();
+    await expect(page.locator('.portal-brand img')).toHaveCount(1);
+    await expect(page.locator('.portal-language > summary')).toBeVisible();
+
+    if (viewport.width <= 680) {
+      await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
+      await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeVisible();
+      await expect(page.locator('.portal-search-action')).toBeHidden();
+    } else {
+      await expect(page.locator('.portal-search-action')).toBeVisible();
+    }
+
+    if (viewport.width < 1100) {
+      await expect(page.locator('.portal-mobile-menu > summary')).toBeVisible();
+    } else {
+      await expect(page.locator('.portal-desktop-nav')).toBeVisible();
+      await expect(page.locator('.portal-mobile-menu')).toBeHidden();
+    }
 
     const measurements = await image.evaluate((element) => {
       const rect = element.getBoundingClientRect();
