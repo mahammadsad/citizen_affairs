@@ -3,6 +3,7 @@ import ArticleLayout from '@layouts/ArticleLayout.astro';
 import ArticleDecisionWorkspace from '@components/ArticleDecisionWorkspace.astro';
 import ArticleChangeHistory from '@components/ArticleChangeHistory.astro';
 import ArticleFreshnessNotice from '@components/ArticleFreshnessNotice.astro';
+import ArticleStructuredData from '@components/ArticleStructuredData.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
 import { canOfferApplicationAction } from '@lib/freshness';
@@ -124,6 +125,11 @@ const sourceCount = new Set(sourceLinks).size;
   faqs={article.data.faqs}
   {related}
 >
+  <ArticleStructuredData
+    {article}
+    {canonical}
+    applicationUrl={safeApplicationUrl}
+  />
   <ArticleFreshnessNotice
     locale={locale}
     contentType={article.data.contentType}
