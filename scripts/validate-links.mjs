@@ -75,9 +75,15 @@ function pageIds(source) {
   return ids;
 }
 
+function markupOnly(source) {
+  return source
+    .replace(/(<script\b[^>]*>)[\s\S]*?<\/script>/gi, '$1</script>')
+    .replace(/(<style\b[^>]*>)[\s\S]*?<\/style>/gi, '$1</style>');
+}
+
 function collectHtmlReferences(source) {
   const values = [];
-  for (const tagMatch of source.matchAll(/<[^>]+>/g)) {
+  for (const tagMatch of markupOnly(source).matchAll(/<[^>]+>/g)) {
     const tag = tagMatch[0];
     const name = tag.match(/^<\s*([a-z][\w:-]*)/i)?.[1]?.toLowerCase();
     if (!name || tag.startsWith('</') || tag.startsWith('<!')) continue;
@@ -123,7 +129,7 @@ const fileSet = new Set(paths.map(toRelative));
 const htmlFiles = paths.filter((path) => extname(path) === '.html');
 const cssFiles = paths.filter((path) => extname(path) === '.css');
 const htmlSources = new Map(htmlFiles.map((path) => [toRelative(path), readFileSync(path, 'utf8')]));
-const idsByFile = new Map([...htmlSources].map(([file, source]) => [file, pageIds(source)]));
+const idsByFile = new Map([...htmlSources].map(([file, source]) => [file, pageIds(markupOnly(source))]));
 
 function validateReference(value, sourceFile, sourceUrl) {
   if (shouldSkip(value)) return;
