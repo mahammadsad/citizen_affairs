@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const articleRoute = await readFile('src/pages/[lang]/articles/[slug].astro', 'utf8');
 const workspace = await readFile('src/components/ArticleDecisionWorkspace.astro', 'utf8');
+const action = await readFile('src/components/OfficialActionLink.astro', 'utf8');
 const changeHistory = await readFile('src/components/ArticleChangeHistory.astro', 'utf8');
 
 test('article routes use the decision workspace and transparent change history', () => {
@@ -31,7 +32,11 @@ test('decision workspace is localized, actionable and accessible', () => {
   assert.match(workspace, /अब क्या जाँचें और अगला कदम क्या हो/);
   assert.match(workspace, /id="action-checklist"/);
   assert.match(workspace, /aria-labelledby="decision-workspace-title"/);
-  assert.match(workspace, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(workspace, /OfficialActionLink/);
+  assert.match(workspace, /data-action-safety/);
+  assert.match(action, /target="_blank"/);
+  assert.match(action, /rel="noopener noreferrer external"/);
+  assert.match(action, /referrerpolicy="no-referrer"/);
   assert.match(workspace, /deadlineLabel\(deadlineStatus, locale\)/);
 });
 
