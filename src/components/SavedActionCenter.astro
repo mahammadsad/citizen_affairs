@@ -1,0 +1,378 @@
+---
+import type { Locale } from '../i18n';
+
+export interface Props {
+  locale: Locale;
+  indexUrl: string;
+}
+
+const { locale, indexUrl } = Astro.props;
+const copy = {
+  en: {
+    eyebrow: 'Private action list',
+    title: 'Saved information on this device',
+    description: 'Review opportunities and services you saved, check approaching deadlines and remove items you no longer need.',
+    privacyTitle: 'Stored only in this browser',
+    privacy: 'Citizen Affairs does not receive this list. Clearing browser storage or changing devices removes it.',
+    saved: 'Saved',
+    recent: 'Recently viewed',
+    deadlineItems: 'With deadlines',
+    tabSaved: 'Saved items',
+    tabRecent: 'Recently viewed',
+    status: 'Deadline status',
+    allStatuses: 'All statuses',
+    urgent: '3 days or less',
+    soon: 'Within 15 days',
+    later: 'More than 15 days',
+    closed: 'Closed',
+    noDeadline: 'No deadline',
+    sort: 'Sort by',
+    savedFirst: 'Recently saved/viewed',
+    nearest: 'Nearest deadline',
+    titleSort: 'Title A–Z',
+    count: '{count} item(s)',
+    remove: 'Remove',
+    clear: 'Clear this list',
+    open: 'Open details',
+    noSaved: 'Nothing has been saved on this device yet. Open an article and choose “Save for later”.',
+    noRecent: 'No recently viewed articles are available on this device.',
+    noMatch: 'No items match this deadline filter.',
+    indexError: 'Saved links are available, but current deadline details could not be loaded.',
+    deadline: 'Deadline',
+    section: 'Section',
+    verification: 'Verification',
+    goDeadlines: 'Browse deadlines'
+  },
+  bn: {
+    eyebrow: 'ব্যক্তিগত করণীয় তালিকা',
+    title: 'এই ডিভাইসে সেভ করা তথ্য',
+    description: 'সেভ করা সুযোগ ও পরিষেবা দেখুন, নিকটবর্তী ডেডলাইন যাচাই করুন এবং অপ্রয়োজনীয় তথ্য সরান।',
+    privacyTitle: 'শুধু এই ব্রাউজারে সংরক্ষিত',
+    privacy: 'সিটিজেন অ্যাফেয়ার্স এই তালিকা পায় না। ব্রাউজার স্টোরেজ মুছলে বা ডিভাইস বদলালে তালিকা মুছে যাবে।',
+    saved: 'সেভ করা',
+    recent: 'সাম্প্রতিক দেখা',
+    deadlineItems: 'ডেডলাইনসহ',
+    tabSaved: 'সেভ করা তথ্য',
+    tabRecent: 'সাম্প্রতিক দেখা',
+    status: 'ডেডলাইনের অবস্থা',
+    allStatuses: 'সব অবস্থা',
+    urgent: '৩ দিন বা কম',
+    soon: '১৫ দিনের মধ্যে',
+    later: '১৫ দিনের বেশি',
+    closed: 'বন্ধ',
+    noDeadline: 'ডেডলাইন নেই',
+    sort: 'সাজান',
+    savedFirst: 'সাম্প্রতিক সেভ/দেখা',
+    nearest: 'নিকটতম ডেডলাইন',
+    titleSort: 'শিরোনাম অনুযায়ী',
+    count: '{count}টি তথ্য',
+    remove: 'সরান',
+    clear: 'এই তালিকা মুছুন',
+    open: 'বিস্তারিত খুলুন',
+    noSaved: 'এই ডিভাইসে এখনো কিছু সেভ করা হয়নি। কোনো নিবন্ধ খুলে “পরে দেখার জন্য সেভ করুন” বেছে নিন।',
+    noRecent: 'এই ডিভাইসে সাম্প্রতিক দেখা কোনো নিবন্ধ নেই।',
+    noMatch: 'এই ডেডলাইন ফিল্টারে কোনো তথ্য নেই।',
+    indexError: 'সেভ করা লিংক আছে, কিন্তু বর্তমান ডেডলাইন তথ্য লোড করা যায়নি।',
+    deadline: 'ডেডলাইন',
+    section: 'বিভাগ',
+    verification: 'যাচাই',
+    goDeadlines: 'ডেডলাইন দেখুন'
+  },
+  hi: {
+    eyebrow: 'निजी कार्य-सूची',
+    title: 'इस उपकरण पर सहेजी गई जानकारी',
+    description: 'सहेजे गए अवसर और सेवाएँ देखें, नज़दीकी समय-सीमाएँ जाँचें और गैरज़रूरी आइटम हटाएँ।',
+    privacyTitle: 'केवल इस ब्राउज़र में संग्रहीत',
+    privacy: 'Citizen Affairs को यह सूची प्राप्त नहीं होती। ब्राउज़र स्टोरेज साफ़ करने या उपकरण बदलने पर सूची हट जाएगी।',
+    saved: 'सहेजे गए',
+    recent: 'हाल में देखे गए',
+    deadlineItems: 'समय-सीमा वाले',
+    tabSaved: 'सहेजे गए आइटम',
+    tabRecent: 'हाल में देखे गए',
+    status: 'समय-सीमा स्थिति',
+    allStatuses: 'सभी स्थितियाँ',
+    urgent: '3 दिन या कम',
+    soon: '15 दिनों के भीतर',
+    later: '15 दिनों से अधिक',
+    closed: 'बंद',
+    noDeadline: 'कोई समय-सीमा नहीं',
+    sort: 'क्रम',
+    savedFirst: 'हाल में सहेजे/देखे गए',
+    nearest: 'सबसे नज़दीकी समय-सीमा',
+    titleSort: 'शीर्षक A–Z',
+    count: '{count} आइटम',
+    remove: 'हटाएँ',
+    clear: 'यह सूची साफ़ करें',
+    open: 'विवरण खोलें',
+    noSaved: 'इस उपकरण पर अभी कुछ सहेजा नहीं गया है। कोई लेख खोलें और “बाद के लिए सहेजें” चुनें।',
+    noRecent: 'इस उपकरण पर हाल में देखा गया कोई लेख उपलब्ध नहीं है।',
+    noMatch: 'इस समय-सीमा फ़िल्टर से कोई आइटम नहीं मिला।',
+    indexError: 'सहेजे गए लिंक उपलब्ध हैं, लेकिन वर्तमान समय-सीमा विवरण लोड नहीं हो सके।',
+    deadline: 'समय-सीमा',
+    section: 'अनुभाग',
+    verification: 'सत्यापन',
+    goDeadlines: 'समय-सीमाएँ देखें'
+  }
+}[locale];
+const localePrefix = locale === 'en' ? '' : `/${locale}`;
+---
+
+<section class="saved-hero">
+  <div class="container saved-hero-grid">
+    <div>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h1>{copy.title}</h1>
+      <p>{copy.description}</p>
+    </div>
+    <aside>
+      <strong>{copy.privacyTitle}</strong>
+      <p>{copy.privacy}</p>
+      <a class="btn btn-secondary" href={`${localePrefix}/deadlines/`}>{copy.goDeadlines}</a>
+    </aside>
+  </div>
+</section>
+
+<main
+  class="section"
+  data-saved-center
+  data-index-url={indexUrl}
+  data-count-template={copy.count}
+  data-no-saved={copy.noSaved}
+  data-no-recent={copy.noRecent}
+  data-no-match={copy.noMatch}
+  data-index-error={copy.indexError}
+  data-remove={copy.remove}
+  data-open={copy.open}
+  data-deadline={copy.deadline}
+  data-section={copy.section}
+  data-verification={copy.verification}
+  data-urgent={copy.urgent}
+  data-soon={copy.soon}
+  data-later={copy.later}
+  data-closed={copy.closed}
+  data-no-deadline={copy.noDeadline}
+>
+  <div class="container saved-action-shell">
+    <div class="saved-summary" aria-label={copy.eyebrow}>
+      <div><strong id="savedTotal">0</strong><span>{copy.saved}</span></div>
+      <div><strong id="recentTotal">0</strong><span>{copy.recent}</span></div>
+      <div><strong id="deadlineTotal">0</strong><span>{copy.deadlineItems}</span></div>
+    </div>
+
+    <div class="saved-toolbar">
+      <div class="saved-tabs" role="tablist" aria-label={copy.eyebrow}>
+        <button id="savedTab" type="button" role="tab" aria-selected="true" aria-controls="actionList" data-list-key="saved-articles">{copy.tabSaved}</button>
+        <button id="recentTab" type="button" role="tab" aria-selected="false" aria-controls="actionList" data-list-key="recently-viewed">{copy.tabRecent}</button>
+      </div>
+      <label>
+        <span>{copy.status}</span>
+        <select id="savedStatus">
+          <option value="">{copy.allStatuses}</option>
+          <option value="urgent">{copy.urgent}</option>
+          <option value="soon">{copy.soon}</option>
+          <option value="later">{copy.later}</option>
+          <option value="closed">{copy.closed}</option>
+          <option value="none">{copy.noDeadline}</option>
+        </select>
+      </label>
+      <label>
+        <span>{copy.sort}</span>
+        <select id="savedSort">
+          <option value="stored">{copy.savedFirst}</option>
+          <option value="deadline">{copy.nearest}</option>
+          <option value="title">{copy.titleSort}</option>
+        </select>
+      </label>
+      <button class="btn btn-secondary" id="clearSavedList" type="button">{copy.clear}</button>
+    </div>
+
+    <p class="saved-count" id="savedResultCount" aria-live="polite"></p>
+    <p class="saved-index-warning" id="savedIndexWarning" role="status" hidden></p>
+    <div class="saved-action-list" id="actionList" role="tabpanel" aria-labelledby="savedTab" aria-live="polite" aria-busy="true"></div>
+    <p class="saved-empty" id="savedEmpty" hidden></p>
+  </div>
+</main>
+
+<script>
+  type StoredItem = { id?: string; url?: string; title?: string; description?: string; savedAt?: string; viewedAt?: string };
+  type IndexItem = {
+    href: string; label: string; sub?: string; category?: string; categoryId?: string; type?: string;
+    verification?: string; deadline?: string; updated?: string; region?: string; hasOfficialAction?: boolean;
+  };
+  type ActionItem = StoredItem & { index?: IndexItem; order: number };
+
+  const root = document.querySelector<HTMLElement>('[data-saved-center]');
+  const output = document.getElementById('actionList');
+  const empty = document.getElementById('savedEmpty');
+  const count = document.getElementById('savedResultCount');
+  const warning = document.getElementById('savedIndexWarning');
+  const status = document.getElementById('savedStatus') as HTMLSelectElement | null;
+  const sort = document.getElementById('savedSort') as HTMLSelectElement | null;
+  const clear = document.getElementById('clearSavedList') as HTMLButtonElement | null;
+  const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-list-key]')];
+  let activeKey = 'saved-articles';
+  let indexItems: IndexItem[] = [];
+  let indexLoaded = false;
+
+  const read = (key: string): StoredItem[] => {
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || '[]');
+      return Array.isArray(value) ? value.filter((item) => item && typeof item === 'object') : [];
+    } catch { return []; }
+  };
+  const write = (key: string, values: StoredItem[]) => {
+    try { localStorage.setItem(key, JSON.stringify(values)); } catch {}
+  };
+  const pathFor = (value = '') => {
+    try { return new URL(value, location.origin).pathname.replace(/\/+$/, '') || '/'; }
+    catch { return value.replace(/\/+$/, '') || '/'; }
+  };
+  const indexMap = () => new Map(indexItems.map((item) => [pathFor(item.href), item]));
+  const bucketFor = (iso = '') => {
+    if (!iso) return 'none';
+    const deadline = new Date(iso);
+    if (Number.isNaN(deadline.getTime())) return 'none';
+    const today = new Date(); today.setHours(0, 0, 0, 0); deadline.setHours(23, 59, 59, 999);
+    const days = Math.ceil((deadline.getTime() - today.getTime()) / 86_400_000);
+    if (days < 0) return 'closed';
+    if (days <= 3) return 'urgent';
+    if (days <= 15) return 'soon';
+    return 'later';
+  };
+  const bucketLabel = (bucket: string) => ({
+    urgent: root?.dataset.urgent,
+    soon: root?.dataset.soon,
+    later: root?.dataset.later,
+    closed: root?.dataset.closed,
+    none: root?.dataset.noDeadline
+  }[bucket] || '');
+  const formatDate = (iso = '') => {
+    const value = new Date(iso);
+    return Number.isNaN(value.getTime()) ? '' : new Intl.DateTimeFormat(document.documentElement.lang, { year: 'numeric', month: 'short', day: 'numeric' }).format(value);
+  };
+  const text = (tag: string, value = '', className = '') => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    element.textContent = value;
+    return element;
+  };
+
+  const syncSummary = () => {
+    const saved = read('saved-articles');
+    const recent = read('recently-viewed');
+    const map = indexMap();
+    const deadlines = saved.filter((item) => map.get(pathFor(item.url))?.deadline).length;
+    const formatter = new Intl.NumberFormat(document.documentElement.lang);
+    const targets = [
+      ['savedTotal', saved.length], ['recentTotal', recent.length], ['deadlineTotal', deadlines]
+    ] as const;
+    targets.forEach(([id, value]) => { const node = document.getElementById(id); if (node) node.textContent = formatter.format(value); });
+  };
+
+  const removeItem = (item: StoredItem) => {
+    const values = read(activeKey).filter((candidate) => {
+      if (item.id && candidate.id) return candidate.id !== item.id;
+      return pathFor(candidate.url) !== pathFor(item.url);
+    });
+    write(activeKey, values);
+    render();
+  };
+
+  const createCard = (item: ActionItem) => {
+    const info = item.index;
+    const url = item.url || info?.href || '#';
+    const title = item.title || info?.label || url;
+    const description = item.description || info?.sub || '';
+    const bucket = bucketFor(info?.deadline);
+    const article = document.createElement('article');
+    article.className = `saved-action-card deadline-${bucket}`;
+
+    const meta = document.createElement('div'); meta.className = 'saved-card-meta';
+    if (info?.category) meta.append(text('span', info.category));
+    if (info?.verification) meta.append(text('span', info.verification));
+    meta.append(text('span', bucketLabel(bucket), 'saved-deadline-state'));
+
+    const heading = document.createElement('h2');
+    const link = document.createElement('a'); link.href = url; link.textContent = title; heading.append(link);
+    article.append(meta, heading);
+    if (description) article.append(text('p', description, 'saved-description'));
+
+    const facts = document.createElement('dl'); facts.className = 'saved-facts';
+    if (info?.deadline) {
+      const group = document.createElement('div'); group.append(text('dt', root?.dataset.deadline || ''), text('dd', formatDate(info.deadline))); facts.append(group);
+    }
+    if (info?.category) {
+      const group = document.createElement('div'); group.append(text('dt', root?.dataset.section || ''), text('dd', info.category)); facts.append(group);
+    }
+    if (info?.verification) {
+      const group = document.createElement('div'); group.append(text('dt', root?.dataset.verification || ''), text('dd', info.verification)); facts.append(group);
+    }
+    if (facts.children.length) article.append(facts);
+
+    const actions = document.createElement('div'); actions.className = 'saved-card-actions';
+    const open = document.createElement('a'); open.className = 'btn btn-primary'; open.href = url; open.textContent = root?.dataset.open || 'Open';
+    const remove = document.createElement('button'); remove.className = 'btn btn-secondary'; remove.type = 'button'; remove.textContent = root?.dataset.remove || 'Remove'; remove.addEventListener('click', () => removeItem(item));
+    actions.append(open, remove); article.append(actions);
+    return article;
+  };
+
+  const render = () => {
+    if (!output || !root) return;
+    const map = indexMap();
+    let items: ActionItem[] = read(activeKey).map((item, order) => ({ ...item, order, index: map.get(pathFor(item.url)) }));
+    const selectedStatus = status?.value || '';
+    if (selectedStatus) items = items.filter((item) => bucketFor(item.index?.deadline) === selectedStatus);
+    const sortMode = sort?.value || 'stored';
+    items.sort((a, b) => {
+      if (sortMode === 'title') return (a.title || a.index?.label || '').localeCompare(b.title || b.index?.label || '', document.documentElement.lang);
+      if (sortMode === 'deadline') {
+        const aTime = a.index?.deadline ? new Date(a.index.deadline).getTime() : Number.POSITIVE_INFINITY;
+        const bTime = b.index?.deadline ? new Date(b.index.deadline).getTime() : Number.POSITIVE_INFINITY;
+        return aTime - bTime;
+      }
+      return a.order - b.order;
+    });
+
+    output.replaceChildren(...items.map(createCard));
+    output.setAttribute('aria-busy', 'false');
+    const totalStored = read(activeKey).length;
+    if (empty) {
+      empty.hidden = items.length > 0;
+      empty.textContent = totalStored === 0
+        ? (activeKey === 'saved-articles' ? root.dataset.noSaved || '' : root.dataset.noRecent || '')
+        : root.dataset.noMatch || '';
+    }
+    if (count) count.textContent = (root.dataset.countTemplate || '{count}').replace('{count}', new Intl.NumberFormat(document.documentElement.lang).format(items.length));
+    clear?.toggleAttribute('disabled', totalStored === 0);
+    syncSummary();
+  };
+
+  tabs.forEach((tab) => tab.addEventListener('click', () => {
+    activeKey = tab.dataset.listKey || 'saved-articles';
+    tabs.forEach((button) => {
+      const selected = button === tab;
+      button.setAttribute('aria-selected', String(selected));
+      button.tabIndex = selected ? 0 : -1;
+    });
+    if (output) output.setAttribute('aria-labelledby', tab.id);
+    render();
+  }));
+  status?.addEventListener('change', render);
+  sort?.addEventListener('change', render);
+  clear?.addEventListener('click', () => { write(activeKey, []); render(); });
+  addEventListener('storage', render);
+
+  fetch(root?.dataset.indexUrl || '', { cache: 'no-store' })
+    .then((response) => response.ok ? response.json() : Promise.reject(new Error('index unavailable')))
+    .then((data: IndexItem[]) => { indexItems = Array.isArray(data) ? data : []; indexLoaded = true; render(); })
+    .catch(() => {
+      indexItems = []; indexLoaded = false;
+      if (warning) { warning.hidden = false; warning.textContent = root?.dataset.indexError || ''; }
+      render();
+    });
+  if (!indexLoaded) render();
+</script>
+
+<style>
+  .saved-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.09),rgba(var(--color-green-rgb),.07))}.saved-hero-grid{display:grid;gap:1.5rem;align-items:end}.saved-hero h1{margin:.45rem 0;font-size:clamp(2rem,5vw,3.7rem)}.saved-hero p{max-width:65ch;color:var(--color-text-muted)}.saved-hero aside{padding:1rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.saved-hero aside p{margin:.35rem 0 .85rem;font-size:.84rem}.saved-action-shell{max-width:1050px}.saved-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}.saved-summary>div{display:grid;gap:.2rem;padding:1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface)}.saved-summary strong{font-size:1.6rem;color:var(--color-primary)}.saved-summary span{font-size:.75rem;font-weight:850;color:var(--color-text-muted)}.saved-toolbar{display:grid;grid-template-columns:1fr 190px 190px auto;gap:.75rem;align-items:end;padding:1rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.saved-tabs{display:flex;gap:.45rem}.saved-tabs button{min-height:44px;padding:.55rem .85rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-bg);color:var(--color-text);font:inherit;font-size:.8rem;font-weight:850}.saved-tabs button[aria-selected="true"]{border-color:var(--color-primary);background:rgba(var(--color-primary-rgb),.1);color:var(--color-primary)}.saved-toolbar label{display:grid;gap:.35rem}.saved-toolbar label>span{font-size:.72rem;font-weight:850;color:var(--color-text-muted)}.saved-toolbar select{min-height:44px;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);font:inherit}.saved-count{margin:1.25rem 0 .75rem;font-weight:850}.saved-index-warning{padding:.8rem 1rem;border-left:4px solid var(--color-orange);border-radius:8px;background:rgba(var(--color-orange-rgb),.09);color:var(--color-text-muted);font-size:.82rem}.saved-action-list{display:grid;gap:.85rem}.saved-empty{padding:2rem;text-align:center;border:1px dashed var(--color-border);border-radius:14px;color:var(--color-text-muted)}.saved-action-list :global(.saved-action-card){display:grid;gap:.7rem;padding:1rem 1.1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface)}.saved-action-list :global(.deadline-urgent),.saved-action-list :global(.deadline-soon){border-left:4px solid var(--color-orange)}.saved-action-list :global(.deadline-closed){opacity:.78}.saved-action-list :global(.saved-card-meta){display:flex;flex-wrap:wrap;gap:.4rem .75rem;font-size:.7rem;font-weight:850;color:var(--color-green-text)}.saved-action-list :global(.saved-deadline-state){color:var(--color-primary)}.saved-action-list :global(h2){margin:0;font-size:1.12rem}.saved-action-list :global(h2 a:hover){color:var(--color-primary)}.saved-action-list :global(.saved-description){margin:0;color:var(--color-text-muted);font-size:.86rem}.saved-action-list :global(.saved-facts){display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}.saved-action-list :global(.saved-facts div){padding:.55rem;border-radius:8px;background:var(--color-surface-alt)}.saved-action-list :global(dt){font-size:.65rem;font-weight:800;color:var(--color-text-muted)}.saved-action-list :global(dd){margin:0;font-size:.78rem;font-weight:800}.saved-action-list :global(.saved-card-actions){display:flex;flex-wrap:wrap;gap:.55rem;padding-top:.2rem}.saved-action-list :global(.saved-card-actions .btn){min-height:40px}@media(min-width:720px){.saved-hero-grid{grid-template-columns:1fr minmax(260px,360px)}.saved-action-list{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:860px){.saved-toolbar{grid-template-columns:1fr 1fr}.saved-tabs{grid-column:1/-1}.saved-toolbar>#clearSavedList{width:100%}}@media(max-width:560px){.saved-summary,.saved-toolbar{grid-template-columns:1fr}.saved-tabs{grid-column:auto;display:grid}.saved-action-list :global(.saved-facts){grid-template-columns:1fr}.saved-toolbar>#clearSavedList{width:100%}}
+</style>
