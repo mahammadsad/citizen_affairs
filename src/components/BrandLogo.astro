@@ -54,7 +54,7 @@ const darkSrc = resolveAssetPath(asset.dark);
   width={asset.width}
   height={asset.height}
   alt={alt}
-  class:list={['brand-logo-theme-aware', className]}
+  class={className}
   loading={loading}
   decoding="async"
   data-brand-logo
@@ -89,7 +89,7 @@ const darkSrc = resolveAssetPath(asset.dark);
 </script>
 
 <style is:global>
-  img.brand-logo-theme-aware {
+  img[data-brand-logo] {
     display: block;
     max-width: 100%;
     height: auto;
