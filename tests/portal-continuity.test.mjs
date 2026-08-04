@@ -44,7 +44,7 @@ test('navigation exposes saved and urgent deadline counts across layouts', () =>
 });
 
 test('urgent deadline count is derived from the static locale index', () => {
-  assert.match(runtime, /\/${locale}\/search-index\.json/);
+  assert.ok(runtime.includes("const indexPath = `/${locale}/search-index.json`;"));
   assert.match(runtime, /cache: 'no-store'/);
   assert.match(runtime, /days >= 0 && days <= 3/);
   assert.match(runtime, /loadUrgentDeadlineCount/);
