@@ -1,7 +1,30 @@
 <script is:inline>
   (() => {
+    const syncDisclosureSemantics = () => {
+      document
+        .querySelectorAll(
+          '.portal-language > summary, .portal-mobile-menu > summary, .portal-more > summary'
+        )
+        .forEach((summary) => {
+          const details = summary.parentElement;
+          if (!(details instanceof HTMLDetailsElement)) return;
+
+          const syncExpanded = () => {
+            summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+          };
+
+          summary.setAttribute('role', 'button');
+          syncExpanded();
+
+          if (summary.dataset.portalDisclosureReady === 'true') return;
+          summary.dataset.portalDisclosureReady = 'true';
+          details.addEventListener('toggle', syncExpanded);
+        });
+    };
+
     const syncPortalSelectors = () => {
       document.querySelector('.action-grid')?.classList.add('portal-action-grid');
+      syncDisclosureSemantics();
     };
 
     if (document.readyState === 'loading') {
