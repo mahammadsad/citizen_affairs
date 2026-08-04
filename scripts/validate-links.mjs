@@ -15,6 +15,7 @@ const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
 const siteOrigin = new URL(brand.domain).origin;
 const errors = [];
 const references = [];
+let interactiveControlsSkipped = 0;
 
 function walk(directory) {
   if (!existsSync(directory)) return [];
@@ -88,6 +89,10 @@ function collectHtmlReferences(source) {
     const name = tag.match(/^<\s*([a-z][\w:-]*)/i)?.[1]?.toLowerCase();
     if (!name || tag.startsWith('</') || tag.startsWith('<!')) continue;
 
+    if (name === 'a' && /\bdata-footer-language(?:\s|=|>)/i.test(tag)) {
+      interactiveControlsSkipped += 1;
+      continue;
+    }
     if (['a', 'area', 'base', 'link'].includes(name)) {
       values.push(...attributeValues(tag, ['href']));
     }
@@ -179,6 +184,7 @@ const report = {
   cssFiles: cssFiles.length,
   referencesChecked: references.length,
   uniqueTargets: new Set(references.map((reference) => reference.target)).size,
+  interactiveControlsSkipped,
   passed: errors.length === 0,
   errors
 };
@@ -193,5 +199,5 @@ if (errors.length) {
 
 const totalBytes = paths.reduce((sum, path) => sum + statSync(path).size, 0);
 console.log(
-  `Internal link validation passed for ${references.length} reference(s), ${report.uniqueTargets} target(s) and ${fileSet.size} generated file(s) (${totalBytes} bytes).`
+  `Internal link validation passed for ${references.length} reference(s), ${report.uniqueTargets} target(s), ${interactiveControlsSkipped} scripted control(s) and ${fileSet.size} generated file(s) (${totalBytes} bytes).`
 );
