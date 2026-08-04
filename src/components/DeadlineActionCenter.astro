@@ -1,0 +1,249 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import { categoryName, getCategoryData } from '@lib/content';
+import { deadlineState } from '@lib/deadline';
+import type { Locale } from '../i18n';
+
+export interface Props {
+  articles: CollectionEntry<'articles'>[];
+  locale: Locale;
+}
+
+const { articles, locale } = Astro.props;
+const copy = {
+  en: {
+    eyebrow: 'Deadline centre',
+    title: 'Plan before the last date',
+    description: 'See verified opportunities with deadlines, focus on the most urgent items and open the official source before acting.',
+    all: 'All deadlines',
+    urgent: '3 days or less',
+    soon: 'Within 15 days',
+    later: 'More than 15 days',
+    closed: 'Closed',
+    category: 'Section',
+    allCategories: 'All sections',
+    sort: 'Sort by',
+    nearest: 'Nearest deadline',
+    newest: 'Recently updated',
+    titleSort: 'Title A–Z',
+    results: '{count} deadline item(s)',
+    noMatch: 'No deadlines match these filters. Try another urgency or section.',
+    privacy: 'This page does not require an account. Open an item and save it on your device to build a private action list.',
+    viewSaved: 'Open saved items'
+  },
+  bn: {
+    eyebrow: 'ডেডলাইন সেন্টার',
+    title: 'শেষ তারিখের আগেই পরিকল্পনা করুন',
+    description: 'সময়সীমাযুক্ত যাচাইকৃত সুযোগ দেখুন, জরুরি বিষয় আগে নিন এবং পদক্ষেপের আগে অফিসিয়াল সূত্র খুলুন।',
+    all: 'সব ডেডলাইন',
+    urgent: '৩ দিন বা কম',
+    soon: '১৫ দিনের মধ্যে',
+    later: '১৫ দিনের বেশি',
+    closed: 'বন্ধ',
+    category: 'বিভাগ',
+    allCategories: 'সব বিভাগ',
+    sort: 'সাজান',
+    nearest: 'নিকটতম ডেডলাইন',
+    newest: 'সাম্প্রতিক আপডেট',
+    titleSort: 'শিরোনাম অনুযায়ী',
+    results: '{count}টি ডেডলাইন',
+    noMatch: 'এই ফিল্টারে কোনো ডেডলাইন নেই। অন্য সময়সীমা বা বিভাগ বেছে নিন।',
+    privacy: 'এই পাতার জন্য অ্যাকাউন্ট দরকার নেই। কোনো তথ্য খুলে ডিভাইসে সেভ করে ব্যক্তিগত করণীয় তালিকা তৈরি করুন।',
+    viewSaved: 'সেভ করা তথ্য খুলুন'
+  },
+  hi: {
+    eyebrow: 'समय-सीमा केंद्र',
+    title: 'अंतिम तारीख से पहले योजना बनाएँ',
+    description: 'समय-सीमा वाली सत्यापित जानकारी देखें, जरूरी विषय पहले चुनें और कार्रवाई से पहले आधिकारिक स्रोत खोलें।',
+    all: 'सभी समय-सीमाएँ',
+    urgent: '3 दिन या कम',
+    soon: '15 दिनों के भीतर',
+    later: '15 दिनों से अधिक',
+    closed: 'बंद',
+    category: 'अनुभाग',
+    allCategories: 'सभी अनुभाग',
+    sort: 'क्रम',
+    nearest: 'सबसे नज़दीकी समय-सीमा',
+    newest: 'हाल में अपडेट',
+    titleSort: 'शीर्षक A–Z',
+    results: '{count} समय-सीमा आइटम',
+    noMatch: 'इन फ़िल्टरों से कोई समय-सीमा नहीं मिली। दूसरी अवधि या अनुभाग चुनें।',
+    privacy: 'इस पृष्ठ के लिए खाता आवश्यक नहीं है। किसी जानकारी को खोलकर अपने उपकरण पर सहेजें और निजी कार्य-सूची बनाएँ।',
+    viewSaved: 'सहेजी गई जानकारी खोलें'
+  }
+}[locale];
+
+const entries = await Promise.all(
+  articles.map(async (article) => {
+    const category = await getCategoryData(article.data.category);
+    return {
+      article,
+      categoryLabel: category ? categoryName(category, locale) : article.data.category,
+      deadline: article.data.deadline!,
+      updated: article.data.updated || article.data.date,
+      state: deadlineState(article.data.deadline)
+    };
+  })
+);
+const categories = [...new Map(entries.map((entry) => [entry.article.data.category, entry.categoryLabel])).entries()]
+  .sort((a, b) => a[1].localeCompare(b[1]));
+const localePrefix = locale === 'en' ? '' : `/${locale}`;
+---
+
+<section class="deadline-hero">
+  <div class="container deadline-hero-grid">
+    <div>
+      <span class="eyebrow">{copy.eyebrow}</span>
+      <h1>{copy.title}</h1>
+      <p>{copy.description}</p>
+    </div>
+    <aside>
+      <p>{copy.privacy}</p>
+      <a class="btn btn-secondary" href={`${localePrefix}/saved/`}>{copy.viewSaved}</a>
+    </aside>
+  </div>
+</section>
+
+<main class="section" data-deadline-center data-count-template={copy.results}>
+  <div class="container deadline-shell">
+    <div class="deadline-summary" aria-label={copy.eyebrow}>
+      <button type="button" data-deadline-filter="urgent" aria-pressed="false">
+        <strong data-deadline-count="urgent">0</strong><span>{copy.urgent}</span>
+      </button>
+      <button type="button" data-deadline-filter="soon" aria-pressed="false">
+        <strong data-deadline-count="soon">0</strong><span>{copy.soon}</span>
+      </button>
+      <button type="button" data-deadline-filter="later" aria-pressed="false">
+        <strong data-deadline-count="later">0</strong><span>{copy.later}</span>
+      </button>
+      <button type="button" data-deadline-filter="closed" aria-pressed="false">
+        <strong data-deadline-count="closed">0</strong><span>{copy.closed}</span>
+      </button>
+    </div>
+
+    <form class="deadline-controls" id="deadlineControls">
+      <fieldset>
+        <legend class="sr-only">{copy.eyebrow}</legend>
+        <button class="filter-pill is-active" type="button" data-deadline-filter="all" aria-pressed="true">{copy.all}</button>
+        <button class="filter-pill" type="button" data-deadline-filter="urgent" aria-pressed="false">{copy.urgent}</button>
+        <button class="filter-pill" type="button" data-deadline-filter="soon" aria-pressed="false">{copy.soon}</button>
+        <button class="filter-pill" type="button" data-deadline-filter="later" aria-pressed="false">{copy.later}</button>
+        <button class="filter-pill" type="button" data-deadline-filter="closed" aria-pressed="false">{copy.closed}</button>
+      </fieldset>
+      <label>
+        <span>{copy.category}</span>
+        <select id="deadlineCategory">
+          <option value="">{copy.allCategories}</option>
+          {categories.map(([value, label]) => <option value={value}>{label}</option>)}
+        </select>
+      </label>
+      <label>
+        <span>{copy.sort}</span>
+        <select id="deadlineSort">
+          <option value="deadline">{copy.nearest}</option>
+          <option value="updated">{copy.newest}</option>
+          <option value="title">{copy.titleSort}</option>
+        </select>
+      </label>
+    </form>
+
+    <p class="deadline-result-count" id="deadlineResultCount" aria-live="polite"></p>
+    <div class="deadline-grid" id="deadlineGrid">
+      {entries.map(({ article, deadline, updated, state }) => (
+        <div
+          data-deadline-item
+          data-category={article.data.category}
+          data-deadline={deadline.toISOString()}
+          data-updated={updated.toISOString()}
+          data-title={article.data.title}
+          data-build-state={state}
+        >
+          <ArticleCard {article} {locale} />
+        </div>
+      ))}
+    </div>
+    <p class="deadline-empty" id="deadlineEmpty" hidden>{copy.noMatch}</p>
+  </div>
+</main>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-deadline-center]');
+  const grid = document.getElementById('deadlineGrid');
+  const count = document.getElementById('deadlineResultCount');
+  const empty = document.getElementById('deadlineEmpty');
+  const category = document.getElementById('deadlineCategory') as HTMLSelectElement | null;
+  const sort = document.getElementById('deadlineSort') as HTMLSelectElement | null;
+  const items = [...document.querySelectorAll<HTMLElement>('[data-deadline-item]')];
+  let active = 'all';
+
+  const bucketFor = (iso = '') => {
+    const deadline = new Date(iso);
+    if (Number.isNaN(deadline.getTime())) return 'later';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    deadline.setHours(23, 59, 59, 999);
+    const days = Math.ceil((deadline.getTime() - today.getTime()) / 86_400_000);
+    if (days < 0) return 'closed';
+    if (days <= 3) return 'urgent';
+    if (days <= 15) return 'soon';
+    return 'later';
+  };
+
+  const syncSummary = () => {
+    const totals = { urgent: 0, soon: 0, later: 0, closed: 0 };
+    items.forEach((item) => { totals[bucketFor(item.dataset.deadline) as keyof typeof totals] += 1; });
+    Object.entries(totals).forEach(([key, value]) => {
+      const target = document.querySelector(`[data-deadline-count="${key}"]`);
+      if (target) target.textContent = new Intl.NumberFormat(document.documentElement.lang).format(value);
+    });
+  };
+
+  const render = () => {
+    const selectedCategory = category?.value || '';
+    const visible = items.filter((item) => {
+      const matchesBucket = active === 'all' || bucketFor(item.dataset.deadline) === active;
+      const matchesCategory = !selectedCategory || item.dataset.category === selectedCategory;
+      item.hidden = !(matchesBucket && matchesCategory);
+      return !item.hidden;
+    });
+
+    const mode = sort?.value || 'deadline';
+    visible.sort((a, b) => {
+      if (mode === 'title') return (a.dataset.title || '').localeCompare(b.dataset.title || '', document.documentElement.lang);
+      const field = mode === 'updated' ? 'updated' : 'deadline';
+      const aTime = new Date(a.dataset[field] || '').getTime();
+      const bTime = new Date(b.dataset[field] || '').getTime();
+      return mode === 'updated' ? bTime - aTime : aTime - bTime;
+    });
+    visible.forEach((item) => grid?.append(item));
+
+    document.querySelectorAll<HTMLElement>('[data-deadline-filter]').forEach((button) => {
+      const selected = button.dataset.deadlineFilter === active;
+      button.classList.toggle('is-active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    if (empty) empty.hidden = visible.length > 0;
+    if (count && root) {
+      count.textContent = (root.dataset.countTemplate || '{count}').replace(
+        '{count}',
+        new Intl.NumberFormat(document.documentElement.lang).format(visible.length)
+      );
+    }
+  };
+
+  document.querySelectorAll<HTMLElement>('[data-deadline-filter]').forEach((button) => {
+    button.addEventListener('click', () => {
+      active = button.dataset.deadlineFilter || 'all';
+      render();
+    });
+  });
+  category?.addEventListener('change', render);
+  sort?.addEventListener('change', render);
+  syncSummary();
+  render();
+</script>
+
+<style>
+  .deadline-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.09),rgba(var(--color-orange-rgb),.08))}.deadline-hero-grid{display:grid;gap:1.5rem;align-items:end}.deadline-hero h1{margin:.45rem 0;font-size:clamp(2rem,5vw,3.7rem)}.deadline-hero p{max-width:65ch;color:var(--color-text-muted)}.deadline-hero aside{padding:1rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.deadline-hero aside p{margin-top:0;font-size:.86rem}.deadline-shell{max-width:1180px}.deadline-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}.deadline-summary button{display:grid;gap:.2rem;padding:1rem;text-align:left;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);color:var(--color-text)}.deadline-summary button:hover,.deadline-summary button:focus-visible,.deadline-summary button.is-active{border-color:var(--color-primary);box-shadow:var(--shadow-sm)}.deadline-summary strong{font-size:1.6rem;color:var(--color-primary)}.deadline-summary span{font-size:.75rem;font-weight:800;color:var(--color-text-muted)}.deadline-controls{display:grid;grid-template-columns:1fr 210px 210px;gap:.8rem;align-items:end;padding:1rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.deadline-controls fieldset{display:flex;flex-wrap:wrap;gap:.45rem;margin:0;padding:0;border:0}.deadline-controls label{display:grid;gap:.35rem}.deadline-controls label>span{font-size:.72rem;font-weight:850;color:var(--color-text-muted)}.deadline-controls select{min-height:44px;padding:.55rem .7rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);font:inherit}.filter-pill{min-height:40px;padding:.45rem .75rem;border:1px solid var(--color-border);border-radius:999px;background:var(--color-bg);color:var(--color-text);font:inherit;font-size:.78rem;font-weight:800}.filter-pill.is-active{border-color:var(--color-primary);background:rgba(var(--color-primary-rgb),.1);color:var(--color-primary)}.deadline-result-count{margin:1.25rem 0 .75rem;font-weight:850}.deadline-grid{display:grid;gap:1rem}.deadline-grid>[hidden]{display:none}.deadline-empty{padding:2rem;text-align:center;border:1px dashed var(--color-border);border-radius:14px;color:var(--color-text-muted)}@media(min-width:720px){.deadline-hero-grid{grid-template-columns:1fr minmax(260px,360px)}.deadline-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(min-width:1080px){.deadline-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:820px){.deadline-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.deadline-controls{grid-template-columns:1fr 1fr}.deadline-controls fieldset{grid-column:1/-1}}@media(max-width:520px){.deadline-summary,.deadline-controls{grid-template-columns:1fr}.deadline-controls fieldset{grid-column:auto}.deadline-summary button{grid-template-columns:auto 1fr;align-items:center}.deadline-summary strong{font-size:1.3rem}}
+</style>
