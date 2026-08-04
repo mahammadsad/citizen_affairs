@@ -71,6 +71,18 @@ jobs:
       - name: Editorial content validation
         run: npm run validate:content
 
+      - name: Editorial freshness audit
+        run: npm run audit:freshness
+
+      - name: Upload editorial freshness report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: editorial-freshness-${{ github.run_id }}
+          path: .artifacts/editorial-freshness-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Build
         run: npm run build
 
