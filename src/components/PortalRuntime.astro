@@ -1,5 +1,16 @@
 <script is:inline>
   (() => {
+    const badgeCopy = {
+      en: { saved: 'saved items', urgent: 'urgent deadlines' },
+      bn: { saved: 'সংরক্ষিত তথ্য', urgent: 'জরুরি শেষ তারিখ' },
+      hi: { saved: 'सहेजे गए आइटम', urgent: 'ज़रूरी समय-सीमाएँ' }
+    };
+
+    const locale = ['bn', 'hi'].includes(document.documentElement.lang)
+      ? document.documentElement.lang
+      : 'en';
+    const copy = badgeCopy[locale];
+
     const syncDisclosureSemantics = () => {
       document
         .querySelectorAll(
@@ -22,9 +33,75 @@
         });
     };
 
+    const readListCount = (key) => {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || '[]');
+        return Array.isArray(value) ? value.length : 0;
+      } catch (_) {
+        return 0;
+      }
+    };
+
+    const setBadge = (link, value, label, kind) => {
+      if (!(link instanceof HTMLAnchorElement)) return;
+      let badge = link.querySelector(`.portal-nav-count[data-kind="${kind}"]`);
+      if (value <= 0) {
+        badge?.remove();
+        link.removeAttribute(`data-${kind}-count`);
+        return;
+      }
+      if (!(badge instanceof HTMLElement)) {
+        badge = document.createElement('span');
+        badge.className = 'portal-nav-count';
+        badge.dataset.kind = kind;
+        link.append(badge);
+      }
+      badge.textContent = value > 99 ? '99+' : String(value);
+      badge.setAttribute('aria-label', `${value} ${label}`);
+      link.dataset[`${kind}Count`] = String(value);
+    };
+
+    const syncSavedBadges = () => {
+      const saved = readListCount('saved-articles');
+      document
+        .querySelectorAll('.portal-saved-action, .portal-mobile-bottom a[href*="/saved"]')
+        .forEach((link) => setBadge(link, saved, copy.saved, 'saved'));
+    };
+
+    const syncUrgentBadges = (urgent) => {
+      document
+        .querySelectorAll(
+          '.portal-desktop-nav a[href*="/deadlines"], .portal-mobile-panel a[href*="/deadlines"], .portal-mobile-bottom a[href*="/deadlines"]'
+        )
+        .forEach((link) => setBadge(link, urgent, copy.urgent, 'urgent'));
+    };
+
+    const loadUrgentDeadlineCount = async () => {
+      const indexPath = `/${locale}/search-index.json`;
+      try {
+        const response = await fetch(`${indexPath}?nav=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' }
+        });
+        if (!response.ok) return;
+        const items = await response.json();
+        if (!Array.isArray(items)) return;
+        const now = Date.now();
+        const urgent = items.filter((item) => {
+          if (!item || typeof item.deadline !== 'string') return false;
+          const time = Date.parse(item.deadline);
+          if (Number.isNaN(time)) return false;
+          const days = Math.ceil((time - now) / 86400000);
+          return days >= 0 && days <= 3;
+        }).length;
+        syncUrgentBadges(urgent);
+      } catch (_) {}
+    };
+
     const syncPortalSelectors = () => {
       document.querySelector('.action-grid')?.classList.add('portal-action-grid');
       syncDisclosureSemantics();
+      syncSavedBadges();
     };
 
     if (document.readyState === 'loading') {
@@ -33,13 +110,66 @@
       syncPortalSelectors();
     }
 
-    window.addEventListener('pageshow', syncPortalSelectors);
+    window.addEventListener('pageshow', () => {
+      syncPortalSelectors();
+      loadUrgentDeadlineCount();
+    });
+    window.addEventListener('storage', syncSavedBadges);
+    window.addEventListener('portal-storage-change', syncSavedBadges);
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (target.closest('#saveArticle, #clearSavedList, [data-remove-item]')) {
+        window.setTimeout(syncSavedBadges, 0);
+      }
+    });
+    loadUrgentDeadlineCount();
   })();
 </script>
 
 <style is:global>
   .portal-action-grid a {
     color: var(--color-text);
+  }
+
+  .portal-saved-action,
+  .portal-desktop-nav a[href*='/deadlines'],
+  .portal-mobile-panel a[href*='/deadlines'],
+  .portal-mobile-bottom a[href*='/deadlines'],
+  .portal-mobile-bottom a[href*='/saved'] {
+    position: relative;
+  }
+
+  .portal-nav-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border: 2px solid var(--color-surface);
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .portal-icon-action .portal-nav-count {
+    position: absolute;
+    top: 2px;
+    right: 1px;
+  }
+
+  .portal-mobile-bottom .portal-nav-count {
+    position: absolute;
+    top: 1px;
+    right: calc(50% - 21px);
+  }
+
+  .portal-nav-count[data-kind='urgent'] {
+    background: var(--color-orange);
+    color: #241200;
   }
 
   html[data-theme='dark'] .portal-search {
