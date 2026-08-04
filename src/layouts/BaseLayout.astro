@@ -4,7 +4,13 @@ import '../styles/components.css';
 import '../styles/worldclass.css';
 import '../styles/dark-mode.css';
 import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
-import { normalizeCanonicalUrl, toAbsoluteUrl } from '@lib/seo';
+import {
+  localizedFeedUrl,
+  normalizeCanonicalUrl,
+  SCHEMA_IDS,
+  schemaLanguage,
+  toAbsoluteUrl
+} from '@lib/seo';
 import { locales, type Locale, ui } from '../i18n';
 
 export interface Props {
@@ -33,12 +39,20 @@ const {
 
 const brandName = getBrandName(locale);
 const resolvedCanonical = normalizeCanonicalUrl(canonical, SITE.url);
-const resolvedAlternateUrls = Object.fromEntries(
+const suppliedAlternateUrls = Object.fromEntries(
   Object.entries(alternateUrls).map(([lang, url]) => [
     lang,
     url ? normalizeCanonicalUrl(url, SITE.url) : undefined
   ])
 ) as Partial<Record<Locale, string>>;
+const resolvedAlternateUrls = {
+  ...suppliedAlternateUrls,
+  [locale]: suppliedAlternateUrls[locale] || resolvedCanonical
+} as Partial<Record<Locale, string>>;
+const xDefaultUrl = resolvedAlternateUrls.en || resolvedCanonical;
+const alternateOgLocales = locales.filter(
+  (lang) => lang !== locale && Boolean(resolvedAlternateUrls[lang])
+);
 const resolvedTitle = title || brandName;
 const fullTitle = resolvedTitle === brandName ? resolvedTitle : `${resolvedTitle} | ${brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
@@ -48,18 +62,24 @@ const ogImageType = ogImage.toLowerCase().endsWith('.png')
     ? 'image/webp'
     : 'image/jpeg';
 const ogImageAlt = `${brandName} — ${getBrandTagline(locale)}`;
+const searchUrl = locale === 'en' ? `${SITE.url}/search/` : `${SITE.url}/${locale}/search/`;
 
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: brandName,
-  alternateName: BRAND.brandShortName,
+  '@id': SCHEMA_IDS.website,
+  name: getBrandName('en'),
+  alternateName: [BRAND.brandNameBn, BRAND.brandNameHi, BRAND.brandShortName],
   url: SITE.url,
-  description,
-  inLanguage: locales,
+  description: SITE.description,
+  inLanguage: locales.map(schemaLanguage),
+  publisher: { '@id': SCHEMA_IDS.organization },
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${SITE.url}/search/?q={search_term_string}`,
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${searchUrl}?q={search_term_string}`
+    },
     'query-input': 'required name=search_term_string'
   }
 };
@@ -67,12 +87,16 @@ const websiteSchema = {
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': SCHEMA_IDS.organization,
   name: getBrandName('en'),
   alternateName: [BRAND.brandNameBn, BRAND.brandNameHi],
   url: SITE.url,
-  logo: toAbsoluteUrl(SITE.logo, SITE.url),
+  logo: {
+    '@type': 'ImageObject',
+    url: toAbsoluteUrl(SITE.logo, SITE.url)
+  },
   email: BRAND.contactEmail,
-  description,
+  description: SITE.description,
   sameAs: [SOCIALS.telegram, SOCIALS.whatsapp],
   publishingPrinciples: `${SITE.url}/en/editorial-policy/`,
   ethicsPolicy: `${SITE.url}/en/editorial-policy/`,
@@ -81,6 +105,7 @@ const organizationSchema = {
 
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
+const ogLocaleFor = (lang: Locale) => lang === 'bn' ? 'bn_IN' : lang === 'hi' ? 'hi_IN' : 'en_IN';
 const publicSupabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseOrigin = (() => {
   if (!publicSupabaseUrl) return '';
@@ -117,9 +142,9 @@ const t = ui(locale);
     <meta name="x-build-commit" content={import.meta.env.PUBLIC_BUILD_COMMIT || 'local'} />
     <link rel="canonical" href={resolvedCanonical} />
     {locales.map((lang) => resolvedAlternateUrls[lang] && <link rel="alternate" hreflang={lang} href={resolvedAlternateUrls[lang]} />)}
-    <link rel="alternate" hreflang="x-default" href={resolvedAlternateUrls.en || resolvedCanonical} />
+    <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
     <link rel="manifest" href={`${SITE.basePath}site.webmanifest`} />
-    <link rel="alternate" type="application/rss+xml" title={`${brandName} RSS`} href={`${SITE.basePath}rss.xml`} />
+    <link rel="alternate" type="application/rss+xml" title={`${brandName} RSS`} href={localizedFeedUrl(locale)} />
     <link rel="icon" type="image/png" sizes="32x32" href={`${SITE.basePath}assets/favicon-32.png`} />
     <link rel="icon" type="image/png" sizes="192x192" href={`${SITE.basePath}assets/favicon-192.png`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${SITE.basePath}assets/favicon-180.png`} />
@@ -136,6 +161,7 @@ const t = ui(locale);
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:url" content={resolvedCanonical} />
     <meta property="og:locale" content={ogLocale} />
+    {alternateOgLocales.map((lang) => <meta property="og:locale:alternate" content={ogLocaleFor(lang)} />)}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
