@@ -1,0 +1,11 @@
+---
+import LanguageRedirect from '@components/LanguageRedirect.astro';
+import { ACTIVE_CATEGORY_IDS } from '@utils/constants';
+
+export function getStaticPaths() {
+  return ACTIVE_CATEGORY_IDS.map((category) => ({ params: { category } }));
+}
+
+const { category } = Astro.params;
+---
+<LanguageRedirect target={`/en/categories/${category}/`} title="Open this Citizen Affairs section" />
