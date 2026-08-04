@@ -21,3 +21,8 @@ test('desktop brand also receives a professional readable size', () => {
   assert.match(layout, /clamp\(158px, 18vw, 184px\)/);
   assert.match(layout, /max-height: 56px !important/);
 });
+
+test('the shared layout does not inject a pre-hero homepage panel', () => {
+  assert.doesNotMatch(layout, /isPortalHome|PortalContinuity|portal-continuity-wrap/);
+  assert.match(layout, /<main id="main-content">\s*<slot \/>/);
+});
