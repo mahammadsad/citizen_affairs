@@ -9,15 +9,26 @@ main .portal-deadline-list > a {
   color: var(--color-text);
 }
 
-/* Small text needs a stronger colour than the decorative primary teal. */
-main .portal-heading-row > a,
-main .portal-method li > span,
-main .portal-method aside a {
-  color: #075f5b;
+/* Small text needs a stronger colour than the decorative primary teal.
+   These selectors intentionally outrank component-scoped homepage rules. */
+html body main section.portal-sections .portal-heading-row > a,
+html body main section.portal-method li > span,
+html body main section.portal-method aside a {
+  color: #075f5b !important;
 }
 
-main .portal-discovery .portal-label {
-  color: #7ce4d7;
+html body main section.portal-discovery .portal-label {
+  color: #7ce4d7 !important;
+}
+
+html body main .portal-search > button[type="submit"] {
+  color: #ffffff !important;
+  background: #075f5b !important;
+}
+
+html body main .portal-search > button[type="submit"]:hover,
+html body main .portal-search > button[type="submit"]:focus-visible {
+  background: #064d4a !important;
 }
 
 :root[data-theme="dark"] body .portal-header {
@@ -77,7 +88,12 @@ main .portal-discovery .portal-label {
 :root[data-theme="dark"] body main .portal-heading-row > a,
 :root[data-theme="dark"] body main .portal-method li > span,
 :root[data-theme="dark"] body main .portal-method aside a {
-  color: #7ce4d7;
+  color: #7ce4d7 !important;
+}
+
+:root[data-theme="dark"] body main .portal-search > button[type="submit"] {
+  color: #ffffff !important;
+  background: #075f5b !important;
 }
 
 :root[data-theme="dark"] body .portal-mobile-panel,
