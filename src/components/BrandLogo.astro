@@ -10,25 +10,205 @@ interface Props {
   loading?: 'eager' | 'lazy';
 }
 
-const variants: Record<Variant, { src: string; width: number; height: number }> = {
-  full: { src: 'assets/brand/citizen-affairs-full.svg', width: 920, height: 260 },
-  horizontal: { src: 'assets/brand/citizen-affairs-horizontal.svg', width: 560, height: 132 },
-  monogram: { src: 'assets/brand/citizen-affairs-monogram.svg', width: 512, height: 512 },
-  circular: { src: 'assets/brand/citizen-affairs-circular.svg', width: 512, height: 512 }
+type LogoAsset = {
+  light: string;
+  dark: string;
+  width: number;
+  height: number;
+};
+
+const variants: Record<Variant, LogoAsset> = {
+  full: {
+    light: 'assets/brand/citizen-affairs-full.svg',
+    dark: 'assets/brand/citizen-affairs-full-dark.svg',
+    width: 920,
+    height: 260
+  },
+  horizontal: {
+    light: 'assets/brand/citizen-affairs-horizontal.svg',
+    dark: 'assets/brand/citizen-affairs-horizontal-dark.svg',
+    width: 560,
+    height: 132
+  },
+  monogram: {
+    light: 'assets/brand/citizen-affairs-monogram.svg',
+    dark: 'assets/brand/citizen-affairs-monogram.svg',
+    width: 512,
+    height: 512
+  },
+  circular: {
+    light: 'assets/brand/citizen-affairs-circular.svg',
+    dark: 'assets/brand/citizen-affairs-circular.svg',
+    width: 512,
+    height: 512
+  }
 };
 
 const { variant = 'horizontal', alt = 'Citizen Affairs', class: className, loading = 'eager' } = Astro.props;
 const asset = variants[variant];
+const lightSrc = resolveAssetPath(asset.light);
+const darkSrc = resolveAssetPath(asset.dark);
 ---
 <img
-  src={resolveAssetPath(asset.src)}
+  src={lightSrc}
   width={asset.width}
   height={asset.height}
   alt={alt}
   class={className}
   loading={loading}
   decoding="async"
+  data-brand-logo
+  data-logo-variant={variant}
+  data-light-src={lightSrc}
+  data-dark-src={darkSrc}
 />
-<style>
-  img { display: block; max-width: 100%; height: auto; object-fit: contain; }
+
+<script>
+  const syncBrandLogos = () => {
+    const darkTheme = document.documentElement.dataset.theme === 'dark';
+
+    document.querySelectorAll('[data-brand-logo]').forEach((element) => {
+      if (!(element instanceof HTMLImageElement)) return;
+
+      const useReverseLogo = darkTheme || Boolean(element.closest('.site-footer'));
+      const nextSource = useReverseLogo ? element.dataset.darkSrc : element.dataset.lightSrc;
+      if (nextSource && element.getAttribute('src') !== nextSource) element.setAttribute('src', nextSource);
+    });
+  };
+
+  syncBrandLogos();
+
+  if (document.documentElement.dataset.brandLogoObserver !== 'ready') {
+    document.documentElement.dataset.brandLogoObserver = 'ready';
+    new MutationObserver(syncBrandLogos).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+    window.addEventListener('pageshow', syncBrandLogos);
+  }
+</script>
+
+<style is:global>
+  img[data-brand-logo] {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .site-header .navbar {
+    height: 64px !important;
+  }
+
+  .site-header .brand {
+    flex-basis: 150px !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .site-header .header-brand-logo {
+    width: 148px !important;
+    max-height: 40px !important;
+  }
+
+  .site-header :is(.icon-btn, .language-trigger, .menu-toggle) {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  html[data-theme='dark'] .site-header .brand,
+  html[data-theme='dark'] .mobile-drawer .drawer-brand {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .mobile-drawer .drawer-brand {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  .mobile-drawer .drawer-brand-logo {
+    width: 150px !important;
+    max-height: 40px !important;
+  }
+
+  .prefooter {
+    transform: translateY(1.25rem) !important;
+    padding: 1rem 1.2rem !important;
+    border-radius: 18px !important;
+    box-shadow: 0 16px 38px rgba(11, 29, 58, .18) !important;
+  }
+
+  .site-footer .footer-brand {
+    width: min(100%, 225px) !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .site-footer .footer-brand-logo {
+    width: 100% !important;
+    max-height: 64px !important;
+  }
+
+  .site-footer .footer-intro > p {
+    margin-top: .85rem !important;
+  }
+
+  @media (max-width: 620px) {
+    .site-header .navbar {
+      height: 60px !important;
+      padding-inline: .9rem !important;
+    }
+
+    .site-header .brand {
+      flex-basis: 158px !important;
+    }
+
+    .site-header .header-brand-logo {
+      width: 156px !important;
+      max-height: 37px !important;
+    }
+
+    .site-header .nav-actions {
+      gap: 0 !important;
+    }
+
+    .mobile-drawer .drawer-head {
+      min-height: 64px !important;
+    }
+
+    .mobile-drawer .drawer-brand-logo {
+      width: 156px !important;
+      max-height: 38px !important;
+    }
+
+    .prefooter,
+    .site-footer .footer-brand {
+      display: none !important;
+    }
+
+    .site-footer {
+      padding-top: 2.4rem !important;
+    }
+
+    .site-footer .footer-main {
+      gap: 1.1rem !important;
+    }
+
+    .site-footer .footer-intro > p {
+      margin: 0 !important;
+    }
+  }
 </style>
