@@ -1,0 +1,458 @@
+---
+import { getCollection } from 'astro:content';
+import { ACTIVE_CATEGORY_IDS, getBrandName } from '@utils/constants';
+import { categoryName } from '@lib/content';
+import BrandLogo from './BrandLogo.astro';
+import Icon from './Icon.astro';
+import LatestTicker from './LatestTicker.astro';
+import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  alternateUrls?: Partial<Record<Locale, string>>;
+}
+
+const { locale, alternateUrls = {} } = Astro.props;
+const t = ui(locale);
+const brandName = getBrandName(locale);
+const pathname = Astro.url.pathname;
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
+const languageUrls = Object.fromEntries(
+  locales.map((lang) => {
+    const fallback = localizedPath(lang);
+    return [lang, alternateUrls[lang] || (lang === 'en' ? fallback.replace('/en/', '/') : fallback)];
+  })
+) as Record<Locale, string>;
+const categories = (await getCollection('categories'))
+  .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
+  .sort((a, b) => ACTIVE_CATEGORY_IDS.indexOf(a.id) - ACTIVE_CATEGORY_IDS.indexOf(b.id));
+const currentDate = new Intl.DateTimeFormat(localeMeta[locale].intl, {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric'
+}).format(new Date());
+
+const copy = {
+  en: {
+    independent: 'Independent citizen-information service',
+    notGovernment: 'Not a government website',
+    jobs: 'Jobs',
+    education: 'Education',
+    schemes: 'Schemes',
+    citizenServices: 'Citizen Services',
+    deadlines: 'Deadlines',
+    guides: 'Guides',
+    more: 'More',
+    admissions: 'Admissions, Exams & Results',
+    alerts: 'Citizen Alerts',
+    allUpdates: 'All Updates',
+    saved: 'Saved',
+    sections: 'Sections',
+    officialPolicy: 'Verification policy'
+  },
+  bn: {
+    independent: 'স্বাধীন নাগরিক তথ্য পরিষেবা',
+    notGovernment: 'সরকারি ওয়েবসাইট নয়',
+    jobs: 'চাকরি',
+    education: 'শিক্ষা',
+    schemes: 'প্রকল্প',
+    citizenServices: 'নাগরিক পরিষেবা',
+    deadlines: 'সময়সীমা',
+    guides: 'গাইড',
+    more: 'আরও',
+    admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
+    alerts: 'নাগরিক সতর্কতা',
+    allUpdates: 'সব আপডেট',
+    saved: 'সংরক্ষিত',
+    sections: 'বিভাগ',
+    officialPolicy: 'যাচাই নীতি'
+  },
+  hi: {
+    independent: 'स्वतंत्र नागरिक सूचना सेवा',
+    notGovernment: 'सरकारी वेबसाइट नहीं',
+    jobs: 'नौकरियाँ',
+    education: 'शिक्षा',
+    schemes: 'योजनाएँ',
+    citizenServices: 'नागरिक सेवाएँ',
+    deadlines: 'समय-सीमाएँ',
+    guides: 'मार्गदर्शिकाएँ',
+    more: 'अधिक',
+    admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
+    alerts: 'नागरिक अलर्ट',
+    allUpdates: 'सभी अपडेट',
+    saved: 'सहेजे गए',
+    sections: 'अनुभाग',
+    officialPolicy: 'सत्यापन नीति'
+  }
+}[locale];
+
+const primaryLinks = [
+  { label: copy.jobs, href: route('categories/jobs'), match: '/categories/jobs' },
+  { label: copy.education, href: route('categories/materials'), match: '/categories/materials' },
+  { label: copy.schemes, href: route('categories/projects'), match: '/categories/projects' },
+  { label: copy.citizenServices, href: route('categories/affairs'), match: '/categories/affairs' },
+  { label: copy.deadlines, href: route('deadlines'), match: '/deadlines' },
+  { label: copy.guides, href: route('categories/guides'), match: '/categories/guides' }
+];
+
+const moreLinks = [
+  { label: copy.admissions, href: route('categories/exams'), icon: 'exams' },
+  { label: copy.alerts, href: route('categories/notices'), icon: 'notices' },
+  { label: copy.allUpdates, href: route('articles'), icon: 'updates' },
+  { label: copy.officialPolicy, href: route('editorial-policy'), icon: 'check' }
+];
+
+const mobileCategories = categories.map((category) => ({
+  label: categoryName(category, locale),
+  href: route(`categories/${category.id}`),
+  icon:
+    category.id === 'jobs'
+      ? 'briefcase'
+      : category.id === 'projects'
+        ? 'schemes'
+        : category.id === 'exams'
+          ? 'exams'
+          : category.id === 'materials'
+            ? 'education'
+            : category.id === 'affairs'
+              ? 'services'
+              : category.id === 'notices'
+                ? 'notices'
+                : 'book'
+}));
+---
+
+<header class="portal-header">
+  <div class="portal-utility">
+    <div class="container">
+      <span><Icon name="check" size={15} />{copy.independent}</span>
+      <span>{currentDate}</span>
+      <a href={route('disclaimer')}>{copy.notGovernment}</a>
+    </div>
+  </div>
+
+  <div class="portal-navbar">
+    <div class="container portal-navbar-inner">
+      <a class="portal-brand" href={route()} aria-label={`${brandName} — ${t.home}`}>
+        <BrandLogo variant="horizontal" alt={`${brandName} ${t.logo}`} class="portal-brand-logo" />
+      </a>
+
+      <nav class="portal-desktop-nav" aria-label={t.primaryNav}>
+        <a href={route()} aria-current={pathname === route() ? 'page' : undefined}>{t.home}</a>
+        {primaryLinks.map((item) => (
+          <a href={item.href} aria-current={pathname.includes(item.match) ? 'page' : undefined}>{item.label}</a>
+        ))}
+        <details class="portal-more">
+          <summary>{copy.more}<span aria-hidden="true">⌄</span></summary>
+          <div>
+            {moreLinks.map((item) => (
+              <a href={item.href}><Icon name={item.icon} size={18} />{item.label}</a>
+            ))}
+          </div>
+        </details>
+      </nav>
+
+      <div class="portal-header-actions">
+        <a class="portal-icon-action portal-search-action" href={route('search')} aria-label={t.search}>
+          <Icon name="search" />
+        </a>
+        <a class="portal-icon-action portal-saved-action" href={route('saved')} aria-label={copy.saved}>
+          <Icon name="bookmark" />
+        </a>
+        <details class="portal-language">
+          <summary aria-label={`${t.language}: ${localeMeta[locale].nativeName}`}>
+            <Icon name="globe" size={19} /><span>{localeMeta[locale].code}</span>
+          </summary>
+          <div>
+            {locales.map((lang) => (
+              <a
+                href={languageUrls[lang]}
+                lang={lang}
+                hreflang={lang}
+                aria-current={lang === locale ? 'true' : undefined}
+              >
+                <span>{lang === locale ? '✓' : ''}</span>{localeMeta[lang].nativeName}
+              </a>
+            ))}
+          </div>
+        </details>
+        <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme}>
+          <Icon name="theme" />
+        </button>
+        <details class="portal-mobile-menu">
+          <summary aria-label={t.menu}><Icon name="menu" /></summary>
+          <div class="portal-mobile-panel">
+            <div class="portal-mobile-head">
+              <strong>{copy.sections}</strong>
+              <span>{copy.notGovernment}</span>
+            </div>
+            <nav aria-label={t.mobileNav}>
+              {mobileCategories.map((item) => (
+                <a href={item.href}><Icon name={item.icon} size={20} /><span>{item.label}</span><Icon name="arrow" size={17} /></a>
+              ))}
+              <a href={route('deadlines')}><Icon name="clock" size={20} /><span>{copy.deadlines}</span><Icon name="arrow" size={17} /></a>
+              <a href={route('articles')}><Icon name="updates" size={20} /><span>{copy.allUpdates}</span><Icon name="arrow" size={17} /></a>
+            </nav>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <LatestTicker {locale} />
+</header>
+
+<nav class="portal-mobile-bottom" aria-label={t.mobileNav}>
+  <a href={route()} aria-current={pathname === route() ? 'page' : undefined}><Icon name="home" size={20} /><span>{t.home}</span></a>
+  <a href={route('search')}><Icon name="search" size={20} /><span>{t.search}</span></a>
+  <a href={route('deadlines')} aria-current={pathname.includes('/deadlines') ? 'page' : undefined}><Icon name="clock" size={20} /><span>{copy.deadlines}</span></a>
+  <a href={route('saved')} aria-current={pathname.includes('/saved') ? 'page' : undefined}><Icon name="bookmark" size={20} /><span>{copy.saved}</span></a>
+  <a href={route('categories')} aria-current={pathname.includes('/categories') ? 'page' : undefined}><Icon name="categories" size={20} /><span>{copy.sections}</span></a>
+</nav>
+
+<script>
+  const themeButton = document.querySelector<HTMLButtonElement>('.portal-theme-toggle');
+  themeButton?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (_) {}
+  });
+
+  document.querySelectorAll<HTMLDetailsElement>('.portal-header details').forEach((details) => {
+    details.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => details.removeAttribute('open')));
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element;
+    document.querySelectorAll<HTMLDetailsElement>('.portal-header details[open]').forEach((details) => {
+      if (!details.contains(target)) details.removeAttribute('open');
+    });
+  });
+</script>
+
+<style>
+  .portal-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(255, 255, 255, .96);
+    backdrop-filter: blur(14px);
+  }
+  [data-theme="dark"] .portal-header { background: rgba(8, 19, 33, .96); }
+  .portal-utility {
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-navy);
+    color: rgba(255, 255, 255, .84);
+    font-size: .68rem;
+    font-weight: 700;
+  }
+  .portal-utility .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    min-height: 30px;
+  }
+  .portal-utility span:first-child {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+  }
+  .portal-utility span:first-child svg { color: #7ce4d7; }
+  .portal-utility a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+  .portal-navbar { background: var(--color-surface); }
+  .portal-navbar-inner {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-height: 68px;
+  }
+  .portal-brand {
+    flex: 0 1 160px;
+    min-width: 106px;
+    overflow: hidden;
+  }
+  :global(.portal-brand-logo) {
+    display: block;
+    width: 158px;
+    max-width: 100%;
+    max-height: 50px;
+    object-fit: contain;
+  }
+  .portal-desktop-nav {
+    display: none;
+    align-items: center;
+    gap: clamp(.65rem, 1.4vw, 1.15rem);
+    margin-left: auto;
+  }
+  .portal-desktop-nav > a,
+  .portal-more > summary {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text);
+    font-size: .79rem;
+    font-weight: 780;
+    white-space: nowrap;
+  }
+  .portal-desktop-nav > a:hover,
+  .portal-desktop-nav > a[aria-current="page"] {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .portal-more,
+  .portal-language,
+  .portal-mobile-menu { position: relative; }
+  .portal-more summary,
+  .portal-language summary,
+  .portal-mobile-menu summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .portal-more summary::-webkit-details-marker,
+  .portal-language summary::-webkit-details-marker,
+  .portal-mobile-menu summary::-webkit-details-marker { display: none; }
+  .portal-more summary { gap: .25rem; }
+  .portal-more > div,
+  .portal-language > div {
+    position: absolute;
+    right: 0;
+    top: calc(100% + .45rem);
+    min-width: 220px;
+    padding: .45rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+  }
+  .portal-more > div a,
+  .portal-language > div a {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    min-height: 42px;
+    padding: .55rem .65rem;
+    border-radius: 7px;
+    font-size: .8rem;
+    font-weight: 750;
+  }
+  .portal-more > div a:hover,
+  .portal-language > div a:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+  .portal-header-actions {
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+    margin-left: auto;
+  }
+  .portal-icon-action,
+  .portal-language > summary,
+  .portal-mobile-menu > summary {
+    display: grid;
+    place-items: center;
+    min-width: 42px;
+    min-height: 42px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: var(--color-text);
+  }
+  .portal-icon-action:hover,
+  .portal-language > summary:hover,
+  .portal-mobile-menu > summary:hover { background: var(--color-surface-alt); }
+  .portal-language > summary {
+    grid-template-columns: auto auto;
+    gap: .25rem;
+    border-color: var(--color-border);
+    padding-inline: .5rem;
+    font-size: .72rem;
+    font-weight: 850;
+  }
+  .portal-language > div { min-width: 170px; }
+  .portal-language > div a { display: grid; grid-template-columns: 18px 1fr; }
+  .portal-mobile-menu > summary { display: grid; }
+  .portal-mobile-panel {
+    position: fixed;
+    top: 99px;
+    right: .75rem;
+    width: min(360px, calc(100vw - 1.5rem));
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+  }
+  .portal-mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .85rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .portal-mobile-head span { color: var(--color-text-muted); font-size: .68rem; }
+  .portal-mobile-panel nav { padding: .45rem; }
+  .portal-mobile-panel nav a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .6rem;
+    min-height: 46px;
+    padding: .65rem;
+    border-radius: 8px;
+    font-size: .83rem;
+    font-weight: 750;
+  }
+  .portal-mobile-panel nav a:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+  .portal-mobile-bottom { display: none; }
+
+  @media (min-width: 1100px) {
+    .portal-desktop-nav { display: flex; }
+    .portal-mobile-menu { display: none; }
+    .portal-header-actions { margin-left: 0; }
+  }
+  @media (max-width: 1099px) {
+    .portal-saved-action { display: none; }
+  }
+  @media (max-width: 680px) {
+    .portal-utility .container { justify-content: center; }
+    .portal-utility span:nth-child(2),
+    .portal-utility a { display: none; }
+    .portal-navbar-inner { min-height: 62px; }
+    .portal-brand { flex-basis: 118px; }
+    :global(.portal-brand-logo) { width: 118px; max-height: 44px; }
+    .portal-search-action { display: none; }
+    .portal-mobile-panel { top: 92px; }
+    .portal-mobile-bottom {
+      position: fixed;
+      inset: auto 0 0;
+      z-index: 110;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      min-height: 60px;
+      padding-bottom: env(safe-area-inset-bottom);
+      border-top: 1px solid var(--color-border);
+      background: rgba(255, 255, 255, .97);
+      backdrop-filter: blur(14px);
+    }
+    [data-theme="dark"] .portal-mobile-bottom { background: rgba(8, 19, 33, .97); }
+    .portal-mobile-bottom a {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: .15rem;
+      min-width: 0;
+      color: var(--color-text-muted);
+      font-size: .61rem;
+      font-weight: 750;
+    }
+    .portal-mobile-bottom a[aria-current="page"] { color: var(--color-primary); }
+    :global(body) { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+  }
+</style>
