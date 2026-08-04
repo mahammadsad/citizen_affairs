@@ -97,11 +97,11 @@ if (!existsSync(workerPath)) {
   if (fileSize(workerPath) > budgets.serviceWorker) errors.push('Service worker exceeds the 20 KiB budget');
   for (const contract of [
     "request.mode === 'navigate'",
-    "request.destination",
-    "CACHE_PREFIX",
-    "deployment\\.json",
-    "search-index\\.json",
-    "(?:admin|staff|api)"
+    'request.destination',
+    'CACHE_PREFIX',
+    'deployment\\.json',
+    'search-index\\.json',
+    '(?:admin|staff|api)'
   ]) {
     if (!worker.includes(contract)) errors.push(`Service worker is missing safety contract: ${contract}`);
   }
@@ -112,8 +112,14 @@ if (!existsSync(workerPath)) {
 for (const path of htmlFiles) {
   const file = relative(dist, path).replaceAll('\\', '/');
   const html = readFileSync(path, 'utf8');
-  for (const match of html.matchAll(/<(?:script|link)\b[^>]+(?:src|href)=["'](https?:\/\/[^"']+)/gi)) {
-    errors.push(`${file} loads a third-party script or stylesheet: ${match[1]}`);
+  for (const match of html.matchAll(/<script\b[^>]+src=["'](https?:\/\/[^"']+)/gi)) {
+    errors.push(`${file} loads a third-party script: ${match[1]}`);
+  }
+  for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
+    const tag = match[0];
+    if (!/\brel=["']stylesheet["']/i.test(tag)) continue;
+    const href = tag.match(/\bhref=["'](https?:\/\/[^"']+)/i)?.[1];
+    if (href) errors.push(`${file} loads a third-party stylesheet: ${href}`);
   }
   if (html.includes('article-hero-image')) {
     const hero = html.match(/<img\b[^>]*class=["'][^"']*article-hero-image[^"']*["'][^>]*>/i)?.[0] || '';
