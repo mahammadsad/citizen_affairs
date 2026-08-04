@@ -11,7 +11,7 @@ test('production deployments no longer share one queue with pull request validat
   assert.match(workflow, /pages-pr-\{0\}/);
   assert.match(workflow, /pages-production/);
   assert.match(workflow, /cancel-in-progress: true/);
-  assert.match(workflow, /timeout-minutes: 10/);
+  assert.match(workflow, /timeout-minutes: 15/);
   assert.doesNotMatch(workflow, /group: ["']pages["']/);
 });
 
