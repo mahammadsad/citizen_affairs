@@ -1,41 +1,89 @@
 # Owner operations
 
-This is the shortest safe operating guide.
+This is the shortest safe operating guide for Citizen Affairs.
 
-## Current availability
+## Current operating model
 
-The public website is live, but there is no production Supabase project. Staff sign-in, database drafts, topic discovery and automated publication are intentionally unavailable. Continue using Pages CMS only for temporary repository drafts; every new CMS article remains `draft: true` and cannot bypass review.
+Citizen Affairs is a static GitHub Pages website. There is currently no production Supabase project, so staff sign-in, database drafts, topic discovery and database-backed publication are intentionally unavailable. Pages CMS may create temporary repository drafts, but every new CMS article remains `draft: true` and cannot bypass review.
 
-## Publish an article
+Do not restore credentials or URLs from the deleted Supabase project. A replacement project must pass the database, RLS, role, Edge Function and unauthenticated-request checks before `SUPABASE_INTEGRATION_ENABLED` is deliberately enabled.
 
-The steps below apply only after a replacement Supabase project has passed the deployment and security checklist and `SUPABASE_INTEGRATION_ENABLED` has been deliberately enabled.
+## Understand release status
 
-1. Sign in at `/staff/` with an active Supabase staff account.
-2. Create a draft. Complete its Job or Scheme details, official sources and staff assignments in Supabase Studio until the fuller form UI is connected.
-3. A different editor, fact-checker and final reviewer record approvals for the current article version.
-4. Move the item to **Approved** with a written reason.
-5. A Publisher selects **Request publication**, enters a reason, and starts the protected build.
-6. GitHub opens a content pull request in `mahammadsad/citizen_affairs`, reports its number and URL, verifies branch protection and requests squash auto-merge only when it is safe.
-7. GitHub Pages deploys the merge. Only then does the callback set the database record to **Published**.
+These three states are different:
 
-If auto-merge is disabled, a required check fails or the PR does not merge, the workflow closes the unmerged publication PR and records a sanitized failure. Retry only after correcting the named configuration or validation error.
+1. **Merged** — the change is present on the protected `main` branch.
+2. **Deployed** — the GitHub Pages deployment job completed successfully.
+3. **Verified live** — the post-deployment production browser job found the exact expected commit on `citizenaffairs.in` and passed the sitemap, important-route, service-worker and offline checks.
 
-If any factual field, source, deadline, Job detail or Scheme detail changes, the database increments the article version and invalidates old approvals. Review the new version again.
+Never describe a release as live merely because its pull request merged. Open the **Deploy to GitHub Pages** workflow and confirm the `production-smoke` job succeeded.
 
-## Everyday checks
+The `/status/` page and `/health.json` show the build currently served by the website. They do not prove that the GitHub production test suite passed; the workflow result is the verification record.
 
-- Review overdue `next_review_date` items.
-- Close expired job applications instead of silently deleting them.
+## Routine checks
+
+- The read-only **Production Health** workflow runs every day at 08:45 IST.
+- Review a failed health run before publishing more changes.
+- Review overdue `next_review_date` items and close expired opportunities instead of deleting them silently.
 - Check official-source links and changed PDFs.
-- Review correction reports; publish material corrections in the public log.
-- Keep Owner accounts for emergencies. Use a normal editorial role for daily work.
+- Review correction reports and publish material corrections in the public log.
+- Keep Owner accounts for emergencies; use normal editorial roles for routine work after a replacement backend is enabled.
+
+## Dependency updates
+
+Dependabot checks npm packages and GitHub Actions each Monday morning. It opens pull requests; it never merges them automatically.
+
+For each dependency pull request:
+
+1. Confirm the **Dependency Review** job has no high or critical vulnerability finding.
+2. Require the complete **Deploy to GitHub Pages** pull-request workflow to pass.
+3. Read major-version release notes before merging. Do not merge a major upgrade merely because the bot opened it.
+4. Merge only one risky major upgrade at a time so a regression can be identified and reverted cleanly.
+
+All external GitHub Actions must remain pinned to immutable 40-character commit SHAs. Do not replace a SHA with `@main`, `@master` or a floating `@v1` tag.
+
+## When a release fails
+
+### Pull-request validation fails
+
+Do not merge. Open the failed step and correct the named problem. Never weaken a content, security, dependency, link, SEO or accessibility gate merely to make the check green.
+
+### Deployment fails
+
+The previously deployed Pages version normally remains available. Correct the failure in a new commit or pull request, then let the protected workflow deploy again. Do not force-push `main`.
+
+### Deployment succeeds but production smoke fails
+
+Treat the change as **deployed but not verified live**. Read the failed browser assertion and retained evidence. Check the exact served commit, custom domain, sitemap, service worker and offline fallback before making another release claim.
+
+### The public website appears unavailable
+
+Run **Production Health** manually from GitHub Actions. Check GitHub Pages status, the custom-domain configuration and DNS before changing application code. Avoid repeated blind redeployments because they can hide the original cause.
+
+## Safe rollback
+
+Rollback through a new pull request that reverts the problematic merge commit. Require the normal validation and production smoke checks. Never rewrite or force-push `main`, and never manually edit the deployed Pages artifact.
+
+## Publishing after a replacement backend exists
+
+The following applies only after a replacement Supabase project passes its deployment and security checklist:
+
+1. A staff member creates or updates a draft and completes structured details and official sources.
+2. Different assigned staff record editorial, fact-check and final-review approvals for the current version.
+3. A Publisher requests publication with a written reason.
+4. GitHub exports the approved snapshot into a protected content pull request.
+5. GitHub Pages deploys the protected merge.
+6. Only after successful production verification does the callback mark the database publication event as deployed.
+
+Any factual, source, deadline or structured-detail change creates a new version and invalidates old approvals.
 
 ## Never do these
 
-- Never send a Supabase secret key, service-role key, GitHub token or password in chat, email, Markdown or browser code.
-- Never mark an article Officially Confirmed without a primary official source and independent fact-check approval.
-- Never change an approved fact directly to avoid re-review.
-- Never claim a deployment succeeded until GitHub Pages and the publication event both say it succeeded.
-- Never merge or reopen an automatically closed publication PR whose database event is already Failed; fix the cause and request publication again.
+- Never send a Supabase secret key, service-role key, GitHub token, password or recovery code in chat, email, Markdown or browser code.
+- Never put a secret in a `PUBLIC_` variable.
+- Never claim Officially Confirmed status without a primary official source and independent fact-check approval.
+- Never claim a release is verified live until the production smoke job succeeds.
+- Never bypass a failed workflow by manually uploading files or weakening the failing rule.
+- Never merge or reopen an automatically closed publication pull request whose database event is already Failed; correct the cause and request publication again.
 
-See [Troubleshooting](TROUBLESHOOTING.md) when a step fails.
+See [Troubleshooting](TROUBLESHOOTING.md) for detailed failure guidance.
