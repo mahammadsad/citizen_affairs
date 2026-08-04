@@ -18,7 +18,6 @@ const modernPins = {
   uploadArtifact: '043fb46d1a93c77aae656e7c1c64a875d1fc6a0a',
   uploadPages: 'fc324d3547104276b827a68afc52ff2a11cc49c9',
   deployPages: 'cd2ce8fcbc39b97be8ca5fce6e763baed58fa128',
-  dependencyReview: 'a1d282b36b6f3519aa1f3fc636f609c47dddb294',
 };
 
 const deprecatedPins = [
@@ -30,7 +29,7 @@ const deprecatedPins = [
 ];
 
 test('production workflows use immutable current-runtime action pins', () => {
-  for (const pin of Object.values(modernPins).slice(0, 5)) assert.match(deploy, new RegExp(pin));
+  for (const pin of Object.values(modernPins)) assert.match(deploy, new RegExp(pin));
   assert.match(productionHealth, new RegExp(modernPins.checkout));
   assert.match(productionHealth, new RegExp(modernPins.setupNode));
   assert.match(productionHealth, new RegExp(modernPins.uploadArtifact));
@@ -64,12 +63,17 @@ test('dependency updates are proposed weekly but never auto-merged', () => {
   assert.doesNotMatch(dependabot, /auto-merge|automerge/);
 });
 
-test('dependency-changing pull requests receive a read-only high-severity gate', () => {
+test('dependency-changing pull requests receive a read-only lockfile and high-severity gate', () => {
   assert.match(dependencyReview, /pull_request:/);
   assert.match(dependencyReview, /permissions:\n  contents: read/);
-  assert.match(dependencyReview, new RegExp(modernPins.dependencyReview));
-  assert.match(dependencyReview, /fail-on-severity: high/);
-  assert.match(dependencyReview, /show-openssf-scorecard: false/);
+  assert.match(dependencyReview, new RegExp(modernPins.checkout));
+  assert.match(dependencyReview, new RegExp(modernPins.setupNode));
+  assert.match(dependencyReview, new RegExp(modernPins.uploadArtifact));
+  assert.match(dependencyReview, /fetch-depth: 2/);
+  assert.match(dependencyReview, /Verify lockfile integrity/);
+  assert.match(dependencyReview, /npm ci/);
+  assert.match(dependencyReview, /npm audit --audit-level=high --json/);
+  assert.match(dependencyReview, /dependency-review-report\.json/);
   assert.doesNotMatch(dependencyReview, /contents: write|pull-requests: write/);
 });
 
