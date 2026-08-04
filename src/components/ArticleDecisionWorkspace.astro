@@ -1,0 +1,263 @@
+---
+import Icon from './Icon.astro';
+import { deadlineLabel, deadlineState } from '@lib/deadline';
+import { dateLocale, type Locale, verificationLabels } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  contentType: 'job' | 'scheme' | 'explainer';
+  verificationStatus:
+    | 'officially-confirmed'
+    | 'partially-confirmed'
+    | 'under-verification'
+    | 'corrected'
+    | 'withdrawn'
+    | 'closed';
+  lastVerified?: Date;
+  deadline?: Date;
+  sourceCount: number;
+  officialNoticeUrl?: string;
+  applicationUrl?: string;
+  quickSummary?: string[];
+  importantDates?: string[];
+  qualification?: string[];
+  requiredDocuments?: string[];
+  amountOrVacancies?: string;
+}
+
+const {
+  locale,
+  contentType,
+  verificationStatus,
+  lastVerified,
+  deadline,
+  sourceCount,
+  officialNoticeUrl,
+  applicationUrl,
+  quickSummary = [],
+  importantDates = [],
+  qualification = [],
+  requiredDocuments = [],
+  amountOrVacancies
+} = Astro.props;
+
+const copy = {
+  en: {
+    eyebrow: 'Decision workspace',
+    title: 'What you should check and do next',
+    intro: 'Use this verified summary before reading the full explanation or opening an official portal.',
+    currentStatus: 'Current status',
+    lastVerified: 'Last verified',
+    deadline: 'Deadline',
+    sources: 'Official sources',
+    notice: 'Read official notice',
+    apply: 'Open official application',
+    summary: 'At a glance',
+    dates: 'Important dates',
+    eligibility: 'Eligibility',
+    documents: 'Documents to prepare',
+    vacancies: 'Vacancies or pay',
+    benefit: 'Benefit or amount',
+    amount: 'Amount or key figure',
+    before: 'Before you act',
+    beforeBody: 'Confirm the latest deadline, eligibility and instructions on the official government page. Citizen Affairs explains the information but does not accept or process applications.'
+  },
+  bn: {
+    eyebrow: 'সিদ্ধান্ত নেওয়ার কর্মক্ষেত্র',
+    title: 'এখন কী যাচাই করবেন এবং কী করবেন',
+    intro: 'সম্পূর্ণ ব্যাখ্যা পড়া বা অফিসিয়াল পোর্টাল খোলার আগে এই যাচাইকৃত সারাংশটি দেখুন।',
+    currentStatus: 'বর্তমান অবস্থা',
+    lastVerified: 'সর্বশেষ যাচাই',
+    deadline: 'শেষ তারিখ',
+    sources: 'অফিসিয়াল সূত্র',
+    notice: 'অফিসিয়াল বিজ্ঞপ্তি পড়ুন',
+    apply: 'অফিসিয়াল আবেদন খুলুন',
+    summary: 'এক নজরে',
+    dates: 'গুরুত্বপূর্ণ তারিখ',
+    eligibility: 'যোগ্যতা',
+    documents: 'প্রস্তুত রাখার নথি',
+    vacancies: 'শূন্যপদ বা বেতন',
+    benefit: 'সুবিধা বা অর্থের পরিমাণ',
+    amount: 'পরিমাণ বা গুরুত্বপূর্ণ সংখ্যা',
+    before: 'পদক্ষেপ নেওয়ার আগে',
+    beforeBody: 'সর্বশেষ শেষ তারিখ, যোগ্যতা ও নির্দেশনা অফিসিয়াল সরকারি পেজে আবার নিশ্চিত করুন। Citizen Affairs তথ্যটি সহজ করে, কিন্তু কোনো আবেদন গ্রহণ বা প্রক্রিয়া করে না।'
+  },
+  hi: {
+    eyebrow: 'निर्णय कार्यक्षेत्र',
+    title: 'अब क्या जाँचें और अगला कदम क्या हो',
+    intro: 'पूरा विवरण पढ़ने या आधिकारिक पोर्टल खोलने से पहले इस सत्यापित सारांश का उपयोग करें।',
+    currentStatus: 'वर्तमान स्थिति',
+    lastVerified: 'अंतिम सत्यापन',
+    deadline: 'अंतिम तिथि',
+    sources: 'आधिकारिक स्रोत',
+    notice: 'आधिकारिक सूचना पढ़ें',
+    apply: 'आधिकारिक आवेदन खोलें',
+    summary: 'एक नज़र में',
+    dates: 'महत्वपूर्ण तिथियाँ',
+    eligibility: 'पात्रता',
+    documents: 'तैयार रखने वाले दस्तावेज़',
+    vacancies: 'रिक्तियाँ या वेतन',
+    benefit: 'लाभ या राशि',
+    amount: 'राशि या प्रमुख संख्या',
+    before: 'कार्रवाई करने से पहले',
+    beforeBody: 'नवीनतम अंतिम तिथि, पात्रता और निर्देश आधिकारिक सरकारी पेज पर फिर से जाँचें। Citizen Affairs जानकारी समझाता है, लेकिन आवेदन स्वीकार या संसाधित नहीं करता।'
+  }
+}[locale];
+
+const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+const deadlineStatus = deadlineState(deadline);
+const amountLabel = contentType === 'job' ? copy.vacancies : contentType === 'scheme' ? copy.benefit : copy.amount;
+const hasFacts = Boolean(
+  quickSummary.length || importantDates.length || qualification.length || requiredDocuments.length || amountOrVacancies
+);
+---
+
+<section class:list={['decision-workspace', `status-${verificationStatus}`]} id="action-checklist" aria-labelledby="decision-workspace-title">
+  <header class="decision-heading">
+    <p><Icon name="check" size={16} />{copy.eyebrow}</p>
+    <h2 id="decision-workspace-title">{copy.title}</h2>
+    <span>{copy.intro}</span>
+  </header>
+
+  <dl class="decision-status">
+    <div>
+      <dt>{copy.currentStatus}</dt>
+      <dd>{verificationLabels[locale][verificationStatus]}</dd>
+    </div>
+    {lastVerified && (
+      <div>
+        <dt>{copy.lastVerified}</dt>
+        <dd>{formatter.format(lastVerified)}</dd>
+      </div>
+    )}
+    {deadline && (
+      <div class:list={['deadline-fact', `deadline-${deadlineStatus}`]}>
+        <dt>{copy.deadline}</dt>
+        <dd>{formatter.format(deadline)} · {deadlineLabel(deadlineStatus, locale)}</dd>
+      </div>
+    )}
+    <div>
+      <dt>{copy.sources}</dt>
+      <dd>{sourceCount}</dd>
+    </div>
+  </dl>
+
+  {(officialNoticeUrl || applicationUrl) && (
+    <div class="decision-actions" aria-label={copy.title}>
+      {applicationUrl && (
+        <a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">
+          {copy.apply}<Icon name="external" size={17} />
+        </a>
+      )}
+      {officialNoticeUrl && (
+        <a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">
+          {copy.notice}<Icon name="external" size={17} />
+        </a>
+      )}
+    </div>
+  )}
+
+  {hasFacts && (
+    <div class="decision-grid">
+      {quickSummary.length > 0 && (
+        <section>
+          <h3><Icon name="updates" size={19} />{copy.summary}</h3>
+          <ul>{quickSummary.map((item) => <li>{item}</li>)}</ul>
+        </section>
+      )}
+      {qualification.length > 0 && (
+        <section>
+          <h3><Icon name="check" size={19} />{copy.eligibility}</h3>
+          <ul>{qualification.map((item) => <li>{item}</li>)}</ul>
+        </section>
+      )}
+      {importantDates.length > 0 && (
+        <section>
+          <h3><Icon name="clock" size={19} />{copy.dates}</h3>
+          <ul>{importantDates.map((item) => <li>{item}</li>)}</ul>
+        </section>
+      )}
+      {requiredDocuments.length > 0 && (
+        <section>
+          <h3><Icon name="book" size={19} />{copy.documents}</h3>
+          <ul>{requiredDocuments.map((item) => <li>{item}</li>)}</ul>
+        </section>
+      )}
+      {amountOrVacancies && (
+        <section class="decision-amount">
+          <h3><Icon name="briefcase" size={19} />{amountLabel}</h3>
+          <p>{amountOrVacancies}</p>
+        </section>
+      )}
+    </div>
+  )}
+
+  <aside class="decision-warning">
+    <Icon name="notices" size={20} />
+    <div><strong>{copy.before}</strong><p>{copy.beforeBody}</p></div>
+  </aside>
+</section>
+
+<style>
+  .decision-workspace {
+    margin: 1.5rem 0 2rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+  .decision-heading {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface-alt);
+  }
+  .decision-heading > p {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0 0 .4rem;
+    color: var(--color-primary);
+    font-size: .72rem;
+    font-weight: 850;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .decision-heading h2 { margin: 0; font-size: clamp(1.35rem, 3vw, 1.8rem); }
+  .decision-heading > span { display: block; margin-top: .4rem; color: var(--color-text-muted); font-size: .9rem; }
+  .decision-status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    margin: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .decision-status div { padding: .85rem 1rem; border-right: 1px solid var(--color-border); }
+  .decision-status div:last-child { border-right: 0; }
+  .decision-status dt { color: var(--color-text-muted); font-size: .67rem; font-weight: 750; }
+  .decision-status dd { margin-top: .2rem; font-size: .82rem; font-weight: 850; }
+  .decision-actions { display: flex; flex-wrap: wrap; gap: .65rem; padding: 1rem 1.25rem 0; }
+  .decision-actions a { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+  .decision-grid { display: grid; gap: .8rem; padding: 1.25rem; }
+  .decision-grid section { min-width: 0; padding: 1rem; border: 1px solid var(--color-border); border-radius: 11px; background: var(--color-bg); }
+  .decision-grid h3 { display: flex; align-items: center; gap: .45rem; margin: 0 0 .55rem; font-size: .95rem; }
+  .decision-grid h3 svg { color: var(--color-primary); }
+  .decision-grid ul { margin: 0 0 0 1.15rem; list-style: disc; }
+  .decision-grid li { margin: .35rem 0; font-size: .86rem; line-height: 1.5; }
+  .decision-amount p { margin: 0; font-size: 1rem; font-weight: 850; }
+  .decision-warning { display: flex; gap: .7rem; margin: 0 1.25rem 1.25rem; padding: .9rem; border-left: 3px solid var(--color-primary); background: rgba(var(--color-primary-rgb), .06); }
+  .decision-warning > svg { flex: 0 0 auto; color: var(--color-primary); }
+  .decision-warning strong { font-size: .83rem; }
+  .decision-warning p { margin: .2rem 0 0; color: var(--color-text-muted); font-size: .78rem; line-height: 1.5; }
+  @media (min-width: 720px) {
+    .decision-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .decision-amount { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .decision-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .decision-status div:nth-child(2n) { border-right: 0; }
+    .decision-actions a { width: 100%; }
+  }
+</style>
