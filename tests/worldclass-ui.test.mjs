@@ -43,7 +43,7 @@ test('homepage provides useful empty-content and citizen-task experiences', () =
   assert.match(homepage, /portal-promises/);
   assert.match(homepage, /portal-action-grid/);
   assert.match(homepage, /portal-method/);
-  assert.match(homepage, /officially-confirmed/);
+  assert.match(homepage, /verificationLabels/);
 });
 
 test('portal navigation exposes the active citizen sections on desktop and mobile', () => {
