@@ -1,0 +1,45 @@
+<script is:inline>
+  (() => {
+    const syncPortalSelectors = () => {
+      document.querySelector('.action-grid')?.classList.add('portal-action-grid');
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', syncPortalSelectors, { once: true });
+    } else {
+      syncPortalSelectors();
+    }
+
+    window.addEventListener('pageshow', syncPortalSelectors);
+  })();
+</script>
+
+<style is:global>
+  .portal-action-grid a {
+    color: var(--color-text);
+  }
+
+  html[data-theme='dark'] .portal-search {
+    background: var(--color-surface);
+  }
+
+  html[data-theme='dark'] .portal-search input {
+    color: #edf2f7;
+    caret-color: #edf2f7;
+  }
+
+  html[data-theme='dark'] .portal-search input::placeholder {
+    color: #c7d2df;
+    opacity: 1;
+  }
+
+  html[data-theme='dark'] .portal-action-grid a {
+    background: var(--color-surface);
+    color: #edf2f7;
+  }
+
+  html[data-theme='dark'] .portal-action-grid a:hover,
+  html[data-theme='dark'] .portal-action-grid a:focus-visible {
+    background: var(--color-surface-alt);
+  }
+</style>

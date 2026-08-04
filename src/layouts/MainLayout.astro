@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import PortalHeader from '@components/PortalHeader.astro';
+import PortalRuntime from '@components/PortalRuntime.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
 import type { Locale } from '../i18n';
@@ -9,6 +10,7 @@ const { title, description, image, canonical, ogType, structuredData, locale = '
 ---
 <BaseLayout {title} {description} {image} {canonical} {ogType} {structuredData} {locale} {alternateUrls} {robots}>
   <PortalHeader {locale} {alternateUrls} />
+  <PortalRuntime />
   <main id="main-content"><slot /></main>
   <Footer {locale} />
 </BaseLayout>

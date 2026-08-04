@@ -1,5 +1,5 @@
 ---
-import HomePage from '@components/HomePage.astro';
+import CitizenPortalHome from '@components/CitizenPortalHome.astro';
 import type { Locale } from '../../i18n';
 
 export function getStaticPaths() {
@@ -8,4 +8,4 @@ export function getStaticPaths() {
 
 const { locale } = Astro.props as { locale: Locale };
 ---
-<HomePage {locale} />
+<CitizenPortalHome {locale} />
