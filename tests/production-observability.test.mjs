@@ -5,6 +5,8 @@ import test from 'node:test';
 const read = (path) => readFile(path, 'utf8');
 const health = await read('src/pages/health.json.ts');
 const statusPage = await read('src/pages/status.astro');
+const baseLayout = await read('src/layouts/BaseLayout.astro');
+const searchAlias = await read('src/pages/en/search/index.astro');
 const serviceWorker = await read('src/pages/sw.js.ts');
 const linkValidator = await read('scripts/validate-links.mjs');
 const summary = await read('scripts/summarize-production-health.mjs');
@@ -28,6 +30,7 @@ test('served-build health and owner status do not overclaim live verification', 
 });
 
 test('generated internal link audit covers routes, assets, srcsets and fragments', () => {
+  assert.match(linkValidator, /attributeValues/);
   assert.match(linkValidator, /collectHtmlReferences/);
   assert.match(linkValidator, /collectCssReferences/);
   assert.match(linkValidator, /srcset/);
@@ -35,6 +38,15 @@ test('generated internal link audit covers routes, assets, srcsets and fragments
   assert.match(linkValidator, /missing fragment/);
   assert.match(linkValidator, /internal-link-report\.json/);
   assert.match(packageJson, /"validate:links": "node scripts\/validate-links\.mjs"/);
+});
+
+test('generated-link fixes preserve English search and the global skip target', () => {
+  assert.match(searchAlias, /robots" content="noindex, follow"/);
+  assert.match(searchAlias, /canonical/);
+  assert.match(searchAlias, /location\.replace/);
+  assert.match(searchAlias, /SITE\.basePath}search\//);
+  assert.match(baseLayout, /document\.getElementById\('main-content'\)/);
+  assert.match(baseLayout, /document\.querySelector\('main'\)\?\.setAttribute\('id', 'main-content'\)/);
 });
 
 test('deployment validation retains internal-link evidence before publishing', () => {
