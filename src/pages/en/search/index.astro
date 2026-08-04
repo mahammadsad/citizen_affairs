@@ -1,0 +1,25 @@
+---
+import { SITE } from '@utils/constants';
+
+const target = `${SITE.basePath}search/`;
+const canonical = `${SITE.url}/search/`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex, follow" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href={canonical} />
+    <title>Search | Citizen Affairs</title>
+  </head>
+  <body>
+    <main id="main-content">
+      <p>The English search page has moved. <a href={target}>Continue to search</a>.</p>
+    </main>
+    <script is:inline define:vars={{ target }}>
+      location.replace(target + location.search + location.hash);
+    </script>
+  </body>
+</html>
