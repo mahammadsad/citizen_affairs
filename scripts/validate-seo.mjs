@@ -6,7 +6,7 @@ const dist = join(root, 'dist');
 const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
 const site = new URL(brand.domain).origin;
 const errors = [];
-const noindexUrls = new Set();
+const utilityUrls = new Set();
 
 function walk(directory, extension) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -73,7 +73,7 @@ if (!/xmlns:xhtml="http:\/\/www\.w3\.org\/1999\/xhtml"/.test(sitemap)) {
 if (sitemapSet.size !== sitemapLocs.length) errors.push('sitemap contains duplicate URLs');
 for (const loc of sitemapLocs) {
   if (!loc.startsWith(`${site}/`)) errors.push(`sitemap URL is outside the production origin: ${loc}`);
-  if (/\/(?:search|saved|staff)\//.test(new URL(loc).pathname)) {
+  if (/\/(?:search|saved|staff|admin)\//.test(new URL(loc).pathname)) {
     errors.push(`utility route entered sitemap: ${loc}`);
   }
 }
@@ -90,15 +90,26 @@ for (const block of sitemapBlocks) {
 
 for (const path of walk(dist, '.html')) {
   const file = relative(dist, path).replaceAll('\\', '/');
-  if (file === '404.html' || file.startsWith('google')) continue;
+  if (file === '404.html' || file === 'admin/index.html' || file.startsWith('google')) continue;
+
   const html = readFileSync(path, 'utf8');
   const pageUrl = generatedUrl(file);
-  const htmlLang = html.match(/<html\b[^>]*\blang="([^"]+)"/i)?.[1];
   const links = tags(html, 'link');
   const metas = tags(html, 'meta');
-  const canonicals = links.filter((tag) => tag.attrs.rel === 'canonical');
   const robots = metas.find((tag) => tag.attrs.name === 'robots')?.attrs.content || '';
   const noindex = /\bnoindex\b/i.test(robots);
+  const redirects = metas.some(
+    (tag) => tag.attrs['http-equiv']?.toLowerCase() === 'refresh'
+  );
+  const isUtilityDocument = noindex || redirects;
+
+  if (isUtilityDocument) {
+    utilityUrls.add(pageUrl);
+    continue;
+  }
+
+  const htmlLang = html.match(/<html\b[^>]*\blang="([^"]+)"/i)?.[1];
+  const canonicals = links.filter((tag) => tag.attrs.rel === 'canonical');
   const canonical = canonicals[0]?.attrs.href;
 
   if (!['en', 'bn', 'hi'].includes(htmlLang)) errors.push(`${file}: invalid or missing html lang`);
@@ -106,12 +117,6 @@ for (const path of walk(dist, '.html')) {
   if (!canonical || !normalizeUrl(canonical)?.startsWith(`${site}/`)) {
     errors.push(`${file}: canonical is missing or outside production`);
   }
-
-  if (noindex) {
-    noindexUrls.add(pageUrl);
-    continue;
-  }
-
   if (normalizeUrl(canonical) !== normalizeUrl(pageUrl)) {
     errors.push(`${file}: indexable page is not self-canonical`);
   }
@@ -158,8 +163,8 @@ for (const path of walk(dist, '.html')) {
   }
 }
 
-for (const url of noindexUrls) {
-  if (sitemapSet.has(url)) errors.push(`noindex page entered sitemap: ${url}`);
+for (const url of utilityUrls) {
+  if (sitemapSet.has(url)) errors.push(`noindex or redirect page entered sitemap: ${url}`);
 }
 
 const feedExpectations = [
@@ -187,4 +192,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`SEO validation passed for ${sitemapSet.size} sitemap URL(s) and three locale feeds.`);
+console.log(`SEO validation passed for ${sitemapSet.size} sitemap URL(s), ${utilityUrls.size} utility page(s) and three locale feeds.`);
