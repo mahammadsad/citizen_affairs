@@ -5,11 +5,17 @@
       bn: { saved: 'সংরক্ষিত তথ্য', urgent: 'জরুরি শেষ তারিখ' },
       hi: { saved: 'सहेजे गए आइटम', urgent: 'ज़रूरी समय-सीमाएँ' }
     };
+    const externalCopy = {
+      en: { opens: 'Opens external destination in a new tab', destination: 'Destination' },
+      bn: { opens: 'নতুন ট্যাবে বাইরের গন্তব্য খুলবে', destination: 'গন্তব্য' },
+      hi: { opens: 'बाहरी गंतव्य नए टैब में खुलेगा', destination: 'गंतव्य' }
+    };
 
     const locale = ['bn', 'hi'].includes(document.documentElement.lang)
       ? document.documentElement.lang
       : 'en';
     const copy = badgeCopy[locale];
+    const external = externalCopy[locale];
 
     const syncDisclosureSemantics = () => {
       document
@@ -30,6 +36,38 @@
           if (summary.dataset.portalDisclosureReady === 'true') return;
           summary.dataset.portalDisclosureReady = 'true';
           details.addEventListener('toggle', syncExpanded);
+        });
+    };
+
+    const hardenExternalLinks = () => {
+      document
+        .querySelectorAll(
+          '.source-panel a[target="_blank"], .decision-workspace a[target="_blank"], .utility-card a[target="_blank"]'
+        )
+        .forEach((link) => {
+          if (!(link instanceof HTMLAnchorElement)) return;
+          let hostname = '';
+          try {
+            hostname = new URL(link.href, location.href).hostname.replace(/^www\./, '');
+          } catch (_) {}
+
+          const rel = new Set((link.getAttribute('rel') || '').split(/\s+/).filter(Boolean));
+          ['noopener', 'noreferrer', 'external'].forEach((value) => rel.add(value));
+          link.setAttribute('rel', [...rel].join(' '));
+          link.referrerPolicy = 'no-referrer';
+          link.dataset.externalSafe = 'true';
+
+          if (!link.getAttribute('aria-label')) {
+            const label = link.textContent?.trim() || external.destination;
+            link.setAttribute('aria-label', `${label}. ${hostname || external.destination}. ${external.opens}.`);
+          }
+
+          if (link.closest('.source-panel') && hostname && !link.querySelector('.external-domain-cue')) {
+            const cue = document.createElement('small');
+            cue.className = 'external-domain-cue';
+            cue.textContent = hostname;
+            link.append(cue);
+          }
         });
     };
 
@@ -101,6 +139,7 @@
     const syncPortalSelectors = () => {
       document.querySelector('.action-grid')?.classList.add('portal-action-grid');
       syncDisclosureSemantics();
+      hardenExternalLinks();
       syncSavedBadges();
     };
 
@@ -130,6 +169,18 @@
 <style is:global>
   .portal-action-grid a {
     color: var(--color-text);
+  }
+
+  .source-panel a[target='_blank'] .external-domain-cue {
+    display: block;
+    max-width: 240px;
+    overflow: hidden;
+    margin-top: .15rem;
+    color: var(--color-text-muted);
+    font-size: .64rem;
+    font-weight: 720;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .portal-saved-action,
