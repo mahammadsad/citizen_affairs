@@ -8,19 +8,22 @@ const authorRoot = join(root, 'src/content/authors');
 const publicRoot = join(root, 'public');
 const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
 const activeCategories = new Set(brand.activeCategoryIds);
+const publicWorkflows = new Set(['published', 'corrected', 'closed']);
+const openOpportunityStatuses = new Set(['upcoming', 'open', 'closing-soon']);
 const errors = [];
 const authorExtensions = new Set(['.json', '.yaml', '.yml', '.toml']);
+const articleExtensions = new Set(['.md', '.mdx']);
 const authorSlugs = new Set(
   readdirSync(authorRoot, { withFileTypes: true })
     .filter((entry) => entry.isFile() && authorExtensions.has(extname(entry.name)))
     .map((entry) => entry.name.slice(0, -extname(entry.name).length)),
 );
 
-function walk(directory, extension) {
+function walk(directory, extensions) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const path = join(directory, entry.name);
-    if (entry.isDirectory()) return walk(path, extension);
-    return extname(entry.name) === extension ? [path] : [];
+    if (entry.isDirectory()) return walk(path, extensions);
+    return extensions.has(extname(entry.name)) ? [path] : [];
   });
 }
 
@@ -46,8 +49,15 @@ function asTime(value) {
   return Number.isNaN(time) ? undefined : time;
 }
 
+function rejectExpiredOpenOpportunity(file, deadlineValue, status, label) {
+  const deadline = asTime(deadlineValue);
+  if (deadline && deadline < Date.now() && openOpportunityStatuses.has(status)) {
+    errors.push(`${file}: expired ${label} cannot remain ${status}`);
+  }
+}
+
 const articles = [];
-for (const path of walk(contentRoot, '.md')) {
+for (const path of walk(contentRoot, articleExtensions)) {
   const file = relative(root, path);
   try {
     const data = frontmatter(path);
@@ -57,7 +67,9 @@ for (const path of walk(contentRoot, '.md')) {
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(data.urlSlug || '')) errors.push(`${file}: invalid URL slug`);
     if (!['en', 'bn', 'hi'].includes(data.language)) errors.push(`${file}: unsupported language`);
     if (!data.draft && !activeCategories.has(data.category)) errors.push(`${file}: inactive category must remain draft`);
-    if (!data.draft && data.workflowStatus !== 'published') errors.push(`${file}: public content must have workflowStatus: published`);
+    if (!data.draft && !publicWorkflows.has(data.workflowStatus)) {
+      errors.push(`${file}: public content must use workflowStatus: published, corrected, or closed`);
+    }
     for (const field of ['author', 'assignedEditor', 'factCheckedBy', 'copyReviewedBy', 'reviewedBy', 'publishedBy']) {
       if (data[field] && !authorSlugs.has(data[field])) errors.push(`${file}: ${field} profile does not exist: ${data[field]}`);
     }
@@ -100,11 +112,16 @@ for (const path of walk(contentRoot, '.md')) {
     if (data.contentType === 'job') {
       if (data.category !== 'jobs') errors.push(`${file}: job content must use the jobs category`);
       required(data.job, ['recruitingOrganization', 'postName', 'notificationNumber', 'notificationDate', 'totalVacancies', 'qualification', 'applicationDeadline', 'selectionProcess', 'applicationMode', 'officialNotificationUrl', 'officialApplicationUrl', 'recruitmentStatus'], 'job', file);
-      const deadline = asTime(data.job?.applicationDeadline);
-      if (deadline && deadline < Date.now() && ['open', 'closing-soon'].includes(data.job?.recruitmentStatus)) errors.push(`${file}: expired job cannot remain open`);
+      rejectExpiredOpenOpportunity(file, data.job?.applicationDeadline, data.job?.recruitmentStatus, 'job');
     } else if (data.contentType === 'scheme') {
       if (data.category !== 'projects') errors.push(`${file}: scheme content must use the projects category`);
       required(data.scheme, ['schemeName', 'ministry', 'schemeLevel', 'targetBeneficiaries', 'benefitType', 'eligibilityCriteria', 'applicationProcess', 'applicationMode', 'officialPortal', 'schemeStatus'], 'scheme', file);
+    } else if (data.contentType === 'admission') {
+      required(data.admission, ['institution', 'programme', 'admissionLevel', 'eligibilityCriteria', 'applicationDeadline', 'applicationMode', 'officialProspectusUrl', 'officialApplicationUrl', 'admissionStatus'], 'admission', file);
+      rejectExpiredOpenOpportunity(file, data.admission?.applicationDeadline, data.admission?.admissionStatus, 'admission');
+    } else if (data.contentType === 'scholarship') {
+      required(data.scholarship, ['scholarshipName', 'provider', 'academicLevel', 'targetStudents', 'benefitAmount', 'eligibilityCriteria', 'applicationDeadline', 'applicationMode', 'officialPortal', 'scholarshipStatus'], 'scholarship', file);
+      rejectExpiredOpenOpportunity(file, data.scholarship?.applicationDeadline, data.scholarship?.scholarshipStatus, 'scholarship');
     }
   } catch (error) {
     errors.push(`${file}: ${error.message}`);

@@ -2,8 +2,10 @@
 import ArticleLayout from '@layouts/ArticleLayout.astro';
 import ArticleDecisionWorkspace from '@components/ArticleDecisionWorkspace.astro';
 import ArticleChangeHistory from '@components/ArticleChangeHistory.astro';
+import ArticleFreshnessNotice from '@components/ArticleFreshnessNotice.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
+import { canOfferApplicationAction } from '@lib/freshness';
 import { locales, type Locale } from '../../../i18n';
 import { SITE } from '@utils/constants';
 
@@ -51,6 +53,7 @@ const applicationUrl =
   article.data.admission?.officialApplicationUrl ||
   article.data.scholarship?.officialPortal ||
   article.data.service?.officialPortal;
+const safeApplicationUrl = canOfferApplicationAction(article.data) ? applicationUrl : undefined;
 const decisionQualification = article.data.qualification.length
   ? article.data.qualification
   : article.data.job?.qualification ||
@@ -110,7 +113,7 @@ const sourceCount = new Set(sourceLinks).size;
   sourceUrls={article.data.sourceUrls}
   sources={article.data.sources}
   {officialNoticeUrl}
-  {applicationUrl}
+  applicationUrl={safeApplicationUrl}
   urlSlug={article.data.urlSlug}
   quickSummary={[]}
   importantDates={[]}
@@ -121,6 +124,15 @@ const sourceCount = new Set(sourceLinks).size;
   faqs={article.data.faqs}
   {related}
 >
+  <ArticleFreshnessNotice
+    locale={locale}
+    contentType={article.data.contentType}
+    workflowStatus={article.data.workflowStatus}
+    verificationStatus={article.data.verificationStatus}
+    lastVerified={article.data.lastVerified}
+    nextReviewDate={article.data.nextReviewDate}
+    deadline={article.data.deadline}
+  />
   <ArticleDecisionWorkspace
     locale={locale}
     contentType={layoutContentType}
@@ -129,7 +141,7 @@ const sourceCount = new Set(sourceLinks).size;
     deadline={article.data.deadline}
     {sourceCount}
     {officialNoticeUrl}
-    {applicationUrl}
+    applicationUrl={safeApplicationUrl}
     quickSummary={article.data.quickSummary}
     importantDates={article.data.importantDates}
     qualification={decisionQualification}

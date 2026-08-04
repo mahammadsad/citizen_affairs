@@ -10,8 +10,16 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import { slugify } from './seo';
 import type { Locale } from '../i18n';
 import { isActiveCategory } from '@utils/constants';
+import { compareArticleFreshness, isCurrentListingCandidate } from './freshness';
 
-const isPublicWorkflow = (status: CollectionEntry<'articles'>['data']['workflowStatus']) => ['published', 'corrected', 'closed'].includes(status);
+const isPublicWorkflow = (status: CollectionEntry<'articles'>['data']['workflowStatus']) =>
+  ['published', 'corrected', 'closed'].includes(status);
+
+const isPublicArticle = (data: CollectionEntry<'articles'>['data']) =>
+  !data.draft &&
+  isPublicWorkflow(data.workflowStatus) &&
+  data.verificationStatus !== 'withdrawn' &&
+  isActiveCategory(data.category);
 
 export async function getCategoryData(slug: string): Promise<CollectionEntry<'categories'> | undefined> {
   return getEntry('categories', slug);
@@ -49,18 +57,34 @@ export async function getArticlesByCategorySlug(categorySlug: string) {
   return articles.filter((article) => article.data.category === categorySlug);
 }
 
-export async function getLocalizedArticles(locale: Locale) {
-  const articles = await getCollection('articles', ({ data }) => !data.draft && isPublicWorkflow(data.workflowStatus) && data.language === locale && data.verificationStatus !== 'withdrawn' && isActiveCategory(data.category));
+export async function getAllLocalizedPublicArticles(locale: Locale) {
+  const articles = await getCollection(
+    'articles',
+    ({ data }) => isPublicArticle(data) && data.language === locale,
+  );
   return articles.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
+/**
+ * Current discovery surfaces intentionally exclude expired opportunities.
+ * Their article URLs remain available through `getAllLocalizedPublicArticles`
+ * so corrections, results and historical context are not lost.
+ */
+export async function getLocalizedArticles(locale: Locale) {
+  const now = new Date();
+  const articles = (await getAllLocalizedPublicArticles(locale)).filter((article) =>
+    isCurrentListingCandidate(article.data, now),
+  );
+  return articles.sort((a, b) => compareArticleFreshness(a.data, b.data, now));
+}
+
 export async function getLocalizedArticle(locale: Locale, slug: string) {
-  const articles = await getLocalizedArticles(locale);
+  const articles = await getAllLocalizedPublicArticles(locale);
   return articles.find((article) => article.data.urlSlug === slug);
 }
 
 export async function getArticleTranslation(translationKey: string, locale: Locale) {
-  const articles = await getLocalizedArticles(locale);
+  const articles = await getAllLocalizedPublicArticles(locale);
   return articles.find((article) => article.data.translationKey === translationKey);
 }
 
@@ -83,7 +107,9 @@ export function categoryDescription(category: CollectionEntry<'categories'>, loc
 
 export async function getUpcomingDeadlines(locale: Locale, limit?: number) {
   const now = Date.now();
-  const articles = (await getLocalizedArticles(locale)).filter((article) => article.data.deadline && !Number.isNaN(article.data.deadline.getTime()));
+  const articles = (await getLocalizedArticles(locale)).filter(
+    (article) => article.data.deadline && !Number.isNaN(article.data.deadline.getTime()),
+  );
   articles.sort((a, b) => {
     const aTime = a.data.deadline!.getTime();
     const bTime = b.data.deadline!.getTime();
@@ -96,10 +122,12 @@ export async function getUpcomingDeadlines(locale: Locale, limit?: number) {
 }
 
 export async function getRelatedArticles(locale: Locale, category: string, excludeSlug: string, limit = 3) {
-  return (await getLocalizedArticlesByCategory(locale, category)).filter((article) => article.data.urlSlug !== excludeSlug).slice(0, limit);
+  return (await getLocalizedArticlesByCategory(locale, category))
+    .filter((article) => article.data.urlSlug !== excludeSlug)
+    .slice(0, limit);
 }
 
 export async function getArticlesByAuthorSlug(authorSlug: string) {
-  const articles = await getCollection('articles', ({ data }) => !data.draft && isPublicWorkflow(data.workflowStatus) && data.verificationStatus !== 'withdrawn' && isActiveCategory(data.category));
+  const articles = await getCollection('articles', ({ data }) => isPublicArticle(data));
   return articles.filter((article) => article.data.author === authorSlug);
 }
