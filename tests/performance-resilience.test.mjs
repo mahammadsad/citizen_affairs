@@ -29,8 +29,8 @@ test('service worker is build-versioned and excludes mutable or private paths', 
   assert.match(worker, /CACHE_NAME = CACHE_PREFIX \+ BUILD/);
   assert.match(worker, /request\.mode === 'navigate'/);
   assert.match(worker, /\(\?:admin\|staff\|api\)/);
-  assert.match(worker, /deployment\\\\\.json/);
-  assert.match(worker, /search-index\\\\\.json/);
+  assert.ok(worker.includes('deployment\\\\.json'));
+  assert.ok(worker.includes('search-index\\\\.json'));
   assert.match(worker, /Cache-Control': 'no-cache, no-store, must-revalidate'/);
 });
 
