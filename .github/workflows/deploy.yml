@@ -89,6 +89,9 @@ jobs:
       - name: Generated HTML and route validation
         run: npm run validate:html
 
+      - name: Canonical, hreflang and structured-data validation
+        run: npm run validate:seo
+
       - name: Scan generated frontend for private credentials
         run: npm run audit:secrets
 
