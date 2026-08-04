@@ -29,6 +29,7 @@ test('latest information bar is static and mobile footer is collapsible', () => 
   const ticker = read('src/components/LatestTicker.astro');
   assert.doesNotMatch(ticker, /@keyframes|animation\s*:/);
   assert.match(ticker, /latest-message/);
+  assert.match(ticker, /lead &&/);
 
   const footer = read('src/components/Footer.astro');
   assert.match(footer, /footer-mobile-groups/);
@@ -36,10 +37,21 @@ test('latest information bar is static and mobile footer is collapsible', () => 
   assert.match(footer, /<summary>/);
 });
 
-test('homepage has useful empty-content and verification experiences', () => {
+test('homepage provides useful empty-content and citizen-task experiences', () => {
   const homepage = read('src/components/HomePage.astro');
-  assert.match(homepage, /editorial-empty-state/);
-  assert.match(homepage, /verification-timeline/);
-  assert.match(homepage, /hero-metrics/);
-  assert.match(homepage, /officially-confirmed/);
+  assert.match(homepage, /portal-start/);
+  assert.match(homepage, /portal-promises/);
+  assert.match(homepage, /portal-action-grid/);
+  assert.match(homepage, /portal-method/);
+  assert.match(homepage, /verificationLabels/);
+});
+
+test('portal navigation exposes the active citizen sections on desktop and mobile', () => {
+  const header = read('src/components/PortalHeader.astro');
+  assert.match(header, /portal-desktop-nav/);
+  assert.match(header, /portal-mobile-bottom/);
+  assert.match(header, /categories\/jobs/);
+  assert.match(header, /categories\/materials/);
+  assert.match(header, /categories\/projects/);
+  assert.match(header, /categories\/affairs/);
 });

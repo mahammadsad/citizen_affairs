@@ -7,7 +7,6 @@ import { getLocalizedArticles, getUpcomingDeadlines, categoryDescription, catego
 import { deadlineLabel, deadlineState } from '@lib/deadline';
 import { ACTIVE_CATEGORY_IDS, resolveAssetPath, SITE } from '@utils/constants';
 import {
-  formatUpdateCount,
   locales,
   localizedPath,
   trustPagePath,
@@ -19,27 +18,26 @@ import {
 
 const { locale } = Astro.props as { locale: Locale; isRoot?: boolean };
 const t = ui(locale);
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
+
 const allArticles = await getLocalizedArticles(locale);
-const latestArticles = allArticles.slice(0, 6);
 const categories = await getCollection('categories');
-const activeCategories = categories.filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id));
-const upcoming = await getUpcomingDeadlines(locale, 4);
+const activeCategories = categories
+  .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
+  .sort((a, b) => ACTIVE_CATEGORY_IDS.indexOf(a.id) - ACTIVE_CATEGORY_IDS.indexOf(b.id));
+const latestArticles = allArticles.slice(0, 8);
+const upcoming = await getUpcomingDeadlines(locale, 6);
 const featured = allArticles.find((article) => article.data.featured) || allArticles[0];
+const importantToday = allArticles.filter((article) => article.id !== featured?.id).slice(0, 5);
+const changedArticles = allArticles.filter((article) => article.data.updateHistory.length > 0).slice(0, 4);
 const featuredCategory = featured ? categories.find((category) => category.id === featured.data.category) : undefined;
-const hasPublishedContent = allArticles.length > 0;
-const verifiedCount = allArticles.filter((article) => article.data.verificationStatus === 'officially-confirmed').length;
 const canonical = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
 const alternateUrls = Object.fromEntries(
   locales.map((lang) => [lang, lang === 'en' ? `${SITE.url}/` : `${SITE.url}/${lang}/`])
 ) as Record<Locale, string>;
-const iconMap: Record<string, string> = {
-  jobs: 'briefcase',
-  projects: 'schemes',
-  exams: 'exams',
-  notices: 'notices',
-  affairs: 'services',
-  materials: 'education'
-};
 const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
   year: 'numeric',
   month: 'short',
@@ -54,155 +52,218 @@ const resolveSrcSet = (value?: string) =>
     })
     .join(', ');
 
+const iconMap: Record<string, string> = {
+  jobs: 'briefcase',
+  projects: 'schemes',
+  exams: 'exams',
+  notices: 'notices',
+  affairs: 'services',
+  materials: 'education',
+  guides: 'book'
+};
+
 const copy = {
   en: {
-    kicker: 'Independent public-information platform',
-    heroNote: 'Official sources first. Clear explanations. Transparent corrections.',
-    quickJobs: 'Government jobs',
-    quickSchemes: 'Welfare schemes',
-    quickDeadlines: 'Upcoming deadlines',
-    verified: 'Officially verified',
-    published: 'Published guides',
-    activeTopics: 'Active sections',
-    thisWeek: 'Important this week',
-    noFeaturedTitle: 'Start with trusted information',
-    noFeaturedBody:
-      'Browse focused guides for government jobs and welfare schemes while new verified updates are prepared.',
-    latestIntro: 'Recently verified information, presented with source and update details.',
-    emptyLatestTitle: 'More verified updates are being prepared',
-    emptyLatestBody:
-      'The site stays intentionally selective: an update is published only after its source and status are recorded.',
-    promiseSources: 'Official-source links',
-    promiseDates: 'Last-verified dates',
-    promiseCorrections: 'Transparent corrections',
-    deadlineIntro: 'Do not miss the application and registration dates that matter.',
-    processTitle: 'A clearer way to use public information',
-    processBody:
-      'Every guide is designed to help you understand the update, verify the source and take the correct next step.',
-    learnMethod: 'Read our verification method',
-    browseAll: 'Browse all updates'
+    label: 'Citizen opportunity & public-service portal',
+    title: 'Find opportunities, benefits and public services that affect your life',
+    description:
+      'Verified government jobs, admissions, scholarships, welfare schemes, deadlines and citizen-service guides from official sources across India.',
+    searchPlaceholder: 'Search jobs, scholarships, schemes, results, Aadhaar services…',
+    officialPromise: 'Official sources first',
+    lastCheckedPromise: 'Verification dates shown',
+    correctionPromise: 'Changes tracked openly',
+    actionHeading: 'What do you need today?',
+    actionIntro: 'Start with the task you want to complete.',
+    importantToday: 'Important today',
+    startHere: 'Start with a citizen section',
+    startHereBody: 'Choose a section to find official opportunities, benefits and services.',
+    deadlines: 'Deadline centre',
+    deadlineIntro: 'Applications and registrations closing soon.',
+    latest: 'Latest verified updates',
+    latestIntro: 'Actionable information with status, deadline and official-source details.',
+    changed: 'What changed',
+    changedIntro: 'Corrections, extensions and important updates recorded transparently.',
+    stateTitle: 'Find information relevant to you',
+    stateBody: 'Search by state, qualification, scheme, service or deadline.',
+    stateCta: 'Open advanced search',
+    methodTitle: 'A citizen-first way to publish public information',
+    methodBody:
+      'We publish an update only when it changes an opportunity, eligibility rule, entitlement, deadline, required action or access to a public service.',
+    methodLink: 'How we verify information',
+    browseAll: 'Browse all updates',
+    viewDeadlines: 'View all deadlines',
+    viewCategories: 'View all sections',
+    lastUpdated: 'Last updated',
+    noDeadline: 'No deadline',
+    actions: [
+      ['Find a government job', 'Open recruitment notices by qualification and state.', 'jobs', 'briefcase'],
+      ['Find admissions and results', 'Admissions, entrance exams, admit cards and results.', 'exams', 'exams'],
+      ['Find a scholarship', 'Scholarships, fellowships and student support.', 'materials', 'education'],
+      ['Check welfare schemes', 'Benefits, eligibility and application procedures.', 'projects', 'schemes'],
+      ['Use a citizen service', 'Aadhaar, PAN, voter, pension, certificates and more.', 'affairs', 'services'],
+      ['See urgent alerts', 'Deadline changes, corrections and service notices.', 'notices', 'notices']
+    ],
+    popularNeeds: [
+      ['Jobs by qualification', 'jobs'],
+      ['Scholarship deadlines', 'materials'],
+      ['Admit cards and results', 'exams'],
+      ['Schemes for families', 'projects'],
+      ['Certificates and IDs', 'affairs'],
+      ['Deadline extensions', 'notices']
+    ]
   },
   bn: {
-    kicker: 'স্বাধীন জনতথ্য প্ল্যাটফর্ম',
-    heroNote: 'আগে অফিসিয়াল সূত্র। সহজ ব্যাখ্যা। স্বচ্ছ সংশোধন।',
-    quickJobs: 'সরকারি চাকরি',
-    quickSchemes: 'কল্যাণমূলক প্রকল্প',
-    quickDeadlines: 'আসন্ন শেষ তারিখ',
-    verified: 'অফিসিয়ালি যাচাইকৃত',
-    published: 'প্রকাশিত গাইড',
-    activeTopics: 'সক্রিয় বিভাগ',
-    thisWeek: 'এই সপ্তাহের গুরুত্বপূর্ণ তথ্য',
-    noFeaturedTitle: 'বিশ্বস্ত তথ্য দিয়ে শুরু করুন',
-    noFeaturedBody:
-      'নতুন যাচাইকৃত আপডেট প্রস্তুত হওয়ার সময় সরকারি চাকরি ও কল্যাণমূলক প্রকল্পের গাইড দেখুন।',
-    latestIntro: 'সূত্র, যাচাই ও আপডেটের তারিখসহ সাম্প্রতিক তথ্য।',
-    emptyLatestTitle: 'আরও যাচাইকৃত আপডেট প্রস্তুত হচ্ছে',
-    emptyLatestBody:
-      'প্রতিটি তথ্যের সূত্র ও যাচাইয়ের অবস্থা নথিভুক্ত হওয়ার পরেই তা প্রকাশ করা হয়।',
-    promiseSources: 'অফিসিয়াল সূত্রের লিঙ্ক',
-    promiseDates: 'সর্বশেষ যাচাইয়ের তারিখ',
-    promiseCorrections: 'স্বচ্ছ সংশোধন',
-    deadlineIntro: 'গুরুত্বপূর্ণ আবেদন ও নিবন্ধনের শেষ তারিখ মিস করবেন না।',
-    processTitle: 'জনতথ্য ব্যবহারের আরও পরিষ্কার উপায়',
-    processBody:
-      'প্রতিটি গাইড তথ্যটি বোঝা, সূত্র যাচাই করা এবং সঠিক পরবর্তী পদক্ষেপ নিতে সাহায্য করে।',
-    learnMethod: 'যাচাই পদ্ধতি পড়ুন',
-    browseAll: 'সব আপডেট দেখুন'
+    label: 'নাগরিক সুযোগ ও জনপরিষেবা পোর্টাল',
+    title: 'আপনার জীবনে প্রভাব ফেলে এমন সুযোগ, সুবিধা ও জনপরিষেবা খুঁজুন',
+    description:
+      'সারা ভারতের অফিসিয়াল সূত্রভিত্তিক সরকারি চাকরি, ভর্তি, স্কলারশিপ, জনকল্যাণ প্রকল্প, সময়সীমা ও নাগরিক পরিষেবার যাচাইকৃত তথ্য।',
+    searchPlaceholder: 'চাকরি, স্কলারশিপ, প্রকল্প, ফলাফল, আধার পরিষেবা খুঁজুন…',
+    officialPromise: 'আগে অফিসিয়াল সূত্র',
+    lastCheckedPromise: 'যাচাইয়ের তারিখ দেখানো হয়',
+    correctionPromise: 'পরিবর্তন স্বচ্ছভাবে নথিভুক্ত',
+    actionHeading: 'আজ আপনার কী দরকার?',
+    actionIntro: 'যে কাজটি করতে চান, সেখান থেকেই শুরু করুন।',
+    importantToday: 'আজকের গুরুত্বপূর্ণ তথ্য',
+    startHere: 'নাগরিক বিভাগ থেকে শুরু করুন',
+    startHereBody: 'অফিসিয়াল সুযোগ, সুবিধা ও পরিষেবা খুঁজতে একটি বিভাগ বেছে নিন।',
+    deadlines: 'সময়সীমা কেন্দ্র',
+    deadlineIntro: 'শীঘ্রই বন্ধ হতে চলা আবেদন ও নিবন্ধন।',
+    latest: 'সর্বশেষ যাচাইকৃত আপডেট',
+    latestIntro: 'স্ট্যাটাস, সময়সীমা ও অফিসিয়াল সূত্রসহ করণীয় তথ্য।',
+    changed: 'কী পরিবর্তন হয়েছে',
+    changedIntro: 'সংশোধন, সময়সীমা বৃদ্ধি ও গুরুত্বপূর্ণ পরিবর্তনের স্বচ্ছ রেকর্ড।',
+    stateTitle: 'আপনার জন্য প্রাসঙ্গিক তথ্য খুঁজুন',
+    stateBody: 'রাজ্য, যোগ্যতা, প্রকল্প, পরিষেবা বা সময়সীমা অনুযায়ী খুঁজুন।',
+    stateCta: 'উন্নত অনুসন্ধান খুলুন',
+    methodTitle: 'নাগরিক-কেন্দ্রিক জনতথ্য প্রকাশের পদ্ধতি',
+    methodBody:
+      'কোনো সুযোগ, যোগ্যতা, অধিকার, সময়সীমা, করণীয় বা জনপরিষেবায় প্রবেশের পরিবর্তন হলেই আমরা তা প্রকাশ করি।',
+    methodLink: 'তথ্য যাচাইয়ের পদ্ধতি',
+    browseAll: 'সব আপডেট দেখুন',
+    viewDeadlines: 'সব সময়সীমা দেখুন',
+    viewCategories: 'সব বিভাগ দেখুন',
+    lastUpdated: 'সর্বশেষ আপডেট',
+    noDeadline: 'সময়সীমা নেই',
+    actions: [
+      ['সরকারি চাকরি খুঁজুন', 'যোগ্যতা ও রাজ্য অনুযায়ী নিয়োগ বিজ্ঞপ্তি।', 'jobs', 'briefcase'],
+      ['ভর্তি ও ফলাফল দেখুন', 'ভর্তি, প্রবেশিকা, অ্যাডমিট কার্ড ও ফলাফল।', 'exams', 'exams'],
+      ['স্কলারশিপ খুঁজুন', 'স্কলারশিপ, ফেলোশিপ ও শিক্ষার্থী সহায়তা।', 'materials', 'education'],
+      ['জনকল্যাণ প্রকল্প দেখুন', 'সুবিধা, যোগ্যতা ও আবেদন পদ্ধতি।', 'projects', 'schemes'],
+      ['নাগরিক পরিষেবা ব্যবহার করুন', 'আধার, প্যান, ভোটার, পেনশন, সার্টিফিকেট ও আরও অনেক কিছু।', 'affairs', 'services'],
+      ['জরুরি সতর্কতা দেখুন', 'সময়সীমা পরিবর্তন, সংশোধন ও পরিষেবা নোটিশ।', 'notices', 'notices']
+    ],
+    popularNeeds: [
+      ['যোগ্যতা অনুযায়ী চাকরি', 'jobs'],
+      ['স্কলারশিপের সময়সীমা', 'materials'],
+      ['অ্যাডমিট কার্ড ও ফলাফল', 'exams'],
+      ['পরিবারের জন্য প্রকল্প', 'projects'],
+      ['সার্টিফিকেট ও পরিচয়পত্র', 'affairs'],
+      ['সময়সীমা বৃদ্ধি', 'notices']
+    ]
   },
   hi: {
-    kicker: 'स्वतंत्र जन-सूचना मंच',
-    heroNote: 'पहले आधिकारिक स्रोत। स्पष्ट व्याख्या। पारदर्शी सुधार।',
-    quickJobs: 'सरकारी नौकरियाँ',
-    quickSchemes: 'कल्याण योजनाएँ',
-    quickDeadlines: 'आगामी अंतिम तिथियाँ',
-    verified: 'आधिकारिक रूप से सत्यापित',
-    published: 'प्रकाशित गाइड',
-    activeTopics: 'सक्रिय अनुभाग',
-    thisWeek: 'इस सप्ताह की महत्वपूर्ण जानकारी',
-    noFeaturedTitle: 'विश्वसनीय जानकारी से शुरुआत करें',
-    noFeaturedBody:
-      'नई सत्यापित जानकारी तैयार होने तक सरकारी नौकरियों और कल्याण योजनाओं की उपयोगी गाइड देखें।',
-    latestIntro: 'स्रोत, सत्यापन और अपडेट की तारीख के साथ हाल की जानकारी।',
-    emptyLatestTitle: 'और सत्यापित अपडेट तैयार किए जा रहे हैं',
-    emptyLatestBody:
-      'किसी जानकारी को उसके स्रोत और सत्यापन स्थिति दर्ज होने के बाद ही प्रकाशित किया जाता है।',
-    promiseSources: 'आधिकारिक स्रोत लिंक',
-    promiseDates: 'अंतिम सत्यापन तारीख',
-    promiseCorrections: 'पारदर्शी सुधार',
-    deadlineIntro: 'महत्वपूर्ण आवेदन और पंजीकरण की अंतिम तिथियाँ न चूकें।',
-    processTitle: 'जन-सूचना उपयोग करने का अधिक स्पष्ट तरीका',
-    processBody:
-      'हर गाइड आपको जानकारी समझने, स्रोत जाँचने और सही अगला कदम लेने में मदद करती है।',
-    learnMethod: 'हमारी सत्यापन पद्धति पढ़ें',
-    browseAll: 'सभी अपडेट देखें'
+    label: 'नागरिक अवसर और जन-सेवा पोर्टल',
+    title: 'अपने जीवन को प्रभावित करने वाले अवसर, लाभ और सार्वजनिक सेवाएँ खोजें',
+    description:
+      'भारत भर के आधिकारिक स्रोतों से सत्यापित सरकारी नौकरियाँ, प्रवेश, छात्रवृत्तियाँ, कल्याण योजनाएँ, समय-सीमाएँ और नागरिक-सेवा मार्गदर्शिकाएँ।',
+    searchPlaceholder: 'नौकरी, छात्रवृत्ति, योजना, परिणाम, आधार सेवा खोजें…',
+    officialPromise: 'पहले आधिकारिक स्रोत',
+    lastCheckedPromise: 'सत्यापन की तारीख दिखाई जाती है',
+    correctionPromise: 'बदलाव खुले रूप से दर्ज',
+    actionHeading: 'आज आपको क्या चाहिए?',
+    actionIntro: 'जिस काम को पूरा करना है, वहीं से शुरू करें।',
+    importantToday: 'आज की महत्वपूर्ण जानकारी',
+    startHere: 'नागरिक अनुभाग से शुरुआत करें',
+    startHereBody: 'आधिकारिक अवसर, लाभ और सेवाएँ खोजने के लिए अनुभाग चुनें।',
+    deadlines: 'समय-सीमा केंद्र',
+    deadlineIntro: 'जल्द बंद होने वाले आवेदन और पंजीकरण।',
+    latest: 'नवीनतम सत्यापित अपडेट',
+    latestIntro: 'स्थिति, समय-सीमा और आधिकारिक स्रोत के साथ उपयोगी जानकारी।',
+    changed: 'क्या बदला',
+    changedIntro: 'सुधार, समय-विस्तार और महत्वपूर्ण बदलावों का पारदर्शी रिकॉर्ड।',
+    stateTitle: 'अपने लिए प्रासंगिक जानकारी खोजें',
+    stateBody: 'राज्य, योग्यता, योजना, सेवा या समय-सीमा के अनुसार खोजें।',
+    stateCta: 'उन्नत खोज खोलें',
+    methodTitle: 'नागरिक-केंद्रित सार्वजनिक सूचना पद्धति',
+    methodBody:
+      'हम जानकारी तभी प्रकाशित करते हैं जब वह अवसर, पात्रता, अधिकार, समय-सीमा, आवश्यक कार्रवाई या सार्वजनिक सेवा की पहुँच बदलती है।',
+    methodLink: 'हम जानकारी कैसे सत्यापित करते हैं',
+    browseAll: 'सभी अपडेट देखें',
+    viewDeadlines: 'सभी समय-सीमाएँ देखें',
+    viewCategories: 'सभी अनुभाग देखें',
+    lastUpdated: 'अंतिम अपडेट',
+    noDeadline: 'कोई समय-सीमा नहीं',
+    actions: [
+      ['सरकारी नौकरी खोजें', 'योग्यता और राज्य के अनुसार भर्ती सूचनाएँ।', 'jobs', 'briefcase'],
+      ['प्रवेश और परिणाम देखें', 'प्रवेश, परीक्षाएँ, एडमिट कार्ड और परिणाम।', 'exams', 'exams'],
+      ['छात्रवृत्ति खोजें', 'छात्रवृत्तियाँ, फेलोशिप और छात्र सहायता।', 'materials', 'education'],
+      ['कल्याण योजनाएँ देखें', 'लाभ, पात्रता और आवेदन प्रक्रिया।', 'projects', 'schemes'],
+      ['नागरिक सेवा का उपयोग करें', 'आधार, पैन, मतदाता, पेंशन, प्रमाणपत्र और अधिक।', 'affairs', 'services'],
+      ['जरूरी अलर्ट देखें', 'समय-सीमा बदलाव, सुधार और सेवा सूचनाएँ।', 'notices', 'notices']
+    ],
+    popularNeeds: [
+      ['योग्यता के अनुसार नौकरियाँ', 'jobs'],
+      ['छात्रवृत्ति समय-सीमाएँ', 'materials'],
+      ['एडमिट कार्ड और परिणाम', 'exams'],
+      ['परिवारों के लिए योजनाएँ', 'projects'],
+      ['प्रमाणपत्र और पहचान', 'affairs'],
+      ['समय-सीमा विस्तार', 'notices']
+    ]
   }
 }[locale];
 ---
 
-<MainLayout title={t.nationwide} description={t.heroDescription} {locale} {canonical} {alternateUrls}>
-  <section class="home-hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <span class="hero-kicker"><span aria-hidden="true"></span>{copy.kicker}</span>
-        <h1>{t.heroTitle}</h1>
-        <p class="hero-description">{t.heroDescription}</p>
-
-        <form
-          class="hero-search"
-          action={locale === 'en' ? localizedPath(locale, 'search').replace('/en/', '/') : localizedPath(locale, 'search')}
-        >
-          <Icon name="search" />
-          <input name="q" type="search" placeholder={t.searchPlaceholder} aria-label={t.search} />
+<MainLayout title={copy.title} description={copy.description} {locale} {canonical} {alternateUrls}>
+  <section class="portal-hero">
+    <div class="container portal-hero-grid">
+      <div class="portal-hero-copy">
+        <span class="portal-label"><Icon name="check" size={17} />{copy.label}</span>
+        <h1>{copy.title}</h1>
+        <p>{copy.description}</p>
+        <form class="portal-search" action={route('search')}>
+          <Icon name="search" size={23} />
+          <input name="q" type="search" placeholder={copy.searchPlaceholder} aria-label={t.search} />
           <button type="submit">{t.search}</button>
         </form>
-
-        <nav class="hero-quick-links" aria-label={t.categories}>
-          <a href={localizedPath(locale, 'categories/jobs')}><Icon name="briefcase" size={18} />{copy.quickJobs}</a>
-          <a href={localizedPath(locale, 'categories/projects')}><Icon name="schemes" size={18} />{copy.quickSchemes}</a>
-          <a href={localizedPath(locale, 'deadlines')}><Icon name="clock" size={18} />{copy.quickDeadlines}</a>
-        </nav>
-
-        <p class="hero-note"><Icon name="check" size={18} />{copy.heroNote}</p>
+        <div class="portal-promises" aria-label={t.verificationMethod}>
+          <span><Icon name="external" size={16} />{copy.officialPromise}</span>
+          <span><Icon name="clock" size={16} />{copy.lastCheckedPromise}</span>
+          <span><Icon name="check" size={16} />{copy.correctionPromise}</span>
+        </div>
       </div>
 
-      <aside class="featured-update" aria-label={copy.thisWeek}>
+      <aside class="portal-today">
+        <div class="portal-section-label">
+          <span>{copy.importantToday}</span>
+          {allArticles.length > 0 && <a href={route('articles')}>{copy.browseAll}<Icon name="arrow" size={17} /></a>}
+        </div>
         {featured ? (
-          <>
-            <div class="featured-image">
-              {featured.data.featuredImage ? (
-                <picture>
-                  {featured.data.featuredImageAvif && (
-                    <source
-                      srcset={
-                        resolveSrcSet(featured.data.featuredImageAvifSrcSet) ||
-                        resolveAssetPath(featured.data.featuredImageAvif)
-                      }
-                      sizes="(max-width: 980px) calc(100vw - 2rem), 520px"
-                      type="image/avif"
-                    />
-                  )}
-                  <img
-                    src={resolveAssetPath(featured.data.featuredImage)}
-                    srcset={resolveSrcSet(featured.data.featuredImageSrcSet)}
-                    sizes="(max-width: 980px) calc(100vw - 2rem), 520px"
-                    alt={featured.data.featuredImageAlt || featured.data.title}
-                    width={featured.data.featuredImageWidth || 1200}
-                    height={featured.data.featuredImageHeight || 675}
-                    fetchpriority="high"
-                    decoding="async"
+          <article class="portal-lead">
+            {featured.data.featuredImage && (
+              <picture>
+                {featured.data.featuredImageAvif && (
+                  <source
+                    srcset={resolveSrcSet(featured.data.featuredImageAvifSrcSet) || resolveAssetPath(featured.data.featuredImageAvif)}
+                    type="image/avif"
                   />
-                </picture>
-              ) : (
-                <div class="image-fallback"><Icon name={iconMap[featured.data.category] || 'updates'} size={64} /></div>
-              )}
-              <span>{featured.data.featured ? t.featured : t.latest}</span>
-            </div>
-            <div class="featured-body">
-              <div class="featured-badges">
+                )}
+                <img
+                  src={resolveAssetPath(featured.data.featuredImage)}
+                  srcset={resolveSrcSet(featured.data.featuredImageSrcSet)}
+                  alt={featured.data.featuredImageAlt || featured.data.title}
+                  width={featured.data.featuredImageWidth || 1200}
+                  height={featured.data.featuredImageHeight || 675}
+                  fetchpriority="high"
+                  decoding="async"
+                />
+              </picture>
+            )}
+            <div>
+              <div class="portal-lead-meta">
                 <span>{featuredCategory ? categoryName(featuredCategory, locale) : featured.data.category}</span>
                 <span><Icon name="check" size={14} />{verificationLabels[locale][featured.data.verificationStatus]}</span>
               </div>
-              <h2>{featured.data.title}</h2>
+              <h2><a href={route(`articles/${featured.data.urlSlug}`)}>{featured.data.title}</a></h2>
               <p>{featured.data.description}</p>
               <dl>
                 {featured.data.deadline && (
@@ -212,68 +273,126 @@ const copy = {
                   </div>
                 )}
                 <div>
-                  <dt>{t.updated}</dt>
+                  <dt>{copy.lastUpdated}</dt>
                   <dd>{formatter.format(featured.data.updated || featured.data.date)}</dd>
                 </div>
               </dl>
-              <div class="featured-actions">
-                <a class="btn btn-primary btn-sm" href={localizedPath(locale, `articles/${featured.data.urlSlug}`)}>
-                  {t.readMore}<Icon name="arrow" size={18} />
-                </a>
-                {featured.data.applicationUrl && (
-                  <a
-                    class="btn btn-secondary btn-sm"
-                    href={featured.data.applicationUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t.apply}<Icon name="external" size={18} />
-                  </a>
-                )}
-              </div>
+              <a class="portal-primary-link" href={route(`articles/${featured.data.urlSlug}`)}>
+                {t.readMore}<Icon name="arrow" size={18} />
+              </a>
             </div>
-          </>
+          </article>
         ) : (
-          <div class="empty-showcase">
-            <span class="empty-showcase-icon"><Icon name="check" size={38} /></span>
-            <span class="eyebrow">{copy.thisWeek}</span>
-            <h2>{copy.noFeaturedTitle}</h2>
-            <p>{copy.noFeaturedBody}</p>
-            <div class="empty-showcase-links">
-              <a href={localizedPath(locale, 'categories/jobs')}>{copy.quickJobs}<Icon name="arrow" size={18} /></a>
-              <a href={localizedPath(locale, 'categories/projects')}>{copy.quickSchemes}<Icon name="arrow" size={18} /></a>
+          <div class="portal-start">
+            <span class="portal-start-icon"><Icon name="categories" size={30} /></span>
+            <h2>{copy.startHere}</h2>
+            <p>{copy.startHereBody}</p>
+            <div>
+              {activeCategories.slice(0, 4).map((category) => (
+                <a href={route(`categories/${category.id}`)}>
+                  <Icon name={iconMap[category.id] || 'book'} size={18} />
+                  {categoryName(category, locale)}
+                </a>
+              ))}
             </div>
           </div>
         )}
-      </aside>
-    </div>
 
-    <div class="container hero-metrics" aria-label={t.verifiedSources}>
-      <div><strong>{verifiedCount}</strong><span>{copy.verified}</span></div>
-      <div><strong>{allArticles.length}</strong><span>{copy.published}</span></div>
-      <div><strong>{activeCategories.length}</strong><span>{copy.activeTopics}</span></div>
+        {importantToday.length > 0 && (
+          <ol class="portal-headlines">
+            {importantToday.map((article) => {
+              const articleCategory = categories.find((category) => category.id === article.data.category);
+              return (
+                <li>
+                  <a href={route(`articles/${article.data.urlSlug}`)}>
+                    <span>{articleCategory ? categoryName(articleCategory, locale) : article.data.category}</span>
+                    <strong>{article.data.title}</strong>
+                    <small>{formatter.format(article.data.updated || article.data.date)}</small>
+                  </a>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </aside>
     </div>
   </section>
 
-  <section class="section category-section" id="categories">
+  <section class="portal-actions section">
     <div class="container">
-      <div class="section-heading-row">
-        <div class="section-head">
-          <span class="eyebrow">{t.categories}</span>
-          <h2>{t.whatWeCover}</h2>
-        </div>
-        <a href={localizedPath(locale, 'categories')}>{t.viewAll}<Icon name="arrow" size={18} /></a>
+      <div class="portal-heading">
+        <span>{t.quickLinks}</span>
+        <h2>{copy.actionHeading}</h2>
+        <p>{copy.actionIntro}</p>
       </div>
-      <div class="category-grid">
+      <div class="portal-action-grid">
+        {copy.actions.map(([title, description, category, icon]) => (
+          <a href={route(`categories/${category}`)}>
+            <span><Icon name={icon} size={25} /></span>
+            <div>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </div>
+            <Icon name="arrow" size={19} />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {upcoming.length > 0 && (
+    <section class="portal-deadlines section">
+      <div class="container">
+        <div class="portal-heading-row">
+          <div class="portal-heading">
+            <span>{t.deadlines}</span>
+            <h2>{copy.deadlines}</h2>
+            <p>{copy.deadlineIntro}</p>
+          </div>
+          <a href={route('deadlines')}>{copy.viewDeadlines}<Icon name="arrow" size={18} /></a>
+        </div>
+        <div class="portal-deadline-list">
+          {upcoming.map((article) => {
+            const articleCategory = categories.find((category) => category.id === article.data.category);
+            return (
+              <a href={route(`articles/${article.data.urlSlug}`)}>
+                <div>
+                  <span>{articleCategory ? categoryName(articleCategory, locale) : article.data.category}</span>
+                  <strong>{article.data.title}</strong>
+                </div>
+                <div>
+                  <small>{deadlineLabel(deadlineState(article.data.deadline), locale)}</small>
+                  <time datetime={article.data.deadline?.toISOString()}>{article.data.deadline ? formatter.format(article.data.deadline) : copy.noDeadline}</time>
+                </div>
+                <Icon name="arrow" size={19} />
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="portal-sections section">
+    <div class="container">
+      <div class="portal-heading-row">
+        <div class="portal-heading">
+          <span>{t.categories}</span>
+          <h2>{copy.startHere}</h2>
+          <p>{copy.startHereBody}</p>
+        </div>
+        <a href={route('categories')}>{copy.viewCategories}<Icon name="arrow" size={18} /></a>
+      </div>
+      <div class="portal-category-grid">
         {activeCategories.map((category) => {
           const count = allArticles.filter((article) => article.data.category === category.id).length;
           return (
-            <a class="category-card" href={localizedPath(locale, `categories/${category.id}`)}>
-              <span class="category-icon"><Icon name={iconMap[category.id] || 'book'} size={28} /></span>
+            <a href={route(`categories/${category.id}`)}>
+              <span class="portal-category-icon"><Icon name={iconMap[category.id] || 'book'} size={27} /></span>
               <div>
                 <h3>{categoryName(category, locale)}</h3>
                 <p>{categoryDescription(category, locale)}</p>
-                <small>{count > 0 ? formatUpdateCount(locale, count) : t.regularlyUpdated}</small>
+                {count > 0 && <small>{count} {t.articles.toLowerCase()}</small>}
               </div>
               <Icon name="arrow" size={20} />
             </a>
@@ -283,470 +402,118 @@ const copy = {
     </div>
   </section>
 
-  <section class="section section-alt latest-section">
-    <div class="container">
-      <div class="section-heading-row">
-        <div class="section-head">
-          <span class="eyebrow">{t.latest}</span>
-          <h2>{t.latest}</h2>
-          <p>{copy.latestIntro}</p>
-        </div>
-        {hasPublishedContent && (
-          <a href={localizedPath(locale, 'articles')}>{copy.browseAll}<Icon name="arrow" size={18} /></a>
-        )}
-      </div>
-
-      {hasPublishedContent ? (
-        <div class="articles-grid">{latestArticles.map((article) => <ArticleCard {article} {locale} />)}</div>
-      ) : (
-        <div class="editorial-empty-state">
-          <div>
-            <span class="empty-state-icon"><Icon name="services" size={32} /></span>
-            <h3>{copy.emptyLatestTitle}</h3>
-            <p>{copy.emptyLatestBody}</p>
-          </div>
-          <ul>
-            <li><Icon name="external" size={18} />{copy.promiseSources}</li>
-            <li><Icon name="clock" size={18} />{copy.promiseDates}</li>
-            <li><Icon name="check" size={18} />{copy.promiseCorrections}</li>
-          </ul>
-          <a class="btn btn-primary btn-sm" href={localizedPath(locale, 'categories')}>
-            {t.categories}<Icon name="arrow" size={18} />
-          </a>
-        </div>
-      )}
-    </div>
-  </section>
-
-  {upcoming.length > 0 && (
-    <section class="section deadline-section">
+  {latestArticles.length > 0 && (
+    <section class="portal-latest section">
       <div class="container">
-        <div class="section-heading-row">
-          <div class="section-head">
-            <span class="eyebrow"><Icon name="clock" size={18} />{t.deadlines}</span>
-            <h2>{t.deadlines}</h2>
-            <p>{copy.deadlineIntro}</p>
+        <div class="portal-heading-row">
+          <div class="portal-heading">
+            <span>{t.latest}</span>
+            <h2>{copy.latest}</h2>
+            <p>{copy.latestIntro}</p>
           </div>
-          <a href={localizedPath(locale, 'deadlines')}>{t.viewAll}<Icon name="arrow" size={18} /></a>
+          <a href={route('articles')}>{copy.browseAll}<Icon name="arrow" size={18} /></a>
         </div>
-        <div class="deadline-grid">{upcoming.map((article) => <ArticleCard {article} {locale} compact />)}</div>
+        <div class="portal-article-grid">
+          {latestArticles.map((article) => <ArticleCard {article} {locale} />)}
+        </div>
       </div>
     </section>
   )}
 
-  <section class="section verification-section" id="about">
-    <div class="container verification-layout">
-      <div class="verification-heading">
-        <span class="eyebrow">{t.independent}</span>
-        <h2>{copy.processTitle}</h2>
-        <p>{copy.processBody}</p>
-        <a href={localizedPath(locale, 'editorial-policy')}>
-          {copy.learnMethod}<Icon name="arrow" size={18} />
-        </a>
-      </div>
-      <ol class="verification-timeline">
-        <li><span>01</span><Icon name="services" /><strong>{t.stepDiscover}</strong></li>
-        <li><span>02</span><Icon name="check" /><strong>{t.stepVerify}</strong></li>
-        <li><span>03</span><Icon name="book" /><strong>{t.stepExplain}</strong></li>
-        <li><span>04</span><Icon name="clock" /><strong>{t.stepUpdate}</strong></li>
-      </ol>
-      <div class="independence-note">
-        <Icon name="about" size={28} />
-        <div>
-          <strong>{t.independent}</strong>
-          <span>{t.disclaimerShort}</span>
-          <a href={trustPagePath(locale, 'about')}>{t.learnMoreAbout}<Icon name="arrow" size={18} /></a>
+  {changedArticles.length > 0 && (
+    <section class="portal-changes section">
+      <div class="container">
+        <div class="portal-heading">
+          <span>{t.updated}</span>
+          <h2>{copy.changed}</h2>
+          <p>{copy.changedIntro}</p>
+        </div>
+        <div class="portal-change-grid">
+          {changedArticles.map((article) => (
+            <a href={route(`articles/${article.data.urlSlug}`)}>
+              <span><Icon name="clock" size={19} /></span>
+              <div>
+                <h3>{article.data.title}</h3>
+                <p>{article.data.updateHistory[0]}</p>
+              </div>
+              <Icon name="arrow" size={18} />
+            </a>
+          ))}
         </div>
       </div>
+    </section>
+  )}
+
+  <section class="portal-discovery section">
+    <div class="container portal-discovery-grid">
+      <div>
+        <span class="portal-label"><Icon name="search" size={17} />{t.search}</span>
+        <h2>{copy.stateTitle}</h2>
+        <p>{copy.stateBody}</p>
+        <form class="portal-search portal-search-compact" action={route('search')}>
+          <Icon name="search" size={21} />
+          <input name="q" type="search" placeholder={copy.searchPlaceholder} aria-label={t.search} />
+          <button type="submit">{copy.stateCta}</button>
+        </form>
+      </div>
+      <nav aria-label={t.popularSearches}>
+        {copy.popularNeeds.map(([label, category]) => (
+          <a href={route(`categories/${category}`)}>{label}<Icon name="arrow" size={17} /></a>
+        ))}
+      </nav>
+    </div>
+  </section>
+
+  <section class="portal-method section">
+    <div class="container portal-method-grid">
+      <div>
+        <span class="portal-label"><Icon name="check" size={17} />{t.verificationMethod}</span>
+        <h2>{copy.methodTitle}</h2>
+        <p>{copy.methodBody}</p>
+        <a href={route('editorial-policy')}>{copy.methodLink}<Icon name="arrow" size={18} /></a>
+      </div>
+      <ol>
+        <li><span>01</span><strong>{t.stepDiscover}</strong></li>
+        <li><span>02</span><strong>{t.stepVerify}</strong></li>
+        <li><span>03</span><strong>{t.stepExplain}</strong></li>
+        <li><span>04</span><strong>{t.stepUpdate}</strong></li>
+      </ol>
+      <aside>
+        <Icon name="about" size={24} />
+        <p>{t.disclaimerShort}</p>
+        <a href={trustPagePath(locale, 'about')}>{t.learnMoreAbout}<Icon name="arrow" size={17} /></a>
+      </aside>
     </div>
   </section>
 </MainLayout>
 
 <style>
-  .home-hero {
-    position: relative;
-    overflow: hidden;
-    padding: clamp(3rem, 7vw, 6.5rem) 0 1.5rem;
-    background:
-      radial-gradient(circle at 88% 8%, rgba(var(--color-primary-rgb), .16), transparent 30%),
-      radial-gradient(circle at 4% 92%, rgba(var(--color-green-rgb), .10), transparent 28%),
-      linear-gradient(150deg, var(--color-surface), var(--color-bg));
-  }
-  .home-hero::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: linear-gradient(rgba(var(--color-primary-rgb), .035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(var(--color-primary-rgb), .035) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: linear-gradient(to bottom, #000, transparent 78%);
-  }
-  .hero-grid {
-    position: relative;
-    display: grid;
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: center;
-  }
-  .hero-copy { max-width: 720px; }
-  .hero-kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: .65rem;
-    margin-bottom: 1.2rem;
-    color: var(--color-green-text);
-    font-weight: 800;
-    font-size: .84rem;
-    letter-spacing: .02em;
-  }
-  .hero-kicker span {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--color-green);
-    box-shadow: 0 0 0 5px rgba(var(--color-green-rgb), .12);
-  }
-  .hero-copy h1 {
-    max-width: 15ch;
-    font-size: clamp(2.55rem, 6.4vw, 5.15rem);
-    line-height: 1.01;
-    letter-spacing: -.045em;
-  }
-  .hero-description {
-    max-width: 62ch;
-    margin: 1.25rem 0 1.5rem;
-    color: var(--color-text-muted);
-    font-size: clamp(1.05rem, 1rem + .35vw, 1.24rem);
-  }
-  .hero-search {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: .7rem;
-    max-width: 710px;
-    padding: .5rem .5rem .5rem 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 18px;
-    background: var(--color-surface);
-    box-shadow: 0 18px 46px rgba(11, 29, 58, .11);
-  }
-  .hero-search > svg { color: var(--color-primary); }
-  .hero-search input {
-    width: 100%;
-    min-width: 0;
-    padding: .75rem 0;
-    border: 0;
-    outline: 0;
-    background: transparent;
-  }
-  .hero-search button {
-    min-height: 48px;
-    padding: 0 1.4rem;
-    border-radius: 13px;
-    background: var(--color-primary);
-    color: #fff;
-    font-weight: 800;
-  }
-  .hero-quick-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .55rem;
-    margin-top: .85rem;
-  }
-  .hero-quick-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: .4rem;
-    min-height: 42px;
-    padding: .45rem .8rem;
-    border: 1px solid var(--color-border);
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .62);
-    color: var(--color-text);
-    font-size: .82rem;
-    font-weight: 750;
-  }
-  [data-theme="dark"] .hero-quick-links a { background: rgba(16, 26, 44, .72); }
-  .hero-note {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    margin-top: 1.2rem;
-    color: var(--color-text-muted);
-    font-size: .86rem;
-  }
-  .hero-note svg { color: var(--color-green-text); }
-
-  .featured-update {
-    overflow: hidden;
-    border: 1px solid rgba(var(--color-primary-rgb), .15);
-    border-radius: 28px;
-    background: var(--color-surface);
-    box-shadow: 0 28px 70px rgba(11, 29, 58, .15);
-  }
-  .featured-image {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    background: linear-gradient(135deg, var(--color-navy), var(--color-primary));
-  }
-  .featured-image picture,
-  .featured-image img { width: 100%; height: 100%; }
-  .featured-image img { object-fit: cover; }
-  .featured-image > span {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: .4rem .75rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .94);
-    color: #0b1d3a;
-    font-size: .72rem;
-    font-weight: 900;
-    box-shadow: var(--shadow-sm);
-  }
-  .image-fallback {
-    height: 100%;
-    display: grid;
-    place-items: center;
-    color: #fff;
-  }
-  .featured-body { padding: clamp(1.25rem, 3vw, 1.75rem); }
-  .featured-badges {
-    display: flex;
-    justify-content: space-between;
-    gap: .7rem;
-    color: var(--color-green-text);
-    font-size: .72rem;
-    font-weight: 850;
-  }
-  .featured-badges span { display: inline-flex; align-items: center; gap: .35rem; }
-  .featured-body h2 {
-    margin: .8rem 0 .6rem;
-    font-size: clamp(1.35rem, 2vw, 1.75rem);
-    line-height: 1.28;
-  }
-  .featured-body > p { color: var(--color-text-muted); }
-  .featured-body dl {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .8rem 1.4rem;
-    margin: 1.1rem 0;
-  }
-  .featured-body dt { color: var(--color-text-muted); font-size: .7rem; }
-  .featured-body dd { font-size: .85rem; font-weight: 800; }
-  .featured-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
-
-  .empty-showcase { padding: clamp(1.8rem, 5vw, 3rem); }
-  .empty-showcase-icon {
-    display: grid;
-    place-items: center;
-    width: 72px;
-    height: 72px;
-    margin-bottom: 1.3rem;
-    border-radius: 22px;
-    background: linear-gradient(135deg, var(--color-primary), var(--color-green));
-    color: #fff;
-    box-shadow: 0 18px 35px rgba(var(--color-primary-rgb), .2);
-  }
-  .empty-showcase h2 { margin-bottom: .7rem; font-size: clamp(1.55rem, 3vw, 2.15rem); }
-  .empty-showcase p { color: var(--color-text-muted); }
-  .empty-showcase-links { display: grid; gap: .6rem; margin-top: 1.5rem; }
-  .empty-showcase-links a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    min-height: 50px;
-    padding: .75rem .9rem;
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    background: var(--color-surface-alt);
-    font-weight: 800;
-  }
-
-  .hero-metrics {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin-top: clamp(2rem, 5vw, 4rem);
-    border: 1px solid var(--color-border);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, .78);
-    backdrop-filter: blur(14px);
-  }
-  [data-theme="dark"] .hero-metrics { background: rgba(16, 26, 44, .76); }
-  .hero-metrics div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .65rem;
-    min-height: 76px;
-    padding: .85rem 1rem;
-    text-align: center;
-  }
-  .hero-metrics div + div { border-left: 1px solid var(--color-border); }
-  .hero-metrics strong { color: var(--color-primary); font-size: 1.45rem; }
-  .hero-metrics span { color: var(--color-text-muted); font-size: .8rem; font-weight: 700; }
-
-  .section-heading-row {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1.2rem;
-  }
-  .section-heading-row > a,
-  .verification-heading > a {
-    display: inline-flex;
-    align-items: center;
-    gap: .35rem;
-    color: var(--color-primary);
-    font-weight: 800;
-  }
-  .section-heading-row > a { margin-bottom: var(--space-5); }
-  .category-grid,
-  .articles-grid,
-  .deadline-grid { display: grid; gap: 1rem; }
-  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .category-card {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1rem;
-    min-height: 148px;
-    padding: 1.35rem;
-    border: 1px solid var(--color-border);
-    border-radius: 20px;
-    background: var(--color-surface);
-    transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
-  }
-  .category-card:hover,
-  .category-card:focus-visible {
-    transform: translateY(-4px);
-    border-color: rgba(var(--color-primary-rgb), .35);
-    box-shadow: var(--shadow-md);
-  }
-  .category-icon {
-    display: grid;
-    place-items: center;
-    width: 58px;
-    height: 58px;
-    border-radius: 17px;
-    background: linear-gradient(145deg, rgba(var(--color-primary-rgb), .14), rgba(var(--color-green-rgb), .09));
-    color: var(--color-primary);
-  }
-  .category-card h3 { font-size: 1.15rem; }
-  .category-card p { margin-top: .25rem; color: var(--color-text-muted); font-size: .88rem; line-height: 1.5; }
-  .category-card small { display: block; margin-top: .45rem; color: var(--color-green-text); font-weight: 750; }
-  .category-card > svg { color: var(--color-text-muted); }
-
-  .editorial-empty-state {
-    display: grid;
-    grid-template-columns: minmax(0, 1.4fr) minmax(220px, .8fr) auto;
-    align-items: center;
-    gap: 1.5rem;
-    padding: clamp(1.4rem, 4vw, 2.4rem);
-    border: 1px solid var(--color-border);
-    border-radius: 24px;
-    background: var(--color-surface);
-    box-shadow: var(--shadow-sm);
-  }
-  .empty-state-icon {
-    display: grid;
-    place-items: center;
-    width: 58px;
-    height: 58px;
-    margin-bottom: .9rem;
-    border-radius: 17px;
-    background: rgba(var(--color-primary-rgb), .1);
-    color: var(--color-primary);
-  }
-  .editorial-empty-state h3 { margin-bottom: .35rem; font-size: 1.35rem; }
-  .editorial-empty-state p { color: var(--color-text-muted); }
-  .editorial-empty-state ul { display: grid; gap: .7rem; }
-  .editorial-empty-state li { display: flex; align-items: center; gap: .55rem; font-size: .88rem; font-weight: 700; }
-  .editorial-empty-state li svg { color: var(--color-green-text); }
-
-  .verification-section {
-    background:
-      linear-gradient(135deg, rgba(var(--color-primary-rgb), .08), rgba(var(--color-green-rgb), .08)),
-      var(--color-surface);
-  }
-  .verification-layout {
-    display: grid;
-    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-    gap: clamp(2rem, 6vw, 5rem);
-    align-items: start;
-  }
-  .verification-heading h2 { margin-bottom: .8rem; font-size: clamp(1.9rem, 4vw, 3rem); }
-  .verification-heading p { color: var(--color-text-muted); }
-  .verification-heading > a { margin-top: 1.2rem; }
-  .verification-timeline {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .9rem;
-  }
-  .verification-timeline li {
-    position: relative;
-    display: grid;
-    min-height: 150px;
-    padding: 1.15rem;
-    border: 1px solid var(--color-border);
-    border-radius: 18px;
-    background: var(--color-surface);
-  }
-  .verification-timeline li > span {
-    position: absolute;
-    top: .75rem;
-    right: .85rem;
-    color: rgba(var(--color-primary-rgb), .25);
-    font-size: 1.4rem;
-    font-weight: 900;
-  }
-  .verification-timeline svg { color: var(--color-primary); }
-  .verification-timeline strong { align-self: end; }
-  .independence-note {
-    grid-column: 1 / -1;
-    display: flex;
-    gap: .9rem;
-    padding: 1.1rem 1.25rem;
-    border: 1px solid rgba(var(--color-green-rgb), .25);
-    border-radius: 18px;
-    background: rgba(var(--color-green-rgb), .07);
-  }
-  .independence-note > svg { flex: 0 0 auto; color: var(--color-green-text); }
-  .independence-note div { display: grid; gap: .15rem; }
-  .independence-note span { color: var(--color-text-muted); }
-  .independence-note a { display: inline-flex; align-items: center; gap: .35rem; margin-top: .35rem; color: var(--color-primary); font-weight: 800; }
-
-  @media (min-width: 840px) {
-    .hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(360px, .75fr); }
-    .articles-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .deadline-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  }
-  @media (max-width: 839px) {
-    .articles-grid,
-    .deadline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .editorial-empty-state { grid-template-columns: 1fr; }
-    .editorial-empty-state .btn { width: max-content; }
-    .verification-layout { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 620px) {
-    .home-hero { padding-top: 2.5rem; }
-    .hero-copy h1 { font-size: clamp(2.35rem, 12vw, 3.35rem); }
-    .hero-search { grid-template-columns: auto minmax(0, 1fr); }
-    .hero-search button { grid-column: 1 / -1; width: 100%; }
-    .hero-quick-links { display: grid; grid-template-columns: 1fr; }
-    .hero-quick-links a { justify-content: space-between; border-radius: 13px; }
-    .hero-metrics { grid-template-columns: 1fr; }
-    .hero-metrics div { justify-content: flex-start; }
-    .hero-metrics div + div { border-left: 0; border-top: 1px solid var(--color-border); }
-    .category-grid,
-    .articles-grid,
-    .deadline-grid { grid-template-columns: 1fr; }
-    .category-card { min-height: 0; padding: 1.1rem; }
-    .section-heading-row { align-items: flex-start; }
-    .section-heading-row > a { margin-bottom: var(--space-5); font-size: .86rem; }
-    .verification-timeline { grid-template-columns: 1fr; }
-    .verification-timeline li { min-height: 122px; }
-  }
+  .portal-hero{padding:clamp(2rem,5vw,4.5rem) 0 2.5rem;background:linear-gradient(180deg,var(--color-surface) 0%,var(--color-bg) 100%);border-bottom:1px solid var(--color-border)}
+  .portal-hero-grid{display:grid;gap:2rem;align-items:start}.portal-hero-copy{padding-top:clamp(.5rem,2vw,1.5rem)}
+  .portal-label{display:inline-flex;align-items:center;gap:.45rem;margin-bottom:1rem;color:var(--color-green-text);font-size:.78rem;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+  .portal-hero h1{max-width:16ch;margin:0;font-size:clamp(2.25rem,5.6vw,4.65rem);line-height:1.02;letter-spacing:-.045em}
+  .portal-hero-copy>p{max-width:68ch;margin:1rem 0 1.4rem;color:var(--color-text-muted);font-size:clamp(1.02rem,1rem + .25vw,1.18rem)}
+  .portal-search{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;max-width:760px;min-height:58px;padding:.35rem .35rem .35rem 1rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface);box-shadow:var(--shadow-sm)}
+  .portal-search>svg{color:var(--color-primary)}.portal-search input{min-width:0;padding:.75rem;border:0;outline:0;background:transparent}.portal-search button{align-self:stretch;padding:0 1.25rem;border-radius:9px;background:var(--color-primary);color:#fff;font-weight:800}
+  .portal-promises{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-top:.85rem;color:var(--color-text-muted);font-size:.78rem;font-weight:700}.portal-promises span{display:inline-flex;align-items:center;gap:.35rem}.portal-promises svg{color:var(--color-green-text)}
+  .portal-today{border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);overflow:hidden}
+  .portal-section-label{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:48px;padding:.7rem 1rem;border-bottom:1px solid var(--color-border);background:var(--color-surface-alt);font-size:.78rem;font-weight:850;text-transform:uppercase;letter-spacing:.03em}
+  .portal-section-label a,.portal-heading-row>a,.portal-method a{display:inline-flex;align-items:center;gap:.35rem;color:var(--color-primary);font-size:.82rem;font-weight:800;text-transform:none;letter-spacing:0}
+  .portal-lead picture{display:block;aspect-ratio:16/8;background:var(--color-surface-alt)}.portal-lead picture img{width:100%;height:100%;object-fit:cover}.portal-lead>div{padding:1.1rem}
+  .portal-lead-meta{display:flex;justify-content:space-between;gap:.7rem;margin-bottom:.55rem;color:var(--color-green-text);font-size:.7rem;font-weight:800}.portal-lead-meta span:last-child{display:inline-flex;align-items:center;gap:.25rem}
+  .portal-lead h2{margin:0;font-size:clamp(1.35rem,2.5vw,2rem);line-height:1.2}.portal-lead p{margin:.55rem 0 .8rem;color:var(--color-text-muted)}
+  .portal-lead dl{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;padding:.75rem 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)}.portal-lead dl div{display:grid;gap:.1rem}.portal-lead dt{color:var(--color-text-muted);font-size:.68rem;font-weight:700}.portal-lead dd{font-size:.8rem;font-weight:800}
+  .portal-primary-link{display:inline-flex;align-items:center;gap:.35rem;margin-top:.85rem;color:var(--color-primary);font-weight:850}
+  .portal-headlines{border-top:1px solid var(--color-border)}.portal-headlines li+li{border-top:1px solid var(--color-border)}.portal-headlines a{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.2rem 1rem;padding:.85rem 1rem}.portal-headlines span{grid-column:1/-1;color:var(--color-primary);font-size:.67rem;font-weight:850;text-transform:uppercase}.portal-headlines strong{font-size:.9rem;line-height:1.35}.portal-headlines small{color:var(--color-text-muted);white-space:nowrap}
+  .portal-start{padding:clamp(1.25rem,3vw,2rem)}.portal-start-icon{display:grid;place-items:center;width:52px;height:52px;margin-bottom:.9rem;border-radius:12px;background:rgba(var(--color-primary-rgb),.1);color:var(--color-primary)}.portal-start h2{margin:0;font-size:1.5rem}.portal-start p{margin:.4rem 0 1rem;color:var(--color-text-muted)}.portal-start>div{display:grid;gap:.45rem}.portal-start a{display:flex;align-items:center;gap:.5rem;min-height:42px;padding:.6rem .7rem;border:1px solid var(--color-border);border-radius:9px;font-weight:750}
+  .portal-heading{max-width:720px}.portal-heading>span{display:block;margin-bottom:.35rem;color:var(--color-green-text);font-size:.75rem;font-weight:850;text-transform:uppercase;letter-spacing:.04em}.portal-heading h2{margin:0;font-size:clamp(1.7rem,3vw,2.55rem)}.portal-heading p{margin-top:.45rem;color:var(--color-text-muted)}.portal-heading-row{display:flex;align-items:end;justify-content:space-between;gap:1.5rem;margin-bottom:1.5rem}
+  .portal-actions{background:var(--color-surface)}.portal-action-grid{display:grid;gap:.75rem;margin-top:1.5rem}.portal-action-grid>a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.85rem;min-height:100%;padding:1rem;border:1px solid var(--color-border);border-radius:11px;background:var(--color-surface);transition:border-color var(--transition-fast),background var(--transition-fast)}.portal-action-grid>a:hover,.portal-action-grid>a:focus-visible{border-color:var(--color-primary);background:var(--color-surface-alt)}.portal-action-grid>a>span{display:grid;place-items:center;width:46px;height:46px;border-radius:10px;background:rgba(var(--color-primary-rgb),.09);color:var(--color-primary)}.portal-action-grid h3{margin:0;font-size:1rem}.portal-action-grid p{margin:.2rem 0 0;color:var(--color-text-muted);font-size:.82rem}
+  .portal-deadlines{background:var(--color-surface-alt)}.portal-deadline-list{overflow:hidden;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface)}.portal-deadline-list>a{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:1rem;padding:.9rem 1rem}.portal-deadline-list>a+a{border-top:1px solid var(--color-border)}.portal-deadline-list>a:hover{background:var(--color-surface-alt)}.portal-deadline-list div:first-child{display:grid;gap:.15rem}.portal-deadline-list div:first-child span{color:var(--color-primary);font-size:.66rem;font-weight:850;text-transform:uppercase}.portal-deadline-list div:first-child strong{font-size:.91rem}.portal-deadline-list div:nth-child(2){display:grid;justify-items:end;gap:.1rem}.portal-deadline-list small{color:var(--color-orange);font-weight:850}.portal-deadline-list time{font-size:.78rem;font-weight:750}
+  .portal-sections{background:var(--color-bg)}.portal-category-grid{display:grid;gap:.75rem}.portal-category-grid>a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:start;gap:.9rem;padding:1rem;border:1px solid var(--color-border);border-radius:11px;background:var(--color-surface)}.portal-category-grid>a:hover{border-color:var(--color-primary)}.portal-category-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:10px;background:rgba(var(--color-green-rgb),.09);color:var(--color-green-text)}.portal-category-grid h3{margin:0;font-size:1.02rem}.portal-category-grid p{display:-webkit-box;margin:.25rem 0 0;overflow:hidden;color:var(--color-text-muted);font-size:.82rem;-webkit-box-orient:vertical;-webkit-line-clamp:2}.portal-category-grid small{display:inline-block;margin-top:.45rem;color:var(--color-primary);font-size:.7rem;font-weight:800}
+  .portal-latest{background:var(--color-surface)}.portal-article-grid{display:grid;gap:.9rem}.portal-changes{background:var(--color-surface-alt)}.portal-change-grid{display:grid;gap:.75rem;margin-top:1.4rem}.portal-change-grid>a{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.75rem;align-items:start;padding:.95rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface)}.portal-change-grid>a>span{color:var(--color-orange)}.portal-change-grid h3{margin:0;font-size:.95rem}.portal-change-grid p{margin:.25rem 0 0;color:var(--color-text-muted);font-size:.8rem}
+  .portal-discovery{background:var(--color-navy);color:#fff}.portal-discovery h2{color:#fff;font-size:clamp(1.8rem,3vw,2.6rem)}.portal-discovery p{max-width:62ch;color:rgba(255,255,255,.75)}.portal-discovery-grid{display:grid;gap:1.5rem;align-items:center}.portal-search-compact{margin-top:1rem}.portal-discovery nav{display:grid;gap:.5rem}.portal-discovery nav a{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:.7rem .8rem;border:1px solid rgba(255,255,255,.18);border-radius:9px;background:rgba(255,255,255,.06);font-weight:750}
+  .portal-method{background:var(--color-surface)}.portal-method-grid{display:grid;gap:1.4rem}.portal-method h2{max-width:22ch;margin:0;font-size:clamp(1.8rem,3vw,2.6rem)}.portal-method p{max-width:68ch;margin:.6rem 0 1rem;color:var(--color-text-muted)}.portal-method ol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border:1px solid var(--color-border);border-radius:12px;overflow:hidden}.portal-method li{display:grid;gap:.25rem;min-height:100px;padding:1rem;background:var(--color-surface-alt)}.portal-method li:nth-child(odd){border-right:1px solid var(--color-border)}.portal-method li:nth-child(n+3){border-top:1px solid var(--color-border)}.portal-method li span{color:var(--color-primary);font-size:.72rem;font-weight:850}.portal-method aside{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.7rem;padding:1rem;border-left:3px solid var(--color-green);background:var(--color-surface-alt)}.portal-method aside p{margin:0}.portal-method aside a{grid-column:2}
+  @media(min-width:720px){.portal-action-grid,.portal-category-grid,.portal-article-grid,.portal-change-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(min-width:980px){.portal-hero-grid{grid-template-columns:minmax(0,1.08fr) minmax(390px,.92fr)}.portal-action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.portal-category-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.portal-article-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-change-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.portal-discovery-grid{grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr)}.portal-method-grid{grid-template-columns:minmax(0,1.2fr) minmax(360px,.8fr)}.portal-method aside{grid-column:1/-1}}
+  @media(max-width:719px){.portal-hero{padding-top:1.4rem}.portal-hero h1{font-size:clamp(2.15rem,11vw,3.15rem)}.portal-search{grid-template-columns:auto minmax(0,1fr);padding-right:.55rem}.portal-search button{grid-column:1/-1;min-height:44px}.portal-heading-row{align-items:start;flex-direction:column;gap:.65rem}.portal-deadline-list>a{grid-template-columns:minmax(0,1fr) auto}.portal-deadline-list>a>svg{display:none}.portal-deadline-list div:nth-child(2){align-self:end}}
 </style>

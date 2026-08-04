@@ -26,10 +26,21 @@ test('independence and publication gates are database enforced', () => {
   assert.match(migration, /audit_log_immutable/);
 });
 
-test('public snapshots have separate Job and Scheme contracts', () => {
-  assert.match(contentSchema, /const jobDetails = z\.object/);
-  assert.match(contentSchema, /const schemeDetails = z\.object/);
-  assert.match(contentSchema, /contentType: z\.enum\(\['job', 'scheme', 'explainer'\]\)/);
+test('public snapshots have separate citizen-information contracts', () => {
+  for (const schema of [
+    'jobDetails',
+    'schemeDetails',
+    'admissionDetails',
+    'scholarshipDetails',
+    'serviceDetails',
+    'alertDetails'
+  ]) {
+    assert.match(contentSchema, new RegExp(`const ${schema} = z\\.object`));
+  }
+  assert.match(
+    contentSchema,
+    /contentType: z\.enum\(\['job', 'scheme', 'admission', 'scholarship', 'service', 'alert', 'explainer'\]\)/
+  );
 });
 
 test('publishing uses user auth and secret-only deployment feedback', () => {

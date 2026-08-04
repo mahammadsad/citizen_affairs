@@ -5,100 +5,34 @@ import Icon from './Icon.astro';
 
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
-const articles = (await getLocalizedArticles(locale)).slice(0, 3);
-const lead = articles[0];
+const lead = (await getLocalizedArticles(locale))[0];
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
 ---
-<div class="latest-bar" aria-label={t.latestTicker}>
-  <span class="latest-label"><span class="latest-dot" aria-hidden="true"></span>{t.latestTicker}</span>
-  <div class="latest-message">
-    {lead ? (
-      <a href={localizedPath(locale, `articles/${lead.data.urlSlug}`)}>
+{lead && (
+  <div class="latest-bar" aria-label={t.latestTicker}>
+    <span class="latest-label"><span class="latest-dot" aria-hidden="true"></span>{t.latestTicker}</span>
+    <div class="latest-message">
+      <a href={route(`articles/${lead.data.urlSlug}`)}>
         <strong>{lead.data.title}</strong>
         <Icon name="arrow" size={17} />
       </a>
-    ) : (
-      <span>{t.tickerEmpty}</span>
-    )}
+    </div>
+    <a class="latest-all" href={route('articles')}>{t.viewAll}<Icon name="arrow" size={16} /></a>
   </div>
-  {lead && <a class="latest-all" href={localizedPath(locale, 'articles')}>{t.viewAll}<Icon name="arrow" size={16} /></a>}
-</div>
+)}
 
 <style>
-  .latest-bar {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    min-height: 42px;
-    background: #0b1d3a;
-    color: #fff;
-    border-top: 1px solid rgba(255, 255, 255, .08);
-  }
-  .latest-label {
-    align-self: stretch;
-    display: inline-flex;
-    align-items: center;
-    gap: .55rem;
-    padding: 0 1rem;
-    background: #102c50;
-    font-size: .76rem;
-    font-weight: 850;
-    white-space: nowrap;
-  }
-  .latest-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #0ea59a;
-    box-shadow: 0 0 0 4px rgba(14, 165, 154, .17);
-  }
-  .latest-message {
-    min-width: 0;
-    padding: 0 1rem;
-    color: #dbe8f4;
-    font-size: .82rem;
-  }
-  .latest-message a {
-    display: flex;
-    align-items: center;
-    gap: .55rem;
-    min-height: 42px;
-    min-width: 0;
-  }
-  .latest-message strong {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #fff;
-    font-weight: 650;
-  }
-  .latest-message svg { flex: 0 0 auto; color: #0ea59a; }
-  .latest-all {
-    display: inline-flex;
-    align-items: center;
-    gap: .3rem;
-    min-height: 42px;
-    padding: 0 1rem;
-    border-left: 1px solid rgba(255, 255, 255, .13);
-    color: #fff;
-    font-size: .76rem;
-    font-weight: 800;
-    white-space: nowrap;
-  }
-  .latest-message a:hover strong,
-  .latest-message a:focus-visible strong,
-  .latest-all:hover,
-  .latest-all:focus-visible { color: #63d5ca; }
-
-  @media (max-width: 620px) {
-    .latest-bar { grid-template-columns: 46px minmax(0, 1fr); }
-    .latest-label {
-      justify-content: center;
-      padding: 0;
-      font-size: 0;
-    }
-    .latest-all { display: none; }
-    .latest-message { padding: 0 .75rem; }
-  }
+  .latest-bar{position:relative;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;min-height:42px;background:#0b1d3a;color:#fff;border-top:1px solid rgba(255,255,255,.08)}
+  .latest-label{align-self:stretch;display:inline-flex;align-items:center;gap:.55rem;padding:0 1rem;background:#102c50;font-size:.76rem;font-weight:850;white-space:nowrap}
+  .latest-dot{width:8px;height:8px;border-radius:50%;background:#0ea59a;box-shadow:0 0 0 4px rgba(14,165,154,.17)}
+  .latest-message{min-width:0;padding:0 1rem;color:#dbe8f4;font-size:.82rem}
+  .latest-message a{display:flex;align-items:center;gap:.55rem;min-height:42px;min-width:0}
+  .latest-message strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-weight:650}
+  .latest-message svg{flex:0 0 auto;color:#0ea59a}
+  .latest-all{display:inline-flex;align-items:center;gap:.3rem;min-height:42px;padding:0 1rem;border-left:1px solid rgba(255,255,255,.13);color:#fff;font-size:.76rem;font-weight:800;white-space:nowrap}
+  .latest-message a:hover strong,.latest-message a:focus-visible strong,.latest-all:hover,.latest-all:focus-visible{color:#63d5ca}
+  @media(max-width:620px){.latest-bar{grid-template-columns:46px minmax(0,1fr)}.latest-label{justify-content:center;padding:0;font-size:0}.latest-all{display:none}.latest-message{padding:0 .75rem}}
 </style>

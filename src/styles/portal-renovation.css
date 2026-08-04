@@ -1,0 +1,125 @@
+/* Global finishing rules for the renovated citizen portal.
+   Loaded from MainLayout after the legacy visual system so portal surfaces keep
+   explicit, accessible foreground colours in both themes. */
+
+main .portal-action-grid > a,
+main .portal-category-grid > a,
+main .portal-change-grid > a,
+main .portal-deadline-list > a {
+  color: var(--color-text);
+}
+
+/* Small text needs a stronger colour than the decorative primary teal.
+   These selectors intentionally outrank component-scoped homepage rules. */
+html body main section.portal-sections .portal-heading-row > a,
+html body main section.portal-method li > span,
+html body main section.portal-method aside a {
+  color: #075f5b !important;
+}
+
+html body main section.portal-discovery .portal-label {
+  color: #7ce4d7 !important;
+}
+
+html body main .portal-search > button[type="submit"] {
+  color: #ffffff !important;
+  background: #075f5b !important;
+}
+
+html body main .portal-search > button[type="submit"]:hover,
+html body main .portal-search > button[type="submit"]:focus-visible {
+  background: #064d4a !important;
+}
+
+:root[data-theme="dark"] body .portal-header {
+  color: #edf2f7;
+  background: rgb(8, 19, 33);
+}
+
+:root[data-theme="dark"] body .portal-header .portal-icon-action,
+:root[data-theme="dark"] body .portal-header .portal-language > summary,
+:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary,
+:root[data-theme="dark"] body .portal-header .portal-more > summary,
+:root[data-theme="dark"] body .portal-header .portal-desktop-nav > a {
+  color: #edf2f7;
+}
+
+:root[data-theme="dark"] body .portal-header .portal-icon-action:hover,
+:root[data-theme="dark"] body .portal-header .portal-icon-action:focus-visible,
+:root[data-theme="dark"] body .portal-header .portal-language > summary:hover,
+:root[data-theme="dark"] body .portal-header .portal-language > summary:focus-visible,
+:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary:hover,
+:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary:focus-visible {
+  color: #ffffff;
+  background: #172940;
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a,
+:root[data-theme="dark"] body main .portal-category-grid > a,
+:root[data-theme="dark"] body main .portal-change-grid > a,
+:root[data-theme="dark"] body main .portal-deadline-list > a,
+:root[data-theme="dark"] body main .portal-today,
+:root[data-theme="dark"] body main .portal-start {
+  color: #edf2f7;
+  background: #0f1b2e;
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a:hover,
+:root[data-theme="dark"] body main .portal-action-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-category-grid > a:hover,
+:root[data-theme="dark"] body main .portal-category-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-change-grid > a:hover,
+:root[data-theme="dark"] body main .portal-change-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-deadline-list > a:hover,
+:root[data-theme="dark"] body main .portal-deadline-list > a:focus-visible {
+  color: #ffffff;
+  background: #172940;
+  border-color: rgba(var(--color-primary-rgb), .55);
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a p,
+:root[data-theme="dark"] body main .portal-category-grid > a p,
+:root[data-theme="dark"] body main .portal-change-grid > a p,
+:root[data-theme="dark"] body main .portal-start p {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body main .portal-heading-row > a,
+:root[data-theme="dark"] body main .portal-method li > span,
+:root[data-theme="dark"] body main .portal-method aside a {
+  color: #7ce4d7 !important;
+}
+
+:root[data-theme="dark"] body main .portal-search > button[type="submit"] {
+  color: #ffffff !important;
+  background: #075f5b !important;
+}
+
+:root[data-theme="dark"] body .portal-mobile-panel,
+:root[data-theme="dark"] body .portal-language > div,
+:root[data-theme="dark"] body .portal-more > div {
+  color: #edf2f7;
+  background: #0f1b2e;
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body .portal-mobile-panel a,
+:root[data-theme="dark"] body .portal-language > div a,
+:root[data-theme="dark"] body .portal-more > div a {
+  color: #edf2f7;
+}
+
+:root[data-theme="dark"] body .portal-mobile-bottom {
+  color: #b8c4d3;
+  background: rgba(8, 19, 33, .98);
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body .portal-mobile-bottom a {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body .portal-mobile-bottom a[aria-current="page"] {
+  color: #63d5ca;
+}
