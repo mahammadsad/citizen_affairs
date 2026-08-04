@@ -1,0 +1,55 @@
+/* Global finishing rules for the renovated citizen portal.
+   Loaded from MainLayout after the legacy visual system so portal surfaces keep
+   explicit, accessible foreground colours in both themes. */
+
+main .portal-action-grid > a,
+main .portal-category-grid > a,
+main .portal-change-grid > a,
+main .portal-deadline-list > a {
+  color: var(--color-text);
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a,
+:root[data-theme="dark"] body main .portal-category-grid > a,
+:root[data-theme="dark"] body main .portal-change-grid > a,
+:root[data-theme="dark"] body main .portal-deadline-list > a,
+:root[data-theme="dark"] body main .portal-today,
+:root[data-theme="dark"] body main .portal-start {
+  color: #edf2f7;
+  background: #0f1b2e;
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a:hover,
+:root[data-theme="dark"] body main .portal-action-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-category-grid > a:hover,
+:root[data-theme="dark"] body main .portal-category-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-change-grid > a:hover,
+:root[data-theme="dark"] body main .portal-change-grid > a:focus-visible,
+:root[data-theme="dark"] body main .portal-deadline-list > a:hover,
+:root[data-theme="dark"] body main .portal-deadline-list > a:focus-visible {
+  color: #ffffff;
+  background: #172940;
+  border-color: rgba(var(--color-primary-rgb), .55);
+}
+
+:root[data-theme="dark"] body main .portal-action-grid > a p,
+:root[data-theme="dark"] body main .portal-category-grid > a p,
+:root[data-theme="dark"] body main .portal-change-grid > a p,
+:root[data-theme="dark"] body main .portal-start p {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body .portal-mobile-panel,
+:root[data-theme="dark"] body .portal-language > div,
+:root[data-theme="dark"] body .portal-more > div {
+  color: #edf2f7;
+  background: #0f1b2e;
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body .portal-mobile-panel a,
+:root[data-theme="dark"] body .portal-language > div a,
+:root[data-theme="dark"] body .portal-more > div a {
+  color: #edf2f7;
+}
