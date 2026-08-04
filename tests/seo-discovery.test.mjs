@@ -60,7 +60,8 @@ test('content-specific entities are emitted only through safe current actions', 
 test('CI enforces generated canonical, hreflang, JSON-LD, sitemap and feed contracts', () => {
   assert.match(validator, /indexable page is not self-canonical/);
   assert.match(validator, /hreflang self-reference is missing or incorrect/);
-  assert.match(validator, /noindex page entered sitemap/);
+  assert.match(validator, /isUtilityDocument = noindex \|\| redirects/);
+  assert.match(validator, /noindex or redirect page entered sitemap/);
   assert.match(validator, /article schema is missing/);
   assert.match(validator, /contains an item from another language/);
   assert.match(packageJson, /"validate:seo": "node scripts\/validate-seo\.mjs"/);
