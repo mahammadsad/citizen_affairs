@@ -34,7 +34,7 @@ test('sitemap emits reciprocal multilingual clusters and excludes expired discov
   assert.match(sitemap, /xmlns:xhtml/);
   assert.match(sitemap, /isCurrentListingCandidate\(data\)/);
   assert.match(sitemap, /translationGroups/);
-  assert.match(sitemap, /hreflang=\\"x-default\\"/);
+  assert.match(sitemap, /hreflang="x-default"/);
   assert.match(sitemap, /alternates\.en \|\| alternates\.bn \|\| alternates\.hi/);
 });
 
