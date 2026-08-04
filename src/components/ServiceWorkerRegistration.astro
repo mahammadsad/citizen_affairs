@@ -1,0 +1,84 @@
+---
+import { SITE } from '@utils/constants';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = {
+  en: {
+    offline: 'You are offline. Previously opened pages may remain available.',
+    online: 'Connection restored.'
+  },
+  bn: {
+    offline: 'আপনি অফলাইনে আছেন। আগে খোলা পৃষ্ঠা এখনও পাওয়া যেতে পারে।',
+    online: 'ইন্টারনেট সংযোগ ফিরে এসেছে।'
+  },
+  hi: {
+    offline: 'आप ऑफलाइन हैं। पहले खोले गए पृष्ठ अभी भी उपलब्ध हो सकते हैं।',
+    online: 'इंटरनेट कनेक्शन वापस आ गया है।'
+  }
+}[locale];
+const workerUrl = `${SITE.basePath}sw.js`;
+const workerScope = SITE.basePath;
+---
+<p
+  id="networkStatus"
+  class="network-status"
+  role="status"
+  aria-live="polite"
+  hidden
+  data-offline={copy.offline}
+  data-online={copy.online}
+></p>
+
+<script define:vars={{ workerUrl, workerScope }}>
+  const status = document.getElementById('networkStatus');
+  let hideTimer;
+
+  const showNetworkState = (online) => {
+    if (!status) return;
+    status.textContent = online ? status.dataset.online : status.dataset.offline;
+    status.hidden = false;
+    status.dataset.state = online ? 'online' : 'offline';
+    clearTimeout(hideTimer);
+    if (online) hideTimer = setTimeout(() => { status.hidden = true; }, 4000);
+  };
+
+  addEventListener('offline', () => showNetworkState(false));
+  addEventListener('online', () => showNetworkState(true));
+  if (!navigator.onLine) showNetworkState(false);
+
+  const register = () => {
+    if (!('serviceWorker' in navigator) || location.protocol !== 'https:') return;
+    navigator.serviceWorker.register(workerUrl, { scope: workerScope }).catch(() => {});
+  };
+
+  addEventListener('load', () => {
+    if ('requestIdleCallback' in window) requestIdleCallback(register, { timeout: 3000 });
+    else setTimeout(register, 1200);
+  }, { once: true });
+</script>
+
+<style>
+  .network-status {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right));
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    z-index: 500;
+    max-width: min(28rem, calc(100vw - 2rem));
+    margin: 0;
+    padding: .75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-lg);
+    color: var(--color-text);
+    font-size: .82rem;
+    font-weight: 750;
+  }
+  .network-status[data-state="offline"] { border-color: #b45309; }
+  .network-status[data-state="online"] { border-color: var(--color-green-text); }
+</style>
