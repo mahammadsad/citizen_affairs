@@ -19,11 +19,12 @@
     "audit:freshness": "node scripts/audit-freshness.mjs",
     "validate:html": "node scripts/validate-html.mjs",
     "validate:seo": "node scripts/validate-seo.mjs",
+    "validate:performance": "node scripts/validate-performance.mjs",
     "thumbnail": "node scripts/render-thumbnail.mjs",
     "test:visual": "playwright test",
     "test:production": "playwright test --config playwright.production.config.mjs",
     "audit:secrets": "node scripts/scan-secrets.mjs",
-    "validate": "npm run format:check && npm test && npm run check && npm run validate:content && npm run audit:freshness && npm run build && npm run validate:html && npm run validate:seo",
+    "validate": "npm run format:check && npm test && npm run check && npm run validate:content && npm run audit:freshness && npm run build && npm run validate:html && npm run validate:seo && npm run validate:performance",
     "format": "node scripts/format-check.mjs --write",
     "format:check": "node scripts/format-check.mjs"
   },

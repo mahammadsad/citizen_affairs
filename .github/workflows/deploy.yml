@@ -92,6 +92,18 @@ jobs:
       - name: Canonical, hreflang and structured-data validation
         run: npm run validate:seo
 
+      - name: Performance and offline resilience validation
+        run: npm run validate:performance
+
+      - name: Upload performance and resilience report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: performance-resilience-${{ github.run_id }}
+          path: .artifacts/performance-resilience-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Scan generated frontend for private credentials
         run: npm run audit:secrets
 
