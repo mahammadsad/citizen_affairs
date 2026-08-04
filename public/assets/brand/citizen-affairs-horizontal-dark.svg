@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 132">
+  <defs>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#63D5CA"/>
+      <stop offset="1" stop-color="#0EA59A"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(3 5) scale(.238)">
+    <g font-family="Arial, Helvetica, sans-serif" font-weight="800">
+      <text x="22" y="394" font-size="388" fill="#F4F7FB">C</text>
+      <text x="194" y="394" font-size="388" fill="url(#teal)">A</text>
+    </g>
+    <g transform="translate(135 218)">
+      <path d="M0 0h80l25 25v98H0z" fill="#0EA59A"/>
+      <path d="M80 0v25h25" fill="#8BE5DC"/>
+      <path d="M21 48h61M21 70h61M21 92h44" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(347 91)">
+      <circle r="54" fill="url(#teal)"/>
+      <path d="M-24 0l16 17 34-39" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g fill="none" stroke="#F5A623" stroke-width="12" stroke-linecap="round">
+      <path d="M402 31a61 61 0 0 1 54 54"/>
+      <path d="M410 58a35 35 0 0 1 29 29"/>
+    </g>
+  </g>
+  <path d="M134 21v90" stroke="#63D5CA" stroke-width="2"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="156" y="66" font-size="38" font-weight="800" letter-spacing="4" fill="#F4F7FB">CITIZEN</text>
+    <text x="156" y="103" font-size="38" font-weight="800" letter-spacing="4" fill="#F4F7FB">AFFAIRS</text>
+  </g>
+</svg>
