@@ -53,3 +53,17 @@ main .portal-deadline-list > a {
 :root[data-theme="dark"] body .portal-more > div a {
   color: #edf2f7;
 }
+
+:root[data-theme="dark"] body .portal-mobile-bottom {
+  color: #b8c4d3;
+  background: rgba(8, 19, 33, .98);
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body .portal-mobile-bottom a {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body .portal-mobile-bottom a[aria-current="page"] {
+  color: #63d5ca;
+}
