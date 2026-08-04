@@ -32,7 +32,8 @@ const PRECACHE = [
 const sameOrigin = (request) => new URL(request.url).origin === self.location.origin;
 const isPrivateOrMutable = (url) =>
   /\\/(?:admin|staff|api)(?:\\/|$)/.test(url.pathname) ||
-  /\\/(?:deployment\\.json|search-index\\.json)$/.test(url.pathname);
+  /\\/status(?:\\/|$)/.test(url.pathname) ||
+  /\\/(?:deployment\\.json|health\\.json|search-index\\.json)$/.test(url.pathname);
 const localeFor = (url) => {
   const path = url.pathname.slice(BASE.length).replace(/^\\/+/, '');
   if (path.startsWith('bn/')) return 'bn';

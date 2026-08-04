@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '@utils/constants';
+
+const commit = import.meta.env.PUBLIC_BUILD_COMMIT || 'local';
+const generatedAt = new Date();
+const actionsUrl = 'https://github.com/mahammadsad/citizen_affairs/actions';
+---
+
+<BaseLayout
+  title="Operational status"
+  description="Current Citizen Affairs served-build identity and browser-side operational checks."
+  canonical={`${SITE.url}/status/`}
+  robots="noindex, follow"
+  locale="en"
+>
+  <main id="main-content" class="status-page">
+    <section class="status-card">
+      <p class="status-eyebrow">Citizen Affairs operations</p>
+      <h1>Operational status</h1>
+      <p class="status-intro">
+        This page identifies the build currently being served and performs lightweight browser checks.
+        The independent GitHub Actions production smoke test remains the final live-verification record.
+      </p>
+
+      <dl class="release-stages">
+        <div>
+          <dt>Merged target</dt>
+          <dd><code>{commit}</code></dd>
+          <small>Commit embedded when this static release was built.</small>
+        </div>
+        <div>
+          <dt>Served deployment</dt>
+          <dd id="servedState" data-state="checking">Checking…</dd>
+          <small id="servedDetail">Reading the no-cache deployment marker.</small>
+        </div>
+        <div>
+          <dt>Verified live</dt>
+          <dd>See latest production health run</dd>
+          <small>This page does not claim a GitHub test result by itself.</small>
+        </div>
+      </dl>
+
+      <section aria-labelledby="live-checks-title" class="live-checks">
+        <div>
+          <h2 id="live-checks-title">Live file checks</h2>
+          <p id="checkSummary" role="status" aria-live="polite">Starting checks…</p>
+        </div>
+        <ul id="checkList">
+          <li data-check="health">Health contract</li>
+          <li data-check="manifest">App manifest</li>
+          <li data-check="worker">Service worker file</li>
+          <li data-check="offline-en">English offline page</li>
+          <li data-check="offline-bn">Bengali offline page</li>
+          <li data-check="offline-hi">Hindi offline page</li>
+          <li data-check="sitemap">Sitemap</li>
+          <li data-check="robots">Robots policy</li>
+        </ul>
+      </section>
+
+      <aside class="status-note">
+        <strong>How to read this page</strong>
+        <p>
+          “Available now” means this browser could fetch the file. A release is “verified live” only after
+          the production smoke workflow passes against the exact deployed commit.
+        </p>
+      </aside>
+
+      <div class="status-actions">
+        <button type="button" id="retryChecks">Run checks again</button>
+        <a href={actionsUrl} target="_blank" rel="noopener noreferrer external" referrerpolicy="no-referrer">
+          Open GitHub Actions ↗
+        </a>
+        <a href="/">Return to Citizen Affairs</a>
+      </div>
+
+      <p class="status-generated">Page generated {generatedAt.toISOString()}</p>
+    </section>
+  </main>
+</BaseLayout>
+
+<script is:inline define:vars={{ expectedCommit: commit }}>
+  (() => {
+    const resources = {
+      health: '/health.json',
+      manifest: '/site.webmanifest',
+      worker: '/sw.js',
+      'offline-en': '/offline/',
+      'offline-bn': '/bn/offline/',
+      'offline-hi': '/hi/offline/',
+      sitemap: '/sitemap.xml',
+      robots: '/robots.txt'
+    };
+    const state = document.getElementById('servedState');
+    const detail = document.getElementById('servedDetail');
+    const summary = document.getElementById('checkSummary');
+    const retry = document.getElementById('retryChecks');
+
+    const setCheck = (name, passed) => {
+      const item = document.querySelector(`[data-check="${name}"]`);
+      if (!item) return;
+      item.dataset.state = passed ? 'passed' : 'failed';
+      item.setAttribute('aria-label', `${item.textContent}: ${passed ? 'available now' : 'unavailable'}`);
+    };
+
+    const probe = async (path) => {
+      const response = await fetch(`${path}${path.includes('?') ? '&' : '?'}status=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' }
+      });
+      return response.ok;
+    };
+
+    const run = async () => {
+      retry?.setAttribute('disabled', '');
+      summary.textContent = 'Checking current files…';
+      let passed = 0;
+      const checks = await Promise.all(
+        Object.entries(resources).map(async ([name, path]) => {
+          try {
+            const ok = await probe(path);
+            setCheck(name, ok);
+            if (ok) passed += 1;
+          } catch {
+            setCheck(name, false);
+          }
+        })
+      );
+      void checks;
+
+      try {
+        const response = await fetch(`/deployment.json?status=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' }
+        });
+        const payload = response.ok ? await response.json() : {};
+        const matches = payload.commit === expectedCommit;
+        state.textContent = matches ? 'Exact build is being served' : 'Build identity needs attention';
+        state.dataset.state = matches ? 'passed' : 'failed';
+        detail.textContent = `Served commit: ${payload.commit || 'unavailable'}`;
+      } catch {
+        state.textContent = 'Deployment marker unavailable';
+        state.dataset.state = 'failed';
+        detail.textContent = 'The no-cache deployment marker could not be read.';
+      }
+
+      summary.textContent = `${passed} of ${Object.keys(resources).length} live files are available now.`;
+      retry?.removeAttribute('disabled');
+    };
+
+    retry?.addEventListener('click', run);
+    run();
+  })();
+</script>
+
+<style>
+  .status-page {
+    min-height: 100vh;
+    padding: clamp(1rem, 4vw, 3rem);
+    background: var(--color-bg);
+  }
+  .status-card {
+    width: min(880px, 100%);
+    margin: 0 auto;
+    padding: clamp(1.1rem, 4vw, 2.5rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-md);
+  }
+  .status-eyebrow {
+    color: var(--color-green-text);
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  h1 { margin: .35rem 0 .75rem; font-size: clamp(2rem, 6vw, 3.6rem); }
+  .status-intro { max-width: 68ch; color: var(--color-text-muted); }
+  .release-stages {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+    margin: 1.5rem 0;
+  }
+  .release-stages div,
+  .live-checks,
+  .status-note {
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-alt);
+  }
+  .release-stages dt { color: var(--color-text-muted); font-size: .72rem; font-weight: 800; text-transform: uppercase; }
+  .release-stages dd { margin: .35rem 0; font-weight: 800; overflow-wrap: anywhere; }
+  .release-stages small { color: var(--color-text-muted); }
+  [data-state="passed"] { color: var(--color-green-text); }
+  [data-state="failed"] { color: #a33a2b; }
+  .live-checks { margin-bottom: 1rem; }
+  .live-checks h2 { margin: 0; font-size: 1.25rem; }
+  .live-checks > div { display: flex; justify-content: space-between; gap: 1rem; }
+  .live-checks ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; margin-top: 1rem; }
+  .live-checks li { padding: .65rem .75rem; border-radius: var(--radius-sm); background: var(--color-surface); }
+  .live-checks li::before { content: '•'; margin-right: .45rem; }
+  .live-checks li[data-state="passed"]::before { content: '✓'; }
+  .live-checks li[data-state="failed"]::before { content: '×'; }
+  .status-note { margin-bottom: 1rem; }
+  .status-note p { margin-top: .25rem; color: var(--color-text-muted); }
+  .status-actions { display: flex; flex-wrap: wrap; gap: .7rem; }
+  .status-actions a,
+  .status-actions button {
+    padding: .7rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-alt);
+    font-weight: 750;
+  }
+  .status-actions button:disabled { opacity: .55; cursor: progress; }
+  .status-generated { margin-top: 1.25rem; color: var(--color-text-muted); font-size: .72rem; }
+  code { font-size: .75rem; }
+  @media (max-width: 700px) {
+    .release-stages,
+    .live-checks ul { grid-template-columns: 1fr; }
+    .live-checks > div { display: block; }
+  }
+</style>
