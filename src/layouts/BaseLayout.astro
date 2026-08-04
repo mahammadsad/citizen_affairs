@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import '../styles/components.css';
+import '../styles/worldclass.css';
 import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
 import { normalizeCanonicalUrl, toAbsoluteUrl } from '@lib/seo';
 import { locales, type Locale, ui } from '../i18n';
@@ -31,12 +32,22 @@ const {
 
 const brandName = getBrandName(locale);
 const resolvedCanonical = normalizeCanonicalUrl(canonical, SITE.url);
-const resolvedAlternateUrls = Object.fromEntries(Object.entries(alternateUrls).map(([lang, url]) => [lang, url ? normalizeCanonicalUrl(url, SITE.url) : undefined])) as Partial<Record<Locale, string>>;
+const resolvedAlternateUrls = Object.fromEntries(
+  Object.entries(alternateUrls).map(([lang, url]) => [
+    lang,
+    url ? normalizeCanonicalUrl(url, SITE.url) : undefined
+  ])
+) as Partial<Record<Locale, string>>;
 const resolvedTitle = title || brandName;
 const fullTitle = resolvedTitle === brandName ? resolvedTitle : `${resolvedTitle} | ${brandName}`;
 const ogImage = toAbsoluteUrl(image, SITE.url);
-const ogImageType = ogImage.toLowerCase().endsWith('.png') ? 'image/png' : ogImage.toLowerCase().endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+const ogImageType = ogImage.toLowerCase().endsWith('.png')
+  ? 'image/png'
+  : ogImage.toLowerCase().endsWith('.webp')
+    ? 'image/webp'
+    : 'image/jpeg';
 const ogImageAlt = `${brandName} — ${getBrandTagline(locale)}`;
+
 const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -51,6 +62,7 @@ const websiteSchema = {
     'query-input': 'required name=search_term_string'
   }
 };
+
 const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
@@ -65,6 +77,7 @@ const organizationSchema = {
   ethicsPolicy: `${SITE.url}/en/editorial-policy/`,
   correctionsPolicy: `${SITE.url}/corrections/`
 };
+
 const extraSchemas = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
 const ogLocale = locale === 'bn' ? 'bn_IN' : locale === 'hi' ? 'hi_IN' : 'en_IN';
 const publicSupabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
@@ -86,7 +99,13 @@ const t = ui(locale);
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Security-Policy" content={contentSecurityPolicy} />
     <script is:inline>
-      (() => { try { const saved = localStorage.getItem('theme'); const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); document.documentElement.dataset.theme = theme; } catch (_) {} })();
+      (() => {
+        try {
+          const saved = localStorage.getItem('theme');
+          const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.dataset.theme = theme;
+        } catch (_) {}
+      })();
     </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{fullTitle}</title>
@@ -103,7 +122,7 @@ const t = ui(locale);
     <link rel="icon" type="image/png" sizes="32x32" href={`${SITE.basePath}assets/favicon-32.png`} />
     <link rel="icon" type="image/png" sizes="192x192" href={`${SITE.basePath}assets/favicon-192.png`} />
     <link rel="apple-touch-icon" sizes="180x180" href={`${SITE.basePath}assets/favicon-180.png`} />
-    <meta name="theme-color" content="#0A4D8C" />
+    <meta name="theme-color" content="#0A817A" />
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={brandName} />
     <meta property="og:title" content={fullTitle} />
