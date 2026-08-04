@@ -30,7 +30,9 @@ test('Bengali mobile dark mode keeps the renovated citizen portal readable', asy
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('.portal-hero')).toBeVisible();
+  await expect(page.locator('.portal-utility')).toBeHidden();
+  await expect(page.locator('[data-portal-continuity]')).toHaveCount(0);
+  await expect(page.locator('main > .portal-hero')).toBeVisible();
   await expect(page.locator('.portal-brand-logo')).toHaveAttribute('src', /citizen-affairs-horizontal-dark\.svg$/);
   await expect(page.locator('.footer-brand-logo')).toHaveAttribute('src', /citizen-affairs-full-dark\.svg$/);
   await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
@@ -39,6 +41,7 @@ test('Bengali mobile dark mode keeps the renovated citizen portal readable', asy
     const header = document.querySelector('.portal-header');
     const navbar = document.querySelector('.portal-navbar-inner');
     const headerBrand = document.querySelector('.portal-brand');
+    const headerLogo = document.querySelector('.portal-brand-logo');
     const headerIcon = document.querySelector('.portal-theme-toggle');
     const search = document.querySelector('.portal-search');
     const input = document.querySelector('.portal-search input');
@@ -50,6 +53,7 @@ test('Bengali mobile dark mode keeps the renovated citizen portal readable', asy
       !header ||
       !navbar ||
       !headerBrand ||
+      !headerLogo ||
       !headerIcon ||
       !search ||
       !input ||
@@ -64,6 +68,7 @@ test('Bengali mobile dark mode keeps the renovated citizen portal readable', asy
     return {
       headerBackground: getComputedStyle(header).backgroundColor,
       headerHeight: navbar.getBoundingClientRect().height,
+      headerLogoWidth: headerLogo.getBoundingClientRect().width,
       headerBrandBackground: getComputedStyle(headerBrand).backgroundColor,
       headerIcon: getComputedStyle(headerIcon).color,
       searchBackground: getComputedStyle(search).backgroundColor,
@@ -78,6 +83,7 @@ test('Bengali mobile dark mode keeps the renovated citizen portal readable', asy
   });
 
   expect(colours.headerHeight).toBeLessThanOrEqual(68);
+  expect(colours.headerLogoWidth).toBeGreaterThanOrEqual(136);
   expect(colours.headerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(colours.footerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(contrast(colours.headerIcon, colours.headerBackground)).toBeGreaterThanOrEqual(3);
