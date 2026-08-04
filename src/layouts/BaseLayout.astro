@@ -174,13 +174,9 @@ const t = ui(locale);
     {extraSchemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
   <body id="top">
-    <a href="#main-content" class="skip-link">{t.skipToContent}</a>
+    <a href="#page-content" class="skip-link">{t.skipToContent}</a>
+    <span id="page-content" class="sr-only" tabindex="-1"></span>
     <slot />
-    <script is:inline>
-      if (!document.getElementById('main-content')) {
-        document.querySelector('main')?.setAttribute('id', 'main-content');
-      }
-    </script>
     <ServiceWorkerRegistration {locale} />
   </body>
 </html>
