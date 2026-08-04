@@ -7,6 +7,7 @@ const health = await read('src/pages/health.json.ts');
 const statusPage = await read('src/pages/status.astro');
 const baseLayout = await read('src/layouts/BaseLayout.astro');
 const searchAlias = await read('src/pages/en/search/index.astro');
+const footer = await read('src/components/Footer.astro');
 const serviceWorker = await read('src/pages/sw.js.ts');
 const linkValidator = await read('scripts/validate-links.mjs');
 const summary = await read('scripts/summarize-production-health.mjs');
@@ -32,6 +33,7 @@ test('served-build health and owner status do not overclaim live verification', 
 test('generated internal link audit covers routes, assets, srcsets and fragments', () => {
   assert.match(linkValidator, /attributeValues/);
   assert.match(linkValidator, /pageIds/);
+  assert.match(linkValidator, /markupOnly/);
   assert.match(linkValidator, /collectHtmlReferences/);
   assert.match(linkValidator, /collectCssReferences/);
   assert.match(linkValidator, /srcset/);
@@ -50,6 +52,13 @@ test('generated-link fixes preserve English search and one global skip target', 
   assert.match(baseLayout, /id="page-content"/);
   assert.match(baseLayout, /tabindex="-1"/);
   assert.doesNotMatch(baseLayout, /document\.querySelector\('main'\)/);
+});
+
+test('scripted footer language control is classified separately from routes', () => {
+  assert.match(footer, /data-footer-language/);
+  assert.match(footer, /document\.getElementById\('languageTrigger'\)\?\.click\(\)/);
+  assert.match(linkValidator, /data-footer-language/);
+  assert.match(linkValidator, /interactiveControlsSkipped/);
 });
 
 test('deployment validation retains internal-link evidence before publishing', () => {
