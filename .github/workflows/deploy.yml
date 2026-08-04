@@ -30,7 +30,7 @@ jobs:
       publication-event-id: ${{ steps.publication.outputs.id }}
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 2
 
@@ -41,7 +41,7 @@ jobs:
           node -e "const{execSync}=require('node:child_process'),{appendFileSync}=require('node:fs');const m=execSync('git log -1 --pretty=%B',{encoding:'utf8'}).match(/\[publication:([0-9a-f-]{36})\]/i);appendFileSync(process.env.GITHUB_OUTPUT,'id='+(m?.[1]||'')+'\n')"
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           cache: npm
@@ -60,6 +60,18 @@ jobs:
       - name: Formatting validation
         run: npm run format:check
 
+      - name: Workflow maintenance validation
+        run: npm run validate:workflows
+
+      - name: Upload workflow maintenance report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: workflow-maintenance-${{ github.run_id }}
+          path: .artifacts/workflow-maintenance-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Editorial security contract tests
         run: npm test
 
@@ -76,7 +88,7 @@ jobs:
 
       - name: Upload editorial freshness report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: editorial-freshness-${{ github.run_id }}
           path: .artifacts/editorial-freshness-report.json
@@ -97,7 +109,7 @@ jobs:
 
       - name: Upload performance and resilience report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: performance-resilience-${{ github.run_id }}
           path: .artifacts/performance-resilience-report.json
@@ -109,7 +121,7 @@ jobs:
 
       - name: Upload internal link report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: internal-links-${{ github.run_id }}
           path: .artifacts/internal-link-report.json
@@ -130,7 +142,7 @@ jobs:
 
       - name: Upload responsive article evidence
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: responsive-article-evidence-${{ github.run_id }}
           path: test-results/**/article-*.png
@@ -139,7 +151,7 @@ jobs:
 
       - name: Upload build output
         if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: ./dist
 
@@ -158,7 +170,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
 
   production-smoke:
     needs: deploy
@@ -167,8 +179,8 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           cache: npm
@@ -190,7 +202,7 @@ jobs:
         run: npm run summarize:production
       - name: Retain production screenshots and health report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: production-smoke-${{ github.run_id }}
           path: |
