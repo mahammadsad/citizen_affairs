@@ -176,6 +176,11 @@ const t = ui(locale);
   <body id="top">
     <a href="#main-content" class="skip-link">{t.skipToContent}</a>
     <slot />
+    <script is:inline>
+      if (!document.getElementById('main-content')) {
+        document.querySelector('main')?.setAttribute('id', 'main-content');
+      }
+    </script>
     <ServiceWorkerRegistration {locale} />
   </body>
 </html>
