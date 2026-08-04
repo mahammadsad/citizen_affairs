@@ -1,5 +1,12 @@
 import { getBrandName, SITE } from '@utils/constants';
 
+export type SeoLocale = 'en' | 'bn' | 'hi';
+
+export const SCHEMA_IDS = {
+  organization: `${SITE.url}/#organization`,
+  website: `${SITE.url}/#website`,
+} as const;
+
 export interface SEOMeta {
   title: string;
   description: string;
@@ -14,11 +21,16 @@ export interface SEOMeta {
 export interface ArticleSchema {
   '@context': string;
   '@type': string;
+  '@id': string;
   headline: string;
   description: string;
   image?: string;
   datePublished: string;
-  dateModified?: string;
+  dateModified: string;
+  inLanguage?: string;
+  articleSection?: string;
+  keywords?: string[];
+  isAccessibleForFree: boolean;
   mainEntityOfPage: {
     '@type': string;
     '@id': string;
@@ -26,9 +38,11 @@ export interface ArticleSchema {
   author: {
     '@type': string;
     name: string;
+    url?: string;
   };
-  publisher?: {
+  publisher: {
     '@type': string;
+    '@id': string;
     name: string;
     logo: {
       '@type': string;
@@ -49,22 +63,13 @@ export interface BreadcrumbSchema {
 }
 
 /**
- * Converts a path to an absolute URL.
- *
- * Site-relative asset paths in this project (SITE.ogImage, SITE.logo, CMS
- * image uploads, etc.) already include the GitHub Pages base path, e.g.
- * "/citizen_affairs/assets/og-image.jpg". SITE.url *also* already
- * includes that same base path. Naively concatenating SITE.url + path
- * therefore duplicates the repo path in every generated absolute URL
- * (og:image, JSON-LD logos, etc. all did this before this fix).
- *
- * The correct fix is to prepend only the domain origin (no path) to
- * paths that already carry the base path themselves.
+ * Converts a path to an absolute URL without duplicating a configured base path.
  */
 export function toAbsoluteUrl(path: string, siteUrl: string): string {
   if (path.startsWith('http://') || path.startsWith('https://')) return path;
   const origin = new URL(siteUrl).origin;
-  return `${origin}${path}`;
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${origin}${normalizedPath}`;
 }
 
 export function normalizeCanonicalUrl(value: string, siteUrl: string): string {
@@ -72,6 +77,14 @@ export function normalizeCanonicalUrl(value: string, siteUrl: string): string {
   const incoming = new URL(value, production);
   const pathname = incoming.pathname === '/' ? '/' : `${incoming.pathname.replace(/\/+$/, '')}/`;
   return `${production.origin}${pathname}`;
+}
+
+export function localizedFeedUrl(locale: SeoLocale): string {
+  return locale === 'en' ? `${SITE.url}/rss.xml` : `${SITE.url}/${locale}/rss.xml`;
+}
+
+export function schemaLanguage(locale: SeoLocale): string {
+  return locale === 'bn' ? 'bn-IN' : locale === 'hi' ? 'hi-IN' : 'en-IN';
 }
 
 export function generateMeta(seo: SEOMeta) {
@@ -137,9 +150,6 @@ export function slugify(text: string): string {
   return text
     .trim()
     .toLowerCase()
-    // Keep letters/numbers from any script (Bengali included) and spaces/hyphens;
-    // strip punctuation only. The previous \w-based regex was ASCII-only and
-    // silently stripped all Bengali characters, producing empty slugs.
     .replace(/[^\p{L}\p{N}\s-]/gu, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
@@ -168,27 +178,39 @@ export function generateArticleSchema(article: {
   datePublished: Date;
   dateModified?: Date;
   author: string;
+  authorUrl?: string;
   url: string;
+  language?: string;
+  section?: string;
+  keywords?: string[];
   schemaType?: 'Article' | 'NewsArticle';
 }): ArticleSchema {
+  const canonical = normalizeCanonicalUrl(article.url, SITE.url);
   return {
     '@context': 'https://schema.org',
     '@type': article.schemaType || 'Article',
+    '@id': `${canonical}#article`,
     headline: article.title,
     description: article.description,
     image: article.image,
     datePublished: article.datePublished.toISOString(),
-    dateModified: article.dateModified?.toISOString() || article.datePublished.toISOString(),
+    dateModified: (article.dateModified || article.datePublished).toISOString(),
+    inLanguage: article.language,
+    articleSection: article.section,
+    keywords: article.keywords?.length ? article.keywords : undefined,
+    isAccessibleForFree: true,
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': article.url,
+      '@id': `${canonical}#webpage`,
     },
     author: {
       '@type': 'Person',
       name: article.author,
+      url: article.authorUrl,
     },
     publisher: {
       '@type': 'Organization',
+      '@id': SCHEMA_IDS.organization,
       name: getBrandName('en'),
       logo: {
         '@type': 'ImageObject',

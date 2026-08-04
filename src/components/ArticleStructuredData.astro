@@ -1,0 +1,235 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getAuthorData } from '@lib/content';
+import {
+  normalizeCanonicalUrl,
+  SCHEMA_IDS,
+  schemaLanguage,
+  toAbsoluteUrl
+} from '@lib/seo';
+import { authorProfilePath, type Locale } from '../i18n';
+import { resolveAssetPath, SITE } from '@utils/constants';
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+  canonical: string;
+  applicationUrl?: string;
+}
+
+const { article, canonical, applicationUrl } = Astro.props;
+const data = article.data;
+const locale = data.language as Locale;
+const pageUrl = normalizeCanonicalUrl(canonical, SITE.url);
+const articleId = `${pageUrl}#article`;
+const webpageId = `${pageUrl}#webpage`;
+const authorEntry = await getAuthorData(data.author);
+const authorName = authorEntry?.data.name || data.author;
+const authorUrl = toAbsoluteUrl(authorProfilePath(locale, data.author), SITE.url);
+const imageUrl = data.featuredImage
+  ? toAbsoluteUrl(resolveAssetPath(data.featuredImage), SITE.url)
+  : undefined;
+const modifiedDates = [data.date, data.updated, data.lastVerified].filter(
+  (date): date is Date => Boolean(date)
+);
+const dateModified = new Date(Math.max(...modifiedDates.map((date) => date.getTime())));
+const significantLinks = [
+  ...data.sources.map((source) => source.url),
+  ...data.sourceUrls,
+  data.officialNoticeUrl,
+].filter((url): url is string => Boolean(url));
+
+const schemas: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': webpageId,
+    url: pageUrl,
+    name: data.title,
+    description: data.description,
+    inLanguage: schemaLanguage(locale),
+    datePublished: data.date.toISOString(),
+    dateModified: dateModified.toISOString(),
+    lastReviewed: data.lastVerified?.toISOString(),
+    isPartOf: { '@id': SCHEMA_IDS.website },
+    publisher: { '@id': SCHEMA_IDS.organization },
+    author: {
+      '@type': 'Person',
+      name: authorName,
+      url: authorUrl,
+    },
+    primaryImageOfPage: imageUrl
+      ? {
+          '@type': 'ImageObject',
+          url: imageUrl,
+          caption: data.featuredImageAlt || data.title,
+        }
+      : undefined,
+    mainEntity: { '@id': articleId },
+    about: {
+      '@type': 'Thing',
+      name: data.contentType,
+    },
+    keywords: data.tags.length ? data.tags.join(', ') : undefined,
+    significantLink: significantLinks.length ? significantLinks : undefined,
+    potentialAction: applicationUrl
+      ? {
+          '@type': 'ApplyAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: applicationUrl,
+          },
+        }
+      : undefined,
+  },
+];
+
+if (
+  data.contentType === 'job' &&
+  data.job &&
+  applicationUrl &&
+  ['upcoming', 'open', 'closing-soon'].includes(data.job.recruitmentStatus)
+) {
+  const salary = data.job.salaryMinimum !== undefined || data.job.salaryMaximum !== undefined
+    ? {
+        '@type': 'MonetaryAmount',
+        currency: 'INR',
+        value: {
+          '@type': 'QuantitativeValue',
+          minValue: data.job.salaryMinimum,
+          maxValue: data.job.salaryMaximum,
+          unitText: data.job.salaryUnit === 'annual' ? 'YEAR' : 'MONTH',
+        },
+      }
+    : undefined;
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    '@id': `${pageUrl}#job-posting`,
+    title: data.job.postName,
+    description: data.description,
+    identifier: {
+      '@type': 'PropertyValue',
+      name: data.job.recruitingOrganization,
+      value: data.job.notificationNumber,
+    },
+    datePosted: data.job.notificationDate.toISOString(),
+    validThrough: data.job.applicationDeadline.toISOString(),
+    employmentType: data.job.employmentType,
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: data.job.recruitingOrganization,
+    },
+    jobLocation: data.job.jobLocation.length
+      ? data.job.jobLocation.map((location) => ({
+          '@type': 'Place',
+          address: {
+            '@type': 'PostalAddress',
+            addressRegion: location,
+            addressCountry: 'IN',
+          },
+        }))
+      : undefined,
+    baseSalary: salary,
+    totalJobOpenings: data.job.totalVacancies,
+    qualifications: data.job.qualification.join('; '),
+    directApply: data.job.applicationMode !== 'offline',
+    url: applicationUrl,
+    inLanguage: schemaLanguage(locale),
+  });
+}
+
+if (data.contentType === 'scheme' && data.scheme) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'GovernmentService',
+    '@id': `${pageUrl}#government-service`,
+    name: data.scheme.schemeName,
+    description: data.description,
+    serviceType: data.scheme.benefitType.join(', '),
+    provider: {
+      '@type': 'GovernmentOrganization',
+      name: data.scheme.ministry,
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'India',
+    },
+    audience: data.scheme.targetBeneficiaries.map((audienceType) => ({
+      '@type': 'Audience',
+      audienceType,
+    })),
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      serviceUrl: data.scheme.officialPortal,
+    },
+    url: pageUrl,
+    inLanguage: schemaLanguage(locale),
+  });
+}
+
+if (data.contentType === 'service' && data.service) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'GovernmentService',
+    '@id': `${pageUrl}#government-service`,
+    name: data.service.serviceName,
+    description: data.description,
+    serviceType: data.service.serviceActions.join(', '),
+    provider: {
+      '@type': 'GovernmentOrganization',
+      name: data.service.department,
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'India',
+    },
+    availableChannel: {
+      '@type': 'ServiceChannel',
+      serviceUrl: data.service.officialPortal,
+    },
+    url: pageUrl,
+    inLanguage: schemaLanguage(locale),
+  });
+}
+
+if (data.contentType === 'admission' && data.admission && applicationUrl) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOccupationalProgram',
+    '@id': `${pageUrl}#admission-program`,
+    name: data.admission.programme,
+    description: data.description,
+    provider: {
+      '@type': 'EducationalOrganization',
+      name: data.admission.institution,
+    },
+    applicationDeadline: data.admission.applicationDeadline.toISOString(),
+    educationalProgramMode: data.admission.applicationMode,
+    url: applicationUrl,
+    inLanguage: schemaLanguage(locale),
+  });
+}
+
+if (data.contentType === 'alert' && data.alert) {
+  schemas.push({
+    '@context': 'https://schema.org',
+    '@type': 'SpecialAnnouncement',
+    '@id': `${pageUrl}#announcement`,
+    name: data.title,
+    text: data.description,
+    category: data.alert.alertType,
+    datePosted: data.date.toISOString(),
+    expires: data.alert.expiryDate?.toISOString(),
+    spatialCoverage: {
+      '@type': 'Country',
+      name: 'India',
+    },
+    url: pageUrl,
+    inLanguage: schemaLanguage(locale),
+  });
+}
+---
+
+{schemas.map((schema) => (
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}
