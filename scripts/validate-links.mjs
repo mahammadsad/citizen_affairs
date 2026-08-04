@@ -61,10 +61,8 @@ function attributeValues(source, names) {
     `(?:^|\\s)(${names.join('|')})\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
     'gi'
   );
-  for (const tag of source.matchAll(/<[^>]+>/g)) {
-    for (const match of tag[0].matchAll(attributePattern)) {
-      values.push(match[2] ?? match[3] ?? match[4] ?? '');
-    }
+  for (const match of source.matchAll(attributePattern)) {
+    values.push(match[2] ?? match[3] ?? match[4] ?? '');
   }
   return values;
 }
@@ -78,9 +76,26 @@ function pageIds(source) {
 }
 
 function collectHtmlReferences(source) {
-  const values = attributeValues(source, ['href', 'src', 'action', 'poster']);
-  for (const srcset of attributeValues(source, ['srcset'])) {
-    for (const candidate of srcset.split(',')) values.push(candidate.trim().split(/\s+/)[0]);
+  const values = [];
+  for (const tagMatch of source.matchAll(/<[^>]+>/g)) {
+    const tag = tagMatch[0];
+    const name = tag.match(/^<\s*([a-z][\w:-]*)/i)?.[1]?.toLowerCase();
+    if (!name || tag.startsWith('</') || tag.startsWith('<!')) continue;
+
+    if (['a', 'area', 'base', 'link'].includes(name)) {
+      values.push(...attributeValues(tag, ['href']));
+    }
+    if (['audio', 'embed', 'iframe', 'img', 'input', 'script', 'source', 'track', 'video'].includes(name)) {
+      values.push(...attributeValues(tag, ['src']));
+    }
+    if (name === 'form') values.push(...attributeValues(tag, ['action']));
+    if (name === 'object') values.push(...attributeValues(tag, ['data']));
+    if (name === 'video') values.push(...attributeValues(tag, ['poster']));
+    if (name === 'img' || name === 'source') {
+      for (const srcset of attributeValues(tag, ['srcset'])) {
+        for (const candidate of srcset.split(',')) values.push(candidate.trim().split(/\s+/)[0]);
+      }
+    }
   }
   return values;
 }
