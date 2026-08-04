@@ -1,8 +1,10 @@
 ---
 import '../styles/global.css';
+import '../styles/performance.css';
 import '../styles/components.css';
 import '../styles/worldclass.css';
 import '../styles/dark-mode.css';
+import ServiceWorkerRegistration from '@components/ServiceWorkerRegistration.astro';
 import { BRAND, getBrandName, getBrandTagline, SITE, SOCIALS } from '@utils/constants';
 import {
   localizedFeedUrl,
@@ -174,5 +176,6 @@ const t = ui(locale);
   <body id="top">
     <a href="#main-content" class="skip-link">{t.skipToContent}</a>
     <slot />
+    <ServiceWorkerRegistration {locale} />
   </body>
 </html>
