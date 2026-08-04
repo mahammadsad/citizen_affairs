@@ -1,97 +1,202 @@
 ---
+import { getCollection } from 'astro:content';
 import MainLayout from '@layouts/MainLayout.astro';
+import Icon from './Icon.astro';
+import { categoryName } from '@lib/content';
 import { REGIONS } from '@lib/regions';
-import { SITE } from '@utils/constants';
-import { locales, type Locale, ui } from '../i18n';
+import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
+import { locales, localizedPath, type Locale, ui } from '../i18n';
 
 const { locale } = Astro.props as { locale: Locale };
 const t = ui(locale);
+const categories = (await getCollection('categories'))
+  .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
+  .sort((a, b) => ACTIVE_CATEGORY_IDS.indexOf(a.id) - ACTIVE_CATEGORY_IDS.indexOf(b.id));
+
 const copy = {
   en: {
-    title: 'Search jobs and schemes',
-    description: 'Search verified government jobs and welfare schemes by keyword, state, qualification and status.',
-    type: 'Information type', allTypes: 'Jobs and schemes', job: 'Government job', scheme: 'Welfare scheme',
-    state: 'State or Union Territory', allStates: 'All India', status: 'Current status', allStatuses: 'All statuses',
-    open: 'Open', closingSoon: 'Closing soon', closed: 'Closed', qualification: 'Qualification', allQualifications: 'All qualifications',
-    clear: 'Clear filters', loading: 'Loading the search index…', empty: 'No matching information found. Try fewer filters or another spelling.',
-    count: '{count} result(s)', verified: 'Verification', eligibility: 'Eligibility depends on the official rules. Confirm final conditions on the official portal.',
+    title: 'Search citizen information',
+    description: 'Find verified jobs, admissions, scholarships, schemes, public services, alerts and practical guides.',
+    guidance: 'Search across every active section, then narrow the results by type, category, government level, region, deadline or verification status.',
+    type: 'Information type', allTypes: 'All information types',
+    types: { job: 'Government jobs', scheme: 'Welfare schemes', admission: 'Admissions and exams', scholarship: 'Scholarships', service: 'Citizen services', alert: 'Notices and alerts', explainer: 'Guides and explainers' },
+    category: 'Section', allCategories: 'All sections',
+    level: 'Government level', allLevels: 'All government levels', central: 'Central government', stateLevel: 'State government', westBengal: 'West Bengal', otherState: 'Other state',
+    state: 'State or Union Territory', allStates: 'All India',
+    status: 'Deadline status', allStatuses: 'Any deadline status', open: 'Open', closingSoon: 'Closing soon', closed: 'Closed', noDeadline: 'No deadline',
+    verification: 'Verification', allVerification: 'All verification statuses', official: 'Officially confirmed', partial: 'Partially confirmed', checking: 'Under verification', corrected: 'Corrected', archived: 'Closed information',
+    qualification: 'Qualification or audience', allQualifications: 'All qualifications',
+    sort: 'Sort results', relevance: 'Best match', newest: 'Newest update', deadline: 'Nearest deadline', alphabetical: 'A–Z',
+    clear: 'Clear all filters', loading: 'Loading the verified search index…', count: '{count} result(s)', active: 'Active filters', remove: 'Remove',
+    emptyTitle: 'No exact match found', emptyBody: 'Try a broader keyword, remove one or more filters, or browse all sections.', broaden: 'Clear filters and search again', browse: 'Browse all sections',
+    loadErrorTitle: 'Search index could not be loaded', loadErrorBody: 'The rest of Citizen Affairs is still available. Browse the sections or reload this page.', reload: 'Reload search',
+    verifiedNote: 'Before acting, confirm the latest eligibility, deadline and instructions on the linked official government source.',
+    published: 'Published', deadlineLabel: 'Deadline', sources: 'source(s)', action: 'Official action available'
   },
   bn: {
-    title: 'চাকরি ও প্রকল্প খুঁজুন',
-    description: 'কীওয়ার্ড, রাজ্য, যোগ্যতা ও অবস্থা অনুযায়ী যাচাইকৃত সরকারি চাকরি এবং জনকল্যাণ প্রকল্প খুঁজুন।',
-    type: 'তথ্যের ধরন', allTypes: 'চাকরি ও প্রকল্প', job: 'সরকারি চাকরি', scheme: 'জনকল্যাণ প্রকল্প',
-    state: 'রাজ্য বা কেন্দ্রশাসিত অঞ্চল', allStates: 'সারা ভারত', status: 'বর্তমান অবস্থা', allStatuses: 'সব অবস্থা',
-    open: 'চলমান', closingSoon: 'শীঘ্রই বন্ধ', closed: 'বন্ধ', qualification: 'যোগ্যতা', allQualifications: 'সব যোগ্যতা',
-    clear: 'ফিল্টার মুছুন', loading: 'সার্চ তথ্য লোড হচ্ছে…', empty: 'মিলছে এমন তথ্য পাওয়া যায়নি। কম ফিল্টার বা অন্য বানান দিয়ে চেষ্টা করুন।',
-    count: '{count}টি ফলাফল', verified: 'যাচাই', eligibility: 'যোগ্যতা অফিসিয়াল নিয়মের উপর নির্ভর করে। অফিসিয়াল পোর্টালে চূড়ান্ত শর্ত যাচাই করুন।',
+    title: 'নাগরিক তথ্য খুঁজুন',
+    description: 'যাচাইকৃত চাকরি, ভর্তি, স্কলারশিপ, প্রকল্প, নাগরিক পরিষেবা, সতর্কতা ও ব্যবহারিক গাইড খুঁজুন।',
+    guidance: 'সব সক্রিয় বিভাগে খুঁজুন, তারপর ধরন, বিভাগ, সরকার, রাজ্য, শেষ তারিখ বা যাচাইয়ের অবস্থা অনুযায়ী ফলাফল ছোট করুন।',
+    type: 'তথ্যের ধরন', allTypes: 'সব ধরনের তথ্য',
+    types: { job: 'সরকারি চাকরি', scheme: 'কল্যাণ প্রকল্প', admission: 'ভর্তি ও পরীক্ষা', scholarship: 'স্কলারশিপ', service: 'নাগরিক পরিষেবা', alert: 'নোটিশ ও সতর্কতা', explainer: 'গাইড ও ব্যাখ্যা' },
+    category: 'বিভাগ', allCategories: 'সব বিভাগ',
+    level: 'সরকারের স্তর', allLevels: 'সব সরকারি স্তর', central: 'কেন্দ্রীয় সরকার', stateLevel: 'রাজ্য সরকার', westBengal: 'পশ্চিমবঙ্গ', otherState: 'অন্য রাজ্য',
+    state: 'রাজ্য বা কেন্দ্রশাসিত অঞ্চল', allStates: 'সারা ভারত',
+    status: 'শেষ তারিখের অবস্থা', allStatuses: 'যে কোনো শেষ তারিখ', open: 'খোলা', closingSoon: 'শীঘ্রই বন্ধ', closed: 'বন্ধ', noDeadline: 'শেষ তারিখ নেই',
+    verification: 'যাচাই', allVerification: 'সব যাচাই অবস্থা', official: 'অফিসিয়ালি নিশ্চিত', partial: 'আংশিক নিশ্চিত', checking: 'যাচাই চলছে', corrected: 'সংশোধিত', archived: 'বন্ধ তথ্য',
+    qualification: 'যোগ্যতা বা লক্ষ্যগোষ্ঠী', allQualifications: 'সব যোগ্যতা',
+    sort: 'ফলাফল সাজান', relevance: 'সেরা মিল', newest: 'সর্বশেষ আপডেট', deadline: 'নিকটতম শেষ তারিখ', alphabetical: 'অ–হ',
+    clear: 'সব ফিল্টার মুছুন', loading: 'যাচাইকৃত সার্চ সূচি লোড হচ্ছে…', count: '{count}টি ফলাফল', active: 'সক্রিয় ফিল্টার', remove: 'সরান',
+    emptyTitle: 'সঠিক মিল পাওয়া যায়নি', emptyBody: 'আরও সাধারণ শব্দ লিখুন, কিছু ফিল্টার সরান অথবা সব বিভাগ দেখুন।', broaden: 'ফিল্টার মুছে আবার খুঁজুন', browse: 'সব বিভাগ দেখুন',
+    loadErrorTitle: 'সার্চ সূচি লোড করা যায়নি', loadErrorBody: 'Citizen Affairs-এর বাকি অংশ ব্যবহার করা যাবে। বিভাগগুলি দেখুন বা পেজটি আবার লোড করুন।', reload: 'সার্চ আবার লোড করুন',
+    verifiedNote: 'পদক্ষেপ নেওয়ার আগে সংশ্লিষ্ট অফিসিয়াল সরকারি সূত্রে সর্বশেষ যোগ্যতা, শেষ তারিখ ও নির্দেশনা নিশ্চিত করুন।',
+    published: 'প্রকাশিত', deadlineLabel: 'শেষ তারিখ', sources: 'টি সূত্র', action: 'অফিসিয়াল পদক্ষেপ উপলব্ধ'
   },
   hi: {
-    title: 'नौकरियाँ और योजनाएँ खोजें',
-    description: 'कीवर्ड, राज्य, योग्यता और स्थिति के अनुसार सत्यापित सरकारी नौकरियाँ और कल्याणकारी योजनाएँ खोजें।',
-    type: 'जानकारी का प्रकार', allTypes: 'नौकरियाँ और योजनाएँ', job: 'सरकारी नौकरी', scheme: 'कल्याणकारी योजना',
-    state: 'राज्य या केंद्र शासित प्रदेश', allStates: 'संपूर्ण भारत', status: 'वर्तमान स्थिति', allStatuses: 'सभी स्थितियाँ',
-    open: 'खुला', closingSoon: 'जल्द बंद', closed: 'बंद', qualification: 'योग्यता', allQualifications: 'सभी योग्यताएँ',
-    clear: 'फ़िल्टर हटाएँ', loading: 'खोज सूची लोड हो रही है…', empty: 'कोई मिलती-जुलती जानकारी नहीं मिली। कम फ़िल्टर या दूसरी वर्तनी आज़माएँ।',
-    count: '{count} परिणाम', verified: 'सत्यापन', eligibility: 'पात्रता आधिकारिक नियमों पर निर्भर करती है। आधिकारिक पोर्टल पर अंतिम शर्तें जाँचें।',
-  },
+    title: 'नागरिक जानकारी खोजें',
+    description: 'सत्यापित नौकरियाँ, प्रवेश, छात्रवृत्तियाँ, योजनाएँ, नागरिक सेवाएँ, अलर्ट और उपयोगी मार्गदर्शिकाएँ खोजें।',
+    guidance: 'सभी सक्रिय अनुभागों में खोजें, फिर प्रकार, अनुभाग, सरकारी स्तर, राज्य, अंतिम तिथि या सत्यापन स्थिति से परिणाम सीमित करें।',
+    type: 'जानकारी का प्रकार', allTypes: 'सभी प्रकार की जानकारी',
+    types: { job: 'सरकारी नौकरियाँ', scheme: 'कल्याण योजनाएँ', admission: 'प्रवेश और परीक्षाएँ', scholarship: 'छात्रवृत्तियाँ', service: 'नागरिक सेवाएँ', alert: 'सूचनाएँ और अलर्ट', explainer: 'मार्गदर्शिकाएँ और व्याख्या' },
+    category: 'अनुभाग', allCategories: 'सभी अनुभाग',
+    level: 'सरकारी स्तर', allLevels: 'सभी सरकारी स्तर', central: 'केंद्र सरकार', stateLevel: 'राज्य सरकार', westBengal: 'पश्चिम बंगाल', otherState: 'अन्य राज्य',
+    state: 'राज्य या केंद्र शासित प्रदेश', allStates: 'संपूर्ण भारत',
+    status: 'अंतिम तिथि की स्थिति', allStatuses: 'कोई भी अंतिम तिथि', open: 'खुला', closingSoon: 'जल्द बंद', closed: 'बंद', noDeadline: 'कोई अंतिम तिथि नहीं',
+    verification: 'सत्यापन', allVerification: 'सभी सत्यापन स्थितियाँ', official: 'आधिकारिक रूप से पुष्टि', partial: 'आंशिक पुष्टि', checking: 'सत्यापन जारी', corrected: 'सुधारा गया', archived: 'बंद जानकारी',
+    qualification: 'योग्यता या लक्षित समूह', allQualifications: 'सभी योग्यताएँ',
+    sort: 'परिणाम क्रम', relevance: 'सर्वोत्तम मिलान', newest: 'नवीनतम अपडेट', deadline: 'निकटतम अंतिम तिथि', alphabetical: 'अ–ज्ञ',
+    clear: 'सभी फ़िल्टर हटाएँ', loading: 'सत्यापित खोज सूची लोड हो रही है…', count: '{count} परिणाम', active: 'सक्रिय फ़िल्टर', remove: 'हटाएँ',
+    emptyTitle: 'सटीक मिलान नहीं मिला', emptyBody: 'व्यापक शब्द आज़माएँ, एक या अधिक फ़िल्टर हटाएँ या सभी अनुभाग देखें।', broaden: 'फ़िल्टर हटाकर फिर खोजें', browse: 'सभी अनुभाग देखें',
+    loadErrorTitle: 'खोज सूची लोड नहीं हो सकी', loadErrorBody: 'Citizen Affairs का बाकी भाग उपलब्ध है। अनुभाग देखें या यह पेज फिर लोड करें।', reload: 'खोज फिर लोड करें',
+    verifiedNote: 'कार्रवाई से पहले संबंधित आधिकारिक सरकारी स्रोत पर नवीनतम पात्रता, अंतिम तिथि और निर्देशों की पुष्टि करें।',
+    published: 'प्रकाशित', deadlineLabel: 'अंतिम तिथि', sources: 'स्रोत', action: 'आधिकारिक कार्रवाई उपलब्ध'
+  }
 }[locale];
+
+const levelLabels = {
+  central: copy.central,
+  state: copy.stateLevel,
+  'west-bengal': copy.westBengal,
+  'other-state': copy.otherState
+};
 const canonical = locale === 'en' ? `${SITE.url}/search/` : `${SITE.url}/${locale}/search/`;
 const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, lang === 'en' ? `${SITE.url}/search/` : `${SITE.url}/${lang}/search/`])) as Record<Locale, string>;
 const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
+const browseUrl = localizedPath(locale, 'categories');
 ---
 
 <MainLayout title={copy.title} description={copy.description} {locale} {canonical} {alternateUrls} robots="noindex, follow">
   <section class="search-hero">
-    <div class="container">
-      <span class="eyebrow">{t.verifiedSources}</span>
+    <div class="container search-hero-inner">
+      <p class="eyebrow"><Icon name="search" size={16} />{t.verifiedSources}</p>
       <h1>{copy.title}</h1>
       <p>{copy.description}</p>
+      <small>{copy.guidance}</small>
     </div>
   </section>
-  <main class="section" data-search-page data-index-url={indexUrl} data-empty={copy.empty} data-count={copy.count}>
+
+  <section
+    class="section citizen-search"
+    data-search-page
+    data-index-url={indexUrl}
+    data-count={copy.count}
+    data-empty-title={copy.emptyTitle}
+    data-empty-body={copy.emptyBody}
+    data-broaden={copy.broaden}
+    data-browse={copy.browse}
+    data-browse-url={browseUrl}
+    data-load-error-title={copy.loadErrorTitle}
+    data-load-error-body={copy.loadErrorBody}
+    data-reload={copy.reload}
+    data-active={copy.active}
+    data-remove={copy.remove}
+    data-published={copy.published}
+    data-deadline-label={copy.deadlineLabel}
+    data-sources={copy.sources}
+    data-action={copy.action}
+    data-type-labels={JSON.stringify(copy.types)}
+    data-level-labels={JSON.stringify(levelLabels)}
+  >
     <div class="container search-layout">
       <form class="search-controls" id="structuredSearch" role="search">
         <label class="query-field">
           <span>{t.search}</span>
-          <input id="query" name="q" type="search" placeholder={t.searchPlaceholder} autocomplete="off" />
+          <div><Icon name="search" size={19} /><input id="query" name="q" type="search" placeholder={t.searchPlaceholder} autocomplete="off" /></div>
         </label>
-        <label><span>{copy.type}</span><select id="type" name="type"><option value="">{copy.allTypes}</option><option value="job">{copy.job}</option><option value="scheme">{copy.scheme}</option></select></label>
+
+        <label><span>{copy.type}</span><select id="type" name="type"><option value="">{copy.allTypes}</option>{Object.entries(copy.types).map(([value, label]) => <option value={value}>{label}</option>)}</select></label>
+        <label><span>{copy.category}</span><select id="category" name="category"><option value="">{copy.allCategories}</option>{categories.map((category) => <option value={category.id}>{categoryName(category, locale)}</option>)}</select></label>
+        <label><span>{copy.level}</span><select id="level" name="level"><option value="">{copy.allLevels}</option>{Object.entries(levelLabels).map(([value, label]) => <option value={value}>{label}</option>)}</select></label>
         <label><span>{copy.state}</span><select id="state" name="state"><option value="">{copy.allStates}</option>{REGIONS.map((region) => <option value={region.id}>{region[locale]}</option>)}</select></label>
-        <label><span>{copy.status}</span><select id="status" name="status"><option value="">{copy.allStatuses}</option><option value="open">{copy.open}</option><option value="closing-soon">{copy.closingSoon}</option><option value="closed">{copy.closed}</option></select></label>
+        <label><span>{copy.status}</span><select id="status" name="status"><option value="">{copy.allStatuses}</option><option value="open">{copy.open}</option><option value="closing-soon">{copy.closingSoon}</option><option value="closed">{copy.closed}</option><option value="none">{copy.noDeadline}</option></select></label>
+        <label><span>{copy.verification}</span><select id="verification" name="verification"><option value="">{copy.allVerification}</option><option value="officially-confirmed">{copy.official}</option><option value="partially-confirmed">{copy.partial}</option><option value="under-verification">{copy.checking}</option><option value="corrected">{copy.corrected}</option><option value="closed">{copy.archived}</option></select></label>
         <label><span>{copy.qualification}</span><select id="qualification" name="qualification"><option value="">{copy.allQualifications}</option></select></label>
+        <label><span>{copy.sort}</span><select id="sort" name="sort"><option value="relevance">{copy.relevance}</option><option value="newest">{copy.newest}</option><option value="deadline">{copy.deadline}</option><option value="alphabetical">{copy.alphabetical}</option></select></label>
+
         <div class="control-actions"><button class="btn btn-primary" type="submit">{t.search}</button><button class="btn btn-secondary" id="clearSearch" type="button">{copy.clear}</button></div>
       </form>
-      <aside class="eligibility-note"><strong>{copy.eligibility}</strong></aside>
+
+      <aside class="verification-note"><Icon name="check" size={19} /><strong>{copy.verifiedNote}</strong></aside>
+      <div class="active-filters" id="activeFilters" aria-live="polite" hidden></div>
       <div class="result-heading"><p id="resultCount" aria-live="polite">{copy.loading}</p></div>
       <div class="search-page-results" id="searchPageResults" aria-live="polite" aria-busy="true"></div>
-      <noscript><p class="empty-search">{locale === 'bn' ? 'ইন্টার‌্যাক্টিভ অনুসন্ধানের জন্য জাভাস্ক্রিপ্ট প্রয়োজন। ওয়েবসাইটের বাকি অংশ এটি ছাড়াও ব্যবহার করা যাবে।' : locale === 'hi' ? 'इंटरैक्टिव खोज के लिए जावास्क्रिप्ट आवश्यक है। वेबसाइट का बाकी भाग इसके बिना भी उपलब्ध है।' : 'JavaScript is required for the interactive static search. The rest of the website remains available without it.'}</p></noscript>
+      <noscript><p class="search-message">{locale === 'bn' ? 'ইন্টার‌্যাক্টিভ অনুসন্ধানের জন্য জাভাস্ক্রিপ্ট প্রয়োজন। ওয়েবসাইটের বাকি অংশ এটি ছাড়াও ব্যবহার করা যাবে।' : locale === 'hi' ? 'इंटरैक्टिव खोज के लिए जावास्क्रिप्ट आवश्यक है। वेबसाइट का बाकी भाग इसके बिना भी उपलब्ध है।' : 'JavaScript is required for interactive search. The rest of the website remains available without it.'}</p></noscript>
     </div>
-  </main>
+  </section>
 </MainLayout>
 
 <script>
   type SearchItem = {
-    label: string; sub?: string; href: string; keywords?: string[]; verification?: string; verificationId?: string;
-    category?: string; categoryId?: string; type?: string; state?: string; governmentLevel?: string;
-    qualification?: string[]; status?: string; deadline?: string;
+    label: string;
+    sub?: string;
+    href: string;
+    description?: string;
+    keywords?: string[];
+    verification?: string;
+    verificationId?: string;
+    category?: string;
+    categoryId?: string;
+    type?: string;
+    state?: string;
+    regionLabel?: string;
+    governmentLevel?: string;
+    qualification?: string[];
+    status?: string;
+    deadline?: string;
+    published?: string;
+    updated?: string;
+    sourceCount?: number;
+    actionAvailable?: boolean;
   };
+
   const root = document.querySelector<HTMLElement>('[data-search-page]');
   const form = document.getElementById('structuredSearch') as HTMLFormElement | null;
   const output = document.getElementById('searchPageResults');
   const count = document.getElementById('resultCount');
-  const fields = ['q', 'type', 'state', 'status', 'qualification'] as const;
-  const controls = Object.fromEntries(fields.map((name) => [name, form?.elements.namedItem(name)])) as Record<(typeof fields)[number], HTMLInputElement | HTMLSelectElement | null>;
+  const activeFilters = document.getElementById('activeFilters');
+  const fields = ['q', 'type', 'category', 'level', 'state', 'status', 'verification', 'qualification', 'sort'] as const;
+  type FieldName = (typeof fields)[number];
+  const controls = Object.fromEntries(fields.map((name) => [name, form?.elements.namedItem(name)])) as Record<FieldName, HTMLInputElement | HTMLSelectElement | null>;
+  const typeLabels = JSON.parse(root?.dataset.typeLabels || '{}') as Record<string, string>;
+  const levelLabels = JSON.parse(root?.dataset.levelLabels || '{}') as Record<string, string>;
   let items: SearchItem[] = [];
+  let loadFailed = false;
+
   const normalize = (value = '') => value.normalize('NFKD').toLocaleLowerCase().replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
   const synonymGroups = [
     ['job', 'jobs', 'naukri', 'নৌকরি', 'চাকরি', 'नौकरी', 'recruitment', 'ভর্তি', 'भर्ती'],
     ['scheme', 'schemes', 'yojana', 'যোজনা', 'প্রকল্প', 'योजना'],
+    ['admission', 'admissions', 'ভর্তি', 'प्रवेश'],
+    ['scholarship', 'scholarships', 'স্কলারশিপ', 'বৃত্তি', 'छात्रवृत्ति'],
+    ['service', 'services', 'পরিষেবা', 'सेवा'],
+    ['notice', 'alert', 'নোটিশ', 'সতর্কতা', 'सूचना', 'अलर्ट'],
     ['railway', 'railways', 'रेलवे', 'রেলওয়ে'],
     ['graduation', 'graduate', 'degree', 'স্নাতক', 'स्नातक'],
     ['10th', 'matric', 'madhyamik', 'মাধ্যমিক', 'मैट्रिक'],
-    ['12th', 'higher secondary', 'উচ্চমাধ্যমিক', 'इंटरमीडिएट'],
+    ['12th', 'higher secondary', 'উচ্চমাধ্যমিক', 'इंटरमीडिएट']
   ].map((group) => group.map(normalize));
   const expand = (token: string) => synonymGroups.find((group) => group.includes(token)) || [token];
+
   const distanceAtMostOne = (a: string, b: string) => {
     if (Math.abs(a.length - b.length) > 1) return false;
     if (a === b) return true;
@@ -103,65 +208,258 @@ const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
     }
     return edits + Number(i < a.length || j < b.length) <= 1;
   };
-  const matchesQuery = (item: SearchItem, raw: string) => {
+
+  const queryScore = (item: SearchItem, raw: string) => {
     const query = normalize(raw);
-    if (!query) return true;
-    const haystack = normalize([item.label, item.sub, item.category, ...(item.keywords || [])].join(' '));
+    if (!query) return 0;
+    const title = normalize(item.label);
+    const category = normalize(item.category);
+    const description = normalize(item.description || item.sub || '');
+    const keywords = normalize((item.keywords || []).join(' '));
+    const haystack = [title, category, description, keywords].join(' ');
     const words = haystack.split(' ');
-    return query.split(' ').every((token) => expand(token).some((variant) => haystack.includes(variant) || (variant.length > 3 && words.some((word) => distanceAtMostOne(variant, word)))));
+    let score = 0;
+    for (const token of query.split(' ')) {
+      const variants = expand(token);
+      const matched = variants.some((variant) => {
+        if (title === variant) { score += 18; return true; }
+        if (title.startsWith(variant)) { score += 12; return true; }
+        if (title.includes(variant)) { score += 9; return true; }
+        if (category.includes(variant)) { score += 6; return true; }
+        if (description.includes(variant)) { score += 4; return true; }
+        if (keywords.includes(variant)) { score += 3; return true; }
+        if (variant.length > 3 && words.some((word) => distanceAtMostOne(variant, word))) { score += 1; return true; }
+        return false;
+      });
+      if (!matched) return -1;
+    }
+    return score;
   };
+
   const syncFromUrl = () => {
     const params = new URLSearchParams(location.search);
-    fields.forEach((name) => { const control = controls[name]; if (control) control.value = params.get(name) || ''; });
-  };
-  const syncUrl = () => {
-    const params = new URLSearchParams();
-    fields.forEach((name) => { const value = controls[name]?.value.trim(); if (value) params.set(name, value); });
-    history.replaceState(null, '', `${location.pathname}${params.size ? `?${params}` : ''}`);
-  };
-  const render = () => {
-    if (!output || !root) return;
-    const q = controls.q?.value || '', type = controls.type?.value || '', state = controls.state?.value || '', status = controls.status?.value || '', qualification = normalize(controls.qualification?.value || '');
-    const matches = items.filter((item) => matchesQuery(item, q)
-      && (!type || item.type === type)
-      && (!state || item.state === state)
-      && (!status || item.status === status)
-      && (!qualification || (item.qualification || []).some((value) => normalize(value) === qualification)));
-    output.replaceChildren();
-    output.setAttribute('aria-busy', 'false');
-    if (count) count.textContent = (root.dataset.count || '{count} result(s)').replace('{count}', new Intl.NumberFormat(document.documentElement.lang).format(matches.length));
-    if (!matches.length) {
-      const p = document.createElement('p'); p.className = 'empty-search'; p.textContent = root.dataset.empty || ''; output.append(p); return;
-    }
-    matches.forEach((item) => {
-      const a = document.createElement('a'); a.className = 'search-result-card'; a.href = item.href;
-      const meta = document.createElement('span'); meta.className = 'result-meta'; meta.textContent = [item.category, item.verification].filter(Boolean).join(' · ');
-      const title = document.createElement('strong'); title.textContent = item.label;
-      const summary = document.createElement('span'); summary.className = 'result-summary'; summary.textContent = item.keywords?.[0] || item.sub || '';
-      a.append(meta, title, summary); output.append(a);
+    fields.forEach((name) => {
+      const control = controls[name];
+      if (!control) return;
+      control.value = params.get(name) || (name === 'sort' ? 'relevance' : '');
     });
   };
+
+  const syncUrl = () => {
+    const params = new URLSearchParams();
+    fields.forEach((name) => {
+      const value = controls[name]?.value.trim();
+      if (value && !(name === 'sort' && value === 'relevance')) params.set(name, value);
+    });
+    history.replaceState(null, '', `${location.pathname}${params.size ? `?${params}` : ''}`);
+  };
+
+  const filterLabel = (name: FieldName, value: string) => {
+    const control = controls[name];
+    if (name === 'q') return value;
+    if (control instanceof HTMLSelectElement) return control.selectedOptions[0]?.textContent || value;
+    return value;
+  };
+
+  const renderActiveFilters = () => {
+    if (!activeFilters || !root) return;
+    activeFilters.replaceChildren();
+    const selected = fields.filter((name) => {
+      const value = controls[name]?.value.trim();
+      return Boolean(value && !(name === 'sort' && value === 'relevance'));
+    });
+    activeFilters.hidden = selected.length === 0;
+    if (!selected.length) return;
+    const label = document.createElement('strong');
+    label.textContent = root.dataset.active || 'Active filters';
+    activeFilters.append(label);
+    selected.forEach((name) => {
+      const value = controls[name]?.value || '';
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.clearField = name;
+      button.setAttribute('aria-label', `${root.dataset.remove || 'Remove'} ${filterLabel(name, value)}`);
+      button.textContent = `${filterLabel(name, value)} ×`;
+      activeFilters.append(button);
+    });
+  };
+
+  const addMessage = (kind: 'empty' | 'error') => {
+    if (!output || !root) return;
+    const section = document.createElement('section');
+    section.className = 'search-message';
+    const heading = document.createElement('h2');
+    const body = document.createElement('p');
+    heading.textContent = kind === 'error' ? root.dataset.loadErrorTitle || '' : root.dataset.emptyTitle || '';
+    body.textContent = kind === 'error' ? root.dataset.loadErrorBody || '' : root.dataset.emptyBody || '';
+    const actions = document.createElement('div');
+    const primary = document.createElement('button');
+    primary.type = 'button';
+    primary.className = 'btn btn-primary';
+    primary.dataset.messageAction = kind === 'error' ? 'reload' : 'clear';
+    primary.textContent = kind === 'error' ? root.dataset.reload || '' : root.dataset.broaden || '';
+    const browse = document.createElement('a');
+    browse.className = 'btn btn-secondary';
+    browse.href = root.dataset.browseUrl || '/categories/';
+    browse.textContent = root.dataset.browse || '';
+    actions.append(primary, browse);
+    section.append(heading, body, actions);
+    output.append(section);
+  };
+
+  const formatDate = (value?: string) => value ? new Intl.DateTimeFormat(document.documentElement.lang, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value)) : '';
+  const deadlineRank = (item: SearchItem) => {
+    if (!item.deadline || item.status === 'closed') return Number.POSITIVE_INFINITY;
+    const timestamp = Date.parse(item.deadline);
+    return Number.isNaN(timestamp) ? Number.POSITIVE_INFINITY : timestamp;
+  };
+
+  const render = () => {
+    if (!output || !root) return;
+    output.replaceChildren();
+    output.setAttribute('aria-busy', 'false');
+    renderActiveFilters();
+    if (loadFailed) {
+      if (count) count.textContent = '';
+      addMessage('error');
+      return;
+    }
+
+    const q = controls.q?.value || '';
+    const type = controls.type?.value || '';
+    const category = controls.category?.value || '';
+    const level = controls.level?.value || '';
+    const state = controls.state?.value || '';
+    const status = controls.status?.value || '';
+    const verification = controls.verification?.value || '';
+    const qualification = normalize(controls.qualification?.value || '');
+    const sort = controls.sort?.value || 'relevance';
+
+    const matches = items
+      .map((item) => ({ item, score: queryScore(item, q) }))
+      .filter(({ item, score }) => score >= 0
+        && (!type || item.type === type)
+        && (!category || item.categoryId === category)
+        && (!level || item.governmentLevel === level)
+        && (!state || item.state === state)
+        && (!status || (status === 'closing-soon' ? ['closing-soon', 'urgent'].includes(item.status || '') : item.status === status))
+        && (!verification || item.verificationId === verification)
+        && (!qualification || (item.qualification || []).some((value) => normalize(value) === qualification)))
+      .sort((a, b) => {
+        if (sort === 'newest') return Date.parse(b.item.updated || b.item.published || '') - Date.parse(a.item.updated || a.item.published || '');
+        if (sort === 'deadline') return deadlineRank(a.item) - deadlineRank(b.item) || Date.parse(b.item.updated || '') - Date.parse(a.item.updated || '');
+        if (sort === 'alphabetical') return a.item.label.localeCompare(b.item.label, document.documentElement.lang);
+        return b.score - a.score || Date.parse(b.item.updated || b.item.published || '') - Date.parse(a.item.updated || a.item.published || '');
+      });
+
+    if (count) count.textContent = (root.dataset.count || '{count} result(s)').replace('{count}', new Intl.NumberFormat(document.documentElement.lang).format(matches.length));
+    if (!matches.length) { addMessage('empty'); return; }
+
+    matches.forEach(({ item }) => {
+      const card = document.createElement('a');
+      card.className = 'search-result-card';
+      card.href = item.href;
+      const meta = document.createElement('span');
+      meta.className = 'result-meta';
+      meta.textContent = [typeLabels[item.type || ''], item.category, item.verification].filter(Boolean).join(' · ');
+      const title = document.createElement('strong');
+      title.textContent = item.label;
+      const summary = document.createElement('span');
+      summary.className = 'result-summary';
+      summary.textContent = item.description || item.sub || '';
+      const facts = document.createElement('span');
+      facts.className = 'result-facts';
+      const factValues = [
+        item.updated || item.published ? `${root.dataset.published}: ${formatDate(item.updated || item.published)}` : '',
+        item.deadline ? `${root.dataset.deadlineLabel}: ${formatDate(item.deadline)}` : '',
+        item.regionLabel || levelLabels[item.governmentLevel || ''] || '',
+        item.sourceCount ? `${item.sourceCount} ${root.dataset.sources}` : '',
+        item.actionAvailable ? root.dataset.action || '' : ''
+      ].filter(Boolean);
+      facts.textContent = factValues.join(' · ');
+      card.append(meta, title, summary, facts);
+      output.append(card);
+    });
+  };
+
   const apply = () => { syncUrl(); render(); };
   syncFromUrl();
-  fetch(root?.dataset.indexUrl || '').then((response) => response.ok ? response.json() : []).then((data: SearchItem[]) => {
-    items = data;
-    const qualification = controls.qualification;
-    if (qualification) {
-      const selected = new URLSearchParams(location.search).get('qualification') || '';
-      const values = [...new Set(items.flatMap((item) => item.qualification || []).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-      values.forEach((value) => { const option = document.createElement('option'); option.value = value; option.textContent = value; qualification.append(option); });
-      qualification.value = selected;
-    }
-    render();
-  }).catch(() => { items = []; render(); });
+  fetch(root?.dataset.indexUrl || '')
+    .then((response) => response.ok ? response.json() : Promise.reject(new Error('Search index unavailable')))
+    .then((data: SearchItem[]) => {
+      items = data;
+      const qualificationControl = controls.qualification;
+      if (qualificationControl instanceof HTMLSelectElement) {
+        const selected = new URLSearchParams(location.search).get('qualification') || '';
+        const values = [...new Set(items.flatMap((item) => item.qualification || []).filter(Boolean))].sort((a, b) => a.localeCompare(b, document.documentElement.lang));
+        values.forEach((value) => {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = value;
+          qualificationControl.append(option);
+        });
+        qualificationControl.value = selected;
+      }
+      render();
+    })
+    .catch(() => { items = []; loadFailed = true; render(); });
+
   form?.addEventListener('submit', (event) => { event.preventDefault(); apply(); });
   form?.querySelectorAll('select').forEach((select) => select.addEventListener('change', apply));
   let timer = 0;
   controls.q?.addEventListener('input', () => { window.clearTimeout(timer); timer = window.setTimeout(apply, 180); });
-  document.getElementById('clearSearch')?.addEventListener('click', () => { form?.reset(); apply(); controls.q?.focus(); });
+  document.getElementById('clearSearch')?.addEventListener('click', () => { form?.reset(); if (controls.sort) controls.sort.value = 'relevance'; apply(); controls.q?.focus(); });
+  activeFilters?.addEventListener('click', (event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>('[data-clear-field]');
+    const name = button?.dataset.clearField as FieldName | undefined;
+    if (!name || !controls[name]) return;
+    controls[name]!.value = name === 'sort' ? 'relevance' : '';
+    apply();
+  });
+  output?.addEventListener('click', (event) => {
+    const action = (event.target as Element).closest<HTMLElement>('[data-message-action]')?.dataset.messageAction;
+    if (action === 'reload') location.reload();
+    if (action === 'clear') { form?.reset(); if (controls.sort) controls.sort.value = 'relevance'; apply(); controls.q?.focus(); }
+  });
   addEventListener('popstate', () => { syncFromUrl(); render(); });
 </script>
 
 <style>
-  .search-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.09),rgba(var(--color-green-rgb),.06))}.search-hero h1{font-size:clamp(2rem,5vw,3.7rem);margin:.45rem 0}.search-hero p{max-width:66ch;color:var(--color-text-muted);font-size:1.05rem}.search-layout{max-width:1050px}.search-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:18px}.search-controls label{display:grid;gap:.35rem;min-width:0}.search-controls label>span{font-size:.75rem;font-weight:800;color:var(--color-text-muted)}.search-controls input,.search-controls select{width:100%;min-width:0;min-height:46px;padding:.65rem .75rem;border:1px solid var(--color-border);border-radius:10px;background:var(--color-bg);color:var(--color-text);font:inherit}.query-field{grid-column:1/-1}.query-field input{font-size:1.05rem}.control-actions{display:flex;align-items:end;gap:.6rem;grid-column:span 2}.control-actions .btn{min-height:46px}.eligibility-note{margin:1rem 0;padding:.8rem 1rem;border-left:4px solid var(--color-orange);border-radius:8px;background:rgba(var(--color-orange-rgb),.08);font-size:.82rem;color:var(--color-text-muted)}.result-heading{margin:1.4rem 0 .8rem;font-weight:800}.search-page-results{display:grid;gap:.8rem}.search-result-card{display:grid;gap:.35rem;padding:1rem 1.1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);transition:.2s}.search-result-card:hover,.search-result-card:focus-visible{border-color:var(--color-primary);transform:translateY(-2px);box-shadow:var(--shadow-md)}.search-result-card strong{font-size:1.05rem;color:var(--color-text)}.result-meta{font-size:.72rem;font-weight:800;color:var(--color-green-text)}.result-summary{font-size:.86rem;color:var(--color-text-muted)}.empty-search{padding:2rem;text-align:center;border:1px dashed var(--color-border);border-radius:14px;color:var(--color-text-muted)}@media(max-width:760px){.search-controls{grid-template-columns:1fr 1fr}.control-actions{grid-column:1/-1}}@media(max-width:480px){.search-controls{grid-template-columns:1fr}.control-actions{grid-column:auto;display:grid}.control-actions .btn{width:100%}}
+  .search-hero { padding: 3.5rem 0; background: linear-gradient(135deg, rgba(var(--color-primary-rgb), .1), rgba(var(--color-green-rgb), .07)); }
+  .search-hero-inner { max-width: 850px; }
+  .search-hero .eyebrow { display: flex; align-items: center; gap: .4rem; color: var(--color-primary); font-weight: 850; }
+  .search-hero h1 { margin: .45rem 0; font-size: clamp(2rem, 5vw, 3.7rem); }
+  .search-hero p:not(.eyebrow) { max-width: 66ch; color: var(--color-text-muted); font-size: 1.05rem; }
+  .search-hero small { display: block; max-width: 75ch; margin-top: .8rem; color: var(--color-text-muted); line-height: 1.55; }
+  .search-layout { max-width: 1120px; }
+  .search-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); }
+  .search-controls label { display: grid; gap: .35rem; min-width: 0; }
+  .search-controls label > span { color: var(--color-text-muted); font-size: .73rem; font-weight: 800; }
+  .search-controls input, .search-controls select { width: 100%; min-width: 0; min-height: 46px; padding: .65rem .75rem; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-bg); color: var(--color-text); font: inherit; }
+  .query-field { grid-column: 1 / -1; }
+  .query-field > div { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: .5rem; padding-left: .75rem; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-bg); }
+  .query-field > div:focus-within { border-color: var(--color-primary); outline: 2px solid rgba(var(--color-primary-rgb), .15); }
+  .query-field input { border: 0; padding-left: 0; font-size: 1.03rem; outline: 0; }
+  .control-actions { display: flex; align-items: end; gap: .6rem; grid-column: span 2; }
+  .control-actions .btn { min-height: 46px; }
+  .verification-note { display: flex; align-items: flex-start; gap: .55rem; margin: 1rem 0; padding: .85rem 1rem; border-left: 4px solid var(--color-green); border-radius: 8px; background: rgba(var(--color-green-rgb), .07); color: var(--color-text-muted); font-size: .82rem; }
+  .verification-note svg { flex: 0 0 auto; color: var(--color-green-text); }
+  .active-filters { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; margin: 1rem 0; }
+  .active-filters strong { margin-right: .25rem; font-size: .78rem; }
+  .active-filters button { min-height: 36px; padding: .35rem .65rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface); color: var(--color-text); font-size: .75rem; font-weight: 750; }
+  .active-filters button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .result-heading { margin: 1.35rem 0 .75rem; font-weight: 850; }
+  .search-page-results { display: grid; gap: .8rem; }
+  .search-result-card { display: grid; gap: .4rem; padding: 1.05rem 1.15rem; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .search-result-card:hover, .search-result-card:focus-visible { transform: translateY(-2px); border-color: var(--color-primary); box-shadow: var(--shadow-md); }
+  .search-result-card strong { color: var(--color-text); font-size: 1.05rem; }
+  .result-meta { color: var(--color-green-text); font-size: .7rem; font-weight: 850; }
+  .result-summary { color: var(--color-text-muted); font-size: .86rem; line-height: 1.5; }
+  .result-facts { padding-top: .25rem; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: .7rem; }
+  .search-message { display: grid; justify-items: center; gap: .65rem; padding: 2.2rem 1rem; text-align: center; border: 1px dashed var(--color-border); border-radius: 12px; color: var(--color-text-muted); }
+  .search-message h2 { margin: 0; color: var(--color-text); font-size: 1.25rem; }
+  .search-message p { max-width: 55ch; margin: 0; }
+  .search-message div { display: flex; justify-content: center; gap: .6rem; flex-wrap: wrap; margin-top: .35rem; }
+  @media (max-width: 900px) { .search-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } .control-actions { grid-column: 1 / -1; } }
+  @media (max-width: 540px) { .search-controls { grid-template-columns: 1fr; } .control-actions { display: grid; grid-column: auto; } .control-actions .btn, .search-message .btn { width: 100%; } .search-message div { width: 100%; } }
 </style>
