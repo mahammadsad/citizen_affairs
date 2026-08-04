@@ -119,7 +119,7 @@
     document.addEventListener('click', (event) => {
       const target = event.target;
       if (!(target instanceof Element)) return;
-      if (target.closest('#saveArticle, #clearSavedList, [data-remove-item]')) {
+      if (target.closest('#saveArticle, #clearSavedList, .saved-card-actions button')) {
         window.setTimeout(syncSavedBadges, 0);
       }
     });
