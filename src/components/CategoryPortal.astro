@@ -1,0 +1,373 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import Icon from './Icon.astro';
+import { categoryDescription, categoryName } from '@lib/content';
+import { deadlineState } from '@lib/deadline';
+import { localizedPath, type Locale, ui } from '../i18n';
+
+type Article = CollectionEntry<'articles'>;
+type Category = CollectionEntry<'categories'>;
+
+interface Props {
+  locale: Locale;
+  category: Category;
+  articles: Article[];
+}
+
+const { locale, category, articles } = Astro.props;
+const t = ui(locale);
+const name = categoryName(category, locale);
+const description = categoryDescription(category, locale) || name;
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
+
+const copy = {
+  en: {
+    back: 'All citizen sections',
+    verified: 'Officially confirmed',
+    actionable: 'Open or actionable',
+    central: 'Central government',
+    state: 'State and regional',
+    filters: 'Filter this section',
+    all: 'All updates',
+    official: 'Official only',
+    open: 'Open now',
+    centralFilter: 'Central',
+    stateFilter: 'State',
+    resultPattern: '{count} updates shown',
+    noMatch: 'No updates match this filter. Choose another filter to see available information.',
+    emptyTitle: 'Verified information is being prepared',
+    emptyBody: 'This section is ready, but no current item has passed the publication checks yet.',
+    trustTitle: 'Before you take action',
+    trustBody: 'Check the status, deadline and official source shown on every card. Citizen Affairs explains the update, but the government authority remains the final source.',
+    deadlines: 'View deadline centre',
+    policy: 'Read verification policy',
+    categoryGuides: {
+      jobs: ['Confirm the recruiting organisation and notification number.', 'Check qualification, age and vacancy details before applying.', 'Use only the official application link shown on the card.'],
+      projects: ['Confirm eligibility, benefit amount and applicable state.', 'Prepare the listed documents before starting an application.', 'Check whether applications are open, paused or state-dependent.'],
+      exams: ['Verify the institution, programme and academic session.', 'Check the application deadline, exam date and counselling schedule.', 'Download the official prospectus before paying any fee.'],
+      materials: ['Confirm the provider, eligible study level and income conditions.', 'Check the benefit amount and required documents.', 'Apply only through the official scholarship portal.'],
+      notices: ['Read the issuing authority and effective date carefully.', 'Check whether immediate action is required.', 'Use the official order or notice to confirm the change.'],
+      affairs: ['Confirm the responsible department and available service action.', 'Prepare eligibility documents and note the processing time.', 'Use the official service portal for applications or status checks.'],
+      default: ['Check the current status and last verified date.', 'Review the official source before acting.', 'Recheck deadlines because government schedules can change.']
+    }
+  },
+  bn: {
+    back: 'সব নাগরিক বিভাগ',
+    verified: 'অফিসিয়ালি নিশ্চিত',
+    actionable: 'খোলা বা করণীয় আছে',
+    central: 'কেন্দ্রীয় সরকার',
+    state: 'রাজ্য ও আঞ্চলিক',
+    filters: 'এই বিভাগ ফিল্টার করুন',
+    all: 'সব আপডেট',
+    official: 'শুধু অফিসিয়াল',
+    open: 'এখন খোলা',
+    centralFilter: 'কেন্দ্রীয়',
+    stateFilter: 'রাজ্য',
+    resultPattern: '{count}টি আপডেট দেখানো হচ্ছে',
+    noMatch: 'এই ফিল্টারের সঙ্গে কোনো আপডেট মিলছে না। অন্য ফিল্টার বেছে নিন।',
+    emptyTitle: 'যাচাইকৃত তথ্য প্রস্তুত হচ্ছে',
+    emptyBody: 'বিভাগটি প্রস্তুত, তবে বর্তমানে কোনো তথ্য প্রকাশনার সব যাচাই অতিক্রম করেনি।',
+    trustTitle: 'কোনো পদক্ষেপ নেওয়ার আগে',
+    trustBody: 'প্রতিটি কার্ডে স্ট্যাটাস, শেষ তারিখ ও অফিসিয়াল সূত্র দেখুন। Citizen Affairs তথ্যটি সহজ করে, তবে সংশ্লিষ্ট সরকারি কর্তৃপক্ষই চূড়ান্ত সূত্র।',
+    deadlines: 'শেষ তারিখ কেন্দ্র দেখুন',
+    policy: 'যাচাই নীতি পড়ুন',
+    categoryGuides: {
+      jobs: ['নিয়োগকারী সংস্থা ও বিজ্ঞপ্তি নম্বর নিশ্চিত করুন।', 'আবেদনের আগে যোগ্যতা, বয়স ও শূন্যপদ দেখুন।', 'কার্ডে দেওয়া অফিসিয়াল আবেদন লিঙ্কই ব্যবহার করুন।'],
+      projects: ['যোগ্যতা, সুবিধার পরিমাণ ও প্রযোজ্য রাজ্য নিশ্চিত করুন।', 'আবেদন শুরুর আগে প্রয়োজনীয় নথি প্রস্তুত রাখুন।', 'আবেদন খোলা, সাময়িক বন্ধ নাকি রাজ্যভেদে আলাদা তা দেখুন।'],
+      exams: ['প্রতিষ্ঠান, কোর্স ও শিক্ষাবর্ষ যাচাই করুন।', 'আবেদনের শেষ তারিখ, পরীক্ষা ও কাউন্সেলিং সূচি দেখুন।', 'ফি দেওয়ার আগে অফিসিয়াল প্রসপেক্টাস পড়ুন।'],
+      materials: ['প্রদানকারী, শিক্ষাস্তর ও আয়ের শর্ত নিশ্চিত করুন।', 'সুবিধার পরিমাণ ও প্রয়োজনীয় নথি দেখুন।', 'শুধু অফিসিয়াল স্কলারশিপ পোর্টালে আবেদন করুন।'],
+      notices: ['জারিকারী কর্তৃপক্ষ ও কার্যকর হওয়ার তারিখ মনোযোগ দিয়ে পড়ুন।', 'তাৎক্ষণিক কোনো পদক্ষেপ প্রয়োজন কি না দেখুন।', 'পরিবর্তন নিশ্চিত করতে অফিসিয়াল আদেশ বা নোটিশ ব্যবহার করুন।'],
+      affairs: ['দায়িত্বপ্রাপ্ত দপ্তর ও উপলভ্য পরিষেবা নিশ্চিত করুন।', 'যোগ্যতার নথি প্রস্তুত করুন এবং প্রসেসিং সময় দেখুন।', 'আবেদন বা স্ট্যাটাসের জন্য অফিসিয়াল পরিষেবা পোর্টাল ব্যবহার করুন।'],
+      default: ['বর্তমান স্ট্যাটাস ও সর্বশেষ যাচাইয়ের তারিখ দেখুন।', 'পদক্ষেপ নেওয়ার আগে অফিসিয়াল সূত্র পড়ুন।', 'সরকারি সময়সূচি বদলাতে পারে, তাই শেষ তারিখ আবার যাচাই করুন।']
+    }
+  },
+  hi: {
+    back: 'सभी नागरिक अनुभाग',
+    verified: 'आधिकारिक रूप से पुष्ट',
+    actionable: 'खुला या कार्रवाई योग्य',
+    central: 'केंद्र सरकार',
+    state: 'राज्य और क्षेत्रीय',
+    filters: 'इस अनुभाग को फ़िल्टर करें',
+    all: 'सभी अपडेट',
+    official: 'केवल आधिकारिक',
+    open: 'अभी खुला',
+    centralFilter: 'केंद्रीय',
+    stateFilter: 'राज्य',
+    resultPattern: '{count} अपडेट दिखाए जा रहे हैं',
+    noMatch: 'इस फ़िल्टर से कोई अपडेट मेल नहीं खाता। उपलब्ध जानकारी देखने के लिए दूसरा फ़िल्टर चुनें।',
+    emptyTitle: 'सत्यापित जानकारी तैयार की जा रही है',
+    emptyBody: 'अनुभाग तैयार है, लेकिन अभी कोई वर्तमान सूचना प्रकाशन की सभी जाँचों से नहीं गुज़री है।',
+    trustTitle: 'कार्रवाई करने से पहले',
+    trustBody: 'हर कार्ड पर स्थिति, अंतिम तिथि और आधिकारिक स्रोत देखें। Citizen Affairs जानकारी समझाता है, लेकिन संबंधित सरकारी प्राधिकरण ही अंतिम स्रोत है।',
+    deadlines: 'अंतिम तिथि केंद्र देखें',
+    policy: 'सत्यापन नीति पढ़ें',
+    categoryGuides: {
+      jobs: ['भर्ती संस्था और अधिसूचना संख्या की पुष्टि करें।', 'आवेदन से पहले योग्यता, आयु और रिक्तियों की जाँच करें।', 'कार्ड पर दिया गया आधिकारिक आवेदन लिंक ही उपयोग करें।'],
+      projects: ['पात्रता, लाभ राशि और लागू राज्य की पुष्टि करें।', 'आवेदन शुरू करने से पहले आवश्यक दस्तावेज़ तैयार रखें।', 'देखें कि आवेदन खुले, रुके या राज्य-निर्भर हैं।'],
+      exams: ['संस्थान, कार्यक्रम और शैक्षणिक सत्र सत्यापित करें।', 'आवेदन की अंतिम तिथि, परीक्षा और काउंसलिंग कार्यक्रम देखें।', 'शुल्क देने से पहले आधिकारिक विवरणिका पढ़ें।'],
+      materials: ['प्रदाता, पात्र अध्ययन स्तर और आय शर्तें सत्यापित करें।', 'लाभ राशि और आवश्यक दस्तावेज़ देखें।', 'केवल आधिकारिक छात्रवृत्ति पोर्टल से आवेदन करें।'],
+      notices: ['जारी करने वाले प्राधिकरण और प्रभावी तिथि को ध्यान से पढ़ें।', 'जाँचें कि तुरंत कार्रवाई आवश्यक है या नहीं।', 'बदलाव की पुष्टि के लिए आधिकारिक आदेश या सूचना देखें।'],
+      affairs: ['जिम्मेदार विभाग और उपलब्ध सेवा कार्रवाई की पुष्टि करें।', 'पात्रता दस्तावेज़ तैयार करें और प्रसंस्करण समय देखें।', 'आवेदन या स्थिति के लिए आधिकारिक सेवा पोर्टल उपयोग करें।'],
+      default: ['वर्तमान स्थिति और अंतिम सत्यापन तिथि देखें।', 'कार्रवाई से पहले आधिकारिक स्रोत पढ़ें।', 'सरकारी समय-सारिणी बदल सकती है, इसलिए अंतिम तिथि फिर जाँचें।']
+    }
+  }
+}[locale];
+
+const categoryIcon =
+  category.id === 'jobs'
+    ? 'briefcase'
+    : category.id === 'projects'
+      ? 'schemes'
+      : category.id === 'exams'
+        ? 'exams'
+        : category.id === 'materials'
+          ? 'education'
+          : category.id === 'notices'
+            ? 'notices'
+            : category.id === 'affairs'
+              ? 'services'
+              : 'categories';
+
+const isActionable = (article: Article) => {
+  const deadline = deadlineState(article.data.deadline);
+  if (['open', 'closing-soon', 'urgent'].includes(deadline)) return true;
+  const status =
+    article.data.job?.recruitmentStatus ||
+    article.data.scheme?.schemeStatus ||
+    article.data.admission?.admissionStatus ||
+    article.data.scholarship?.scholarshipStatus ||
+    article.data.service?.serviceStatus ||
+    '';
+  return ['open', 'closing-soon', 'active', 'application-open', 'available', 'upcoming'].includes(status);
+};
+
+const governmentGroup = (article: Article) =>
+  article.data.governmentLevel === 'central' ? 'central' : 'state';
+const officialCount = articles.filter((article) => article.data.verificationStatus === 'officially-confirmed').length;
+const actionableCount = articles.filter(isActionable).length;
+const centralCount = articles.filter((article) => governmentGroup(article) === 'central').length;
+const stateCount = articles.length - centralCount;
+const guideKey = category.id as keyof typeof copy.categoryGuides;
+const guideItems = copy.categoryGuides[guideKey] || copy.categoryGuides.default;
+---
+
+<section
+  class="category-portal"
+  data-category-portal
+  data-result-pattern={copy.resultPattern}
+>
+  <div class="category-hero">
+    <div class="container category-hero-grid">
+      <div>
+        <a class="category-back" href={route('categories')}>
+          <Icon name="arrow" size={17} />{copy.back}
+        </a>
+        <p class="category-kicker"><Icon name={categoryIcon} size={18} />Citizen Affairs</p>
+        <h1>{name}</h1>
+        <p class="category-description">{description}</p>
+      </div>
+
+      <aside class="category-trust" aria-labelledby="category-trust-title">
+        <p><Icon name="check" size={16} />{copy.trustTitle}</p>
+        <h2 id="category-trust-title">{copy.trustTitle}</h2>
+        <p>{copy.trustBody}</p>
+        <ul>{guideItems.map((item) => <li>{item}</li>)}</ul>
+        <div>
+          <a href={route('deadlines')}>{copy.deadlines}<Icon name="arrow" size={16} /></a>
+          <a href={route('editorial-policy')}>{copy.policy}<Icon name="arrow" size={16} /></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="container category-summary" aria-label={t.summary}>
+    <div><strong>{articles.length}</strong><span>{t.updates}</span></div>
+    <div><strong>{officialCount}</strong><span>{copy.verified}</span></div>
+    <div><strong>{actionableCount}</strong><span>{copy.actionable}</span></div>
+    <div><strong>{centralCount}</strong><span>{copy.central}</span></div>
+    <div><strong>{stateCount}</strong><span>{copy.state}</span></div>
+  </div>
+
+  <div class="container category-content">
+    {articles.length > 0 ? (
+      <>
+        <div class="category-toolbar">
+          <div>
+            <span>{copy.filters}</span>
+            <div class="category-filters" role="group" aria-label={copy.filters}>
+              <button type="button" data-category-filter="all" aria-pressed="true">{copy.all}<strong>{articles.length}</strong></button>
+              <button type="button" data-category-filter="official" aria-pressed="false">{copy.official}<strong>{officialCount}</strong></button>
+              <button type="button" data-category-filter="open" aria-pressed="false">{copy.open}<strong>{actionableCount}</strong></button>
+              <button type="button" data-category-filter="central" aria-pressed="false">{copy.centralFilter}<strong>{centralCount}</strong></button>
+              <button type="button" data-category-filter="state" aria-pressed="false">{copy.stateFilter}<strong>{stateCount}</strong></button>
+            </div>
+          </div>
+          <p class="category-result-count" data-category-result-count aria-live="polite">
+            {copy.resultPattern.replace('{count}', String(articles.length))}
+          </p>
+        </div>
+
+        <div class="category-results">
+          {articles.map((article) => (
+            <div
+              data-category-card
+              data-official={article.data.verificationStatus === 'officially-confirmed' ? 'true' : 'false'}
+              data-open={isActionable(article) ? 'true' : 'false'}
+              data-central={governmentGroup(article) === 'central' ? 'true' : 'false'}
+              data-state={governmentGroup(article) === 'state' ? 'true' : 'false'}
+            >
+              <ArticleCard {article} {locale} />
+            </div>
+          ))}
+        </div>
+        <p class="category-no-match" data-category-no-match hidden>{copy.noMatch}</p>
+      </>
+    ) : (
+      <section class="category-empty" aria-labelledby="category-empty-title">
+        <Icon name="check" size={28} />
+        <h2 id="category-empty-title">{copy.emptyTitle}</h2>
+        <p>{copy.emptyBody}</p>
+        <div>
+          <a href={route('articles')}>{t.latestNav}<Icon name="arrow" size={16} /></a>
+          <a href={route('editorial-policy')}>{copy.policy}<Icon name="arrow" size={16} /></a>
+        </div>
+      </section>
+    )}
+  </div>
+</section>
+
+<script>
+  const portal = document.querySelector<HTMLElement>('[data-category-portal]');
+  const buttons = [...(portal?.querySelectorAll<HTMLButtonElement>('[data-category-filter]') || [])];
+  const cards = [...(portal?.querySelectorAll<HTMLElement>('[data-category-card]') || [])];
+  const resultCount = portal?.querySelector<HTMLElement>('[data-category-result-count]');
+  const noMatch = portal?.querySelector<HTMLElement>('[data-category-no-match]');
+
+  const applyFilter = (filter: string) => {
+    let visibleCount = 0;
+    cards.forEach((card) => {
+      const visible = filter === 'all' || card.dataset[filter] === 'true';
+      card.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.categoryFilter === filter)));
+    if (resultCount && portal?.dataset.resultPattern) {
+      resultCount.textContent = portal.dataset.resultPattern.replace('{count}', String(visibleCount));
+    }
+    if (noMatch) noMatch.hidden = visibleCount !== 0;
+  };
+
+  buttons.forEach((button) => button.addEventListener('click', () => applyFilter(button.dataset.categoryFilter || 'all')));
+</script>
+
+<style>
+  .category-portal { padding-bottom: 4rem; }
+  .category-hero {
+    padding: clamp(2rem, 5vw, 4.2rem) 0 3.4rem;
+    border-bottom: 1px solid var(--color-border);
+    background: linear-gradient(180deg, var(--color-surface), var(--color-bg));
+  }
+  .category-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+    gap: clamp(1.5rem, 4vw, 4rem);
+    align-items: center;
+  }
+  .category-back,
+  .category-kicker,
+  .category-trust > p:first-child,
+  .category-trust a {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .category-back { color: var(--color-primary); font-size: .8rem; font-weight: 800; }
+  .category-back :global(svg) { transform: rotate(180deg); }
+  .category-kicker {
+    margin: 1.25rem 0 .55rem;
+    color: var(--color-primary);
+    font-size: .72rem;
+    font-weight: 850;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+  .category-hero h1 { max-width: 15ch; font-size: clamp(2.25rem, 5vw, 4.25rem); line-height: 1.04; letter-spacing: -.04em; }
+  .category-description { max-width: 62ch; margin-top: 1rem; color: var(--color-text-muted); font-size: 1.05rem; }
+  .category-trust { padding: 1.25rem; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); box-shadow: var(--shadow-sm); }
+  .category-trust > p:first-child { margin: 0 0 .45rem; color: var(--color-green-text); font-size: .7rem; font-weight: 850; text-transform: uppercase; }
+  .category-trust h2 { margin: 0; font-size: 1.25rem; }
+  .category-trust h2 + p { margin: .55rem 0 .85rem; color: var(--color-text-muted); font-size: .84rem; }
+  .category-trust ul { display: grid; gap: .45rem; margin: 0; padding-left: 1.15rem; font-size: .82rem; }
+  .category-trust > div { display: flex; gap: .8rem 1rem; flex-wrap: wrap; margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--color-border); }
+  .category-trust a { color: var(--color-primary); font-size: .75rem; font-weight: 820; }
+  .category-summary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    margin-top: -1.55rem;
+    border: 1px solid var(--color-border);
+    border-radius: 11px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .category-summary div { min-width: 0; padding: .9rem 1rem; border-right: 1px solid var(--color-border); }
+  .category-summary div:last-child { border-right: 0; }
+  .category-summary strong,
+  .category-summary span { display: block; }
+  .category-summary strong { font-size: 1.35rem; }
+  .category-summary span { margin-top: .12rem; color: var(--color-text-muted); font-size: .68rem; font-weight: 720; }
+  .category-content { padding-top: 2.2rem; }
+  .category-toolbar { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .category-toolbar > div > span { display: block; margin-bottom: .5rem; color: var(--color-text-muted); font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+  .category-filters { display: flex; gap: .45rem; flex-wrap: wrap; }
+  .category-filters button {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    min-height: 40px;
+    padding: .45rem .7rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: .75rem;
+    font-weight: 780;
+  }
+  .category-filters button strong { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 999px; background: var(--color-surface-alt); font-size: .65rem; }
+  .category-filters button[aria-pressed='true'] { border-color: var(--color-primary); background: rgba(var(--color-primary-rgb), .08); color: var(--color-primary); }
+  .category-result-count { margin: 0; color: var(--color-text-muted); font-size: .75rem; }
+  .category-results { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .category-results > div[hidden] { display: none; }
+  .category-no-match,
+  .category-empty { padding: 2.5rem 1.25rem; border: 1px dashed var(--color-border); border-radius: 12px; text-align: center; color: var(--color-text-muted); background: var(--color-surface); }
+  .category-empty { max-width: 720px; margin: 0 auto; }
+  .category-empty :global(svg) { color: var(--color-primary); }
+  .category-empty h2 { margin: .7rem 0 .45rem; color: var(--color-text); }
+  .category-empty p { max-width: 55ch; margin: 0 auto; }
+  .category-empty div { display: flex; justify-content: center; gap: .75rem 1rem; flex-wrap: wrap; margin-top: 1rem; }
+  .category-empty a { display: inline-flex; align-items: center; gap: .35rem; color: var(--color-primary); font-weight: 800; }
+
+  @media (max-width: 980px) {
+    .category-hero-grid { grid-template-columns: 1fr; }
+    .category-results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .category-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .category-summary div:nth-child(3) { border-right: 0; }
+    .category-summary div:nth-child(n + 4) { border-top: 1px solid var(--color-border); }
+  }
+  @media (max-width: 620px) {
+    .category-hero { padding-top: 1.4rem; }
+    .category-hero h1 { font-size: 2.3rem; }
+    .category-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-inline: .9rem; }
+    .category-summary div { border-top: 1px solid var(--color-border); }
+    .category-summary div:nth-child(-n + 2) { border-top: 0; }
+    .category-summary div:nth-child(even) { border-right: 0; }
+    .category-summary div:last-child { grid-column: 1 / -1; }
+    .category-toolbar { align-items: flex-start; flex-direction: column; }
+    .category-results { grid-template-columns: 1fr; }
+    .category-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+    .category-filters button { justify-content: space-between; }
+  }
+</style>
