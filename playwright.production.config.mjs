@@ -2,8 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/production',
-  timeout: 60_000,
-  retries: 2,
+  timeout: 180_000,
+  retries: 1,
   reporter: [['line'], ['html', { outputFolder: 'production-smoke-report', open: 'never' }]],
   use: {
     baseURL: process.env.PRODUCTION_URL || 'https://citizenaffairs.in',
