@@ -1,16 +1,29 @@
 ---
+import DeadlineActionCenter from '@components/DeadlineActionCenter.astro';
 import MainLayout from '@layouts/MainLayout.astro';
-import ArticleCard from '@components/ArticleCard.astro';
 import { getUpcomingDeadlines } from '@lib/content';
-import { locales,type Locale,ui } from '../../i18n';
+import { locales, type Locale, ui } from '../../i18n';
 import { SITE } from '@utils/constants';
-export function getStaticPaths(){
-  return locales.map((lang)=>({params:{lang},props:{locale:lang}}));
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
 }
-const {locale}=Astro.props as {locale:Locale};
-const t=ui(locale);
-const articles=await getUpcomingDeadlines(locale);
-const canonical=`${SITE.url}/${locale}/deadlines/`;
-const alternateUrls=Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/deadlines/`])) as Record<Locale,string>;
+
+const { locale } = Astro.props as { locale: Locale };
+const t = ui(locale);
+const articles = await getUpcomingDeadlines(locale);
+const canonical = `${SITE.url}/${locale}/deadlines/`;
+const alternateUrls = Object.fromEntries(
+  locales.map((lang) => [lang, `${SITE.url}/${lang}/deadlines/`])
+) as Record<Locale, string>;
 ---
-<MainLayout title={t.deadlines} description={t.deadlinesDescription} {locale} {canonical} {alternateUrls}><section class="listing-hero"><div class="container"><span class="eyebrow">{t.deadlines}</span><h1>{t.deadlines}</h1><p>{t.deadlinesDescription}</p></div></section><section class="section"><div class="container deadline-grid">{articles.map(article=><ArticleCard {article} {locale}/>)}{!articles.length&&<p class="empty-state">{t.deadlinesEmpty}</p>}</div></section></MainLayout><style>.listing-hero{padding:3.5rem 0;background:linear-gradient(135deg,rgba(var(--color-primary-rgb),.08),rgba(var(--color-orange-rgb),.08))}.listing-hero h1{font-size:clamp(2rem,5vw,3.4rem)}.listing-hero p{color:var(--color-text-muted)}.deadline-grid{display:grid;gap:1rem}@media(min-width:680px){.deadline-grid{grid-template-columns:repeat(2,1fr)}}@media(min-width:980px){.deadline-grid{grid-template-columns:repeat(3,1fr)}}</style>
+
+<MainLayout
+  title={t.deadlines}
+  description={t.deadlinesDescription}
+  {locale}
+  {canonical}
+  {alternateUrls}
+>
+  <DeadlineActionCenter {articles} {locale} />
+</MainLayout>

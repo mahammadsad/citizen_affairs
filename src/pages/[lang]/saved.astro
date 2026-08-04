@@ -1,15 +1,29 @@
 ---
+import SavedActionCenter from '@components/SavedActionCenter.astro';
 import MainLayout from '@layouts/MainLayout.astro';
-import { locales,type Locale,ui } from '../../i18n';
+import { locales, type Locale, ui } from '../../i18n';
 import { SITE } from '@utils/constants';
-export function getStaticPaths(){
-  return locales.map((lang)=>({params:{lang},props:{locale:lang}}));
+
+export function getStaticPaths() {
+  return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
 }
-const {locale}=Astro.props as {locale:Locale};
-const t=ui(locale);
-const canonical=`${SITE.url}/${locale}/saved/`;
-const alternateUrls=Object.fromEntries(locales.map(lang=>[lang,`${SITE.url}/${lang}/saved/`])) as Record<Locale,string>;
+
+const { locale } = Astro.props as { locale: Locale };
+const t = ui(locale);
+const canonical = `${SITE.url}/${locale}/saved/`;
+const alternateUrls = Object.fromEntries(
+  locales.map((lang) => [lang, `${SITE.url}/${lang}/saved/`])
+) as Record<Locale, string>;
+const indexUrl = `${SITE.basePath}${locale}/search-index.json`;
 ---
-<MainLayout title={t.saved} description={t.savedDescription} {locale} {canonical} {alternateUrls} robots="noindex, follow"><section class="section"><div class="container saved-shell"><span class="eyebrow">{t.saved}</span><h1>{t.saved}</h1><p>{t.savedDescription}</p><div id="savedList" aria-live="polite"></div><p id="savedEmpty">{t.noSaved}</p><h2>{t.recent}</h2><div id="recentList" aria-live="polite"></div><p id="recentEmpty">{t.noRecent}</p></div></section></MainLayout>
-<script>const render=(key:string,target:string,empty:string)=>{const box=document.getElementById(target);if(!box)return;let values=[];try{values=JSON.parse(localStorage.getItem(key)||'[]')}catch{};const p=document.getElementById(empty);if(p)p.hidden=values.length>0;values.forEach((item:{url:string;title:string;description?:string})=>{const a=document.createElement('a');a.href=item.url;a.innerHTML=`<strong></strong><span></span>`;(a.querySelector('strong') as HTMLElement).textContent=item.title;(a.querySelector('span') as HTMLElement).textContent=item.description||'';box.append(a)})};render('saved-articles','savedList','savedEmpty');render('recently-viewed','recentList','recentEmpty');</script>
-<style>.saved-shell{max-width:800px}.saved-shell h1{font-size:clamp(2rem,5vw,3.3rem)}.saved-shell>p{color:var(--color-text-muted)}.saved-shell h2{margin-top:2.5rem}.saved-shell :global(#savedList),.saved-shell :global(#recentList){display:grid;gap:.7rem;margin-top:1rem}.saved-shell :global(a){display:grid;padding:1rem;background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px}.saved-shell :global(a:hover){border-color:var(--color-primary)}.saved-shell :global(a span){color:var(--color-text-muted);font-size:.86rem}</style>
+
+<MainLayout
+  title={t.saved}
+  description={t.savedDescription}
+  {locale}
+  {canonical}
+  {alternateUrls}
+  robots="noindex, follow"
+>
+  <SavedActionCenter {locale} {indexUrl} />
+</MainLayout>
