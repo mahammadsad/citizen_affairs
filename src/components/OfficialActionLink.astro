@@ -1,0 +1,129 @@
+---
+import Icon from './Icon.astro';
+import {
+  officialLinkIdentity,
+  officialLinkLabels,
+  sourceFreshness,
+  type SourceFreshness
+} from '@lib/official-links';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  url: string;
+  label: string;
+  lastVerified?: Date;
+  variant?: 'primary' | 'secondary' | 'compact';
+  actionType?: 'application' | 'notice' | 'source';
+}
+
+const {
+  locale,
+  url,
+  label,
+  lastVerified,
+  variant = 'secondary',
+  actionType = 'source'
+} = Astro.props;
+const identity = officialLinkIdentity(url);
+const labels = officialLinkLabels(locale);
+const freshness: SourceFreshness = sourceFreshness(lastVerified);
+const copy = {
+  en: {
+    leaving: 'You are leaving Citizen Affairs',
+    application: 'Check the domain before entering personal details, payment information or an OTP.',
+    notice: 'Confirm the notice number, date and issuing authority on the destination page.',
+    source: 'Review the original source before acting on this information.'
+  },
+  bn: {
+    leaving: 'আপনি Citizen Affairs থেকে বাইরে যাচ্ছেন',
+    application: 'ব্যক্তিগত তথ্য, পেমেন্ট তথ্য বা OTP দেওয়ার আগে ডোমেইনটি যাচাই করুন।',
+    notice: 'গন্তব্য পেজে বিজ্ঞপ্তি নম্বর, তারিখ ও প্রকাশকারী কর্তৃপক্ষ নিশ্চিত করুন।',
+    source: 'এই তথ্য অনুযায়ী পদক্ষেপ নেওয়ার আগে মূল সূত্রটি দেখুন।'
+  },
+  hi: {
+    leaving: 'आप Citizen Affairs से बाहर जा रहे हैं',
+    application: 'व्यक्तिगत विवरण, भुगतान जानकारी या OTP दर्ज करने से पहले डोमेन जाँचें।',
+    notice: 'गंतव्य पृष्ठ पर सूचना संख्या, तारीख और जारी करने वाले प्राधिकरण की पुष्टि करें।',
+    source: 'इस जानकारी पर कार्रवाई करने से पहले मूल स्रोत देखें।'
+  }
+}[locale];
+const safety = copy[actionType];
+const aria = `${label}. ${identity.hostname || labels.invalid}. ${labels.newTab}.`;
+---
+
+<div class:list={['official-action-wrap', `official-action-${variant}`, `freshness-${freshness}`]} data-official-action>
+  <a
+    class:list={['official-action-link', variant === 'primary' ? 'btn btn-primary' : variant === 'secondary' ? 'btn btn-secondary' : '']}
+    href={url}
+    target="_blank"
+    rel="noopener noreferrer external"
+    referrerpolicy="no-referrer"
+    aria-label={aria}
+  >
+    <span class="official-action-copy">
+      <strong>{label}</strong>
+      <small>{identity.hostname || labels.invalid}</small>
+    </span>
+    <Icon name="external" size={17} />
+  </a>
+  <div class="official-action-meta">
+    <span class:list={['domain-kind', `domain-${identity.kind}`]}>
+      <Icon name="check" size={14} />{labels[identity.kind]}
+    </span>
+    <span class:list={['connection-kind', { insecure: !identity.secure }]}>
+      {identity.secure ? labels.secure : labels.insecure}
+    </span>
+    <span class="freshness-kind">{labels[freshness]}</span>
+  </div>
+  {variant !== 'compact' && (
+    <p class="official-action-warning"><strong>{copy.leaving}.</strong> {safety}</p>
+  )}
+</div>
+
+<style>
+  .official-action-wrap { display: grid; gap: .45rem; min-width: min(100%, 250px); }
+  .official-action-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    min-height: 48px;
+    text-align: left;
+  }
+  .official-action-copy { display: grid; gap: .1rem; min-width: 0; }
+  .official-action-copy strong { font-size: .82rem; }
+  .official-action-copy small {
+    overflow: hidden;
+    font-size: .66rem;
+    font-weight: 750;
+    opacity: .82;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .official-action-meta { display: flex; flex-wrap: wrap; gap: .35rem .65rem; color: var(--color-text-muted); font-size: .65rem; }
+  .official-action-meta span { display: inline-flex; align-items: center; gap: .25rem; }
+  .domain-kind { color: var(--color-green-text); font-weight: 820; }
+  .domain-listed-source { color: var(--color-primary); }
+  .domain-invalid,
+  .connection-kind.insecure,
+  .freshness-stale .freshness-kind { color: #a04d00; font-weight: 820; }
+  .freshness-review-soon .freshness-kind { color: #8a6500; font-weight: 780; }
+  .official-action-warning { margin: 0; color: var(--color-text-muted); font-size: .69rem; line-height: 1.45; }
+  .official-action-warning strong { color: var(--color-text); }
+  .official-action-compact { min-width: 0; }
+  .official-action-compact .official-action-link {
+    min-height: auto;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--color-primary);
+  }
+  .official-action-compact .official-action-copy { display: flex; align-items: baseline; gap: .3rem; }
+  .official-action-compact .official-action-copy small { max-width: 145px; }
+  .official-action-compact .official-action-meta { display: none; }
+  @media (max-width: 520px) {
+    .official-action-primary,
+    .official-action-secondary { width: 100%; }
+  }
+</style>

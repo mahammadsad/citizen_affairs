@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCategoryData, categoryName } from '@lib/content';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
+import { officialLinkIdentity } from '@lib/official-links';
 import { normalizeRegionLabel, regionName } from '@lib/regions';
 import Icon from './Icon.astro';
 import { dateLocale, localizedPath, type Locale, ui, verificationLabels } from '../i18n';
@@ -56,7 +57,8 @@ const copy = {
     status: 'Status',
     official: 'Official source',
     updated: 'Updated',
-    application: 'Application'
+    application: 'Application',
+    newTab: 'opens in a new tab'
   },
   bn: {
     vacancies: 'শূন্যপদ',
@@ -73,7 +75,8 @@ const copy = {
     status: 'স্ট্যাটাস',
     official: 'অফিসিয়াল সূত্র',
     updated: 'আপডেট',
-    application: 'আবেদন'
+    application: 'আবেদন',
+    newTab: 'নতুন ট্যাবে খুলবে'
   },
   hi: {
     vacancies: 'रिक्तियाँ',
@@ -90,7 +93,8 @@ const copy = {
     status: 'स्थिति',
     official: 'आधिकारिक स्रोत',
     updated: 'अपडेट',
-    application: 'आवेदन'
+    application: 'आवेदन',
+    newTab: 'नए टैब में खुलेगा'
   }
 }[locale];
 
@@ -153,6 +157,7 @@ const visibleFacts = facts.slice(0, compact ? 2 : 4);
 const statusClass = article.data.deadline
   ? `deadline-${state}`
   : `verification-${article.data.verificationStatus}`;
+const officialIdentity = officialLinkIdentity(officialUrl);
 ---
 
 <article class:list={['utility-card', { compact }]}>
@@ -186,9 +191,16 @@ const statusClass = article.data.deadline
   <div class="utility-card-footer">
     <span><Icon name="clock" size={15} />{copy.updated}: {formatter.format(displayDate)}</span>
     <div>
-      {officialUrl && (
-        <a href={officialUrl} target="_blank" rel="noopener noreferrer">
-          {copy.official}<Icon name="external" size={16} />
+      {officialUrl && officialIdentity.valid && (
+        <a
+          class="utility-official"
+          href={officialUrl}
+          target="_blank"
+          rel="noopener noreferrer external"
+          referrerpolicy="no-referrer"
+          aria-label={`${copy.official}: ${officialIdentity.hostname}. ${copy.newTab}`}
+        >
+          <span>{copy.official}<small>{officialIdentity.hostname}</small></span><Icon name="external" size={16} />
         </a>
       )}
       <a class="utility-details" href={route(`articles/${article.data.urlSlug}`)}>
@@ -338,6 +350,16 @@ const statusClass = article.data.deadline
   .utility-card-footer a {
     color: var(--color-primary);
     font-weight: 820;
+  }
+  .utility-official > span { display: grid; gap: .05rem; }
+  .utility-official small {
+    max-width: 125px;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: .58rem;
+    font-weight: 720;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .compact .utility-description { display: none; }
   .compact .utility-card-main { padding: .85rem; }
