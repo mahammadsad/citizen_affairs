@@ -31,6 +31,7 @@ test('served-build health and owner status do not overclaim live verification', 
 
 test('generated internal link audit covers routes, assets, srcsets and fragments', () => {
   assert.match(linkValidator, /attributeValues/);
+  assert.match(linkValidator, /pageIds/);
   assert.match(linkValidator, /collectHtmlReferences/);
   assert.match(linkValidator, /collectCssReferences/);
   assert.match(linkValidator, /srcset/);
@@ -40,13 +41,15 @@ test('generated internal link audit covers routes, assets, srcsets and fragments
   assert.match(packageJson, /"validate:links": "node scripts\/validate-links\.mjs"/);
 });
 
-test('generated-link fixes preserve English search and the global skip target', () => {
+test('generated-link fixes preserve English search and one global skip target', () => {
   assert.match(searchAlias, /robots" content="noindex, follow"/);
   assert.match(searchAlias, /canonical/);
   assert.match(searchAlias, /location\.replace/);
   assert.match(searchAlias, /SITE\.basePath}search\//);
-  assert.match(baseLayout, /document\.getElementById\('main-content'\)/);
-  assert.match(baseLayout, /document\.querySelector\('main'\)\?\.setAttribute\('id', 'main-content'\)/);
+  assert.match(baseLayout, /href="#page-content"/);
+  assert.match(baseLayout, /id="page-content"/);
+  assert.match(baseLayout, /tabindex="-1"/);
+  assert.doesNotMatch(baseLayout, /document\.querySelector\('main'\)/);
 });
 
 test('deployment validation retains internal-link evidence before publishing', () => {
