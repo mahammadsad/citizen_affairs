@@ -2,16 +2,54 @@
 import BaseLayout from './BaseLayout.astro';
 import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
+import PortalContinuity from '@components/PortalContinuity.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
 import type { Locale } from '../i18n';
-interface Props { title?: string; description?: string; image?: string; canonical?: string; ogType?: 'website'|'article'; structuredData?: object|object[]; locale?: Locale; alternateUrls?: Partial<Record<Locale,string>>; robots?: string; }
-const { title, description, image, canonical, ogType, structuredData, locale = 'en', alternateUrls, robots } = Astro.props;
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  ogType?: 'website' | 'article';
+  structuredData?: object | object[];
+  locale?: Locale;
+  alternateUrls?: Partial<Record<Locale, string>>;
+  robots?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  canonical,
+  ogType,
+  structuredData,
+  locale = 'en',
+  alternateUrls,
+  robots
+} = Astro.props;
+const normalizedPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isPortalHome = ['/', '/en', '/bn', '/hi'].includes(normalizedPath);
 ---
+
 <BaseLayout {title} {description} {image} {canonical} {ogType} {structuredData} {locale} {alternateUrls} {robots}>
   <PortalHeader {locale} {alternateUrls} />
   <PortalRuntime />
-  <main id="main-content"><slot /></main>
+  <main id="main-content">
+    {isPortalHome && (
+      <div class="portal-continuity-wrap">
+        <div class="container"><PortalContinuity {locale} /></div>
+      </div>
+    )}
+    <slot />
+  </main>
   <Footer {locale} />
 </BaseLayout>
-<style>main{min-height:calc(100vh - 420px)}</style>
+
+<style>
+  main { min-height: calc(100vh - 420px); }
+  .portal-continuity-wrap { position: relative; z-index: 2; background: var(--color-bg); }
+  .portal-continuity-wrap :global(.portal-continuity) { margin: 1rem 0 0; }
+</style>

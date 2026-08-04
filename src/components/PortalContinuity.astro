@@ -1,0 +1,136 @@
+---
+import Icon from './Icon.astro';
+import { localizedPath, type Locale } from '../i18n';
+
+const { locale } = Astro.props as { locale: Locale };
+const route = (value = '') => {
+  const path = localizedPath(locale, value);
+  return locale === 'en' ? path.replace('/en/', '/') : path;
+};
+
+const copy = {
+  en: {
+    eyebrow: 'Continue your tasks',
+    title: 'Your private action list',
+    intro: 'Saved and recently viewed updates stay only in this browser.',
+    saved: 'Saved items',
+    recent: 'Recently viewed',
+    open: 'Open action centre',
+    deadlines: 'Review deadlines'
+  },
+  bn: {
+    eyebrow: 'আপনার কাজ চালিয়ে যান',
+    title: 'আপনার ব্যক্তিগত অ্যাকশন তালিকা',
+    intro: 'সংরক্ষিত ও সম্প্রতি দেখা আপডেট শুধু এই ব্রাউজারেই থাকে।',
+    saved: 'সংরক্ষিত তথ্য',
+    recent: 'সম্প্রতি দেখা',
+    open: 'অ্যাকশন সেন্টার খুলুন',
+    deadlines: 'শেষ তারিখ দেখুন'
+  },
+  hi: {
+    eyebrow: 'अपना काम जारी रखें',
+    title: 'आपकी निजी कार्य सूची',
+    intro: 'सहेजे गए और हाल में देखे गए अपडेट केवल इसी ब्राउज़र में रहते हैं।',
+    saved: 'सहेजे गए आइटम',
+    recent: 'हाल में देखे गए',
+    open: 'एक्शन सेंटर खोलें',
+    deadlines: 'अंतिम तिथियाँ देखें'
+  }
+}[locale];
+---
+
+<section class="portal-continuity" data-portal-continuity hidden>
+  <div class="portal-continuity-copy">
+    <span class="portal-continuity-eyebrow"><Icon name="bookmark" size={16} />{copy.eyebrow}</span>
+    <h2>{copy.title}</h2>
+    <p>{copy.intro}</p>
+  </div>
+  <dl>
+    <div><dt>{copy.saved}</dt><dd data-saved-count>0</dd></div>
+    <div><dt>{copy.recent}</dt><dd data-recent-count>0</dd></div>
+  </dl>
+  <div class="portal-continuity-actions">
+    <a class="btn btn-primary" href={route('saved')}>{copy.open}<Icon name="arrow" size={17} /></a>
+    <a class="btn btn-secondary" href={route('deadlines')}>{copy.deadlines}<Icon name="clock" size={17} /></a>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const readCount = (key) => {
+      try {
+        const value = JSON.parse(localStorage.getItem(key) || '[]');
+        return Array.isArray(value) ? value.length : 0;
+      } catch (_) {
+        return 0;
+      }
+    };
+
+    const sync = () => {
+      const panel = document.querySelector('[data-portal-continuity]');
+      if (!(panel instanceof HTMLElement)) return;
+      const saved = readCount('saved-articles');
+      const recent = readCount('recently-viewed');
+      panel.querySelector('[data-saved-count]')?.replaceChildren(String(saved));
+      panel.querySelector('[data-recent-count]')?.replaceChildren(String(recent));
+      panel.hidden = saved + recent === 0;
+    };
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync, { once: true });
+    else sync();
+    window.addEventListener('pageshow', sync);
+    window.addEventListener('storage', sync);
+    window.addEventListener('portal-storage-change', sync);
+  })();
+</script>
+
+<style>
+  .portal-continuity {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 1.5fr) auto auto;
+    gap: 1rem 1.5rem;
+    margin: 0;
+    padding: 1rem 1.15rem;
+    border: 1px solid rgba(var(--color-primary-rgb), .24);
+    border-radius: 13px;
+    background: linear-gradient(120deg, rgba(var(--color-primary-rgb), .09), var(--color-surface));
+  }
+  .portal-continuity[hidden] { display: none; }
+  .portal-continuity-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: var(--color-primary);
+    font-size: .7rem;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .portal-continuity h2 { margin: .18rem 0; font-size: 1.12rem; }
+  .portal-continuity p { margin: 0; color: var(--color-text-muted); font-size: .8rem; }
+  .portal-continuity dl { display: flex; gap: .65rem; margin: 0; }
+  .portal-continuity dl div {
+    min-width: 88px;
+    padding: .65rem .75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 9px;
+    background: var(--color-surface);
+    text-align: center;
+  }
+  .portal-continuity dt { color: var(--color-text-muted); font-size: .66rem; font-weight: 750; }
+  .portal-continuity dd { margin: .12rem 0 0; color: var(--color-primary); font-size: 1.15rem; font-weight: 900; }
+  .portal-continuity-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+  .portal-continuity-actions a { display: inline-flex; align-items: center; gap: .35rem; white-space: nowrap; }
+  @media (max-width: 880px) {
+    .portal-continuity { grid-template-columns: 1fr auto; }
+    .portal-continuity-actions { grid-column: 1 / -1; }
+  }
+  @media (max-width: 560px) {
+    .portal-continuity { grid-template-columns: 1fr; }
+    .portal-continuity dl { width: 100%; }
+    .portal-continuity dl div { flex: 1; min-width: 0; }
+    .portal-continuity-actions { grid-column: auto; }
+    .portal-continuity-actions a { flex: 1; justify-content: center; }
+  }
+</style>
