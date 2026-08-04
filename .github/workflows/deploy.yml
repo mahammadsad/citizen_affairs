@@ -104,6 +104,18 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
+      - name: Internal route, asset and fragment validation
+        run: npm run validate:links
+
+      - name: Upload internal link report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: internal-links-${{ github.run_id }}
+          path: .artifacts/internal-link-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Scan generated frontend for private credentials
         run: npm run audit:secrets
 
@@ -151,7 +163,7 @@ jobs:
   production-smoke:
     needs: deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -166,8 +178,17 @@ jobs:
         env:
           PRODUCTION_URL: https://citizenaffairs.in
           EXPECTED_BUILD_COMMIT: ${{ github.sha }}
+          PLAYWRIGHT_JSON_OUTPUT_NAME: production-results.json
         run: npm run test:production
-      - name: Retain production screenshots and report
+      - name: Summarize merged, deployed and verified-live stages
+        if: always()
+        env:
+          PRODUCTION_URL: https://citizenaffairs.in
+          EXPECTED_BUILD_COMMIT: ${{ github.sha }}
+          RELEASE_MERGED: "true"
+          PLAYWRIGHT_JSON_OUTPUT_NAME: production-results.json
+        run: npm run summarize:production
+      - name: Retain production screenshots and health report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -175,8 +196,11 @@ jobs:
           path: |
             test-results/
             production-smoke-report/
+            production-results.json
+            .artifacts/production-health-report.json
+            .artifacts/production-health-summary.md
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 30
 
   publication-feedback:
     needs: [build, deploy, production-smoke]
