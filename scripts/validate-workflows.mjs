@@ -8,6 +8,7 @@ const reportPath = join(artifactDirectory, 'workflow-maintenance-report.json');
 
 const deprecatedPins = new Map([
   ['34e114876b0b11c390a56381ad16ebd13914f8d5', 'actions/checkout before the Node 24 runtime'],
+  ['11d5960a326750d5838078e36cf38b85af677262', 'actions/checkout v4 before the Node 24 runtime'],
   ['49933ea5288caeca8642d1e84afbd3f7d6820020', 'actions/setup-node before the Node 24 runtime'],
   ['ea165f8d65b6e75b540449e92b4886f43607fa02', 'actions/upload-artifact v4'],
   ['56afc609e74202658d3ffba0e8f6dda462b719fa', 'actions/upload-pages-artifact v4'],
