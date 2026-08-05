@@ -1,0 +1,142 @@
+<script>
+  type SubmissionFormConfiguration = {
+    formSelector: string;
+    bannerId: string;
+    storageKey: string;
+    queryKey: string;
+    returnHash: string;
+  };
+
+  const submissionForms: SubmissionFormConfiguration[] = [
+    {
+      formSelector: '[data-career-form]',
+      bannerId: 'applicationSuccess',
+      storageKey: 'citizen-affairs:career-submission-token',
+      queryKey: 'career_submission',
+      returnHash: '#application-form'
+    },
+    {
+      formSelector: '[data-contact-form]',
+      bannerId: 'contactSuccess',
+      storageKey: 'citizen-affairs:contact-submission-token',
+      queryKey: 'contact_submission',
+      returnHash: '#contact-form'
+    }
+  ];
+
+  const createSubmissionToken = (): string => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+
+    return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  };
+
+  const readSessionValue = (key: string): string | null => {
+    try {
+      return window.sessionStorage.getItem(key);
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const writeSessionValue = (key: string, value: string): boolean => {
+    try {
+      window.sessionStorage.setItem(key, value);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const removeSessionValue = (key: string): void => {
+    try {
+      window.sessionStorage.removeItem(key);
+    } catch (_) {}
+  };
+
+  const removeSubmissionParameters = (queryKeys: string[]): void => {
+    const cleanUrl = new URL(window.location.href);
+    let changed = false;
+
+    [...queryKeys, 'sent'].forEach((key) => {
+      if (!cleanUrl.searchParams.has(key)) return;
+      cleanUrl.searchParams.delete(key);
+      changed = true;
+    });
+
+    if (changed) {
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`
+      );
+    }
+  };
+
+  const initialiseSubmissionForm = (configuration: SubmissionFormConfiguration): void => {
+    const form = document.querySelector(configuration.formSelector);
+    const banner = document.getElementById(configuration.bannerId);
+
+    if (!(form instanceof HTMLFormElement) && !banner) return;
+
+    const currentUrl = new URL(window.location.href);
+    const returnedToken = currentUrl.searchParams.get(configuration.queryKey);
+    const expectedToken = readSessionValue(configuration.storageKey);
+    const verifiedReturn = Boolean(
+      returnedToken &&
+      expectedToken &&
+      returnedToken === expectedToken
+    );
+
+    if (banner) banner.hidden = !verifiedReturn;
+
+    if (verifiedReturn) {
+      removeSessionValue(configuration.storageKey);
+    }
+
+    if (returnedToken || currentUrl.searchParams.has('sent')) {
+      removeSubmissionParameters([configuration.queryKey]);
+    }
+
+    if (!(form instanceof HTMLFormElement)) return;
+
+    form.addEventListener('submit', () => {
+      const submissionToken = createSubmissionToken();
+      const tokenStored = writeSessionValue(configuration.storageKey, submissionToken);
+      const nextInput = form.querySelector('input[name="_next"]');
+
+      if (nextInput instanceof HTMLInputElement && tokenStored) {
+        const returnUrl = new URL(window.location.href);
+        returnUrl.search = '';
+        returnUrl.hash = configuration.returnHash;
+        returnUrl.searchParams.set(configuration.queryKey, submissionToken);
+        nextInput.value = returnUrl.toString();
+      }
+
+      if (banner) banner.hidden = true;
+    });
+  };
+
+  const initialiseSubmissionForms = (): void => {
+    submissionForms.forEach(initialiseSubmissionForm);
+  };
+
+  const scheduleInitialisation = (): void => {
+    window.requestAnimationFrame(initialiseSubmissionForms);
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleInitialisation, { once: true });
+  } else {
+    scheduleInitialisation();
+  }
+
+  window.addEventListener('pageshow', (event: PageTransitionEvent) => {
+    if (!event.persisted) return;
+    submissionForms.forEach(({ bannerId }) => {
+      const banner = document.getElementById(bannerId);
+      if (banner) banner.hidden = true;
+    });
+  });
+</script>
