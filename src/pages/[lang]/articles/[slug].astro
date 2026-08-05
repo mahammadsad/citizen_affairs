@@ -137,6 +137,7 @@ const sourceCount = new Set(sourceLinks).size;
     {canonical}
     applicationUrl={safeApplicationUrl}
   />
+  <Content />
   <ArticleEntryExperience locale={locale}>
     <ArticleDecisionWorkspace
       locale={locale}
@@ -154,7 +155,6 @@ const sourceCount = new Set(sourceLinks).size;
       amountOrVacancies={decisionAmount}
     />
   </ArticleEntryExperience>
-  <Content />
   <ArticleFreshnessNotice
     locale={locale}
     contentType={article.data.contentType}
