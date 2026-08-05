@@ -209,5 +209,5 @@ NCRP-তে mobile, email, account, URL, website বা app identifier search �
 
 আমরা official source ছাড়া কোনো viral claim-কে সত্য বা মিথ্যা ঘোষণা করব না। কোনো public identifier-কে criminal বলব না যতক্ষণ না competent authority বা completed legal finding তা সমর্থন করে। Under-verification content discovery-তে দেখানো হবে না এবং separate human fact-checker না থাকলে article-কে “officially confirmed” বলা হবে না।
 
-**শেষ যাচাই:** 5 August 2026  
+**শেষ যাচাই:** 5 August 2026
 **পরবর্তী review:** 5 September 2026
