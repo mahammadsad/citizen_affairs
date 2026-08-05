@@ -7,7 +7,7 @@ import ArticleStructuredData from '@components/ArticleStructuredData.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
 import { canOfferApplicationAction } from '@lib/freshness';
-import { locales, type Locale } from '../../../i18n';
+import { locales, type Locale } from '../../i18n';
 import { SITE } from '@utils/constants';
 
 const articleUrl = (locale: Locale, slug: string) =>
@@ -19,19 +19,19 @@ export async function getStaticPaths() {
   const articles = await getCollection(
     'articles',
     ({ data }) =>
-      data.language !== 'en' &&
+      data.language === 'en' &&
       !data.draft &&
       ['published', 'corrected', 'closed'].includes(data.workflowStatus) &&
       data.verificationStatus !== 'withdrawn'
   );
   return articles.map((article) => ({
-    params: { lang: article.data.language, slug: article.data.urlSlug },
+    params: { slug: article.data.urlSlug },
     props: { article }
   }));
 }
 
 const { article } = Astro.props;
-const locale = article.data.language as Locale;
+const locale = 'en' as const;
 const translations = await Promise.all(
   locales.map(async (lang) => [lang, await getArticleTranslation(article.data.translationKey, lang)] as const)
 );
