@@ -1,0 +1,92 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { resolveAssetPath } from '@utils/constants';
+
+export interface Props {
+  article: CollectionEntry<'articles'>;
+  variant?: 'lead' | 'thumbnail' | 'section';
+  priority?: boolean;
+}
+
+const { article, variant = 'thumbnail', priority = false } = Astro.props;
+const {
+  featuredImage,
+  featuredImageAvif,
+  featuredImageSrcSet,
+  featuredImageAvifSrcSet,
+  featuredImageWidth = 1200,
+  featuredImageHeight = 675,
+  featuredImageAlt,
+  title,
+} = article.data;
+
+const resolveSrcSet = (value?: string) =>
+  value
+    ?.split(',')
+    .map((entry) => {
+      const [url, width] = entry.trim().split(/\s+/);
+      return `${resolveAssetPath(url)} ${width}`;
+    })
+    .join(', ');
+
+const resolvedImage = featuredImage ? resolveAssetPath(featuredImage) : undefined;
+const resolvedAvif = featuredImageAvif ? resolveAssetPath(featuredImageAvif) : undefined;
+const resolvedSrcSet = resolveSrcSet(featuredImageSrcSet);
+const resolvedAvifSrcSet = resolveSrcSet(featuredImageAvifSrcSet);
+const sizes =
+  variant === 'lead'
+    ? '(max-width: 900px) calc(100vw - 2rem), 760px'
+    : variant === 'section'
+      ? '(max-width: 680px) calc(100vw - 2rem), 420px'
+      : '(max-width: 680px) 36vw, 180px';
+---
+
+{resolvedImage && (
+  <picture
+    class:list={['story-picture', `story-picture-${variant}`]}
+    style={`aspect-ratio: ${featuredImageWidth} / ${featuredImageHeight};`}
+    data-story-image={variant}
+  >
+    {resolvedAvif && (
+      <source srcset={resolvedAvifSrcSet || resolvedAvif} {sizes} type="image/avif" />
+    )}
+    <img
+      src={resolvedImage}
+      srcset={resolvedSrcSet}
+      {sizes}
+      alt={featuredImageAlt || title}
+      width={featuredImageWidth}
+      height={featuredImageHeight}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+      decoding="async"
+    />
+  </picture>
+)}
+
+<style>
+  .story-picture {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background: var(--color-surface-alt);
+  }
+
+  .story-picture img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 220ms ease;
+  }
+
+  :global(a:hover) .story-picture img {
+    transform: scale(1.018);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story-picture img {
+      transition: none;
+    }
+  }
+</style>
