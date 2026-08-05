@@ -2,15 +2,27 @@ import { expect, test } from '@playwright/test';
 
 const headerLogoSelector = '.portal-navbar .portal-brand > .portal-brand-logo';
 
-test('mobile homepage is news-led and the brand does not collide at 390px', async ({ page }, testInfo) => {
+test('mobile homepage is image-led and the brand does not collide at 390px', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   const logo = page.locator(headerLogoSelector);
   const actions = page.locator('.portal-header-actions');
+  const lead = page.locator('.lead-story');
+  const leadPicture = lead.locator('[data-story-image="lead"]');
+  const leadImage = leadPicture.locator('img');
+  const leadHeading = lead.locator('h2');
+
   await expect(logo).toBeVisible();
   await expect(page.locator('.news-hero')).toBeVisible();
-  await expect(page.locator('.lead-story')).toBeVisible();
+  await expect(lead).toBeVisible();
+  await expect(leadPicture).toBeVisible();
+  await expect(leadImage).toBeVisible();
+  await expect(leadImage).toHaveAttribute('loading', 'eager');
+  await expect(leadImage).toHaveAttribute('fetchpriority', 'high');
+  await expect(leadImage).toHaveAttribute('width', '1200');
+  await expect(leadImage).toHaveAttribute('height', '675');
+  await expect(leadImage).toHaveAttribute('alt', /.+/);
   await expect(page.locator('.trending-section')).toBeVisible();
   await expect(page.locator('.section-news-block')).toHaveCount(7);
   await expect(page.locator('.portal-search')).toHaveCount(0);
@@ -19,16 +31,32 @@ test('mobile homepage is news-led and the brand does not collide at 390px', asyn
   const measurements = await page.evaluate((selector) => {
     const logo = document.querySelector(selector);
     const actions = document.querySelector('.portal-header-actions');
-    if (!(logo instanceof HTMLElement) || !(actions instanceof HTMLElement)) {
-      throw new Error('Header elements missing');
+    const image = document.querySelector('.lead-story [data-story-image="lead"] img');
+    const heading = document.querySelector('.lead-story h2');
+    if (
+      !(logo instanceof HTMLElement) ||
+      !(actions instanceof HTMLElement) ||
+      !(image instanceof HTMLImageElement) ||
+      !(heading instanceof HTMLElement)
+    ) {
+      throw new Error('Homepage visual elements missing');
     }
     const logoRect = logo.getBoundingClientRect();
     const actionsRect = actions.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    const headingRect = heading.getBoundingClientRect();
     return {
       logoLeft: logoRect.left,
       logoRight: logoRect.right,
       logoWidth: logoRect.width,
       actionsLeft: actionsRect.left,
+      imageTop: imageRect.top,
+      imageBottom: imageRect.bottom,
+      imageWidth: imageRect.width,
+      imageHeight: imageRect.height,
+      imageComplete: image.complete,
+      imageNaturalWidth: image.naturalWidth,
+      headingTop: headingRect.top,
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: document.documentElement.clientWidth,
     };
@@ -37,6 +65,10 @@ test('mobile homepage is news-led and the brand does not collide at 390px', asyn
   expect(measurements.logoLeft).toBeGreaterThanOrEqual(0);
   expect(measurements.logoWidth).toBeGreaterThanOrEqual(184);
   expect(measurements.logoRight).toBeLessThanOrEqual(measurements.actionsLeft + 1);
+  expect(measurements.imageComplete).toBe(true);
+  expect(measurements.imageNaturalWidth).toBeGreaterThan(0);
+  expect(measurements.imageBottom).toBeLessThanOrEqual(measurements.headingTop);
+  expect(measurements.imageWidth / measurements.imageHeight).toBeCloseTo(16 / 9, 1);
   expect(measurements.documentWidth).toBeLessThanOrEqual(measurements.viewportWidth);
 
   await page.screenshot({ path: testInfo.outputPath('article-homepage-390.png'), fullPage: true });
@@ -101,6 +133,7 @@ test('very narrow homepage stays within the viewport', async ({ page }) => {
 
   await expect(page.locator('.portal-theme-toggle')).toBeHidden();
   await expect(page.locator(headerLogoSelector)).toBeVisible();
+  await expect(page.locator('.lead-story [data-story-image="lead"] img')).toBeVisible();
 
   const widths = await page.evaluate(() => ({
     documentWidth: document.documentElement.scrollWidth,
