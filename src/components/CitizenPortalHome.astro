@@ -211,7 +211,12 @@ const copy = {
   }
 
   .news-home {
+    --color-primary: #08756f;
     background: var(--color-bg);
+  }
+
+  :global(html[data-theme='dark']) .news-home {
+    --color-primary: #70ddd1;
   }
 
   .top-news {
