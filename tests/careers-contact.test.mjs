@@ -12,18 +12,40 @@ test('homepage footer directs visitors to dedicated contact and careers pages wi
   assert.doesNotMatch(footer, /class="contact-card"/);
 });
 
-test('careers page provides multilingual role posts and a secure mailbox application form', async () => {
+test('careers page provides detailed jobs, internships and a secure mailbox application form', async () => {
   const careers = await read('src/components/CareersPage.astro');
-  const careersCopy = await read('src/i18n/careers.ts');
+  const careersIndex = await read('src/i18n/careers.ts');
+  const careersEn = await read('src/i18n/careers/en.ts');
+  const careersBn = await read('src/i18n/careers/bn.ts');
+  const careersHi = await read('src/i18n/careers/hi.ts');
+
   for (const role of ['Content Writer', 'Digital Marketing', 'Video Editor', 'Fact-checker', 'Social Media', 'Information Designer']) {
-    assert.match(careersCopy, new RegExp(role, 'i'));
+    assert.match(careersEn, new RegExp(role, 'i'));
   }
+
+  assert.match(careersIndex, /CAREERS_EN/);
+  assert.match(careersIndex, /CAREERS_BN/);
+  assert.match(careersIndex, /CAREERS_HI/);
+  assert.match(careersEn, /"kind": "job"/);
+  assert.match(careersEn, /"kind": "internship"/);
+  assert.match(careersEn, /Editorial & Research Internship/);
+  assert.match(careersBn, /এডিটোরিয়াল ও রিসার্চ ইন্টার্নশিপ/);
+  assert.match(careersHi, /एडिटोरियल और रिसर्च इंटर्नशिप/);
+
+  assert.match(careers, /data-role-filter="job"/);
+  assert.match(careers, /data-role-filter="internship"/);
+  assert.match(careers, /data-role-details/);
+  assert.match(careers, /role\.responsibilities\.map/);
+  assert.match(careers, /role\.requirements\.map/);
+  assert.match(careers, /role\.idealFor/);
+  assert.match(careers, /candidate\.open = false/);
+
   assert.match(careers, /https:\/\/formsubmit\.co\/\$\{BRAND\.contactEmail\}/);
   assert.match(careers, /enctype="multipart\/form-data"/);
   assert.match(careers, /name="_honey"/);
   assert.match(careers, /data-resume/);
   assert.match(careers, /10 \* 1024 \* 1024/);
-  assert.match(careersCopy, /Citizen Affairs never charges an application fee/);
+  assert.match(careersEn, /Citizen Affairs never charges an application fee/);
 });
 
 test('contact page is renovated with direct email, intent routing, safety guidance and mailbox delivery', async () => {
