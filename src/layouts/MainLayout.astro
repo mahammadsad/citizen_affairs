@@ -27,7 +27,7 @@ const {
   structuredData,
   locale = 'en',
   alternateUrls,
-  robots
+  robots,
 } = Astro.props;
 ---
 
@@ -45,43 +45,5 @@ const {
 
   :global(.portal-utility) {
     display: none !important;
-  }
-
-  :global(.portal-navbar-inner) {
-    min-height: 74px;
-  }
-
-  :global(.portal-brand) {
-    flex: 0 0 clamp(158px, 18vw, 184px);
-    min-width: 158px;
-    overflow: visible;
-  }
-
-  :global(.portal-brand-logo) {
-    width: clamp(158px, 18vw, 184px) !important;
-    max-width: none !important;
-    max-height: 56px !important;
-  }
-
-  @media (max-width: 680px) {
-    :global(.portal-navbar-inner) {
-      min-height: 68px;
-      gap: .45rem;
-    }
-
-    :global(.portal-brand) {
-      flex: 0 1 clamp(136px, 42vw, 154px);
-      min-width: 136px;
-    }
-
-    :global(.portal-brand-logo) {
-      width: clamp(136px, 42vw, 154px) !important;
-      max-height: 50px !important;
-    }
-
-    :global(.portal-mobile-panel) {
-      top: 68px !important;
-      max-height: calc(100vh - 88px) !important;
-    }
   }
 </style>
