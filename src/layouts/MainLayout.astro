@@ -76,21 +76,39 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   }
 
   :global(.portal-brand) {
+    --portal-logo-width: clamp(196px, 20vw, 224px);
     display: flex !important;
     align-items: center;
-    flex: 0 1 clamp(196px, 20vw, 224px) !important;
+    justify-content: flex-start;
+    flex: 0 0 var(--portal-logo-width) !important;
     min-width: 196px !important;
     max-width: 224px !important;
-    overflow: visible !important;
+    overflow: hidden !important;
+    border-radius: 10px;
+    background: transparent;
     line-height: 0;
+    transition: background-color 160ms ease, box-shadow 160ms ease;
   }
 
   :global(.portal-brand-logo) {
-    width: clamp(196px, 20vw, 224px) !important;
-    max-width: 100% !important;
+    width: var(--portal-logo-width) !important;
+    max-width: none !important;
     max-height: 82px !important;
     height: auto !important;
     object-fit: contain !important;
+    object-position: left center !important;
+    opacity: 1 !important;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+    transform: translateX(-1rem);
+    transform-origin: left center;
+  }
+
+  /* The approved artwork uses navy lettering. Keep the exact logo colours and
+     provide a restrained white isolation surface when the header is dark. */
+  :global(html[data-theme='dark'] .portal-header .portal-brand) {
+    background: #ffffff !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 5px 16px rgba(0, 0, 0, .22);
   }
 
   :global(.portal-header-actions) {
@@ -126,18 +144,20 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 
     :global(.portal-navbar-inner) {
       min-height: 74px !important;
+      padding-inline: .75rem !important;
       gap: .25rem !important;
     }
 
     :global(.portal-brand) {
-      flex: 1 1 auto !important;
-      min-width: 0 !important;
-      max-width: none !important;
+      --portal-logo-width: clamp(168px, calc(100vw - 176px), 204px);
+      flex: 0 1 var(--portal-logo-width) !important;
+      min-width: 168px !important;
+      max-width: 204px !important;
     }
 
     :global(.portal-brand-logo) {
-      width: clamp(168px, calc(100vw - 176px), 204px) !important;
-      max-width: 100% !important;
+      width: var(--portal-logo-width) !important;
+      max-width: none !important;
       max-height: 72px !important;
     }
 
@@ -166,8 +186,14 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
       display: none !important;
     }
 
+    :global(.portal-brand) {
+      --portal-logo-width: clamp(160px, calc(100vw - 142px), 178px);
+      min-width: 160px !important;
+      max-width: 178px !important;
+    }
+
     :global(.portal-brand-logo) {
-      width: clamp(160px, calc(100vw - 142px), 178px) !important;
+      width: var(--portal-logo-width) !important;
     }
   }
 </style>
