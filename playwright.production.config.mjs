@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const offlineFallbackTest = /live service worker provides the multilingual offline fallback/;
+
 export default defineConfig({
   testDir: './tests/production',
   timeout: 180_000,
@@ -16,7 +18,20 @@ export default defineConfig({
     screenshot: 'only-on-failure'
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
-    { name: 'mobile', use: { ...devices['Pixel 5'] } }
+    {
+      name: 'desktop',
+      grepInvert: offlineFallbackTest,
+      use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'mobile',
+      grepInvert: offlineFallbackTest,
+      use: { ...devices['Pixel 5'] }
+    },
+    {
+      name: 'offline',
+      grep: offlineFallbackTest,
+      use: { ...devices['Desktop Chrome'] }
+    }
   ]
 });
