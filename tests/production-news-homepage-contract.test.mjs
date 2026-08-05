@@ -20,7 +20,7 @@ test('production smoke keeps search discoverable through viewport-appropriate na
 });
 
 test('the content-rich Bengali homepage is checked after the language-neutral root', () => {
-  assert.match(production, /page\.goto\(`\/bn\/\?build=/);
+  assert.match(production, /page\.goto\(\s*`\/bn\/\?build=/);
   assert.match(production, /await expect\(page\.locator\('\.lead-story'\)\)\.toBeVisible\(\)/);
   assert.match(production, /await expect\(page\.locator\('\.trending-section'\)\)\.toBeVisible\(\)/);
 });
