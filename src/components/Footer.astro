@@ -144,8 +144,7 @@ const communityLinks = [
 <script>
   document.querySelector('[data-footer-language]')?.addEventListener('click', (event) => {
     event.preventDefault();
-    const trigger = document.querySelector<HTMLElement>('.portal-language > summary, #languageTrigger');
-    trigger?.click();
+    document.getElementById('languageTrigger')?.click();
   });
 </script>
 
