@@ -22,6 +22,7 @@ const starterFiles = [
 const publishedStarters = new Set([
   'find-official-government-websites-and-services.md',
   'use-digilocker-education-documents-safely.md',
+  'find-government-schemes-with-myscheme.md',
 ]);
 
 function frontmatter(source) {
@@ -72,7 +73,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('starter queue keeps five drafts protected and permits two reviewed public guides', async () => {
+test('starter queue keeps four drafts protected and permits three reviewed public guides', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -134,6 +135,14 @@ test('starter queue keeps five drafts protected and permits two reviewed public 
         assert.match(source, /Issued Documents এবং uploaded file-এর পার্থক্য/);
         assert.match(source, /প্রতিটি institution একই upload field/);
       }
+
+      if (file === 'find-government-schemes-with-myscheme.md') {
+        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/faqs'));
+        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/terms-of-use'));
+        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/find-scheme/scheme-category'));
+        assert.match(source, /চূড়ান্ত eligibility certificate বা benefit approval নয়/);
+        assert.match(source, /Application handoff নিরাপদে যাচাই করুন/);
+      }
     } else {
       draftCount += 1;
       assert.equal(data.workflowStatus, 'draft');
@@ -149,8 +158,8 @@ test('starter queue keeps five drafts protected and permits two reviewed public 
     }
   }
 
-  assert.equal(publicCount, 2);
-  assert.equal(draftCount, 5);
+  assert.equal(publicCount, 3);
+  assert.equal(draftCount, 4);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
