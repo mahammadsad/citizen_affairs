@@ -45,8 +45,30 @@ const significantLinks = [
   ...data.sourceUrls,
   data.officialNoticeUrl,
 ].filter((url): url is string => Boolean(url));
+const articleSchemaType =
+  data.contentType === 'job' || data.contentType === 'scheme' ? 'NewsArticle' : 'Article';
 
 const schemas: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': articleSchemaType,
+    '@id': articleId,
+    headline: data.title,
+    description: data.description,
+    image: imageUrl,
+    datePublished: data.date.toISOString(),
+    dateModified: dateModified.toISOString(),
+    inLanguage: schemaLanguage(locale),
+    articleSection: data.category,
+    keywords: data.tags.length ? data.tags : undefined,
+    isAccessibleForFree: true,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': webpageId,
+    },
+    author: articleAuthor,
+    publisher: { '@id': SCHEMA_IDS.organization },
+  },
   {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
