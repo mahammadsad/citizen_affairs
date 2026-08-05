@@ -1,82 +1,158 @@
 ---
 language: bn
 contentType: explainer
-workflowStatus: draft
+workflowStatus: published
 translationKey: find-official-government-websites-and-services
 urlSlug: find-official-government-websites-and-services
-title: "অফিসিয়াল সরকারি website ও online service খুঁজে পাওয়ার গাইড"
-description: "India.gov.in Web Directory, National Government Services Portal এবং সংশ্লিষ্ট department-এর website ব্যবহার করে আসল সরকারি তথ্য ও service link খোঁজার একটি খসড়া বাংলা গাইড।"
+title: "আসল সরকারি ওয়েবসাইট ও অনলাইন পরিষেবা কীভাবে খুঁজবেন"
+description: "India.gov.in, Web Directory এবং Integrated Government Online Directory ব্যবহার করে সরকারি ওয়েবসাইট, নোটিশ ও অনলাইন পরিষেবার আসল লিংক যাচাই করার বাংলা গাইড।"
 date: 2026-08-05
 updated: 2026-08-05
 lastVerified: 2026-08-05
 nextReviewDate: 2026-09-05
 author: mahammad-sad
 category: guides
-verificationStatus: under-verification
+verificationStatus: partially-confirmed
 sourceUrls:
   - https://www.india.gov.in/
   - https://www.india.gov.in/directory/web-directory
-  - https://services.india.gov.in/
-  - https://services.india.gov.in/page/show/about_us/en
+  - https://www.india.gov.in/services
+  - https://igod.gov.in/
+  - https://igod.gov.in/about_us
+sources:
+  - title: National Portal of India
+    url: https://www.india.gov.in/
+    publishingAuthority: National Informatics Centre, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Web Directory, National Portal of India
+    url: https://www.india.gov.in/directory/web-directory
+    publishingAuthority: National Informatics Centre, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Services, National Portal of India
+    url: https://www.india.gov.in/services
+    publishingAuthority: National Informatics Centre, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Integrated Government Online Directory
+    url: https://igod.gov.in/about_us
+    publishingAuthority: National Informatics Centre, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
 tags:
-  - official government website India
+  - সরকারি ওয়েবসাইট যাচাই
   - India.gov.in directory
-  - government services portal
-  - সরকারি লিংক যাচাই
+  - IGOD
+  - সরকারি অনলাইন পরিষেবা
+  - ভুয়া সরকারি ওয়েবসাইট
 featured: false
-draft: true
+draft: false
 governmentLevel: central
 quickSummary:
-  - department বা authority-এর official site India.gov.in Web Directory-তে মিলিয়ে দেখুন।
-  - online service National Government Services Portal থেকে খোঁজা যায়।
-  - domain, notice, contact এবং cross-link—সব মিলিয়ে official status যাচাই করুন।
+  - India.gov.in-এর Web Directory বা IGOD-এ দপ্তরের সরকারি ওয়েবসাইট মিলিয়ে দেখুন।
+  - অনলাইন পরিষেবা খুঁজতে বর্তমান India.gov.in Services বিভাগ ব্যবহার করুন।
+  - ডোমেইন, issuing authority, contact page এবং মূল সরকারি সাইটের cross-link—সব মিলিয়ে লিংক যাচাই করুন।
+updateHistory:
+  - "2026-08-05: discontinued National Government Services Portal-এর পুরোনো নির্দেশনা সরিয়ে বর্তমান India.gov.in Services ও IGOD লিংক যোগ করা হয়েছে।"
 faqs:
-  - question: সব সরকারি website কি .gov.in দিয়ে শেষ হয়?
-    answer: অনেক সরকারি website gov.in বা nic.in ব্যবহার করে, কিন্তু domain ending একা যথেষ্ট প্রমাণ নয়। India.gov.in directory বা সংশ্লিষ্ট authority-এর official cross-link দিয়ে যাচাই করুন।
-  - question: Google-এর প্রথম result কি সবসময় official?
-    answer: না। advertisement বা SEO result উপরে আসতে পারে। domain এবং official directory যাচাই করে তারপর service ব্যবহার করুন।
+  - question: সব সরকারি ওয়েবসাইট কি .gov.in দিয়ে শেষ হয়?
+    answer: অনেক সরকারি ওয়েবসাইট gov.in বা nic.in ব্যবহার করে, কিন্তু domain ending একা যথেষ্ট প্রমাণ নয়। India.gov.in Web Directory, IGOD বা সংশ্লিষ্ট কর্তৃপক্ষের মূল ওয়েবসাইটের cross-link দিয়ে যাচাই করুন।
+  - question: Google-এর প্রথম ফলাফল কি সবসময় সরকারি ওয়েবসাইট?
+    answer: না। বিজ্ঞাপন, sponsored result বা অন্য website উপরে আসতে পারে। সম্পূর্ণ domain এবং official directory যাচাই করে তারপর কোনো service ব্যবহার করুন।
+  - question: services.india.gov.in ব্যবহার করা উচিত কি?
+    answer: পুরোনো National Government Services Portal এখন India.gov.in-এর Services বিভাগে নিয়ে যায়। নতুন bookmark হিসেবে https://www.india.gov.in/services ব্যবহার করুন।
 ---
-সরকারি service, scheme, recruitment, certificate বা grievance-এর জন্য অনেক আলাদা website রয়েছে। একই নাম ব্যবহার করে ভুয়া website তৈরি হতে পারে বলে search result-এর প্রথম link খুলে personal information দেওয়া নিরাপদ নয়।
+সরকারি পরিষেবা, প্রকল্প, নিয়োগ, সার্টিফিকেট বা অভিযোগের জন্য অনেক আলাদা ওয়েবসাইট রয়েছে। একই নাম ও নকশা ব্যবহার করে ভুয়া ওয়েবসাইট তৈরি হতে পারে। তাই search result-এর প্রথম লিংক খুলে ব্যক্তিগত তথ্য, নথি বা টাকা দেওয়া নিরাপদ নয়।
 
-## India.gov.in কীভাবে সাহায্য করে
+এই গাইডে সরকারি ওয়েবসাইট ও অনলাইন পরিষেবার আসল লিংক যাচাই করার একটি ব্যবহারিক পদ্ধতি দেওয়া হলো। **সিটিজেন অ্যাফেয়ার্স কোনো সরকারি ওয়েবসাইট নয়।** কোনো আবেদন বা লেনদেনের আগে সংশ্লিষ্ট কর্তৃপক্ষের বর্তমান নির্দেশনা আবার মিলিয়ে নিন।
 
-National Portal of India বিভিন্ন ministry, department, state, Union Territory এবং public authority-এর তথ্য ও service link এক জায়গায় দেয়। Web Directory ব্যবহার করে সংশ্লিষ্ট authority-এর official website address মিলিয়ে দেখা যায়।
+## ১. National Portal of India থেকে শুরু করুন
 
-## Web Directory ব্যবহার
+[India.gov.in](https://www.india.gov.in/) হলো National Portal of India। এটি National Informatics Centre—NIC দ্বারা পরিচালিত। এখানে কেন্দ্রীয় ও রাজ্য সরকারের তথ্য, directory, scheme, service এবং public utility খোঁজার বিভাগ রয়েছে।
 
-1. India.gov.in খুলুন।
-2. Directory থেকে Web Directory নির্বাচন করুন।
-3. Ministry, department, state, district, judiciary বা অন্য authority নির্বাচন করুন।
-4. directory-তে থাকা website link খুলুন।
-5. website-এর header, contact page এবং service section দেখে প্রয়োজনীয় page খুঁজুন।
+কোনো দপ্তর বা পরিষেবার নাম জানলে প্রথমে India.gov.in-এ সেটি খুঁজুন। তারপর portal-এ দেওয়া লিংক থেকে সংশ্লিষ্ট কর্তৃপক্ষের মূল ওয়েবসাইট খুলুন।
 
-## National Government Services Portal
+## ২. Web Directory দিয়ে দপ্তরের সাইট মিলিয়ে দেখুন
 
-`services.india.gov.in` কেন্দ্র, রাজ্য, জেলা ও local government-এর online service-গুলো category ও location অনুযায়ী খুঁজতে সাহায্য করে। portal থেকে service page খুলে responsible authority, service description এবং official link দেখুন।
+[India.gov.in Web Directory](https://www.india.gov.in/directory/web-directory) কেন্দ্রীয় মন্ত্রণালয়, বিভাগ, রাজ্য ও কেন্দ্রশাসিত অঞ্চল, জেলা, বিচারব্যবস্থা, আইনসভা এবং ভারতীয় মিশনের ওয়েবসাইট খুঁজতে সাহায্য করে।
 
-## Domain যাচাইয়ের নিয়ম
+ব্যবহারের ধাপ:
+
+1. Web Directory খুলুন।
+2. প্রয়োজন অনুযায়ী Union Government, State/UT, District, Judiciary বা অন্য বিভাগ নির্বাচন করুন।
+3. সংশ্লিষ্ট authority বা department খুঁজুন।
+4. directory-তে দেওয়া official website খুলুন।
+5. সেই website-এর notice, recruitment, service বা contact বিভাগ থেকে প্রয়োজনীয় page নিন।
+
+## ৩. IGOD ব্যবহার করুন
+
+[Integrated Government Online Directory—IGOD](https://igod.gov.in/) নিজেকে ভারত সরকারের সরকারি ওয়েবসাইটগুলোর directory হিসেবে চিহ্নিত করে। এখানে কেন্দ্র, রাজ্য, জেলা, বিচারব্যবস্থা, আইনসভা, mission এবং বিভিন্ন sector অনুযায়ী website খোঁজা যায়।
+
+India.gov.in-এর directory-তে কোনো entry খুঁজে না পেলে IGOD-এ authority বা website title দিয়ে search করুন। Directory-তে লিংক থাকলেও গুরুত্বপূর্ণ আবেদন বা টাকা দেওয়ার আগে সংশ্লিষ্ট department-এর মূল homepage থেকে একই লিংক আবার খুলুন।
+
+## ৪. অনলাইন পরিষেবা কোথায় খুঁজবেন
+
+পুরোনো `services.india.gov.in` ঠিকানা এখন [India.gov.in Services](https://www.india.gov.in/services) বিভাগে নিয়ে যায়। তাই নতুন bookmark হিসেবে বর্তমান India.gov.in Services page ব্যবহার করুন।
+
+Service page খোলার পরে নিচের তথ্য মিলিয়ে নিন:
+
+- পরিষেবাটি কোন department বা authority পরিচালনা করছে
+- central না state service
+- eligibility বা required documents কোথায় দেওয়া আছে
+- application বা payment link একই official domain-এ আছে কি না
+- helpline বা grievance contact official website-এর সঙ্গে মেলে কি না
+
+## ৫. Domain যাচাই করার নিয়ম
 
 - address bar-এ সম্পূর্ণ domain পড়ুন
-- spelling error, extra hyphen বা অপ্রয়োজনীয় শব্দ আছে কি না দেখুন
-- `https` থাকলেই website official হয় না
-- department-এর মূল homepage থেকে service link cross-check করুন
-- India.gov.in directory বা official government portal-এ একই link আছে কি না দেখুন
-- payment-এর আগে merchant বা receiving authority পরীক্ষা করুন
+- spelling error, অতিরিক্ত hyphen বা অপ্রয়োজনীয় শব্দ আছে কি না দেখুন
+- `https` থাকলেই website সরকারি বা নিরাপদ প্রমাণিত হয় না
+- মূল department homepage থেকে service বা notice link খুলুন
+- India.gov.in বা IGOD-এ একই authority-এর website আছে কি না দেখুন
+- social media post বা forwarded message-এর shortened link এড়িয়ে চলুন
 
-## PDF notice যাচাই
+`gov.in` ও `nic.in` সরকারি ব্যবহারে প্রচলিত হলেও domain ending একা চূড়ান্ত প্রমাণ নয়। Directory entry, issuing authority, contact information এবং official cross-link একসঙ্গে যাচাই করুন।
 
-শুধু PDF download হলেই সেটি official নয়। PDF-এর notification number, date, issuing authority, signature designation এবং website footer মিলিয়ে দেখুন। একই PDF authority-এর Notice Board-এ আছে কি না যাচাই করুন। পরে corrigendum বা cancellation এসেছে কি না দেখুন।
+## ৬. PDF notice যাচাই
 
-## Mobile app যাচাই
+শুধু PDF download হলেই সেটি official নয়। PDF-তে নিচের বিষয়গুলো দেখুন:
 
-app download link সংশ্লিষ্ট official website থেকে নিন। app store-এ publisher name, privacy details এবং update history দেখুন। message-এ পাঠানো APK install করবেন না। অজানা app-কে accessibility permission, screen sharing বা SMS access দেবেন না।
+- notification বা advertisement number
+- প্রকাশের তারিখ
+- issuing authority
+- স্বাক্ষরকারীর designation
+- official website বা notice board-এর reference
+- corrigendum, extension, cancellation বা withdrawal এসেছে কি না
 
-## Payment ও personal data
+একই PDF সংশ্লিষ্ট authority-এর Notice, Recruitment, Circular বা Download বিভাগে আছে কি না মিলিয়ে নিন।
 
-সরকারি service-এর নামে ব্যক্তিগত UPI account, WhatsApp number বা unofficial form-এ payment করবেন না। OTP, PIN, CVV, internet banking password বা remote-control access কখনও দেবেন না। প্রয়োজনের অতিরিক্ত Aadhaar, bank statement বা certificate upload করবেন না।
+## ৭. Mobile app যাচাই
 
-## নিজের verified link list তৈরি করুন
+App download link সংশ্লিষ্ট সরকারি ওয়েবসাইট থেকে নিন। App store-এ publisher name, privacy details, download count এবং update history দেখুন। Message-এ পাঠানো APK install করবেন না। অজানা app-কে accessibility permission, screen sharing, SMS access বা device-control permission দেবেন না।
 
-যে service নিয়মিত ব্যবহার করেন তার official homepage bookmark করুন। bookmark-এর পাশে authority এবং last checked date লিখে রাখতে পারেন। forwarded link-এর বদলে এই bookmark থেকে service খুলুন।
+## ৮. Payment ও ব্যক্তিগত তথ্য সুরক্ষিত রাখুন
 
-**সম্পাদকীয় অবস্থা:** এটি একটি লুকানো খসড়া। directory structure ও service portal-এর interface পরিবর্তিত হলে publication-এর আগে ধাপগুলো আবার পরীক্ষা করতে হবে।
+সরকারি পরিষেবার নামে ব্যক্তিগত UPI account, WhatsApp number বা unofficial form-এ টাকা পাঠাবেন না। OTP, PIN, CVV, internet banking password বা remote-control access কখনও দেবেন না। প্রয়োজনের অতিরিক্ত Aadhaar, bank statement বা certificate upload করবেন না।
+
+Payment page খোলার আগে merchant বা receiving authority-এর নাম, amount এবং official service description আবার মিলিয়ে নিন। সন্দেহ হলে payment বন্ধ করে department-এর official helpline ব্যবহার করুন।
+
+## ৯. নিজের verified bookmark list তৈরি করুন
+
+যে সরকারি পরিষেবাগুলো নিয়মিত ব্যবহার করেন, তাদের official homepage bookmark করুন। Bookmark-এর নামের সঙ্গে authority এবং last checked date লিখে রাখতে পারেন। Forwarded link-এর বদলে bookmark বা India.gov.in/IGOD directory থেকে service খুলুন।
+
+## দ্রুত যাচাই তালিকা
+
+কোনো সরকারি লিংকে কাজ করার আগে নিজেকে পাঁচটি প্রশ্ন করুন:
+
+1. লিংকটি India.gov.in, IGOD বা authority-এর মূল site থেকে পেয়েছি কি?
+2. Domain spelling সম্পূর্ণ ঠিক আছে কি?
+3. Notice number ও issuing authority মেলে কি?
+4. Application বা payment link মূল website থেকে খোলা হয়েছে কি?
+5. কোনো OTP, PIN, remote access বা ব্যক্তিগত account-এ payment চাওয়া হচ্ছে কি?
+
+একটি প্রশ্নের উত্তরও সন্দেহজনক হলে কাজ বন্ধ করুন এবং সংশ্লিষ্ট দপ্তরের official contact থেকে যাচাই করুন।
