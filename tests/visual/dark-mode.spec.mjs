@@ -85,6 +85,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
       throw new Error('Professional news homepage dark-mode selectors are missing');
     }
 
+    const brandRect = headerBrand.getBoundingClientRect();
     const logoRect = headerLogo.getBoundingClientRect();
     const actionsRect = document.querySelector('.portal-header-actions')?.getBoundingClientRect();
     if (!actionsRect) throw new Error('Header actions are missing');
@@ -92,6 +93,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
     return {
       headerBackground: getComputedStyle(header).backgroundColor,
       headerHeight: navbar.getBoundingClientRect().height,
+      headerBrandLeft: brandRect.left,
       headerLogoWidth: logoRect.width,
       headerLogoRight: logoRect.right,
       actionsLeft: actionsRect.left,
@@ -113,10 +115,11 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   });
 
   expect(colours.headerHeight).toBeLessThanOrEqual(80);
+  expect(colours.headerBrandLeft).toBeLessThanOrEqual(13);
   expect(colours.headerLogoWidth).toBeGreaterThanOrEqual(184);
   expect(colours.headerLogoRight).toBeLessThanOrEqual(colours.actionsLeft + 1);
   expect(colours.documentWidth).toBeLessThanOrEqual(colours.viewportWidth);
-  expect(colours.headerBrandBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(colours.headerBrandBackground).toBe('rgb(255, 255, 255)');
   expect(colours.footerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(contrast(colours.headerIcon, colours.headerBackground)).toBeGreaterThanOrEqual(3);
   expect(contrast(colours.homeTitle, colours.homeBackground)).toBeGreaterThanOrEqual(4.5);
