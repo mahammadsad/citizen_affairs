@@ -1,84 +1,203 @@
 ---
 language: bn
 contentType: explainer
-workflowStatus: draft
+workflowStatus: published
 translationKey: find-government-schemes-with-myscheme
 urlSlug: find-government-schemes-with-myscheme
 title: "myScheme portal-এ নিজের জন্য সরকারি প্রকল্প খুঁজবেন যেভাবে"
-description: "কেন্দ্র ও রাজ্যের সরকারি প্রকল্প eligibility অনুযায়ী খোঁজা, scheme details পড়া এবং official application page যাচাই করার একটি খসড়া বাংলা গাইড।"
+description: "myScheme-এ কেন্দ্র, রাজ্য ও কেন্দ্রশাসিত অঞ্চলের প্রকল্প খোঁজা, eligibility match বোঝা, scheme details পড়া এবং official application link যাচাই করার বাংলা গাইড।"
 date: 2026-08-05
 updated: 2026-08-05
 lastVerified: 2026-08-05
 nextReviewDate: 2026-09-05
 author: mahammad-sad
 category: projects
-verificationStatus: under-verification
+verificationStatus: partially-confirmed
 sourceUrls:
   - https://www.myscheme.gov.in/
-  - https://www.myscheme.gov.in/faqs
   - https://www.myscheme.gov.in/about
+  - https://www.myscheme.gov.in/faqs
+  - https://www.myscheme.gov.in/terms-of-use
+  - https://www.myscheme.gov.in/find-scheme/scheme-category
+sources:
+  - title: myScheme national platform
+    url: https://www.myscheme.gov.in/
+    publishingAuthority: National e-Governance Division, Digital India Corporation, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: About myScheme
+    url: https://www.myscheme.gov.in/about
+    publishingAuthority: National e-Governance Division, Digital India Corporation, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: myScheme frequently asked questions
+    url: https://www.myscheme.gov.in/faqs
+    publishingAuthority: National e-Governance Division, Digital India Corporation, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: myScheme terms of use
+    url: https://www.myscheme.gov.in/terms-of-use
+    publishingAuthority: National e-Governance Division, Digital India Corporation, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Find Schemes for You
+    url: https://www.myscheme.gov.in/find-scheme/scheme-category
+    publishingAuthority: National e-Governance Division, Digital India Corporation, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
 tags:
   - myScheme বাংলা গাইড
   - সরকারি প্রকল্প eligibility
   - government schemes India
   - welfare benefits
+  - scheme finder
 featured: false
-draft: true
+draft: false
 governmentLevel: central
 quickSummary:
-  - basic demographic ও social details দিয়ে relevant schemes খোঁজা যায়।
-  - myScheme তথ্য দেখায় এবং সংশ্লিষ্ট application page-এ পাঠাতে পারে।
-  - চূড়ান্ত eligibility ও আবেদন নিয়ম সংশ্লিষ্ট scheme authority-এর portal-এ যাচাই করতে হবে।
+  - বয়স, লিঙ্গ, আয়, সামাজিক শ্রেণি, রাজ্য ও অন্য basic details দিয়ে সম্ভাব্য relevant scheme খোঁজা যায়।
+  - myScheme একটি discovery platform; search result বা eligibility match চূড়ান্ত অনুমোদন নয়।
+  - আবেদন করার আগে scheme page, implementing department এবং final application portal-এর বর্তমান নিয়ম যাচাই করুন।
+updateHistory:
+  - "2026-08-05: official homepage, About, FAQ, Terms of Use ও scheme-finder flow দিয়ে matching, application handoff এবং eligibility boundary পুনরায় যাচাই করে controlled publication করা হয়েছে।"
 faqs:
   - question: myScheme কি সব প্রকল্পে সরাসরি আবেদন গ্রহণ করে?
-    answer: portal সাধারণত scheme discovery ও তথ্য দেয় এবং অনেক ক্ষেত্রে সংশ্লিষ্ট official application page-এ নিয়ে যায়। প্রতিটি scheme page-এর বর্তমান নির্দেশনা দেখুন।
+    answer: myScheme scheme discovery, eligibility matching এবং scheme information দেয়। Official FAQ অনুযায়ী ব্যবহারকারী dedicated scheme page থেকে application process দেখে সংশ্লিষ্ট application URL-এ যেতে পারেন। প্রতিটি scheme-এর বর্তমান Apply পদ্ধতি আলাদাভাবে যাচাই করুন।
   - question: search result-এ scheme দেখালেই কি eligibility নিশ্চিত?
-    answer: না। এটি প্রাথমিক matching। চূড়ান্ত eligibility, documents এবং approval সংশ্লিষ্ট scheme-এর সরকারি নিয়ম অনুযায়ী নির্ধারিত হয়।
+    answer: না। এটি আপনার দেওয়া তথ্যের ভিত্তিতে একটি সম্ভাব্য match। চূড়ান্ত eligibility, document verification, approval এবং benefit delivery সংশ্লিষ্ট scheme authority-এর নিয়ম ও সিদ্ধান্তের উপর নির্ভর করে।
+  - question: myScheme-এ ভুল তথ্য দিলে কী হতে পারে?
+    answer: Terms of Use অনুযায়ী দেওয়া তথ্য সম্পূর্ণ ও সঠিক হওয়া উচিত। ভুল বা বিভ্রান্তিকর তথ্যের কারণে eligibility result ভুল হতে পারে এবং application portal-এ সমস্যাও হতে পারে।
+  - question: application link খুলে অন্য domain এ গেলে কী করবেন?
+    answer: নতুন domain সংশ্লিষ্ট ministry, state department বা authorised portal-এর কি না scheme page এবং department-এর official website থেকে মিলিয়ে নিন। OTP, PIN বা payment information দেওয়ার আগে সম্পূর্ণ domain পড়ুন।
 ---
-কেন্দ্রীয় সরকার, রাজ্য সরকার এবং কেন্দ্রশাসিত অঞ্চলের বহু প্রকল্প আলাদা আলাদা portal-এ থাকে। myScheme নাগরিককে নিজের তথ্যের ভিত্তিতে সম্ভাব্য সরকারি প্রকল্প খুঁজতে সাহায্য করে এবং scheme-এর benefit, eligibility, documents ও application process সম্পর্কে তথ্য দেখায়।
+কেন্দ্রীয় সরকার, রাজ্য সরকার এবং কেন্দ্রশাসিত অঞ্চলের বহু প্রকল্প আলাদা আলাদা ministry, department ও portal-এর মাধ্যমে পরিচালিত হয়। [myScheme](https://www.myscheme.gov.in/) একটি Government of India national platform, যা নাগরিককে এক জায়গায় scheme খুঁজতে, basic eligibility details মিলিয়ে দেখতে এবং application process বুঝতে সাহায্য করে।
 
-## myScheme ব্যবহার শুরু করবেন যেভাবে
+তবে myScheme-এ কোনো scheme match হওয়া **চূড়ান্ত eligibility certificate বা benefit approval নয়**। প্রকল্পটির implementing authority, বর্তমান guideline, documents, application window এবং local verification শেষ সিদ্ধান্ত নির্ধারণ করে।
 
-1. browser-এ নিজে `myscheme.gov.in` লিখে portal খুলুন।
-2. Find Schemes For You বা eligibility-based search শুরু করুন।
-3. বয়স, লিঙ্গ, আয়, সামাজিক শ্রেণি, পেশা, রাজ্য বা অন্য প্রয়োজনীয় basic information দিন।
-4. matching schemes-এর তালিকা দেখুন।
-5. আগ্রহের scheme খুলে eligibility, benefit, documents এবং application process পড়ুন।
+**সিটিজেন অ্যাফেয়ার্স myScheme বা কোনো সরকারি প্রকল্পের অংশ নয়।** আবেদন, document upload বা payment করার আগে সংশ্লিষ্ট authority-এর current official page আবার পরীক্ষা করুন।
 
-## ব্যক্তিগত তথ্য দেওয়ার আগে
+## ১. Official myScheme portal খুলুন
 
-Portal-এর domain ঠিক আছে কি না নিশ্চিত করুন। OTP, ব্যাংক PIN, card CVV বা account password scheme search-এর জন্য প্রয়োজন হয় না। কোনো agent বা social media account-কে নিজের login information দেবেন না।
+Browser-এর address bar-এ নিজে `myscheme.gov.in` লিখুন। Search advertisement, forwarded message, shortened link বা একই নামের অন্য domain থেকে portal খুলবেন না। Official portal-এর footer-এ Digital India Corporation, Ministry of Electronics and Information Technology এবং Government of India-এর পরিচয় দেখা যায়।
 
-## Scheme page-এ কী দেখবেন
+Scheme খোঁজার জন্য [Find Schemes for You](https://www.myscheme.gov.in/find-scheme/scheme-category) flow অথবা category, State/UT ও Central Ministry browsing ব্যবহার করা যায়।
 
-- প্রকল্পটি কোন ministry, department বা state authority পরিচালনা করে
-- target beneficiary কারা
-- benefit-এর ধরন ও পরিমাণ
-- বয়স, আয়, residence বা occupation-এর শর্ত
-- exclusion condition আছে কি না
-- কী document প্রয়োজন
-- online, offline বা উভয়ভাবে আবেদন করা যায় কি না
-- official application link
-- scheme active, paused বা application closed কি না
+## ২. Scheme matching কীভাবে কাজ করে
 
-## Search result মানেই final approval নয়
+Official FAQ অনুযায়ী myScheme-এর সাধারণ flow হলো:
 
-myScheme আপনার দেওয়া তথ্যের ভিত্তিতে সম্ভাব্য matching scheme দেখাতে পারে। কিন্তু final eligibility document verification, local rules, budget availability বা scheme authority-এর decision-এর উপর নির্ভর করতে পারে। তাই apply করার আগে dedicated scheme page এবং মূল department-এর official notice পড়ুন।
+1. বয়স, লিঙ্গ, আয়, social category, occupation, residence বা অন্য প্রয়োজনীয় basic details দিন;
+2. Portal আপনার দেওয়া তথ্যের ভিত্তিতে relevant schemes দেখায়;
+3. একটি scheme খুলে eligibility, benefits, documents, FAQs এবং application process পড়ুন;
+4. প্রয়োজন হলে সংশ্লিষ্ট application URL-এ যান।
 
-## Application link যাচাই
+প্রতিটি প্রশ্নে সঠিক তথ্য দিন। কোনো field বুঝতে না পারলে আন্দাজে উত্তর না দিয়ে scheme-এর definition বা official help text দেখুন। ভুল income range, state, category বা occupation বেছে নিলে matching result বিভ্রান্তিকর হতে পারে।
 
-myScheme থেকে application page-এ গেলে নতুন domain খুলতে পারে। সেই domain সংশ্লিষ্ট ministry, state department বা authorised portal-এর কি না দেখুন। personal UPI number, private bank account বা unofficial form-এ টাকা দেবেন না।
+## ৩. Search result মানেই final eligibility নয়
 
-## নিজের scheme list সংরক্ষণ
+myScheme একটি discovery ও preliminary matching platform। Final decision নির্ভর করতে পারে:
 
-যেসব scheme প্রাসঙ্গিক মনে হয় তাদের নাম, authority, official URL, last checked date এবং required documents লিখে রাখুন। eligibility বা application status বদলাতে পারে বলে আবেদন করার দিন আবার official page যাচাই করুন।
+- age বা income proof;
+- domicile বা residence rule;
+- caste, disability, occupation বা beneficiary category certificate;
+- land, education, employment বা family-status record;
+- application date ও available budget;
+- local verification;
+- implementing department-এর approval।
+
+তাই “eligible schemes” তালিকায় নাম দেখালেই benefit নিশ্চিত হয়েছে ধরে নেবেন না। Dedicated scheme page-এর eligibility এবং exclusion conditions পড়ুন, তারপর মূল department-এর current guideline বা notification মিলিয়ে নিন।
+
+## ৪. Scheme page-এ কী কী পরীক্ষা করবেন
+
+একটি scheme খোলার পরে অন্তত এই তথ্যগুলো দেখুন:
+
+- scheme-এর সম্পূর্ণ নাম;
+- Central না State/UT scheme;
+- ministry, department বা implementing authority;
+- target beneficiary;
+- benefit-এর ধরন ও পরিমাণ;
+- age, income, residence, occupation বা category condition;
+- exclusion criteria;
+- required documents;
+- online, offline বা mixed application process;
+- application URL, office বা contact details;
+- deadline, application status বা current availability।
+
+পুরোনো screenshot বা video-র পরিবর্তে portal-এর বর্তমান scheme page ব্যবহার করুন। Scheme details পরিবর্তিত হলে implementing department-এর latest notification বা guideline অগ্রাধিকার পাবে।
+
+## ৫. Application handoff নিরাপদে যাচাই করুন
+
+Official FAQ বলে myScheme dedicated scheme page থেকে সংশ্লিষ্ট application URL-এ নিয়ে যেতে পারে। ফলে Apply চাপলে অন্য official domain খোলা স্বাভাবিক হতে পারে। তখন:
+
+1. সম্পূর্ণ domain পড়ুন;
+2. scheme page-এ দেওয়া ministry বা department-এর সঙ্গে domain মিলিয়ে নিন;
+3. department-এর official homepage থেকেও একই application link পাওয়া যায় কি না দেখুন;
+4. application fee থাকলে official notification-এ amount ও payment method যাচাই করুন;
+5. ব্যক্তিগত UPI ID, private bank account বা messaging-app payment এ টাকা পাঠাবেন না;
+6. OTP, bank PIN, card PIN, CVV বা password কোনো agent-কে দেবেন না।
+
+`https` থাকা ভালো, কিন্তু শুধু lock icon কোনো website-কে সরকারি প্রমাণ করে না। Authority এবং domain—দুটিই যাচাই করুন।
+
+## ৬. ব্যক্তিগত তথ্যের নিরাপত্তা
+
+Scheme matching-এ demographic, income বা social details প্রয়োজন হতে পারে। প্রয়োজনের অতিরিক্ত তথ্য দেবেন না এবং shared device ব্যবহার করলে কাজ শেষে logout করুন। Cyber café-তে document upload করলে downloaded ও scanned copies মুছে দিন।
+
+myScheme account বা application portal-এর login credential কোনো agent, WhatsApp group, social-media page বা অজানা support number-কে দেবেন না। সমস্যা হলে myScheme-এর official contact বা scheme authority-এর official grievance channel ব্যবহার করুন।
+
+## ৭. Documents আগে থেকে প্রস্তুত করুন
+
+Scheme page-এ required documents দেখে একটি checklist বানান। উদাহরণ হিসেবে প্রয়োজন হতে পারে:
+
+- identity proof;
+- residence বা domicile proof;
+- income certificate;
+- bank account details;
+- caste, disability বা occupation certificate;
+- education বা employment record;
+- photograph ও signature।
+
+এটি generic list; সব scheme-এ সব document লাগে না। Current scheme page-এ যা লেখা আছে সেটিই অনুসরণ করুন। Original document বা unmasked identity copy অপ্রয়োজনে কারও কাছে পাঠাবেন না।
+
+## ৮. নিজের shortlist সংরক্ষণ করুন
+
+প্রাসঙ্গিক scheme-এর জন্য লিখে রাখুন:
+
+- scheme name;
+- authority;
+- official myScheme URL;
+- final application URL;
+- last checked date;
+- eligibility points;
+- required documents;
+- deadline বা application status।
+
+Application করার দিন আবার official page খুলুন। Bookmark করা পুরোনো link, cached PDF বা আগের বছরের deadline-এর উপর নির্ভর করবেন না।
 
 ## সাধারণ ভুল
 
-- scheme-এর পুরোনো YouTube video দেখে আবেদন করা
-- অন্য রাজ্যের eligibility নিজের ক্ষেত্রে ধরে নেওয়া
-- income বা age rule না পড়ে form পূরণ করা
-- application deadline যাচাই না করা
-- third-party agent-কে original document বা OTP দেওয়া
+- myScheme match-কে final approval ধরে নেওয়া;
+- অন্য রাজ্যের scheme নিজের ক্ষেত্রে প্রযোজ্য ধরে নেওয়া;
+- exclusion criteria না পড়া;
+- পুরোনো YouTube video বা social post অনুসরণ করা;
+- application domain যাচাই না করা;
+- unofficial agent-কে original document, OTP বা টাকা দেওয়া;
+- form-এ incomplete বা inaccurate information দেওয়া।
 
-**সম্পাদকীয় অবস্থা:** এটি একটি লুকানো খসড়া। myScheme বা individual scheme-এর interface ও নিয়ম বদলালে প্রকাশের আগে পুনরায় যাচাই করতে হবে।
+## শেষ checklist
+
+Apply করার আগে নিশ্চিত করুন:
+
+- [ ] `myscheme.gov.in` থেকেই scheme খুঁজেছেন;
+- [ ] scheme authority ও government level মিলিয়েছেন;
+- [ ] eligibility এবং exclusion criteria পড়েছেন;
+- [ ] required documents ও deadline যাচাই করেছেন;
+- [ ] final application domain official কি না পরীক্ষা করেছেন;
+- [ ] fee ও payment method official notification-এর সঙ্গে মিলিয়েছেন;
+- [ ] কোনো OTP, PIN বা password share করেননি।
+
+myScheme সরকারি প্রকল্প খোঁজার সময় ও পরিশ্রম কমাতে সাহায্য করে। নিরাপদ ব্যবহার হলো—portal-এর match-কে starting point হিসেবে নেওয়া, তারপর সংশ্লিষ্ট authority-এর current official rules দিয়ে eligibility এবং application process নিশ্চিত করা।
