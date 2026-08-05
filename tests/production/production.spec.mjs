@@ -59,8 +59,12 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(
     page.locator('.portal-navbar .portal-brand > img[alt*="Citizen Affairs"]'),
   ).toHaveCount(1);
-  await expect(page.locator('.news-hero')).toBeVisible();
-  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.top-news')).toBeVisible();
+  await expect(page.locator('.lead-story')).toBeVisible();
+  await expect(page.locator('.latest-rail')).toBeVisible();
+  expect(await page.locator('.news-section-block').count()).toBeGreaterThan(0);
+  await expect(page.locator('.trending-section')).toHaveCount(0);
+  await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /language|ভাষা|भाषा/i }).first()).toBeVisible();
   if (testInfo.project.name === 'mobile') {
@@ -87,10 +91,12 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     { waitUntil: 'networkidle' },
   );
   expect(bengaliResponse?.status()).toBe(200);
-  await expect(page.locator('.news-hero')).toBeVisible();
+  await expect(page.locator('.top-news')).toBeVisible();
   await expect(page.locator('.lead-story')).toBeVisible();
-  await expect(page.locator('.trending-section')).toBeVisible();
-  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.latest-rail')).toBeVisible();
+  expect(await page.locator('.news-section-block').count()).toBeGreaterThan(0);
+  await expect(page.locator('.trending-section')).toHaveCount(0);
+  await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
   if (testInfo.project.name === 'mobile') {
     await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
