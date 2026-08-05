@@ -5,6 +5,7 @@ import test from 'node:test';
 const rootRoute = await readFile('src/pages/articles/[slug].astro', 'utf8');
 const localizedRoute = await readFile('src/pages/[lang]/articles/[slug].astro', 'utf8');
 const sitemap = await readFile('src/pages/sitemap.xml.ts', 'utf8');
+const feed = await readFile('src/lib/feed.ts', 'utf8');
 
 test('English articles are generated at the language-neutral canonical route', () => {
   assert.match(rootRoute, /data\.language === 'en'/);
@@ -32,5 +33,24 @@ test('The sitemap publishes the same canonical root route for English articles',
   assert.doesNotMatch(
     sitemap,
     /`\$\{SITE\.url\}\/\$\{article\.data\.language\}\/articles\/\$\{article\.data\.urlSlug\}\//
+  );
+});
+
+test('RSS uses canonical root links for English articles and localized links otherwise', () => {
+  assert.match(
+    feed,
+    /locale === 'en'[\s\S]*`\$\{SITE\.url\}\/articles\/\$\{slug\}\//
+  );
+  assert.match(
+    feed,
+    /`\$\{SITE\.url\}\/\$\{locale\}\/articles\/\$\{slug\}\//
+  );
+  assert.match(
+    feed,
+    /link: articleUrl\(article\.data\.language, article\.data\.urlSlug\)/
+  );
+  assert.doesNotMatch(
+    feed,
+    /link: `\$\{SITE\.url\}\/\$\{article\.data\.language\}\/articles\//
   );
 });
