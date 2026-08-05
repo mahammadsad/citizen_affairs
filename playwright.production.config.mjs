@@ -3,7 +3,8 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests/production',
   timeout: 180_000,
-  retries: 1,
+  workers: 1,
+  retries: 0,
   reporter: [
     ['line'],
     ['html', { outputFolder: 'production-smoke-report', open: 'never' }],
