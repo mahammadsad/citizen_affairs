@@ -10,16 +10,25 @@ test('redundant utility strip is removed from the rendered presentation', () => 
   assert.match(layout, /:global\(\.portal-utility\)[\s\S]*display: none !important/);
 });
 
-test('mobile brand remains prominent without breaking the compact header', () => {
-  assert.match(layout, /clamp\(136px, 42vw, 154px\)/);
-  assert.match(layout, /max-height: 50px !important/);
-  assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 68px !important/);
+test('mobile brand is prominent and receives collision-free flex space', () => {
+  assert.match(layout, /clamp\(168px, calc\(100vw - 176px\), 204px\)/);
+  assert.match(layout, /max-height: 56px !important/);
+  assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 1 1 auto !important/);
+  assert.match(layout, /:global\(\.portal-header-actions\)[\s\S]*flex: 0 0 auto !important/);
+  assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 78px !important/);
   assert.doesNotMatch(layout, /width: 118px/);
 });
 
-test('desktop brand also receives a professional readable size', () => {
-  assert.match(layout, /clamp\(158px, 18vw, 184px\)/);
-  assert.match(layout, /max-height: 56px !important/);
+test('very narrow screens preserve the brand by dropping only the theme shortcut', () => {
+  assert.match(layout, /@media \(max-width: 350px\)/);
+  assert.match(layout, /:global\(\.portal-theme-toggle\)[\s\S]*display: none !important/);
+  assert.match(layout, /clamp\(160px, calc\(100vw - 142px\), 178px\)/);
+});
+
+test('desktop brand has a strong professional width', () => {
+  assert.match(layout, /clamp\(196px, 20vw, 224px\)/);
+  assert.match(layout, /max-height: 58px !important/);
+  assert.match(layout, /min-height: 78px !important/);
 });
 
 test('the shared layout does not inject a pre-hero homepage panel', () => {
