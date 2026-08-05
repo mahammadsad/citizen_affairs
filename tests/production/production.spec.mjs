@@ -57,10 +57,15 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/Citizen Affairs/i);
   await expect(page.locator('header img[alt*="Citizen Affairs"]')).toHaveCount(1);
-  await expect(page.getByRole('button', { name: /search|খুঁজুন|खोजें/i }).first()).toBeVisible();
+  await expect(page.locator('.news-hero')).toBeVisible();
+  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /language|ভাষা|भाषा/i }).first()).toBeVisible();
   if (testInfo.project.name === 'mobile') {
+    await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
     await expect(page.getByRole('button', { name: /menu|মেনু|मेनू/i })).toBeVisible();
+  } else {
+    await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
   }
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/citizenaffairs\.in\//);
   await expect(page.locator('body')).not.toContainText(oldBrand);
@@ -70,6 +75,21 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('meta[name="robots"]')).not.toHaveAttribute('content', /noindex/i);
   if (expectedCommit) {
     await expect(page.locator('meta[name="x-build-commit"]')).toHaveAttribute('content', expectedCommit);
+  }
+
+  const bengaliResponse = await page.goto(`/bn/?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`, {
+    waitUntil: 'networkidle'
+  });
+  expect(bengaliResponse?.status()).toBe(200);
+  await expect(page.locator('.news-hero')).toBeVisible();
+  await expect(page.locator('.lead-story')).toBeVisible();
+  await expect(page.locator('.trending-section')).toBeVisible();
+  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.portal-search')).toHaveCount(0);
+  if (testInfo.project.name === 'mobile') {
+    await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
+  } else {
+    await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
   }
 
   for (const path of ['/sitemap.xml', '/robots.txt']) {
