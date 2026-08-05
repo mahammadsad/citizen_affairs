@@ -96,6 +96,76 @@ html body main .portal-search > button[type="submit"]:focus-visible {
   background: #075f5b !important;
 }
 
+/* News-led homepage surfaces need explicit solid colours because the component
+   uses decorative gradients whose computed backgroundColor is transparent. */
+:root[data-theme="dark"] body main .news-hero {
+  color: #edf2f7;
+  background-color: #081321;
+  background-image: linear-gradient(180deg, #0f1b2e, #081321);
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body main .news-masthead h1,
+:root[data-theme="dark"] body main .section-heading h2,
+:root[data-theme="dark"] body main .deadline-heading h2 {
+  color: #edf2f7;
+}
+
+:root[data-theme="dark"] body main .news-masthead > div > p:last-child,
+:root[data-theme="dark"] body main .section-heading p,
+:root[data-theme="dark"] body main .deadline-heading p,
+:root[data-theme="dark"] body main .news-trust p {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body main .lead-story {
+  color: #ffffff;
+  background-color: #102f52;
+  background-image: linear-gradient(145deg, #0b2440, #17456f);
+}
+
+:root[data-theme="dark"] body main .supporting-stories,
+:root[data-theme="dark"] body main .section-news-block,
+:root[data-theme="dark"] body main .deadline-list > a,
+:root[data-theme="dark"] body main .news-empty,
+:root[data-theme="dark"] body main .news-trust {
+  color: #edf2f7;
+  background-color: #0f1b2e;
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body main .supporting-stories h2,
+:root[data-theme="dark"] body main .supporting-stories h3,
+:root[data-theme="dark"] body main .section-news-block h3,
+:root[data-theme="dark"] body main .section-news-block h4,
+:root[data-theme="dark"] body main .deadline-list strong,
+:root[data-theme="dark"] body main .news-trust strong {
+  color: #edf2f7;
+}
+
+:root[data-theme="dark"] body main .supporting-stories > a,
+:root[data-theme="dark"] body main .section-news-block > header,
+:root[data-theme="dark"] body main .section-story {
+  border-color: #304560;
+}
+
+:root[data-theme="dark"] body main .supporting-stories time,
+:root[data-theme="dark"] body main .section-story time,
+:root[data-theme="dark"] body main .section-story p,
+:root[data-theme="dark"] body main .section-empty,
+:root[data-theme="dark"] body main .deadline-list small {
+  color: #b8c4d3;
+}
+
+:root[data-theme="dark"] body main .trending-section {
+  background-color: #071729;
+}
+
+:root[data-theme="dark"] body main .deadline-section {
+  background-color: #0a1626;
+  border-color: #304560;
+}
+
 :root[data-theme="dark"] body .portal-mobile-panel,
 :root[data-theme="dark"] body .portal-language > div,
 :root[data-theme="dark"] body .portal-more > div {
