@@ -1,5 +1,13 @@
 <script>
-  const submissionForms = [
+  type SubmissionFormConfiguration = {
+    formSelector: string;
+    bannerId: string;
+    storageKey: string;
+    queryKey: string;
+    returnHash: string;
+  };
+
+  const submissionForms: SubmissionFormConfiguration[] = [
     {
       formSelector: '[data-career-form]',
       bannerId: 'applicationSuccess',
@@ -16,7 +24,7 @@
     }
   ];
 
-  const createSubmissionToken = () => {
+  const createSubmissionToken = (): string => {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
       return crypto.randomUUID();
     }
@@ -24,7 +32,7 @@
     return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
   };
 
-  const readSessionValue = (key) => {
+  const readSessionValue = (key: string): string | null => {
     try {
       return window.sessionStorage.getItem(key);
     } catch (_) {
@@ -32,7 +40,7 @@
     }
   };
 
-  const writeSessionValue = (key, value) => {
+  const writeSessionValue = (key: string, value: string): boolean => {
     try {
       window.sessionStorage.setItem(key, value);
       return true;
@@ -41,13 +49,13 @@
     }
   };
 
-  const removeSessionValue = (key) => {
+  const removeSessionValue = (key: string): void => {
     try {
       window.sessionStorage.removeItem(key);
     } catch (_) {}
   };
 
-  const removeSubmissionParameters = (queryKeys) => {
+  const removeSubmissionParameters = (queryKeys: string[]): void => {
     const cleanUrl = new URL(window.location.href);
     let changed = false;
 
@@ -66,7 +74,7 @@
     }
   };
 
-  const initialiseSubmissionForm = (configuration) => {
+  const initialiseSubmissionForm = (configuration: SubmissionFormConfiguration): void => {
     const form = document.querySelector(configuration.formSelector);
     const banner = document.getElementById(configuration.bannerId);
 
@@ -110,11 +118,11 @@
     });
   };
 
-  const initialiseSubmissionForms = () => {
+  const initialiseSubmissionForms = (): void => {
     submissionForms.forEach(initialiseSubmissionForm);
   };
 
-  const scheduleInitialisation = () => {
+  const scheduleInitialisation = (): void => {
     window.requestAnimationFrame(initialiseSubmissionForms);
   };
 
@@ -124,7 +132,7 @@
     scheduleInitialisation();
   }
 
-  window.addEventListener('pageshow', (event) => {
+  window.addEventListener('pageshow', (event: PageTransitionEvent) => {
     if (!event.persisted) return;
     submissionForms.forEach(({ bannerId }) => {
       const banner = document.getElementById(bannerId);
