@@ -17,10 +17,10 @@ const collectSchemaTypes = (value) => {
   return types;
 };
 
-const requestFresh = (request, path) => request.get(
-  `${path}${path.includes('?') ? '&' : '?'}nonce=${Date.now()}`,
-  { headers: noCacheHeaders }
-);
+const requestFresh = (request, path) =>
+  request.get(`${path}${path.includes('?') ? '&' : '?'}nonce=${Date.now()}`, {
+    headers: noCacheHeaders
+  });
 
 const waitForExpectedBuild = async (request, expectedCommit) => {
   if (!expectedCommit) return;
@@ -115,9 +115,9 @@ test('operational endpoints expose the served build without overclaiming verific
   expect(statusResponse?.status()).toBe(200);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
   await expect(page.getByRole('heading', { name: 'Operational status' })).toBeVisible();
-  await expect(page.getByText('Merged target')).toBeVisible();
-  await expect(page.getByText('Served deployment')).toBeVisible();
-  await expect(page.getByText('Verified live')).toBeVisible();
+  await expect(page.getByText('Merged target', { exact: true })).toBeVisible();
+  await expect(page.getByText('Served deployment', { exact: true })).toBeVisible();
+  await expect(page.getByText('Verified live', { exact: true })).toBeVisible();
 });
 
 test('staff workspace is excluded from indexing', async ({ page }) => {
@@ -135,17 +135,21 @@ test('every sitemap URL resolves from the live deployment', async ({ request }, 
 
   for (let index = 0; index < urls.length; index += 8) {
     const batch = urls.slice(index, index + 8);
-    const responses = await Promise.all(batch.map((url) => request.get(
-      `${url}${url.includes('?') ? '&' : '?'}health=${Date.now()}`,
-      { headers: noCacheHeaders }
-    )));
+    const responses = await Promise.all(
+      batch.map((url) =>
+        request.get(`${url}${url.includes('?') ? '&' : '?'}health=${Date.now()}`, {
+          headers: noCacheHeaders
+        })
+      )
+    );
     responses.forEach((response, offset) => {
       expect(response.status(), `${batch[offset]} should resolve`).toBe(200);
     });
   }
 });
 
-test('published article is available when sitemap lists one', async ({ page, request }) => {
+test('published article is available when sitemap lists one', async ({ page, request }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'One project is sufficient for the live article schema check.');
   const sitemap = await (await requestFresh(request, '/sitemap.xml')).text();
   const article = sitemap.match(/<loc>(https:\/\/citizenaffairs\.in\/(?:en|bn|hi)\/articles\/[^<]+)<\/loc>/)?.[1];
   if (!article) return;
@@ -167,10 +171,14 @@ test('live service worker provides the multilingual offline fallback', async ({ 
     if (!navigator.serviceWorker.controller) {
       await new Promise((resolve) => {
         const timeout = setTimeout(resolve, 10_000);
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          clearTimeout(timeout);
-          resolve();
-        }, { once: true });
+        navigator.serviceWorker.addEventListener(
+          'controllerchange',
+          () => {
+            clearTimeout(timeout);
+            resolve();
+          },
+          { once: true }
+        );
       });
     }
     return Boolean(registration.active);
