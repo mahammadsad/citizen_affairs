@@ -17,12 +17,14 @@ for (const viewport of viewports) {
     await page.goto(articlePath, { waitUntil: 'networkidle' });
     const image = page.locator('.article-hero-image');
     await expect(image).toBeVisible();
+    await expect(page.locator('body')).toHaveClass(/article-reading-mode/);
     await expect(page.locator('.portal-brand img')).toHaveCount(1);
     await expect(page.locator('.portal-language > summary')).toBeVisible();
+    await expect(page.locator('.category-nav-shell')).toBeHidden();
+    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
 
     if (viewport.width <= 680) {
-      await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
-      await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeVisible();
+      await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeHidden();
       await expect(page.locator('.portal-search-action')).toBeHidden();
     } else {
       await expect(page.locator('.portal-search-action')).toBeVisible();
