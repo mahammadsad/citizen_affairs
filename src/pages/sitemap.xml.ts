@@ -65,6 +65,7 @@ export async function GET() {
     localeCluster('disclaimer'),
     localeCluster('about', true),
     localeCluster('contact', true),
+    localeCluster('careers', true),
     localeCluster('corrections', true),
     localeCluster('authors/mahammad-sad', true),
   ];
