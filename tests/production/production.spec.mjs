@@ -19,12 +19,12 @@ const collectSchemaTypes = (value) => {
 
 const extractJsonLd = (html) =>
   [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(
-    (match) => JSON.parse(match[1].trim())
+    (match) => JSON.parse(match[1].trim()),
   );
 
 const requestFresh = (request, path) =>
   request.get(`${path}${path.includes('?') ? '&' : '?'}nonce=${Date.now()}`, {
-    headers: noCacheHeaders
+    headers: noCacheHeaders,
   });
 
 const waitForExpectedBuild = async (request, expectedCommit) => {
@@ -33,7 +33,7 @@ const waitForExpectedBuild = async (request, expectedCommit) => {
   for (let attempt = 1; attempt <= 24; attempt += 1) {
     const marker = await request.get(
       `/deployment.json?expected=${encodeURIComponent(expectedCommit)}&attempt=${attempt}&nonce=${Date.now()}`,
-      { headers: noCacheHeaders }
+      { headers: noCacheHeaders },
     );
     if (marker.ok()) {
       const payload = await marker.json().catch(() => ({}));
@@ -52,11 +52,13 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await waitForExpectedBuild(request, expectedCommit);
 
   const response = await page.goto(`/?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`, {
-    waitUntil: 'networkidle'
+    waitUntil: 'networkidle',
   });
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/Citizen Affairs/i);
-  await expect(page.locator('header img[alt*="Citizen Affairs"]')).toHaveCount(1);
+  await expect(
+    page.locator('.portal-navbar .portal-brand > img[alt*="Citizen Affairs"]'),
+  ).toHaveCount(1);
   await expect(page.locator('.news-hero')).toBeVisible();
   await expect(page.locator('.section-news-block')).toHaveCount(7);
   await expect(page.locator('.portal-search')).toHaveCount(0);
@@ -67,7 +69,10 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   } else {
     await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
   }
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/citizenaffairs\.in\//);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    'href',
+    /^https:\/\/citizenaffairs\.in\//,
+  );
   await expect(page.locator('body')).not.toContainText(oldBrand);
   for (const label of inactiveCategoryLabels) {
     await expect(page.getByText(label)).toHaveCount(0);
@@ -77,9 +82,10 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     await expect(page.locator('meta[name="x-build-commit"]')).toHaveAttribute('content', expectedCommit);
   }
 
-  const bengaliResponse = await page.goto(`/bn/?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`, {
-    waitUntil: 'networkidle'
-  });
+  const bengaliResponse = await page.goto(
+    `/bn/?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`,
+    { waitUntil: 'networkidle' },
+  );
   expect(bengaliResponse?.status()).toBe(200);
   await expect(page.locator('.news-hero')).toBeVisible();
   await expect(page.locator('.lead-story')).toBeVisible();
@@ -88,6 +94,39 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('.portal-search')).toHaveCount(0);
   if (testInfo.project.name === 'mobile') {
     await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
+
+    const menuTrigger = page.getByRole('button', { name: /menu|মেনু|मेनू/i });
+    await menuTrigger.click();
+
+    const panel = page.locator('.portal-mobile-panel');
+    const menuSearch = panel.locator('.portal-mobile-menu-search input[name="q"]');
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveAttribute('role', 'dialog');
+    await expect(panel).toHaveAttribute('aria-modal', 'true');
+    await expect(panel.locator('.portal-mobile-brand-logo')).toHaveCount(1);
+    await expect(menuSearch).toBeVisible();
+    await expect(menuSearch).toBeFocused();
+    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+
+    const geometry = await panel.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        top: rect.top,
+        left: rect.left,
+        right: rect.right,
+        bottom: rect.bottom,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      };
+    });
+    expect(Math.abs(geometry.top)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.right - geometry.viewportWidth)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.bottom - geometry.viewportHeight)).toBeLessThanOrEqual(1);
+
+    await page.keyboard.press('Escape');
+    await expect(panel).toBeHidden();
+    await expect(menuTrigger).toBeFocused();
   } else {
     await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
   }
@@ -155,7 +194,9 @@ test('every sitemap URL resolves from the live deployment', async ({ request }, 
   const sitemapResponse = await requestFresh(request, '/sitemap.xml');
   expect(sitemapResponse.status()).toBe(200);
   const sitemap = await sitemapResponse.text();
-  const urls = [...sitemap.matchAll(/<loc>(https:\/\/citizenaffairs\.in\/[^<]*)<\/loc>/g)].map((match) => match[1]);
+  const urls = [...sitemap.matchAll(/<loc>(https:\/\/citizenaffairs\.in\/[^<]*)<\/loc>/g)].map(
+    (match) => match[1],
+  );
   expect(urls.length).toBeGreaterThan(0);
 
   for (let index = 0; index < urls.length; index += 8) {
@@ -163,9 +204,9 @@ test('every sitemap URL resolves from the live deployment', async ({ request }, 
     const responses = await Promise.all(
       batch.map((url) =>
         request.get(`${url}${url.includes('?') ? '&' : '?'}health=${Date.now()}`, {
-          headers: noCacheHeaders
-        })
-      )
+          headers: noCacheHeaders,
+        }),
+      ),
     );
     responses.forEach((response, offset) => {
       expect(response.status(), `${batch[offset]} should resolve`).toBe(200);
@@ -176,13 +217,17 @@ test('every sitemap URL resolves from the live deployment', async ({ request }, 
 test('published article is available when sitemap lists one', async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One project is sufficient for the live article schema check.');
   const sitemap = await (await requestFresh(request, '/sitemap.xml')).text();
-  const article = sitemap.match(/<loc>(https:\/\/citizenaffairs\.in\/(?:en|bn|hi)\/articles\/[^<]+)<\/loc>/)?.[1];
+  const article = sitemap.match(
+    /<loc>(https:\/\/citizenaffairs\.in\/(?:en|bn|hi)\/articles\/[^<]+)<\/loc>/,
+  )?.[1];
   if (!article) return;
 
   const response = await request.get(`${article}?nonce=${Date.now()}`, { headers: noCacheHeaders });
   expect(response.status()).toBe(200);
   const schemas = extractJsonLd(await response.text());
-  const articleTypes = schemas.flatMap(collectSchemaTypes).filter((type) => type === 'Article' || type === 'NewsArticle');
+  const articleTypes = schemas
+    .flatMap(collectSchemaTypes)
+    .filter((type) => type === 'Article' || type === 'NewsArticle');
   expect(articleTypes).toHaveLength(1);
 });
 
@@ -192,7 +237,9 @@ test('live service worker provides the multilingual offline fallback', async ({ 
     if (!('serviceWorker' in navigator)) return false;
     const registration = await Promise.race([
       navigator.serviceWorker.ready,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Service worker activation timed out')), 30_000))
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Service worker activation timed out')), 30_000),
+      ),
     ]);
     if (!navigator.serviceWorker.controller) {
       await new Promise((resolve) => {
@@ -203,7 +250,7 @@ test('live service worker provides the multilingual offline fallback', async ({ 
             clearTimeout(timeout);
             resolve();
           },
-          { once: true }
+          { once: true },
         );
       });
     }
@@ -216,7 +263,9 @@ test('live service worker provides the multilingual offline fallback', async ({ 
   try {
     const response = await page.goto(`/offline-probe-${Date.now()}/`, { waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole('heading', { name: /You are offline|আপনি অফলাইনে আছেন|आप ऑफलाइन हैं/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /You are offline|আপনি অফলাইনে আছেন|आप ऑफलाइन हैं/i }),
+    ).toBeVisible();
   } finally {
     await context.setOffline(false);
   }
