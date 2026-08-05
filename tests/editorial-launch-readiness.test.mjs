@@ -23,6 +23,7 @@ const publishedStarters = new Set([
   'find-official-government-websites-and-services.md',
   'use-digilocker-education-documents-safely.md',
   'find-government-schemes-with-myscheme.md',
+  'update-aadhaar-and-check-status-officially.md',
 ]);
 
 function frontmatter(source) {
@@ -73,7 +74,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('starter queue keeps four drafts protected and permits three reviewed public guides', async () => {
+test('starter queue keeps three drafts protected and permits four reviewed public guides', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -143,6 +144,17 @@ test('starter queue keeps four drafts protected and permits three reviewed publi
         assert.match(source, /চূড়ান্ত eligibility certificate বা benefit approval নয়/);
         assert.match(source, /Application handoff নিরাপদে যাচাই করুন/);
       }
+
+      if (file === 'update-aadhaar-and-check-status-officially.md') {
+        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/updating-data-on-aadhaar'));
+        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1474-english-uk/faqs/your-aadhaar/aadhaar-app/19854-how-to-update-a-mobile-number-through-the-aadhaar-app.html'));
+        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1061-english-uk/faqs/aadhaar-online-services/document-update.html'));
+        assert.ok(data.sourceUrls.includes('https://myaadhaar.uidai.gov.in/'));
+        assert.match(source, /Mobile number update-এর বর্তমান নিয়ম/);
+        assert.match(source, /প্রথমবার mobile number register/);
+        assert.match(source, /14 June 2027 পর্যন্ত fee ছাড়া/);
+        assert.match(source, /request accepted বা rejected/);
+      }
     } else {
       draftCount += 1;
       assert.equal(data.workflowStatus, 'draft');
@@ -158,8 +170,8 @@ test('starter queue keeps four drafts protected and permits three reviewed publi
     }
   }
 
-  assert.equal(publicCount, 3);
-  assert.equal(draftCount, 4);
+  assert.equal(publicCount, 4);
+  assert.equal(draftCount, 3);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
