@@ -19,6 +19,7 @@ const starterFiles = [
   'report-fake-government-message-and-website.md',
   'find-official-government-websites-and-services.md',
 ];
+const publishedStarter = 'find-official-government-websites-and-services.md';
 
 function frontmatter(source) {
   const match = source.match(/^---\s*\n([\s\S]*?)\n---(?:\s*\n|$)/);
@@ -68,7 +69,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('seven official-source Bengali starter drafts cover every portal section', async () => {
+test('starter queue keeps six drafts protected and permits one reviewed public guide', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -77,7 +78,7 @@ test('seven official-source Bengali starter drafts cover every portal section', 
   const allowedSourceHosts = new Set([
     'ssc.gov.in',
     'www.india.gov.in',
-    'services.india.gov.in',
+    'igod.gov.in',
     'www.pib.gov.in',
     'cybercrime.gov.in',
     'www.nta.ac.in',
@@ -88,6 +89,9 @@ test('seven official-source Bengali starter drafts cover every portal section', 
     'www.myscheme.gov.in',
   ]);
 
+  let draftCount = 0;
+  let publicCount = 0;
+
   for (const file of starterFiles) {
     const source = await readFile(`${bengaliDirectory}/${file}`, 'utf8');
     const data = frontmatter(source);
@@ -95,15 +99,31 @@ test('seven official-source Bengali starter drafts cover every portal section', 
 
     assert.equal(data.language, 'bn');
     assert.equal(data.contentType, 'explainer');
-    assert.equal(data.workflowStatus, 'draft');
-    assert.equal(data.verificationStatus, 'under-verification');
-    assert.equal(data.draft, true);
     assert.equal(data.featured, false);
     assert.ok(Array.isArray(data.sourceUrls) && data.sourceUrls.length > 0, `${file} should include official sources`);
     assert.ok(data.lastVerified, `${file} should record source verification`);
     assert.ok(data.nextReviewDate, `${file} should schedule re-verification`);
     assert.ok(new Date(data.nextReviewDate) > new Date(data.lastVerified), `${file} review should follow verification`);
-    assert.match(source, /লুকানো খসড়া/);
+
+    if (file === publishedStarter) {
+      publicCount += 1;
+      assert.equal(data.workflowStatus, 'published');
+      assert.equal(data.verificationStatus, 'partially-confirmed');
+      assert.equal(data.draft, false);
+      assert.ok(Array.isArray(data.sources) && data.sources.length >= 4);
+      assert.ok(data.sources.every((entry) => entry.designation === 'primary'));
+      assert.ok(data.sourceUrls.includes('https://www.india.gov.in/services'));
+      assert.ok(data.sourceUrls.includes('https://igod.gov.in/about_us'));
+      assert.ok(data.sourceUrls.every((value) => !value.includes('services.india.gov.in')));
+      assert.match(source, /পুরোনো `services\.india\.gov\.in` ঠিকানা এখন/);
+      assert.doesNotMatch(source, /সম্পাদকীয় অবস্থা:.*লুকানো খসড়া/);
+    } else {
+      draftCount += 1;
+      assert.equal(data.workflowStatus, 'draft');
+      assert.equal(data.verificationStatus, 'under-verification');
+      assert.equal(data.draft, true);
+      assert.match(source, /লুকানো খসড়া/);
+    }
 
     for (const value of data.sourceUrls) {
       const url = new URL(value);
@@ -112,6 +132,8 @@ test('seven official-source Bengali starter drafts cover every portal section', 
     }
   }
 
+  assert.equal(publicCount, 1);
+  assert.equal(draftCount, 6);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
