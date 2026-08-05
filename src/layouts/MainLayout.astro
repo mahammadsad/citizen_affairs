@@ -69,11 +69,13 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   }
 
   :global(.portal-navbar-inner) {
-    min-height: 78px !important;
+    min-height: 74px !important;
     gap: .5rem !important;
   }
 
   :global(.portal-brand) {
+    display: flex !important;
+    align-items: center;
     flex: 0 1 clamp(196px, 20vw, 224px) !important;
     min-width: 196px !important;
     max-width: 224px !important;
@@ -104,7 +106,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-navbar-inner) {
-      min-height: 78px !important;
+      min-height: 70px !important;
       gap: .25rem !important;
     }
 
@@ -126,8 +128,8 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-mobile-panel) {
-      top: 78px !important;
-      max-height: calc(100vh - 98px) !important;
+      top: 70px !important;
+      max-height: calc(100vh - 90px) !important;
     }
   }
 
