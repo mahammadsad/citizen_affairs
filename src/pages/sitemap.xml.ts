@@ -67,7 +67,7 @@ export async function GET() {
     localeCluster('contact', true),
     localeCluster('careers', true),
     localeCluster('corrections', true),
-    localeCluster('authors/mahammad-sad', true),
+    localeCluster('team', true),
   ];
 
   const entries: SitemapEntry[] = staticClusters.flatMap((cluster) =>
