@@ -12,11 +12,13 @@ const viewports = [
 ];
 
 for (const viewport of viewports) {
-  test(`featured image is complete and centred at ${viewport.width}px`, async ({ page }, testInfo) => {
+  test(`featured image and article table stay complete at ${viewport.width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
     await page.goto(articlePath, { waitUntil: 'networkidle' });
     const image = page.locator('.article-hero-image');
+    const table = page.locator('.article-content table').first();
     await expect(image).toBeVisible();
+    await expect(table).toBeVisible();
     await expect(page.locator('body')).toHaveClass(/article-reading-mode/);
     await expect(page.locator('.portal-brand img')).toHaveCount(1);
     await expect(page.locator('.portal-language > summary')).toBeVisible();
@@ -64,13 +66,46 @@ for (const viewport of viewports) {
         overflowing,
       };
     });
+
+    const tableMeasurements = await table.evaluate((element) => {
+      const content = element.closest('.article-content');
+      if (!content) throw new Error('Article table is not inside the article content column.');
+      const tableRect = element.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      const cellOverflow = Array.from(element.querySelectorAll('th, td'))
+        .filter((cell) => cell.scrollWidth > cell.clientWidth + 2)
+        .map((cell) => ({
+          text: cell.textContent?.trim().slice(0, 80),
+          clientWidth: cell.clientWidth,
+          scrollWidth: cell.scrollWidth,
+        }));
+      return {
+        tableLeft: tableRect.left,
+        tableRight: tableRect.right,
+        contentLeft: contentRect.left,
+        contentRight: contentRect.right,
+        leftInset: tableRect.left - contentRect.left,
+        rightInset: contentRect.right - tableRect.right,
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        cellOverflow,
+      };
+    });
+
     if (viewport.width === 390 || viewport.width === 1440) {
       await page.screenshot({ path: testInfo.outputPath(`article-${viewport.width}.png`), fullPage: true });
     }
+
     expect(measurements.objectFit).toBe('contain');
     expect(measurements.left).toBeGreaterThanOrEqual(0);
     expect(measurements.right).toBeLessThanOrEqual(viewport.width + 1);
     expect(measurements.documentWidth, JSON.stringify(measurements.overflowing)).toBeLessThanOrEqual(measurements.viewportWidth);
     expect(Math.abs(measurements.renderedRatio - measurements.intrinsicRatio)).toBeLessThan(0.02);
+
+    expect(tableMeasurements.tableLeft).toBeGreaterThanOrEqual(tableMeasurements.contentLeft - 1);
+    expect(tableMeasurements.tableRight).toBeLessThanOrEqual(tableMeasurements.contentRight + 1);
+    expect(Math.abs(tableMeasurements.leftInset - tableMeasurements.rightInset)).toBeLessThanOrEqual(2);
+    expect(tableMeasurements.scrollWidth).toBeLessThanOrEqual(tableMeasurements.clientWidth + 2);
+    expect(tableMeasurements.cellOverflow).toEqual([]);
   });
 }
