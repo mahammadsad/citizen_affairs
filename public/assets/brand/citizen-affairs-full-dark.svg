@@ -1,33 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 260" role="img" aria-labelledby="title desc">
+  <title id="title">Citizen Affairs</title>
+  <desc id="desc">Citizen Affairs full logo with verified public information tagline.</desc>
   <defs>
     <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#63D5CA"/>
       <stop offset="1" stop-color="#0EA59A"/>
     </linearGradient>
   </defs>
-  <g transform="translate(20 12) scale(.45)">
-    <g font-family="Arial, Helvetica, sans-serif" font-weight="800">
-      <text x="22" y="394" font-size="388" fill="#F4F7FB">C</text>
-      <text x="194" y="394" font-size="388" fill="url(#teal)">A</text>
-    </g>
-    <g transform="translate(135 218)">
-      <path d="M0 0h80l25 25v98H0z" fill="#0EA59A"/>
-      <path d="M80 0v25h25" fill="#8BE5DC"/>
-      <path d="M21 48h61M21 70h61M21 92h44" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
-    </g>
-    <g transform="translate(347 91)">
-      <circle r="54" fill="url(#teal)"/>
-      <path d="M-24 0l16 17 34-39" fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
-    </g>
-    <g fill="none" stroke="#F5A623" stroke-width="12" stroke-linecap="round">
-      <path d="M402 31a61 61 0 0 1 54 54"/>
-      <path d="M410 58a35 35 0 0 1 29 29"/>
+  <g transform="translate(14 15) scale(1.72)">
+    <g aria-hidden="true">
+      <path d="M69 27A43 43 0 1 0 69 105" fill="none" stroke="#F4F7FB" stroke-width="14" stroke-linecap="square"/>
+      <path d="M78 106L101 24L126 106" fill="none" stroke="url(#teal)" stroke-width="13" stroke-linecap="square" stroke-linejoin="miter"/>
+      <path d="M88 75H115" fill="none" stroke="url(#teal)" stroke-width="11" stroke-linecap="square"/>
+      <g transform="translate(33 51)">
+        <path d="M0 0h24l8 8v31H0z" fill="#0EA59A" rx="3"/>
+        <path d="M24 0v8h8" fill="#8BE5DC"/>
+        <path d="M7 15h18M7 22h18M7 29h13" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+      </g>
+      <g transform="translate(109 26)">
+        <circle r="12" fill="url(#teal)"/>
+        <path d="M-5 0l4 4 8-9" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <g fill="none" stroke="#F5A623" stroke-width="3.2" stroke-linecap="round">
+        <path d="M120 11a18 18 0 0 1 16 16"/>
+        <path d="M122 18a10 10 0 0 1 8 8"/>
+      </g>
+      <g fill="#F4F7FB">
+        <circle cx="91" cy="101" r="4.5"/>
+        <circle cx="102" cy="97" r="5.5"/>
+        <circle cx="113" cy="101" r="4.5"/>
+      </g>
+      <g fill="none" stroke="#63D5CA" stroke-width="3.8" stroke-linecap="round">
+        <path d="M84 119c1-7 5-11 11-11"/>
+        <path d="M92 120c1-10 5-15 10-15s9 5 10 15"/>
+        <path d="M109 108c6 0 10 4 11 11"/>
+      </g>
     </g>
   </g>
-  <path d="M255 42v146" stroke="#63D5CA" stroke-width="3"/>
-  <g font-family="Arial, Helvetica, sans-serif">
-    <text x="292" y="112" font-size="66" font-weight="800" letter-spacing="7" fill="#F4F7FB">CITIZEN</text>
-    <text x="292" y="176" font-size="66" font-weight="800" letter-spacing="7" fill="#F4F7FB">AFFAIRS</text>
-    <text x="295" y="220" font-size="23" font-weight="700" letter-spacing="1.5" fill="#8BE5DC">VERIFIED PUBLIC INFORMATION</text>
+  <path d="M255 39v151" stroke="#63D5CA" stroke-width="3"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#F4F7FB" font-weight="800">
+    <text x="292" y="111" font-size="66" letter-spacing="7">CITIZEN</text>
+    <text x="292" y="177" font-size="66" letter-spacing="7">AFFAIRS</text>
   </g>
+  <text x="295" y="222" font-family="Arial, Helvetica, sans-serif" font-size="23" font-weight="700" letter-spacing="1.5" fill="#8BE5DC">VERIFIED PUBLIC INFORMATION</text>
 </svg>
