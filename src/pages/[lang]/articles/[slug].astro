@@ -10,10 +10,16 @@ import { canOfferApplicationAction } from '@lib/freshness';
 import { locales, type Locale } from '../../../i18n';
 import { SITE } from '@utils/constants';
 
+const articleUrl = (locale: Locale, slug: string) =>
+  locale === 'en'
+    ? `${SITE.url}/articles/${slug}/`
+    : `${SITE.url}/${locale}/articles/${slug}/`;
+
 export async function getStaticPaths() {
   const articles = await getCollection(
     'articles',
     ({ data }) =>
+      data.language !== 'en' &&
       !data.draft &&
       ['published', 'corrected', 'closed'].includes(data.workflowStatus) &&
       data.verificationStatus !== 'withdrawn'
@@ -32,9 +38,9 @@ const translations = await Promise.all(
 const alternateUrls = Object.fromEntries(
   translations
     .filter(([, entry]) => Boolean(entry))
-    .map(([lang, entry]) => [lang, `${SITE.url}/${lang}/articles/${entry!.data.urlSlug}/`])
+    .map(([lang, entry]) => [lang, articleUrl(lang, entry!.data.urlSlug)])
 ) as Partial<Record<Locale, string>>;
-const canonical = article.data.canonical || `${SITE.url}/${locale}/articles/${article.data.urlSlug}/`;
+const canonical = article.data.canonical || articleUrl(locale, article.data.urlSlug);
 const related = await getRelatedArticles(locale, article.data.category, article.data.urlSlug);
 const layoutContentType =
   article.data.contentType === 'job' || article.data.contentType === 'scheme'
