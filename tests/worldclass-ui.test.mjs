@@ -25,11 +25,12 @@ test('responsive interface uses vector Citizen Affairs brand assets', () => {
   }
 });
 
-test('latest information bar is static and mobile footer is collapsible', () => {
-  const ticker = read('src/components/LatestTicker.astro');
-  assert.doesNotMatch(ticker, /@keyframes|animation\s*:/);
-  assert.match(ticker, /latest-message/);
-  assert.match(ticker, /lead &&/);
+test('news category navigation is static and mobile footer is collapsible', () => {
+  const categoryNavigation = read('src/components/LatestTicker.astro');
+  assert.doesNotMatch(categoryNavigation, /@keyframes|animation\s*:/);
+  assert.match(categoryNavigation, /data-category-navigation/);
+  assert.match(categoryNavigation, /ACTIVE_CATEGORY_IDS/);
+  assert.match(categoryNavigation, /overflow-x: auto/);
 
   const footer = read('src/components/Footer.astro');
   assert.match(footer, /footer-mobile-groups/);

@@ -1,38 +1,190 @@
 ---
-import { getLocalizedArticles } from '@lib/content';
-import { localizedPath, type Locale, ui } from '../i18n';
-import Icon from './Icon.astro';
+import { getCollection } from 'astro:content';
+import { categoryName } from '@lib/content';
+import { ACTIVE_CATEGORY_IDS } from '@utils/constants';
+import { localizedPath, type Locale } from '../i18n';
 
 const { locale } = Astro.props as { locale: Locale };
-const t = ui(locale);
-const lead = (await getLocalizedArticles(locale))[0];
+const pathname = Astro.url.pathname;
 const route = (value = '') => {
   const path = localizedPath(locale, value);
   return locale === 'en' ? path.replace('/en/', '/') : path;
 };
+const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
+const currentPath = normalizePath(pathname);
+const isCurrent = (href: string, exact = false) => {
+  const target = normalizePath(href);
+  if (exact || target === '/') return currentPath === target;
+  return currentPath === target || currentPath.startsWith(`${target}/`);
+};
+
+const copy = {
+  en: {
+    aria: 'News categories',
+    home: 'Home',
+    latest: 'Latest News',
+    deadlines: 'Deadlines'
+  },
+  bn: {
+    aria: 'সংবাদ বিভাগ',
+    home: 'হোম',
+    latest: 'সর্বশেষ খবর',
+    deadlines: 'সময়সীমা'
+  },
+  hi: {
+    aria: 'समाचार श्रेणियाँ',
+    home: 'होम',
+    latest: 'ताज़ा खबरें',
+    deadlines: 'समय-सीमाएँ'
+  }
+}[locale];
+
+const categories = (await getCollection('categories'))
+  .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
+  .sort((a, b) => ACTIVE_CATEGORY_IDS.indexOf(a.id) - ACTIVE_CATEGORY_IDS.indexOf(b.id));
+
+const categoryLinks = categories.map((category) => ({
+  id: category.id,
+  label: categoryName(category, locale),
+  href: route(`categories/${category.id}`)
+}));
+
+const links = [
+  { id: 'home', label: copy.home, href: route(), exact: true },
+  { id: 'latest', label: copy.latest, href: route('articles'), exact: false },
+  ...categoryLinks.map((link) => ({ ...link, exact: false })),
+  { id: 'deadlines', label: copy.deadlines, href: route('deadlines'), exact: false }
+];
 ---
-{lead && (
-  <div class="latest-bar" aria-label={t.latestTicker}>
-    <span class="latest-label"><span class="latest-dot" aria-hidden="true"></span>{t.latestTicker}</span>
-    <div class="latest-message">
-      <a href={route(`articles/${lead.data.urlSlug}`)}>
-        <strong>{lead.data.title}</strong>
-        <Icon name="arrow" size={17} />
+
+<div class="category-nav-shell" data-category-navigation>
+  <nav class="category-nav container" aria-label={copy.aria}>
+    {links.map((link) => (
+      <a
+        href={link.href}
+        data-category-link={link.id}
+        aria-current={isCurrent(link.href, link.exact) ? 'page' : undefined}
+      >
+        {link.label}
       </a>
-    </div>
-    <a class="latest-all" href={route('articles')}>{t.viewAll}<Icon name="arrow" size={16} /></a>
-  </div>
-)}
+    ))}
+  </nav>
+</div>
 
 <style>
-  .latest-bar{position:relative;z-index:1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;min-height:42px;background:#0b1d3a;color:#fff;border-top:1px solid rgba(255,255,255,.08)}
-  .latest-label{align-self:stretch;display:inline-flex;align-items:center;gap:.55rem;padding:0 1rem;background:#102c50;font-size:.76rem;font-weight:850;white-space:nowrap}
-  .latest-dot{width:8px;height:8px;border-radius:50%;background:#0ea59a;box-shadow:0 0 0 4px rgba(14,165,154,.17)}
-  .latest-message{min-width:0;padding:0 1rem;color:#dbe8f4;font-size:.82rem}
-  .latest-message a{display:flex;align-items:center;gap:.55rem;min-height:42px;min-width:0}
-  .latest-message strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-weight:650}
-  .latest-message svg{flex:0 0 auto;color:#0ea59a}
-  .latest-all{display:inline-flex;align-items:center;gap:.3rem;min-height:42px;padding:0 1rem;border-left:1px solid rgba(255,255,255,.13);color:#fff;font-size:.76rem;font-weight:800;white-space:nowrap}
-  .latest-message a:hover strong,.latest-message a:focus-visible strong,.latest-all:hover,.latest-all:focus-visible{color:#63d5ca}
-  @media(max-width:620px){.latest-bar{grid-template-columns:46px minmax(0,1fr)}.latest-label{justify-content:center;padding:0;font-size:0}.latest-all{display:none}.latest-message{padding:0 .75rem}}
+  :global(.portal-navbar) {
+    position: relative;
+    z-index: 40;
+    overflow: visible;
+  }
+
+  :global(.portal-navbar-inner),
+  :global(.portal-header-actions) {
+    position: relative;
+    overflow: visible;
+  }
+
+  :global(.portal-header-actions) {
+    z-index: 45;
+  }
+
+  :global(.portal-language[open]),
+  :global(.portal-more[open]) {
+    z-index: 80;
+  }
+
+  :global(.portal-language > div),
+  :global(.portal-more > div) {
+    z-index: 90;
+  }
+
+  .category-nav-shell {
+    position: relative;
+    z-index: 10;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 3px 10px rgba(7, 30, 52, .05);
+  }
+
+  .category-nav {
+    display: flex;
+    align-items: stretch;
+    gap: .15rem;
+    min-height: 44px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 1rem;
+    scroll-snap-type: inline proximity;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-nav a {
+    position: relative;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 .82rem;
+    border-bottom: 3px solid transparent;
+    color: var(--color-text-muted);
+    font-size: .78rem;
+    font-weight: 820;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    transition: background .18s ease, color .18s ease, border-color .18s ease;
+  }
+
+  .category-nav a:hover,
+  .category-nav a:focus-visible {
+    background: var(--color-surface-alt);
+    color: var(--color-primary);
+  }
+
+  .category-nav a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -3px;
+  }
+
+  .category-nav a[aria-current="page"] {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  .category-nav a[data-category-link="latest"]::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    margin-right: .42rem;
+    border-radius: 50%;
+    background: #d92d20;
+  }
+
+  @media (min-width: 1100px) {
+    .category-nav {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .category-nav-shell {
+      box-shadow: 0 2px 8px rgba(7, 30, 52, .06);
+    }
+
+    .category-nav {
+      min-height: 46px;
+      padding-inline: .55rem;
+    }
+
+    .category-nav a {
+      min-height: 46px;
+      padding-inline: .72rem;
+      font-size: .76rem;
+    }
+  }
 </style>
