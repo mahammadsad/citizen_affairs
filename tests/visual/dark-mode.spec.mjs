@@ -37,15 +37,21 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
   await expect(page.locator('.trending-section')).toBeVisible();
   await expect(page.locator('.section-news-block')).toHaveCount(7);
   await expect(page.locator('.portal-search')).toHaveCount(0);
-  await expect(page.locator('.portal-brand-logo')).toHaveAttribute('src', /citizen-affairs-horizontal-dark\.svg$/);
-  await expect(page.locator('.footer-brand-logo')).toHaveAttribute('src', /citizen-affairs-full-dark\.svg$/);
+  await expect(page.locator('.portal-navbar .portal-brand > .portal-brand-logo')).toHaveAttribute(
+    'src',
+    /citizen-affairs-horizontal-dark\.svg$/,
+  );
+  await expect(page.locator('.footer-brand-logo')).toHaveAttribute(
+    'src',
+    /citizen-affairs-full-dark\.svg$/,
+  );
   await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
 
   const colours = await page.evaluate(() => {
     const header = document.querySelector('.portal-header');
     const navbar = document.querySelector('.portal-navbar-inner');
     const headerBrand = document.querySelector('.portal-brand');
-    const headerLogo = document.querySelector('.portal-brand-logo');
+    const headerLogo = document.querySelector('.portal-navbar .portal-brand > .portal-brand-logo');
     const headerIcon = document.querySelector('.portal-theme-toggle');
     const hero = document.querySelector('.news-hero');
     const heroTitle = document.querySelector('.news-masthead h1');
@@ -120,23 +126,32 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
   await page.locator('.portal-mobile-menu > summary').click();
   const panel = page.locator('.portal-mobile-panel');
   await expect(panel).toBeVisible();
+  await expect(page.locator('.portal-mobile-brand-logo')).toHaveAttribute(
+    'src',
+    /citizen-affairs-horizontal-dark\.svg$/,
+  );
 
   const panelColours = await page.evaluate(() => {
     const panel = document.querySelector('.portal-mobile-panel');
     const link = document.querySelector('.portal-mobile-panel nav a');
-    const heading = document.querySelector('.portal-mobile-head strong');
-    if (!panel || !link || !heading) throw new Error('Renovated mobile menu selectors are missing');
+    const close = document.querySelector('.portal-mobile-close');
+    const searchInput = document.querySelector('.portal-mobile-menu-search input');
+    if (!panel || !link || !close || !searchInput) {
+      throw new Error('Full-screen mobile menu selectors are missing');
+    }
     return {
       panelBackground: getComputedStyle(panel).backgroundColor,
       linkText: getComputedStyle(link).color,
-      headingText: getComputedStyle(heading).color,
+      closeText: getComputedStyle(close).color,
+      searchText: getComputedStyle(searchInput).color,
     };
   });
 
   expect(contrast(panelColours.linkText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
-  expect(contrast(panelColours.headingText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(contrast(panelColours.closeText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(contrast(panelColours.searchText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
 
   axe = await new AxeBuilder({ page }).include('.portal-mobile-panel').analyze();
   expect(seriousViolations(axe)).toEqual([]);
-  await page.screenshot({ path: testInfo.outputPath('article-dark-menu-390.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('article-dark-menu-390.png'), fullPage: false });
 });
