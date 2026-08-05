@@ -25,37 +25,37 @@ sources:
   - title: Updating Data on Aadhaar
     url: https://uidai.gov.in/en/updating-data-on-aadhaar
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-guidance
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
   - title: How to update a mobile number through the Aadhaar app
     url: https://uidai.gov.in/en/1474-english-uk/faqs/your-aadhaar/aadhaar-app/19854-how-to-update-a-mobile-number-through-the-aadhaar-app.html
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-faq
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
   - title: How to update address using own documents
     url: https://uidai.gov.in/en/1474-english-uk/faqs/your-aadhaar/aadhaar-app/19852-how-to-update-address-using-own-documents.html
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-faq
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
   - title: Aadhaar document update FAQ
     url: https://uidai.gov.in/en/1061-english-uk/faqs/aadhaar-online-services/document-update.html
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-faq
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
   - title: Aadhaar online address update FAQ
     url: https://www.uidai.gov.in/en/922-faqs/aadhaar-online-services/
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-faq
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
   - title: Aadhaar Seva Kendra services and charges
     url: https://www.uidai.gov.in/en/ecosystem/enrolment-ecosystem/aadhaar-seva-kendra.html
     publishingAuthority: Unique Identification Authority of India, Government of India
-    sourceType: official-guidance
+    sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-05
 applicationUrl: https://myaadhaar.uidai.gov.in/
