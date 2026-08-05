@@ -17,28 +17,30 @@ type LogoAsset = {
   height: number;
 };
 
+// Use the approved exported artwork from the brand kit. These PNG files preserve
+// the exact monogram geometry, wordmark typography, spacing and Bengali tagline.
 const variants: Record<Variant, LogoAsset> = {
   full: {
-    light: 'assets/brand/citizen-affairs-full.svg',
-    dark: 'assets/brand/citizen-affairs-full-dark.svg',
-    width: 920,
-    height: 260
+    light: 'assets/brand/citizen-affairs-full-tagline.png',
+    dark: 'assets/brand/citizen-affairs-full-tagline.png',
+    width: 1048,
+    height: 380
   },
   horizontal: {
-    light: 'assets/brand/citizen-affairs-horizontal.svg',
-    dark: 'assets/brand/citizen-affairs-horizontal-dark.svg',
-    width: 560,
-    height: 132
+    light: 'assets/brand/citizen-affairs-horizontal.png',
+    dark: 'assets/brand/citizen-affairs-horizontal.png',
+    width: 372,
+    height: 156
   },
   monogram: {
-    light: 'assets/brand/citizen-affairs-monogram.svg',
-    dark: 'assets/brand/citizen-affairs-monogram.svg',
+    light: 'assets/brand/citizen-affairs-monogram.png',
+    dark: 'assets/brand/citizen-affairs-monogram.png',
     width: 512,
     height: 512
   },
   circular: {
-    light: 'assets/brand/citizen-affairs-circular.svg',
-    dark: 'assets/brand/citizen-affairs-circular.svg',
+    light: 'assets/brand/citizen-affairs-circular.png',
+    dark: 'assets/brand/citizen-affairs-circular.png',
     width: 512,
     height: 512
   }
@@ -70,8 +72,8 @@ const darkSrc = resolveAssetPath(asset.dark);
     document.querySelectorAll('[data-brand-logo]').forEach((element) => {
       if (!(element instanceof HTMLImageElement)) return;
 
-      const useReverseLogo = darkTheme || Boolean(element.closest('.site-footer'));
-      const nextSource = useReverseLogo ? element.dataset.darkSrc : element.dataset.lightSrc;
+      const useDarkLogo = darkTheme || Boolean(element.closest('.site-footer'));
+      const nextSource = useDarkLogo ? element.dataset.darkSrc : element.dataset.lightSrc;
       if (nextSource && element.getAttribute('src') !== nextSource) element.setAttribute('src', nextSource);
     });
   };
@@ -159,7 +161,7 @@ const darkSrc = resolveAssetPath(asset.dark);
 
   .site-footer .footer-brand-logo {
     width: 100% !important;
-    max-height: 64px !important;
+    max-height: 82px !important;
   }
 
   .site-footer .footer-intro > p {
@@ -178,7 +180,7 @@ const darkSrc = resolveAssetPath(asset.dark);
 
     .site-header .header-brand-logo {
       width: 156px !important;
-      max-height: 37px !important;
+      max-height: 54px !important;
     }
 
     .site-header .nav-actions {
@@ -191,7 +193,7 @@ const darkSrc = resolveAssetPath(asset.dark);
 
     .mobile-drawer .drawer-brand-logo {
       width: 156px !important;
-      max-height: 38px !important;
+      max-height: 54px !important;
     }
 
     .prefooter,

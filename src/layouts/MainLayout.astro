@@ -70,7 +70,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   }
 
   :global(.portal-navbar-inner) {
-    min-height: 74px !important;
+    min-height: 82px !important;
     gap: .5rem !important;
   }
 
@@ -87,8 +87,9 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   :global(.portal-brand-logo) {
     width: clamp(196px, 20vw, 224px) !important;
     max-width: 100% !important;
-    max-height: 58px !important;
+    max-height: 82px !important;
     height: auto !important;
+    object-fit: contain !important;
   }
 
   :global(.portal-header-actions) {
@@ -123,7 +124,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-navbar-inner) {
-      min-height: 70px !important;
+      min-height: 74px !important;
       gap: .25rem !important;
     }
 
@@ -136,7 +137,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-brand-logo) {
       width: clamp(168px, calc(100vw - 176px), 204px) !important;
       max-width: 100% !important;
-      max-height: 56px !important;
+      max-height: 72px !important;
     }
 
     :global(.portal-language > summary) {
@@ -145,8 +146,8 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-mobile-panel) {
-      top: 70px !important;
-      max-height: calc(100vh - 90px) !important;
+      top: 74px !important;
+      max-height: calc(100vh - 94px) !important;
     }
 
     :global(.news-home .top-news) {
