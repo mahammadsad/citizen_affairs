@@ -12,9 +12,9 @@ const assertArticleFirstOrder = (route) => {
   const freshness = route.indexOf('<ArticleFreshnessNotice');
   const history = route.indexOf('<ArticleChangeHistory');
 
-  assert.ok(disclosure >= 0, 'decision disclosure should be rendered');
-  assert.ok(content > disclosure, 'article body should follow the compact decision disclosure');
-  assert.ok(freshness > content, 'the detailed freshness panel should follow the article body');
+  assert.ok(content >= 0, 'article body should be rendered');
+  assert.ok(disclosure > content, 'compact decision disclosure should follow the article body');
+  assert.ok(freshness > disclosure, 'the detailed freshness panel should follow the decision disclosure');
   assert.ok(history > freshness, 'change history should remain after freshness information');
 };
 
