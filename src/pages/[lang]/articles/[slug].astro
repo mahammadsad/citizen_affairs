@@ -4,6 +4,8 @@ import ArticleEntryExperience from '@components/ArticleEntryExperience.astro';
 import ArticleDecisionWorkspace from '@components/ArticleDecisionWorkspace.astro';
 import ArticleChangeHistory from '@components/ArticleChangeHistory.astro';
 import ArticleFreshnessNotice from '@components/ArticleFreshnessNotice.astro';
+import ArticleQuickSummary from '@components/ArticleQuickSummary.astro';
+import ArticleReadingTools from '@components/ArticleReadingTools.astro';
 import ArticleStructuredData from '@components/ArticleStructuredData.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
@@ -137,7 +139,9 @@ const sourceCount = new Set(sourceLinks).size;
     {canonical}
     applicationUrl={safeApplicationUrl}
   />
+  <ArticleQuickSummary locale={locale} items={article.data.quickSummary} />
   <Content />
+  <ArticleReadingTools locale={locale} />
   <ArticleEntryExperience locale={locale}>
     <ArticleDecisionWorkspace
       locale={locale}
@@ -148,7 +152,7 @@ const sourceCount = new Set(sourceLinks).size;
       {sourceCount}
       {officialNoticeUrl}
       applicationUrl={safeApplicationUrl}
-      quickSummary={article.data.quickSummary}
+      quickSummary={[]}
       importantDates={article.data.importantDates}
       qualification={decisionQualification}
       requiredDocuments={decisionDocuments}
