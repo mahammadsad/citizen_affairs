@@ -49,7 +49,12 @@ const labels: Record<Locale, string> = {
 
       const firstParagraph = Array.from(content.children)
         .find((element) => element.tagName === 'P');
-      if (firstParagraph) firstParagraph.insertAdjacentElement('afterend', details);
+      const quickSummary = content.querySelector<HTMLElement>('.article-quick-summary');
+      const insertionAnchor = firstParagraph?.nextElementSibling === quickSummary
+        ? quickSummary
+        : firstParagraph;
+
+      if (insertionAnchor) insertionAnchor.insertAdjacentElement('afterend', details);
       else content.prepend(details);
     }
 
