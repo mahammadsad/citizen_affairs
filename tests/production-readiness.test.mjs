@@ -180,6 +180,8 @@ test('production smoke assertions use exact labels and parse every JSON-LD block
   assert.match(smoke, /\^Notices\$/);
   assert.match(smoke, /meta\[name="x-build-commit"\]/);
   assert.doesNotMatch(smoke, /filter\(\{ hasText:/);
-  assert.match(smoke, /allTextContents\(\)\)\.map\(\(source\) => JSON\.parse\(source\)\)/);
+  assert.match(smoke, /const extractJsonLd =/);
+  assert.match(smoke, /html\.matchAll\(/);
+  assert.match(smoke, /extractJsonLd\(await response\.text\(\)\)/);
   assert.match(smoke, /expect\(articleTypes\)\.toHaveLength\(1\)/);
 });
