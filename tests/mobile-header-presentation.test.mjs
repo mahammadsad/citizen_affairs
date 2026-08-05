@@ -4,10 +4,8 @@ import test from 'node:test';
 
 const layout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 const header = await readFile('src/components/PortalHeader.astro', 'utf8');
-const horizontalLogo = await readFile(
-  'public/assets/brand/citizen-affairs-horizontal.svg',
-  'utf8',
-);
+const brandLogo = await readFile('src/components/BrandLogo.astro', 'utf8');
+const brandConfig = JSON.parse(await readFile('brand.config.json', 'utf8'));
 
 test('redundant utility strip is removed from the rendered presentation', () => {
   assert.match(header, /class="portal-utility"/);
@@ -16,18 +14,28 @@ test('redundant utility strip is removed from the rendered presentation', () => 
 
 test('mobile brand is prominent and receives collision-free flex space', () => {
   assert.match(layout, /clamp\(168px, calc\(100vw - 176px\), 204px\)/);
-  assert.match(layout, /max-height: 56px !important/);
+  assert.match(layout, /max-height: 72px !important/);
   assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 1 1 auto !important/);
   assert.match(layout, /:global\(\.portal-header-actions\)[\s\S]*flex: 0 0 auto !important/);
-  assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 70px !important/);
+  assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 74px !important/);
   assert.doesNotMatch(layout, /width: 118px/);
 });
 
-test('brand mark uses intentional vector geometry instead of intersecting letter glyphs', () => {
-  assert.match(horizontalLogo, /M69 27A43 43 0 1 0 69 105/);
-  assert.match(horizontalLogo, /M78 106L101 24L126 106/);
-  assert.doesNotMatch(horizontalLogo, />C<\/text>/);
-  assert.doesNotMatch(horizontalLogo, />A<\/text>/);
+test('header renders the approved exported horizontal lockup', () => {
+  assert.match(header, /<BrandLogo variant="horizontal"/);
+  assert.match(
+    brandLogo,
+    /light: 'assets\/brand\/citizen-affairs-horizontal\.png'/,
+  );
+  assert.match(
+    brandLogo,
+    /dark: 'assets\/brand\/citizen-affairs-horizontal\.png'/,
+  );
+  assert.doesNotMatch(brandLogo, /citizen-affairs-horizontal(?:-dark)?\.svg/);
+  assert.equal(
+    brandConfig.logoHorizontal,
+    'assets/brand/citizen-affairs-horizontal.png',
+  );
 });
 
 test('very narrow screens preserve the brand by dropping only the theme shortcut', () => {
@@ -36,10 +44,11 @@ test('very narrow screens preserve the brand by dropping only the theme shortcut
   assert.match(layout, /clamp\(160px, calc\(100vw - 142px\), 178px\)/);
 });
 
-test('desktop brand has a strong professional width with a tighter header', () => {
+test('desktop brand preserves the approved lockup proportions', () => {
   assert.match(layout, /clamp\(196px, 20vw, 224px\)/);
-  assert.match(layout, /max-height: 58px !important/);
-  assert.match(layout, /min-height: 74px !important/);
+  assert.match(layout, /max-height: 82px !important/);
+  assert.match(layout, /min-height: 82px !important/);
+  assert.match(layout, /object-fit: contain !important/);
 });
 
 test('the shared layout does not inject a pre-hero homepage panel', () => {
