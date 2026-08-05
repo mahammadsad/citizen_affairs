@@ -1,0 +1,143 @@
+---
+import Icon from './Icon.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = {
+  en: {
+    title: 'Key facts and official links',
+    hint: 'Open the checklist when you are ready to act'
+  },
+  bn: {
+    title: 'গুরুত্বপূর্ণ তথ্য ও অফিসিয়াল লিংক',
+    hint: 'পদক্ষেপ নেওয়ার সময় চেকলিস্টটি খুলুন'
+  },
+  hi: {
+    title: 'मुख्य तथ्य और आधिकारिक लिंक',
+    hint: 'कार्रवाई के समय चेकलिस्ट खोलें'
+  }
+}[locale];
+---
+
+<details class="article-decision-disclosure" data-article-decision-disclosure>
+  <summary>
+    <span class="decision-disclosure-title"><Icon name="updates" size={18} /><strong>{copy.title}</strong></span>
+    <span class="decision-disclosure-hint">{copy.hint}</span>
+  </summary>
+  <div class="decision-disclosure-body"><slot /></div>
+</details>
+
+<script>
+  const revealDecisionTarget = () => {
+    if (location.hash !== '#action-checklist') return;
+    const disclosure = document.querySelector<HTMLDetailsElement>('[data-article-decision-disclosure]');
+    if (disclosure) disclosure.open = true;
+  };
+  revealDecisionTarget();
+  addEventListener('hashchange', revealDecisionTarget);
+</script>
+
+<style>
+  .article-decision-disclosure {
+    margin: .8rem 0 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 13px;
+    background: var(--color-surface);
+    overflow: hidden;
+  }
+  .article-decision-disclosure > summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 48px;
+    padding: .65rem 2.7rem .65rem .8rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .article-decision-disclosure > summary::-webkit-details-marker { display: none; }
+  .article-decision-disclosure > summary::after {
+    content: '+';
+    position: absolute;
+    right: .85rem;
+    top: 50%;
+    translate: 0 -50%;
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    font-weight: 850;
+  }
+  .article-decision-disclosure[open] > summary::after { content: '−'; }
+  .decision-disclosure-title { display: inline-flex; align-items: center; gap: .5rem; min-width: 0; }
+  .decision-disclosure-title :global(svg) { flex: 0 0 auto; color: var(--color-primary); }
+  .decision-disclosure-title strong { font-size: .88rem; }
+  .decision-disclosure-hint { color: var(--color-text-muted); font-size: .72rem; text-align: right; }
+  .decision-disclosure-body { padding: 0 .75rem .75rem; }
+  .decision-disclosure-body :global(.decision-workspace) { margin: 0; }
+  @media (max-width: 620px) {
+    .decision-disclosure-hint { display: none; }
+    .article-decision-disclosure > summary { min-height: 46px; }
+  }
+</style>
+
+<style is:global>
+  .article-shell { padding-top: 1.25rem; }
+  .breadcrumbs { margin-bottom: 1rem; }
+  .article-header h1 { margin: .65rem 0; }
+  .article-deck { margin: .45rem 0; line-height: 1.6; }
+  .article-byline { margin-top: .7rem; }
+  .trust-box {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .7rem;
+    margin: .9rem 0 .65rem;
+    padding: .75rem .85rem;
+    border-radius: 14px;
+  }
+  .trust-box > div { align-items: center; gap: .6rem; }
+  .trust-box dl { display: flex; align-items: stretch; gap: .4rem; margin-top: 0; }
+  .trust-box dl div { min-width: 92px; padding: .4rem .5rem; }
+  .article-actions {
+    position: static;
+    gap: .25rem;
+    margin: .65rem 0 .75rem;
+    padding: .35rem;
+    border-radius: 12px;
+  }
+  .article-actions button,
+  .article-actions a { min-height: 40px; padding: .35rem .55rem; }
+  @media (max-width: 900px) {
+    .article-actions a[data-share] { display: none; }
+  }
+  @media (max-width: 620px) {
+    .article-shell { padding-top: .75rem; }
+    .breadcrumbs { margin-bottom: .7rem; }
+    .article-header h1 {
+      margin: .5rem 0;
+      font-size: clamp(1.9rem, 8.8vw, 2.5rem);
+      line-height: 1.08;
+    }
+    .article-deck { font-size: 1rem; line-height: 1.5; }
+    .article-byline { gap: .3rem .65rem; margin-top: .6rem; }
+    .trust-box {
+      grid-template-columns: minmax(0, 1fr);
+      gap: .45rem;
+      margin: .75rem 0 .55rem;
+      padding: .65rem .75rem;
+    }
+    .trust-box dl {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: .35rem;
+    }
+    .trust-box dl div { min-width: 0; padding: .35rem .45rem; }
+    .article-actions { margin: .55rem 0 .65rem; }
+    .article-actions button { flex: 1 1 0; justify-content: center; min-width: 0; }
+    .article-actions button span { font-size: .72rem; }
+  }
+</style>

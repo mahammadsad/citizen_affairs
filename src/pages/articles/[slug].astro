@@ -1,5 +1,6 @@
 ---
 import ArticleLayout from '@layouts/ArticleLayout.astro';
+import ArticleEntryExperience from '@components/ArticleEntryExperience.astro';
 import ArticleDecisionWorkspace from '@components/ArticleDecisionWorkspace.astro';
 import ArticleChangeHistory from '@components/ArticleChangeHistory.astro';
 import ArticleFreshnessNotice from '@components/ArticleFreshnessNotice.astro';
@@ -136,6 +137,24 @@ const sourceCount = new Set(sourceLinks).size;
     {canonical}
     applicationUrl={safeApplicationUrl}
   />
+  <ArticleEntryExperience locale={locale}>
+    <ArticleDecisionWorkspace
+      locale={locale}
+      contentType={layoutContentType}
+      verificationStatus={article.data.verificationStatus}
+      lastVerified={article.data.lastVerified}
+      deadline={article.data.deadline}
+      {sourceCount}
+      {officialNoticeUrl}
+      applicationUrl={safeApplicationUrl}
+      quickSummary={article.data.quickSummary}
+      importantDates={article.data.importantDates}
+      qualification={decisionQualification}
+      requiredDocuments={decisionDocuments}
+      amountOrVacancies={decisionAmount}
+    />
+  </ArticleEntryExperience>
+  <Content />
   <ArticleFreshnessNotice
     locale={locale}
     contentType={article.data.contentType}
@@ -145,22 +164,6 @@ const sourceCount = new Set(sourceLinks).size;
     nextReviewDate={article.data.nextReviewDate}
     deadline={article.data.deadline}
   />
-  <ArticleDecisionWorkspace
-    locale={locale}
-    contentType={layoutContentType}
-    verificationStatus={article.data.verificationStatus}
-    lastVerified={article.data.lastVerified}
-    deadline={article.data.deadline}
-    {sourceCount}
-    {officialNoticeUrl}
-    applicationUrl={safeApplicationUrl}
-    quickSummary={article.data.quickSummary}
-    importantDates={article.data.importantDates}
-    qualification={decisionQualification}
-    requiredDocuments={decisionDocuments}
-    amountOrVacancies={decisionAmount}
-  />
-  <Content />
   <ArticleChangeHistory
     locale={locale}
     updateHistory={article.data.updateHistory}
