@@ -1,0 +1,217 @@
+/*
+ * Multilingual editorial typography
+ *
+ * Citizen Affairs serves English, Bengali and Hindi readers. A single mixed
+ * font stack made Latin text inherit a Bengali face and left Hindi headings to
+ * browser-dependent fallbacks. These language-scoped tokens keep the interface
+ * fast, familiar and readable without requesting third-party font services.
+ */
+
+:root {
+  --font-latin-ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-bengali-ui: "Hind Siliguri", "Noto Sans Bengali", "Nirmala UI", sans-serif;
+  --font-devanagari-ui: "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif;
+  --font-body: var(--font-latin-ui);
+  --font-display: var(--font-latin-ui);
+  --font-reading: var(--font-latin-ui);
+  --reading-measure: 68ch;
+}
+
+html[lang="en"] {
+  --font-body: var(--font-latin-ui);
+  --font-display: var(--font-latin-ui);
+  --font-reading: var(--font-latin-ui);
+  --reading-measure: 68ch;
+}
+
+html[lang="bn"] {
+  --font-body: var(--font-bengali-ui);
+  --font-display: var(--font-bengali-ui);
+  --font-reading: var(--font-bengali-ui);
+  --reading-measure: 43rem;
+}
+
+html[lang="hi"] {
+  --font-body: var(--font-devanagari-ui);
+  --font-display: var(--font-devanagari-ui);
+  --font-reading: var(--font-devanagari-ui);
+  --reading-measure: 43rem;
+}
+
+body {
+  font-family: var(--font-body);
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+html[lang="en"] h1,
+html[lang="en"] h2,
+html[lang="en"] h3,
+html[lang="en"] h4 {
+  letter-spacing: -0.018em;
+}
+
+html[lang="bn"] h1,
+html[lang="bn"] h2,
+html[lang="bn"] h3,
+html[lang="bn"] h4,
+html[lang="hi"] h1,
+html[lang="hi"] h2,
+html[lang="hi"] h3,
+html[lang="hi"] h4 {
+  letter-spacing: 0;
+  line-height: 1.24;
+}
+
+/* Headlines should feel decisive, but not compressed or over-black. */
+html[lang] .article-header h1 {
+  max-width: 23ch;
+  margin-block: .72rem .8rem;
+  font-family: var(--font-display);
+  font-size: clamp(2.05rem, 4.8vw, 3.55rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+html[lang="bn"] .article-header h1,
+html[lang="hi"] .article-header h1 {
+  max-width: 26ch;
+  line-height: 1.2;
+}
+
+html[lang] .article-deck {
+  max-width: 64ch;
+  font-family: var(--font-body);
+  font-size: clamp(1.02rem, .45vw + .94rem, 1.16rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+html[lang="bn"] .article-deck,
+html[lang="hi"] .article-deck {
+  line-height: 1.72;
+}
+
+/* Keep long-form text within a comfortable reading measure. */
+html[lang] .article-content {
+  width: 100%;
+  max-width: var(--reading-measure);
+  margin-inline: auto;
+  font-family: var(--font-reading);
+  font-size: clamp(1.03rem, .28vw + .98rem, 1.12rem);
+  font-weight: 400;
+  line-height: 1.78;
+}
+
+html[lang="bn"] .article-content {
+  line-height: 1.84;
+}
+
+html[lang="hi"] .article-content {
+  line-height: 1.82;
+}
+
+html[lang] .article-content p,
+html[lang] .article-content li,
+html[lang] .article-content dd {
+  text-wrap: pretty;
+}
+
+html[lang] .article-content p {
+  margin-bottom: 1.15em;
+}
+
+html[lang] .article-content h2,
+html[lang] .article-content h3,
+html[lang] .article-content h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.28;
+  text-wrap: balance;
+}
+
+html[lang] .article-content h2 {
+  margin: 2.15em 0 .72em;
+  font-size: clamp(1.38rem, 1.1rem + 1vw, 1.72rem);
+}
+
+html[lang] .article-content h3 {
+  margin: 1.75em 0 .6em;
+  font-size: clamp(1.2rem, 1.05rem + .55vw, 1.4rem);
+}
+
+html[lang] .article-content li + li {
+  margin-top: .42em;
+}
+
+html[lang] .article-content table,
+html[lang] .article-content figcaption,
+html[lang] .article-content small {
+  font-family: var(--font-body);
+}
+
+/* Cards need fast scanning rather than newspaper-sized display text. */
+html[lang] .utility-card h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.38;
+  text-wrap: pretty;
+}
+
+html[lang="bn"] .utility-card h3,
+html[lang="hi"] .utility-card h3 {
+  line-height: 1.46;
+}
+
+html[lang] .utility-description,
+html[lang] .category-description,
+html[lang] .listing-hero p {
+  font-family: var(--font-body);
+  text-wrap: pretty;
+}
+
+/* Avoid fake condensed spacing in scripts whose marks need vertical room. */
+html[lang="bn"] .eyebrow,
+html[lang="bn"] .category-kicker,
+html[lang="bn"] .utility-card-context,
+html[lang="hi"] .eyebrow,
+html[lang="hi"] .category-kicker,
+html[lang="hi"] .utility-card-context {
+  letter-spacing: 0;
+}
+
+@media (max-width: 680px) {
+  html[lang] .article-header h1 {
+    font-size: clamp(1.85rem, 8.2vw, 2.45rem);
+  }
+
+  html[lang="bn"] .article-header h1,
+  html[lang="hi"] .article-header h1 {
+    line-height: 1.22;
+  }
+
+  html[lang] .article-content {
+    font-size: 1.03rem;
+    line-height: 1.76;
+  }
+
+  html[lang="bn"] .article-content {
+    line-height: 1.82;
+  }
+
+  html[lang="hi"] .article-content {
+    line-height: 1.8;
+  }
+}
