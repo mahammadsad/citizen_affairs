@@ -24,7 +24,7 @@ const contrast = (foreground, background) => {
 const seriousViolations = (results) =>
   results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact || ''));
 
-test('Bengali mobile dark mode keeps the news-led citizen portal readable', async ({ page }, testInfo) => {
+test('Bengali mobile dark mode keeps the professional news homepage readable', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => localStorage.setItem('theme', 'dark'));
   await page.goto('/bn/', { waitUntil: 'networkidle' });
@@ -32,10 +32,12 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.portal-utility')).toBeHidden();
   await expect(page.locator('[data-portal-continuity]')).toHaveCount(0);
-  await expect(page.locator('main > .news-hero')).toBeVisible();
+  await expect(page.locator('main > .top-news')).toBeVisible();
   await expect(page.locator('.lead-story')).toBeVisible();
-  await expect(page.locator('.trending-section')).toBeVisible();
-  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.latest-rail')).toBeVisible();
+  expect(await page.locator('.news-section-block').count()).toBeGreaterThan(0);
+  await expect(page.locator('.trending-section')).toHaveCount(0);
+  await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.locator('.portal-navbar .portal-brand > .portal-brand-logo')).toHaveAttribute(
     'src',
@@ -53,12 +55,13 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
     const headerBrand = document.querySelector('.portal-brand');
     const headerLogo = document.querySelector('.portal-navbar .portal-brand > .portal-brand-logo');
     const headerIcon = document.querySelector('.portal-theme-toggle');
-    const hero = document.querySelector('.news-hero');
-    const heroTitle = document.querySelector('.news-masthead h1');
+    const home = document.querySelector('.news-home');
+    const homeTitle = document.querySelector('.section-title-row h2');
     const lead = document.querySelector('.lead-story');
     const leadTitle = document.querySelector('.lead-story h2');
-    const sectionBlock = document.querySelector('.section-news-block');
-    const sectionTitle = document.querySelector('.section-news-block h3');
+    const latest = document.querySelector('.latest-rail');
+    const latestTitle = document.querySelector('.latest-rail > h2');
+    const sectionTitle = document.querySelector('.news-section-block h3');
     const bottomNav = document.querySelector('.portal-mobile-bottom');
     const bottomNavLink = document.querySelector('.portal-mobile-bottom a');
     const footerBrand = document.querySelector('.site-footer .footer-brand');
@@ -68,17 +71,18 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
       !headerBrand ||
       !headerLogo ||
       !headerIcon ||
-      !hero ||
-      !heroTitle ||
+      !home ||
+      !homeTitle ||
       !lead ||
       !leadTitle ||
-      !sectionBlock ||
+      !latest ||
+      !latestTitle ||
       !sectionTitle ||
       !bottomNav ||
       !bottomNavLink ||
       !footerBrand
     ) {
-      throw new Error('News homepage dark-mode selectors are missing');
+      throw new Error('Professional news homepage dark-mode selectors are missing');
     }
 
     const logoRect = headerLogo.getBoundingClientRect();
@@ -93,11 +97,12 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
       actionsLeft: actionsRect.left,
       headerBrandBackground: getComputedStyle(headerBrand).backgroundColor,
       headerIcon: getComputedStyle(headerIcon).color,
-      heroBackground: getComputedStyle(hero).backgroundColor,
-      heroTitle: getComputedStyle(heroTitle).color,
+      homeBackground: getComputedStyle(home).backgroundColor,
+      homeTitle: getComputedStyle(homeTitle).color,
       leadBackground: getComputedStyle(lead).backgroundColor,
       leadTitle: getComputedStyle(leadTitle).color,
-      sectionBackground: getComputedStyle(sectionBlock).backgroundColor,
+      latestBackground: getComputedStyle(latest).backgroundColor,
+      latestTitle: getComputedStyle(latestTitle).color,
       sectionTitle: getComputedStyle(sectionTitle).color,
       bottomBackground: getComputedStyle(bottomNav).backgroundColor,
       bottomText: getComputedStyle(bottomNavLink).color,
@@ -114,9 +119,10 @@ test('Bengali mobile dark mode keeps the news-led citizen portal readable', asyn
   expect(colours.headerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(colours.footerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(contrast(colours.headerIcon, colours.headerBackground)).toBeGreaterThanOrEqual(3);
-  expect(contrast(colours.heroTitle, colours.heroBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(contrast(colours.homeTitle, colours.homeBackground)).toBeGreaterThanOrEqual(4.5);
   expect(contrast(colours.leadTitle, colours.leadBackground)).toBeGreaterThanOrEqual(4.5);
-  expect(contrast(colours.sectionTitle, colours.sectionBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(contrast(colours.latestTitle, colours.latestBackground)).toBeGreaterThanOrEqual(4.5);
+  expect(contrast(colours.sectionTitle, colours.homeBackground)).toBeGreaterThanOrEqual(4.5);
   expect(contrast(colours.bottomText, colours.bottomBackground)).toBeGreaterThanOrEqual(3);
 
   let axe = await new AxeBuilder({ page }).analyze();

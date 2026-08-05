@@ -12,9 +12,10 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   const leadPicture = lead.locator('[data-story-image="lead"]');
   const leadImage = leadPicture.locator('img');
   const leadHeading = lead.locator('h2');
+  const publishedSections = page.locator('.news-section-block');
 
   await expect(logo).toBeVisible();
-  await expect(page.locator('.news-hero')).toBeVisible();
+  await expect(page.locator('.top-news')).toBeVisible();
   await expect(lead).toBeVisible();
   await expect(leadPicture).toBeVisible();
   await expect(leadImage).toBeVisible();
@@ -23,8 +24,10 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   await expect(leadImage).toHaveAttribute('width', '1200');
   await expect(leadImage).toHaveAttribute('height', '675');
   await expect(leadImage).toHaveAttribute('alt', /.+/);
-  await expect(page.locator('.trending-section')).toBeVisible();
-  await expect(page.locator('.section-news-block')).toHaveCount(7);
+  await expect(page.locator('.latest-rail')).toBeVisible();
+  expect(await publishedSections.count()).toBeGreaterThan(0);
+  await expect(page.locator('.trending-section')).toHaveCount(0);
+  await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeVisible();
 

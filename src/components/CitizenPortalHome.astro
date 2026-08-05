@@ -2,24 +2,17 @@
 import MainLayout from '@layouts/MainLayout.astro';
 import Icon from './Icon.astro';
 import StoryImage from './StoryImage.astro';
-import { categoryName, getCategoryData, getLocalizedArticles, getUpcomingDeadlines } from '@lib/content';
+import { categoryName, getCategoryData, getLocalizedArticles } from '@lib/content';
 import { localizedPath, locales, type Locale, verificationLabels } from '../i18n';
 import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
 
 const { locale } = Astro.props as { locale: Locale };
 const articles = await getLocalizedArticles(locale);
-const latest = articles.slice(0, 9);
+const latest = articles.slice(0, 12);
 const lead = articles.find((article) => article.data.featured) || articles[0];
-const supportingStories = latest.filter((article) => article.id !== lead?.id).slice(0, 3);
-const trending = latest.slice(0, 5);
-const deadlines = await getUpcomingDeadlines(locale, 6);
-const now = new Date();
-const soon = deadlines.filter((article) => {
-  const deadline = article.data.deadline;
-  if (!deadline) return false;
-  const days = Math.ceil((deadline.getTime() - now.getTime()) / 86400000);
-  return days >= 0 && days <= 7;
-});
+const supportingStories = latest.filter((article) => article.id !== lead?.id).slice(0, 4);
+const topStoryIds = new Set([lead?.id, ...supportingStories.map((article) => article.id)].filter(Boolean));
+
 const canonical = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
 const alternateUrls = Object.fromEntries(
   locales.map((lang) => [lang, lang === 'en' ? `${SITE.url}/` : `${SITE.url}/${lang}/`]),
@@ -33,311 +26,233 @@ const route = (value = '') => {
   const path = localizedPath(locale, value);
   return locale === 'en' ? path.replace('/en/', '/') : path;
 };
+
 const categoryEntries = await Promise.all(
   ACTIVE_CATEGORY_IDS.map(async (id) => ({ id, category: await getCategoryData(id) })),
 );
 const categoryLabels = new Map(
   categoryEntries.map(({ id, category }) => [id, category ? categoryName(category, locale) : id]),
 );
-const sectionNews = categoryEntries.map(({ id }) => ({
-  id,
-  label: categoryLabels.get(id) || id,
-  articles: articles.filter((article) => article.data.category === id).slice(0, 3),
-}));
 const categoryLabel = (categoryId: string) => categoryLabels.get(categoryId) || categoryId;
 const articleDate = (article: (typeof articles)[number]) => dateFormat.format(article.data.updated || article.data.date);
+
+const sectionNews = categoryEntries
+  .map(({ id }) => {
+    const categoryArticles = articles.filter((article) => article.data.category === id);
+    const freshArticles = categoryArticles.filter((article) => !topStoryIds.has(article.id));
+    return {
+      id,
+      label: categoryLabels.get(id) || id,
+      articles: (freshArticles.length > 0 ? freshArticles : categoryArticles).slice(0, 3),
+    };
+  })
+  .filter((section) => section.articles.length > 0);
 
 const copy = {
   en: {
     metaTitle: 'Latest citizen news and verified government updates',
-    title: 'Latest citizen news and verified updates',
-    intro: 'Government jobs, education, welfare schemes, citizen services and public alerts—reviewed against official sources before publication.',
-    eyebrow: 'Citizen Affairs newsroom',
-    latest: 'Latest',
+    description:
+      'Latest government jobs, admissions, scholarships, welfare schemes and citizen-service news verified against official sources.',
+    pageTitle: 'Latest news',
     leadLabel: 'Top story',
-    readStory: 'Read full story',
-    allUpdates: 'View all updates',
-    trending: 'Trending now',
-    trendingIntro: 'The newest verified stories across Citizen Affairs. This list is ordered by recency, not personal tracking.',
-    sections: 'Latest from every section',
-    sectionsIntro: 'Browse the newest published story in each division of the portal.',
-    viewSection: 'View section',
-    noSectionNews: 'No verified public story is available in this section yet.',
-    deadlines: 'Closing soon',
-    deadlineIntro: 'Applications and registrations that need attention within seven days.',
-    allDeadlines: 'View all deadlines',
-    trust: 'Official sources first',
-    trustBody: 'Every published story displays its verification status, sources and last-checked date.',
-    emptyTitle: 'Verified stories are being prepared',
-    emptyBody: 'Published news will appear here after source review and protected approval.',
+    latest: 'Latest',
+    allNews: 'All news',
+    sectionNews: 'More news',
+    viewSection: 'View all',
+    readStory: 'Read story',
+    emptyTitle: 'No published stories yet',
+    emptyBody: 'New verified reports will appear here after editorial review.',
   },
   bn: {
     metaTitle: 'সর্বশেষ নাগরিক সংবাদ ও যাচাইকৃত সরকারি আপডেট',
-    title: 'সর্বশেষ নাগরিক সংবাদ ও যাচাইকৃত আপডেট',
-    intro: 'সরকারি চাকরি, শিক্ষা, কল্যাণ প্রকল্প, নাগরিক পরিষেবা ও জনসতর্কতা—প্রকাশের আগে অফিসিয়াল সূত্রে যাচাই করা হয়।',
-    eyebrow: 'Citizen Affairs নিউজরুম',
-    latest: 'সর্বশেষ',
+    description:
+      'সরকারি চাকরি, ভর্তি, স্কলারশিপ, কল্যাণ প্রকল্প ও নাগরিক পরিষেবার সর্বশেষ যাচাইকৃত খবর।',
+    pageTitle: 'সর্বশেষ খবর',
     leadLabel: 'প্রধান খবর',
-    readStory: 'পুরো খবর পড়ুন',
-    allUpdates: 'সব আপডেট দেখুন',
-    trending: 'ট্রেন্ডিং এখন',
-    trendingIntro: 'Citizen Affairs-এর নতুন যাচাইকৃত খবর। তালিকাটি সাম্প্রতিকতার ভিত্তিতে সাজানো, ব্যক্তিগত tracking-এর ভিত্তিতে নয়।',
-    sections: 'প্রতিটি বিভাগের সর্বশেষ খবর',
-    sectionsIntro: 'পোর্টালের প্রতিটি বিভাগ থেকে সর্বশেষ প্রকাশিত যাচাইকৃত খবর দেখুন।',
-    viewSection: 'বিভাগ দেখুন',
-    noSectionNews: 'এই বিভাগে এখনও কোনো যাচাইকৃত প্রকাশিত খবর নেই।',
-    deadlines: 'শিগগির শেষ হচ্ছে',
-    deadlineIntro: 'সাত দিনের মধ্যে শেষ হতে পারে এমন আবেদন ও নিবন্ধন।',
-    allDeadlines: 'সব শেষ তারিখ দেখুন',
-    trust: 'অফিসিয়াল সূত্র আগে',
-    trustBody: 'প্রতিটি প্রকাশিত খবরে যাচাইয়ের অবস্থা, সূত্র ও সর্বশেষ পরীক্ষার তারিখ দেখানো হয়।',
-    emptyTitle: 'যাচাইকৃত খবর প্রস্তুত হচ্ছে',
-    emptyBody: 'সূত্র যাচাই ও সুরক্ষিত অনুমোদনের পরে প্রকাশিত খবর এখানে দেখা যাবে।',
+    latest: 'সর্বশেষ',
+    allNews: 'সব খবর',
+    sectionNews: 'আরও খবর',
+    viewSection: 'সব দেখুন',
+    readStory: 'বিস্তারিত পড়ুন',
+    emptyTitle: 'এখনও কোনো খবর প্রকাশিত হয়নি',
+    emptyBody: 'সম্পাদকীয় যাচাইয়ের পর নতুন খবর এখানে প্রকাশিত হবে।',
   },
   hi: {
     metaTitle: 'नवीनतम नागरिक समाचार और सत्यापित सरकारी अपडेट',
-    title: 'नवीनतम नागरिक समाचार और सत्यापित अपडेट',
-    intro: 'सरकारी नौकरियाँ, शिक्षा, कल्याण योजनाएँ, नागरिक सेवाएँ और सार्वजनिक अलर्ट—प्रकाशन से पहले आधिकारिक स्रोतों से जाँचे जाते हैं।',
-    eyebrow: 'Citizen Affairs न्यूज़रूम',
+    description:
+      'सरकारी नौकरियों, प्रवेश, छात्रवृत्ति, कल्याण योजनाओं और नागरिक सेवाओं की नवीनतम सत्यापित खबरें।',
+    pageTitle: 'ताज़ा खबरें',
+    leadLabel: 'मुख्य खबर',
     latest: 'नवीनतम',
-    leadLabel: 'मुख्य समाचार',
+    allNews: 'सभी खबरें',
+    sectionNews: 'और खबरें',
+    viewSection: 'सभी देखें',
     readStory: 'पूरी खबर पढ़ें',
-    allUpdates: 'सभी अपडेट देखें',
-    trending: 'अभी ट्रेंडिंग',
-    trendingIntro: 'Citizen Affairs की नवीनतम सत्यापित खबरें। सूची हाल की तारीख के आधार पर है, व्यक्तिगत ट्रैकिंग पर नहीं।',
-    sections: 'हर अनुभाग की नवीनतम खबर',
-    sectionsIntro: 'पोर्टल के प्रत्येक अनुभाग से नवीनतम प्रकाशित सत्यापित खबर देखें।',
-    viewSection: 'अनुभाग देखें',
-    noSectionNews: 'इस अनुभाग में अभी कोई सत्यापित सार्वजनिक खबर उपलब्ध नहीं है।',
-    deadlines: 'जल्द बंद होने वाले',
-    deadlineIntro: 'सात दिनों के भीतर ध्यान देने योग्य आवेदन और पंजीकरण।',
-    allDeadlines: 'सभी अंतिम तिथियाँ देखें',
-    trust: 'पहले आधिकारिक स्रोत',
-    trustBody: 'हर प्रकाशित खबर में सत्यापन स्थिति, स्रोत और अंतिम जाँच की तारीख दिखाई जाती है।',
-    emptyTitle: 'सत्यापित खबरें तैयार की जा रही हैं',
-    emptyBody: 'स्रोत समीक्षा और सुरक्षित स्वीकृति के बाद प्रकाशित खबरें यहाँ दिखाई देंगी।',
+    emptyTitle: 'अभी कोई खबर प्रकाशित नहीं हुई',
+    emptyBody: 'संपादकीय समीक्षा के बाद नई सत्यापित खबरें यहाँ दिखाई देंगी।',
   },
 }[locale];
 ---
 
-<MainLayout title={copy.metaTitle} description={copy.intro} {locale} {canonical} {alternateUrls}>
-  <section class="news-hero">
-    <div class="container">
-      <header class="news-masthead">
-        <div>
-          <p class="news-eyebrow"><Icon name="check" size={17} />{copy.eyebrow}</p>
-          <h1>{copy.title}</h1>
-          <p>{copy.intro}</p>
-        </div>
-        <a class="all-updates-link" href={route('articles')}>{copy.allUpdates}<Icon name="arrow" size={18} /></a>
-      </header>
+<MainLayout title={copy.metaTitle} description={copy.description} {locale} {canonical} {alternateUrls}>
+  <main class="news-home">
+    <h1 class="visually-hidden">{copy.pageTitle}</h1>
 
-      {lead ? (
-        <div class="top-stories-grid">
-          <a
-            class:list={['lead-story', { 'has-image': Boolean(lead.data.featuredImage) }]}
-            href={route(`articles/${lead.data.urlSlug}`)}
-          >
-            <StoryImage article={lead} variant="lead" priority />
-            <div class="lead-story-copy">
-              <div class="story-context">
-                <span>{copy.leadLabel}</span>
-                <span>{categoryLabel(lead.data.category)}</span>
-              </div>
-              <h2>{lead.data.title}</h2>
-              <p>{lead.data.description}</p>
-              <div class="story-meta">
-                <span>{verificationLabels[locale][lead.data.verificationStatus]}</span>
-                <time>{articleDate(lead)}</time>
-                <strong>{copy.readStory}<Icon name="arrow" size={17} /></strong>
-              </div>
-            </div>
-          </a>
-
-          <div class="supporting-stories" aria-label={copy.latest}>
-            <h2>{copy.latest}</h2>
-            {supportingStories.map((article) => (
-              <a
-                class:list={['supporting-story', { 'has-image': Boolean(article.data.featuredImage) }]}
-                href={route(`articles/${article.data.urlSlug}`)}
-              >
-                <StoryImage article={article} variant="thumbnail" />
-                <div class="supporting-story-copy">
-                  <span>{categoryLabel(article.data.category)}</span>
-                  <h3>{article.data.title}</h3>
-                  <time>{articleDate(article)}</time>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div class="news-empty">
-          <Icon name="updates" size={44} />
-          <h2>{copy.emptyTitle}</h2>
-          <p>{copy.emptyBody}</p>
-        </div>
-      )}
-    </div>
-  </section>
-
-  {trending.length > 0 && (
-    <section class="trending-section">
-      <div class="container trending-layout">
-        <header>
-          <span>{copy.trending}</span>
-          <h2>{copy.trending}</h2>
-          <p>{copy.trendingIntro}</p>
+    <section class="top-news" aria-labelledby="latest-news-heading">
+      <div class="container">
+        <header class="section-title-row">
+          <h2 id="latest-news-heading">{copy.pageTitle}</h2>
+          <a href={route('articles')}>{copy.allNews}<Icon name="arrow" size={17} /></a>
         </header>
-        <ol class="trending-list">
-          {trending.map((article, index) => (
-            <li>
-              <a href={route(`articles/${article.data.urlSlug}`)}>
-                <span class="trend-number">{String(index + 1).padStart(2, '0')}</span>
-                <span class="trend-copy">
-                  <small>{categoryLabel(article.data.category)}</small>
-                  <strong>{article.data.title}</strong>
-                </span>
-                <Icon name="arrow" size={18} />
-              </a>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-  )}
 
-  <section class="section-news">
-    <div class="container">
-      <header class="section-heading">
-        <span>{copy.sections}</span>
-        <h2>{copy.sections}</h2>
-        <p>{copy.sectionsIntro}</p>
-      </header>
-      <div class="section-news-grid">
-        {sectionNews.map((section) => (
-          <section class="section-news-block">
-            <header>
-              <h3>{section.label}</h3>
-              <a href={route(`categories/${section.id}`)}>{copy.viewSection}<Icon name="arrow" size={16} /></a>
-            </header>
-            {section.articles.length > 0 ? (
-              <div class="section-story-list">
-                {section.articles.map((article, index) => (
-                  <a class:list={['section-story', { primary: index === 0 }]} href={route(`articles/${article.data.urlSlug}`)}>
-                    {index === 0 && article.id !== lead?.id && article.data.featuredImage && (
-                      <StoryImage article={article} variant="section" />
-                    )}
-                    <div class="section-story-copy">
-                      <span>{verificationLabels[locale][article.data.verificationStatus]}</span>
-                      <h4>{article.data.title}</h4>
-                      {index === 0 && <p>{article.data.description}</p>}
-                      <time>{articleDate(article)}</time>
+        {lead ? (
+          <div class="top-stories-grid">
+            <a
+              class:list={['lead-story', { 'has-image': Boolean(lead.data.featuredImage) }]}
+              href={route(`articles/${lead.data.urlSlug}`)}
+            >
+              <StoryImage article={lead} variant="lead" priority />
+              <div class="lead-story-copy">
+                <div class="story-kicker">
+                  <strong>{copy.leadLabel}</strong>
+                  <span>{categoryLabel(lead.data.category)}</span>
+                </div>
+                <h2>{lead.data.title}</h2>
+                <p>{lead.data.description}</p>
+                <div class="story-meta">
+                  <span>{verificationLabels[locale][lead.data.verificationStatus]}</span>
+                  <time datetime={(lead.data.updated || lead.data.date).toISOString()}>{articleDate(lead)}</time>
+                  <strong>{copy.readStory}<Icon name="arrow" size={16} /></strong>
+                </div>
+              </div>
+            </a>
+
+            <aside class="latest-rail" aria-label={copy.latest}>
+              <h2>{copy.latest}</h2>
+              <div class="latest-rail-list">
+                {supportingStories.map((article) => (
+                  <a
+                    class:list={['latest-rail-story', { 'has-image': Boolean(article.data.featuredImage) }]}
+                    href={route(`articles/${article.data.urlSlug}`)}
+                  >
+                    <StoryImage article={article} variant="thumbnail" />
+                    <div>
+                      <span>{categoryLabel(article.data.category)}</span>
+                      <h3>{article.data.title}</h3>
+                      <time datetime={(article.data.updated || article.data.date).toISOString()}>{articleDate(article)}</time>
                     </div>
                   </a>
                 ))}
               </div>
-            ) : (
-              <div class="section-empty">
-                <Icon name="updates" size={23} />
-                <p>{copy.noSectionNews}</p>
-              </div>
-            )}
-          </section>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {soon.length > 0 && (
-    <section class="deadline-section">
-      <div class="container">
-        <header class="deadline-heading">
-          <div><span>{copy.deadlines}</span><h2>{copy.deadlines}</h2><p>{copy.deadlineIntro}</p></div>
-          <a href={route('deadlines')}>{copy.allDeadlines}<Icon name="arrow" size={18} /></a>
-        </header>
-        <div class="deadline-list">
-          {soon.map((article) => (
-            <a href={route(`articles/${article.data.urlSlug}`)}>
-              <div><strong>{article.data.title}</strong><small>{article.data.description}</small></div>
-              <time>{article.data.deadline && dateFormat.format(article.data.deadline)}</time>
-            </a>
-          ))}
-        </div>
+            </aside>
+          </div>
+        ) : (
+          <div class="news-empty">
+            <h2>{copy.emptyTitle}</h2>
+            <p>{copy.emptyBody}</p>
+          </div>
+        )}
       </div>
     </section>
-  )}
 
-  <section class="news-trust">
-    <div class="container">
-      <Icon name="check" size={24} />
-      <div><strong>{copy.trust}</strong><p>{copy.trustBody}</p></div>
-    </div>
-  </section>
+    {sectionNews.length > 0 && (
+      <section class="news-sections" aria-labelledby="more-news-heading">
+        <div class="container">
+          <h2 id="more-news-heading" class="visually-hidden">{copy.sectionNews}</h2>
+
+          <div class="news-section-list">
+            {sectionNews.map((section) => (
+              <section class="news-section-block">
+                <header>
+                  <h3>{section.label}</h3>
+                  <a href={route(`categories/${section.id}`)}>{copy.viewSection}<Icon name="arrow" size={16} /></a>
+                </header>
+
+                <div class="section-story-grid">
+                  {section.articles.map((article, index) => (
+                    <a
+                      class:list={[
+                        'section-story',
+                        { featured: index === 0, 'has-image': Boolean(article.data.featuredImage) },
+                      ]}
+                      href={route(`articles/${article.data.urlSlug}`)}
+                    >
+                      {index === 0 && article.data.featuredImage && (
+                        <StoryImage article={article} variant="section" />
+                      )}
+                      <div class="section-story-copy">
+                        <span>{verificationLabels[locale][article.data.verificationStatus]}</span>
+                        <h4>{article.data.title}</h4>
+                        {index === 0 && <p>{article.data.description}</p>}
+                        <time datetime={(article.data.updated || article.data.date).toISOString()}>{articleDate(article)}</time>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </main>
 </MainLayout>
 
 <style>
-  .news-hero {
-    padding: clamp(1.75rem, 4vw, 3.5rem) 0;
-    border-bottom: 1px solid var(--color-border);
-    background: linear-gradient(180deg, var(--color-surface), var(--color-bg));
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .news-masthead {
+  .news-home {
+    --color-primary: #08756f;
+    background: var(--color-bg);
+  }
+
+  :global(html[data-theme='dark']) .news-home {
+    --color-primary: #70ddd1;
+  }
+
+  .top-news {
+    padding: clamp(1.2rem, 3vw, 2.2rem) 0 clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .section-title-row {
     display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 2rem;
-    margin-bottom: clamp(1.25rem, 3vw, 2.25rem);
-  }
-
-  .news-masthead > div {
-    min-width: 0;
-  }
-
-  .news-eyebrow {
-    display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    margin-bottom: 0.65rem;
-    color: var(--color-primary);
-    font-size: 0.78rem;
-    font-weight: 850;
-    letter-spacing: 0.075em;
-    text-transform: uppercase;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 4px solid var(--color-navy);
   }
 
-  .news-masthead h1 {
-    max-width: 18ch;
-    color: var(--color-navy);
-    font-size: clamp(2.15rem, 5vw, 4.3rem);
-    line-height: 1.02;
-    letter-spacing: -0.045em;
-    overflow-wrap: anywhere;
+  .section-title-row h2 {
+    color: var(--color-text);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.15;
   }
 
-  .news-masthead > div > p:last-child {
-    max-width: 70ch;
-    margin-top: 0.85rem;
-    color: var(--color-text-muted);
-    font-size: clamp(1rem, 1rem + 0.25vw, 1.18rem);
-    line-height: 1.6;
-  }
-
-  .all-updates-link,
-  .deadline-heading > a {
+  .section-title-row a,
+  .news-section-block > header a {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.35rem;
     color: var(--color-primary);
-    font-size: 0.83rem;
+    font-size: 0.78rem;
     font-weight: 850;
   }
 
   .top-stories-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.75fr);
+    grid-template-columns: minmax(0, 1.65fr) minmax(290px, 0.75fr);
     gap: 1rem;
     align-items: start;
   }
@@ -349,15 +264,15 @@ const copy = {
     overflow: hidden;
     flex-direction: column;
     justify-content: end;
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    background: linear-gradient(145deg, var(--color-navy), #133866);
+    border-top: 5px solid var(--color-primary);
+    background: var(--color-navy);
     color: #fff;
-    box-shadow: var(--shadow-lg);
   }
 
   .lead-story.has-image {
     min-height: 0;
+    border: 1px solid var(--color-border);
+    border-top: 5px solid var(--color-primary);
     background: var(--color-surface);
     color: var(--color-text);
   }
@@ -371,61 +286,67 @@ const copy = {
     min-height: 390px;
     flex-direction: column;
     justify-content: end;
-    padding: clamp(1.4rem, 4vw, 3rem);
+    padding: clamp(1.35rem, 3vw, 2.35rem);
   }
 
   .lead-story.has-image .lead-story-copy {
     min-height: 0;
-    padding: clamp(1.15rem, 3vw, 2rem);
   }
 
-  .story-context {
+  .story-kicker {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 0.45rem 0.8rem;
     margin-bottom: auto;
-    color: #89e8dd;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 850;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.045em;
     text-transform: uppercase;
   }
 
-  .lead-story.has-image .story-context {
+  .story-kicker strong {
+    color: #82e8dc;
+  }
+
+  .story-kicker span {
+    color: rgba(255, 255, 255, 0.68);
+  }
+
+  .lead-story.has-image .story-kicker {
     margin-bottom: 0;
+  }
+
+  .lead-story.has-image .story-kicker strong {
     color: var(--color-primary);
   }
 
-  .story-context span + span {
-    color: rgba(255, 255, 255, 0.72);
-  }
-
-  .lead-story.has-image .story-context span + span {
+  .lead-story.has-image .story-kicker span {
     color: var(--color-text-muted);
   }
 
   .lead-story h2 {
-    max-width: 19ch;
-    margin-top: 2.5rem;
+    max-width: 20ch;
+    margin-top: 2.2rem;
     color: #fff;
-    font-size: clamp(2rem, 4.4vw, 4rem);
+    font-size: clamp(2rem, 4vw, 3.75rem);
     line-height: 1.06;
     letter-spacing: -0.035em;
     overflow-wrap: anywhere;
   }
 
   .lead-story.has-image h2 {
-    max-width: 24ch;
+    max-width: 25ch;
     margin-top: 0.65rem;
-    color: var(--color-navy);
-    font-size: clamp(1.8rem, 3.4vw, 3.25rem);
+    color: var(--color-text);
+    font-size: clamp(1.8rem, 3.3vw, 3rem);
   }
 
   .lead-story-copy > p {
-    max-width: 64ch;
-    margin-top: 1rem;
-    color: rgba(255, 255, 255, 0.78);
-    line-height: 1.6;
+    max-width: 68ch;
+    margin-top: 0.85rem;
+    color: rgba(255, 255, 255, 0.76);
+    line-height: 1.55;
   }
 
   .lead-story.has-image .lead-story-copy > p {
@@ -435,11 +356,11 @@ const copy = {
   .story-meta {
     display: flex;
     align-items: center;
-    gap: 0.6rem 1rem;
+    gap: 0.55rem 0.9rem;
     flex-wrap: wrap;
-    margin-top: 1.25rem;
-    color: rgba(255, 255, 255, 0.72);
-    font-size: 0.76rem;
+    margin-top: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.72rem;
   }
 
   .lead-story.has-image .story-meta {
@@ -449,7 +370,7 @@ const copy = {
   .story-meta strong {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.3rem;
     margin-left: auto;
     color: #fff;
   }
@@ -458,414 +379,214 @@ const copy = {
     color: var(--color-primary);
   }
 
-  .supporting-stories {
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
+  .latest-rail {
+    min-width: 0;
+    border-top: 5px solid var(--color-navy);
     background: var(--color-surface);
   }
 
-  .supporting-stories > h2 {
-    padding: 0.9rem 1rem;
-    border-bottom: 4px solid var(--color-primary);
-    font-size: 1.15rem;
+  .latest-rail > h2 {
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-top: 0;
+    font-size: 1.1rem;
   }
 
-  .supporting-story {
+  .latest-rail-list {
+    border-inline: 1px solid var(--color-border);
+  }
+
+  .latest-rail-story {
     display: block;
-    padding: 1rem;
+    padding: 0.9rem;
     border-bottom: 1px solid var(--color-border);
   }
 
-  .supporting-story.has-image {
+  .latest-rail-story.has-image {
     display: grid;
     grid-template-columns: minmax(96px, 34%) minmax(0, 1fr);
+    gap: 0.8rem;
     align-items: start;
-    gap: 0.85rem;
   }
 
-  .supporting-story :global(.story-picture-thumbnail) {
-    border-radius: 6px;
+  .latest-rail-story :global(.story-picture-thumbnail) {
+    border-radius: 3px;
   }
 
-  .supporting-story:last-child {
-    border-bottom: 0;
-  }
-
-  .supporting-story:hover h3 {
-    color: var(--color-primary);
-  }
-
-  .supporting-story span,
+  .latest-rail-story span,
   .section-story-copy > span {
     color: var(--color-primary);
-    font-size: 0.67rem;
+    font-size: 0.65rem;
     font-weight: 850;
-    letter-spacing: 0.045em;
+    letter-spacing: 0.035em;
     text-transform: uppercase;
   }
 
-  .supporting-story h3 {
-    margin: 0.35rem 0 0.65rem;
-    font-size: clamp(1rem, 2vw, 1.25rem);
+  .latest-rail-story h3 {
+    margin: 0.28rem 0 0.5rem;
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
     line-height: 1.35;
     overflow-wrap: anywhere;
   }
 
-  .supporting-story time,
+  .latest-rail-story time,
   .section-story time {
     color: var(--color-text-muted);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
+  }
+
+  .latest-rail-story:hover h3,
+  .section-story:hover h4 {
+    color: var(--color-primary);
   }
 
   .news-empty {
-    padding: 3rem 1.5rem;
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    background: var(--color-surface);
+    padding: 3rem 1rem;
+    border-block: 1px solid var(--color-border);
     text-align: center;
   }
 
-  .news-empty h2 {
-    margin: 0.7rem 0 0.35rem;
-  }
-
   .news-empty p {
+    margin-top: 0.35rem;
     color: var(--color-text-muted);
   }
 
-  .trending-section {
-    padding: clamp(2.75rem, 5vw, 4.5rem) 0;
-    background: var(--color-navy);
-    color: #fff;
+  .news-sections {
+    padding: 0 0 clamp(3rem, 6vw, 5rem);
   }
 
-  .trending-layout {
+  .news-section-list {
     display: grid;
-    grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1.45fr);
-    gap: clamp(2rem, 5vw, 5rem);
+    gap: clamp(2rem, 5vw, 3.8rem);
   }
 
-  .trending-layout > header > span,
-  .section-heading > span,
-  .deadline-heading span {
-    color: var(--color-primary);
-    font-size: 0.72rem;
-    font-weight: 850;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-  }
-
-  .trending-layout > header > span {
-    color: #7ce4d7;
-  }
-
-  .trending-layout h2 {
-    margin: 0.4rem 0 0.8rem;
-    color: #fff;
-    font-size: clamp(1.9rem, 3vw, 2.8rem);
-  }
-
-  .trending-layout header p {
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
-  }
-
-  .trending-list {
-    list-style: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .trending-list li {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .trending-list a {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1rem;
-    min-height: 86px;
-    color: #fff;
-  }
-
-  .trend-number {
-    color: #7ce4d7;
-    font-size: 1.65rem;
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .trend-copy {
+  .news-section-block {
     min-width: 0;
+    padding-top: 0.85rem;
+    border-top: 5px solid var(--color-navy);
   }
 
-  .trend-copy small {
-    display: block;
-    margin-bottom: 0.2rem;
-    color: rgba(255, 255, 255, 0.62);
-    font-size: 0.66rem;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .trend-copy strong {
-    display: block;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-  }
-
-  .section-news {
-    padding: clamp(3rem, 6vw, 5.5rem) 0;
-  }
-
-  .section-heading {
-    margin-bottom: 1.8rem;
-  }
-
-  .section-heading h2,
-  .deadline-heading h2 {
-    margin: 0.3rem 0 0.5rem;
-    font-size: clamp(1.9rem, 3.6vw, 3rem);
-  }
-
-  .section-heading p,
-  .deadline-heading p {
-    color: var(--color-text-muted);
-  }
-
-  .section-news-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .section-news-block {
-    min-width: 0;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-top: 4px solid var(--color-primary);
-    border-radius: 10px;
-    background: var(--color-surface);
-  }
-
-  .section-news-block > header {
+  .news-section-block > header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.9rem 1rem;
-    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0.9rem;
   }
 
-  .section-news-block > header h3 {
-    font-size: 1.25rem;
+  .news-section-block > header h3 {
+    color: var(--color-text);
+    font-size: clamp(1.35rem, 2.8vw, 1.9rem);
   }
 
-  .section-news-block > header a {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 0.3rem;
-    color: var(--color-primary);
-    font-size: 0.72rem;
-    font-weight: 850;
+  .section-story-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(0, 0.75fr));
+    border-block: 1px solid var(--color-border);
   }
 
   .section-story {
-    display: block;
-    border-bottom: 1px solid var(--color-border);
+    min-width: 0;
+    padding: 1rem;
+    border-right: 1px solid var(--color-border);
   }
 
-  .section-story-copy {
-    padding: 0.9rem 1rem;
+  .section-story:last-child {
+    border-right: 0;
+  }
+
+  .section-story.featured {
+    padding: 0;
+  }
+
+  .section-story.featured .section-story-copy {
+    padding: 1rem;
   }
 
   .section-story :global(.story-picture-section) {
     border-bottom: 1px solid var(--color-border);
   }
 
-  .section-story:last-child {
-    border-bottom: 0;
-  }
-
   .section-story h4 {
-    margin: 0.32rem 0 0.5rem;
-    font-size: 1rem;
+    margin: 0.32rem 0 0.55rem;
+    font-size: 1.05rem;
     line-height: 1.4;
     overflow-wrap: anywhere;
   }
 
-  .section-story.primary h4 {
-    font-size: clamp(1.15rem, 2.2vw, 1.45rem);
+  .section-story.featured h4 {
+    font-size: clamp(1.2rem, 2.3vw, 1.55rem);
   }
 
   .section-story p {
     margin-bottom: 0.65rem;
     color: var(--color-text-muted);
     font-size: 0.86rem;
-    line-height: 1.55;
-  }
-
-  .section-story:hover h4 {
-    color: var(--color-primary);
-  }
-
-  .section-empty {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    min-height: 118px;
-    padding: 1rem;
-    color: var(--color-text-muted);
-  }
-
-  .deadline-section {
-    padding: clamp(3rem, 5vw, 4.5rem) 0;
-    border-block: 1px solid var(--color-border);
-    background: var(--color-surface-alt);
-  }
-
-  .deadline-heading {
-    display: flex;
-    align-items: end;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .deadline-list {
-    display: grid;
-    gap: 0.55rem;
-  }
-
-  .deadline-list a {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.1rem;
-    border: 1px solid var(--color-border);
-    border-left: 4px solid var(--color-orange);
-    border-radius: 8px;
-    background: var(--color-surface);
-  }
-
-  .deadline-list strong,
-  .deadline-list small {
-    display: block;
-  }
-
-  .deadline-list small {
-    margin-top: 0.2rem;
-    color: var(--color-text-muted);
-  }
-
-  .deadline-list time {
-    color: #9a5600;
-    font-weight: 850;
-    white-space: nowrap;
-  }
-
-  .news-trust {
-    padding: 1.5rem 0;
-    background: var(--color-surface);
-  }
-
-  .news-trust .container {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-  }
-
-  .news-trust svg {
-    flex: 0 0 auto;
-    color: var(--color-primary);
-  }
-
-  .news-trust strong {
-    display: block;
-  }
-
-  .news-trust p {
-    margin-top: 0.15rem;
-    color: var(--color-text-muted);
-    font-size: 0.84rem;
+    line-height: 1.5;
   }
 
   @media (max-width: 900px) {
-    .news-masthead {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .top-stories-grid,
-    .trending-layout {
+    .top-stories-grid {
       grid-template-columns: 1fr;
     }
 
-    .lead-story:not(.has-image) .lead-story-copy {
-      min-height: 340px;
+    .latest-rail-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .latest-rail-story:nth-child(odd) {
+      border-right: 1px solid var(--color-border);
+    }
+
+    .section-story-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .section-story.featured {
+      grid-column: 1 / -1;
+      border-right: 0;
+      border-bottom: 1px solid var(--color-border);
     }
   }
 
   @media (max-width: 680px) {
-    .news-hero {
-      padding-top: 1.1rem;
+    .top-news {
+      padding-top: 0.9rem;
     }
 
-    .news-masthead {
-      margin-bottom: 1rem;
+    .section-title-row {
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.55rem;
     }
 
-    .news-eyebrow {
-      margin-bottom: 0.45rem;
-    }
-
-    .news-masthead h1 {
-      max-width: 100%;
-      font-size: clamp(2rem, 9.5vw, 2.75rem);
-      line-height: 1.05;
-    }
-
-    .news-masthead > div > p:last-child {
-      margin-top: 0.65rem;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-
-    .top-stories-grid {
-      gap: 0.75rem;
+    .section-title-row h2 {
+      font-size: 1.45rem;
     }
 
     .lead-story {
-      border-radius: 10px;
+      min-height: 310px;
     }
 
-    .lead-story:not(.has-image) .lead-story-copy {
+    .lead-story-copy {
       min-height: 310px;
-      padding: 1.25rem;
+      padding: 1rem;
     }
 
     .lead-story.has-image .lead-story-copy {
-      padding: 1rem;
+      min-height: 0;
     }
 
     .lead-story h2,
     .lead-story.has-image h2 {
       margin-top: 0.55rem;
-      font-size: clamp(1.65rem, 7.2vw, 2.25rem);
+      font-size: clamp(1.65rem, 7vw, 2.2rem);
       line-height: 1.12;
     }
 
     .lead-story-copy > p {
       margin-top: 0.65rem;
-      line-height: 1.5;
-    }
-
-    .story-meta {
-      margin-top: 0.9rem;
+      font-size: 0.94rem;
     }
 
     .story-meta strong {
@@ -873,33 +594,30 @@ const copy = {
       margin-left: 0;
     }
 
-    .supporting-stories {
-      border-radius: 10px;
-    }
-
-    .supporting-story.has-image {
-      grid-template-columns: 118px minmax(0, 1fr);
-    }
-
-    .trending-list a {
-      min-height: 80px;
-    }
-
-    .section-news-grid {
+    .latest-rail-list,
+    .section-story-grid {
       grid-template-columns: 1fr;
     }
 
-    .section-news-block > header {
-      align-items: flex-start;
+    .latest-rail-story:nth-child(odd),
+    .section-story {
+      border-right: 0;
     }
 
-    .deadline-heading {
-      align-items: flex-start;
-      flex-direction: column;
+    .section-story {
+      border-bottom: 1px solid var(--color-border);
     }
 
-    .deadline-list a {
-      grid-template-columns: 1fr;
+    .section-story:last-child {
+      border-bottom: 0;
+    }
+
+    .section-story.featured {
+      grid-column: auto;
+    }
+
+    .news-section-block > header {
+      align-items: baseline;
     }
   }
 </style>
