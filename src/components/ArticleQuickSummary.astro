@@ -24,6 +24,18 @@ const labels: Record<Locale, string> = {
   </aside>
 )}
 
+<script>
+  const quickSummary = document.querySelector<HTMLElement>('.article-quick-summary');
+  const content = quickSummary?.closest<HTMLElement>('.article-content');
+  const firstParagraph = content
+    ? Array.from(content.children).find((element) => element.tagName === 'P')
+    : undefined;
+
+  if (quickSummary && firstParagraph) {
+    firstParagraph.insertAdjacentElement('afterend', quickSummary);
+  }
+</script>
+
 <style>
   .article-quick-summary {
     margin: 1.2rem 0 1.35rem;
@@ -69,24 +81,24 @@ const labels: Record<Locale, string> = {
 
   @media (max-width: 680px) {
     .article-quick-summary {
-      margin: .9rem 0 1.05rem;
-      padding: .78rem .82rem;
+      margin: .75rem 0 1rem;
+      padding: .72rem .8rem;
       border-radius: 0 11px 11px 0;
     }
 
     .article-quick-summary h2 {
-      margin-bottom: .4rem;
+      margin-bottom: .35rem;
       font-size: .76rem;
     }
 
     .article-quick-summary ul {
-      gap: .3rem;
+      gap: .26rem;
     }
 
     .article-quick-summary li {
       padding-left: 1rem;
-      font-size: .92rem;
-      line-height: 1.52;
+      font-size: .9rem;
+      line-height: 1.48;
     }
   }
 </style>
