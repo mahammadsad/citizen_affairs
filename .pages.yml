@@ -6,66 +6,65 @@ media:
 
 content:
   - name: articles
-    label: Articles / আর্টিকেল
+    label: Draft articles / খসড়া আর্টিকেল
     type: group
     items:
       - name: english-articles
-        label: English articles
+        label: English drafts
         type: collection
         path: src/content/articles/en
         format: yaml-frontmatter
         filename: "{fields.urlSlug}.md"
         view:
           primary: title
-          fields: [title, category, verificationStatus, date, draft]
+          fields: [title, category, verificationStatus, lastVerified, nextReviewDate]
           sort: date
           order: desc
         fields:
           - { name: language, label: Language, type: string, default: en, hidden: true, required: true }
-          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: Use the URL slug here. Use the same value in the Bengali version if you add a translation. }
-          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: Lowercase English letters, numbers and hyphens only; for example ayushman-card-guide. }
-          - { name: title, label: Article title, type: string, required: true }
-          - { name: description, label: Short summary, type: text, required: true, description: One or two sentences shown on article cards and search results. }
-          - { name: date, label: Published date, type: date, required: true }
-          - { name: updated, label: Updated date, type: date, required: false }
-          - { name: lastVerified, label: Last verified date, type: date, required: false }
-          - { name: deadline, label: Application deadline, type: date, required: false, description: Leave blank when the article has no deadline. }
+          - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
+          - { name: workflowStatus, label: Workflow status, type: string, default: draft, hidden: true, required: true }
+          - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
           - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: Use the same lowercase ID for every language version. }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: Lowercase English letters, numbers and hyphens only. }
+          - { name: title, label: Article title, type: string, required: true }
+          - { name: description, label: Short summary, type: text, required: true, description: One or two factual sentences for cards and search results. }
+          - { name: date, label: Draft or intended publication date, type: date, required: true }
+          - { name: updated, label: Updated date, type: date, required: false }
+          - { name: lastVerified, label: Last official-source check, type: date, required: false }
+          - { name: nextReviewDate, label: Review again on, type: date, required: false, description: Use a date after the last official-source check. }
+          - { name: deadline, label: Deadline, type: date, required: false, description: Leave blank for evergreen guides. }
           - name: category
-            label: Category
+            label: Portal section
             type: select
             required: true
             options:
               values:
-                - { value: jobs, label: "Government jobs" }
-                - { value: projects, label: "Welfare schemes" }
-                - { value: exams, label: "Exams and results" }
-                - { value: notices, label: "Government notices" }
-                - { value: materials, label: "Education and scholarships" }
-                - { value: affairs, label: "Public services" }
+                - { value: jobs, label: "Government Jobs" }
+                - { value: exams, label: "Admissions, Exams & Results" }
+                - { value: materials, label: "Education & Scholarships" }
+                - { value: projects, label: "Welfare Schemes & Benefits" }
+                - { value: affairs, label: "Citizen Services" }
+                - { value: notices, label: "Citizen Alerts & Notices" }
+                - { value: guides, label: "Citizen Guides" }
           - name: verificationStatus
             label: Verification status
             type: select
             required: true
             default: under-verification
-            description: Select officially-confirmed only after checking an official government source.
+            description: Drafts should normally remain Under Verification. Officially Confirmed also requires an independent fact checker in the protected workflow.
             options:
               values:
-                - { value: officially-confirmed, label: "Officially Confirmed" }
                 - { value: under-verification, label: "Under Verification" }
+                - { value: partially-confirmed, label: "Partially Confirmed" }
+                - { value: officially-confirmed, label: "Officially Confirmed" }
                 - { value: corrected, label: "Corrected" }
-                - { value: withdrawn, label: "Withdrawn" }
                 - { value: closed, label: "Closed" }
-          - { name: sourceUrls, label: Official source URLs, type: string, list: { min: 1 }, required: true, description: Add at least one official government source. }
+                - { value: withdrawn, label: "Withdrawn" }
+          - { name: sourceUrls, label: Official source URLs, type: string, list: { min: 1 }, required: true, description: Add official government pages only. }
           - { name: officialNoticeUrl, label: Official notice URL, type: string, required: false }
-          - { name: applicationUrl, label: Application or service URL, type: string, required: false }
-          - { name: tags, label: Search tags, type: string, list: true, required: false }
-          - { name: featured, label: Feature on homepage, type: boolean, default: false }
-          - { name: featuredImage, label: Featured image, type: image, required: false }
-          - { name: featuredImageAlt, label: Image description, type: string, required: false, description: Describe the image for visually impaired readers. }
-          - { name: draft, label: Keep hidden as draft, type: boolean, default: true, hidden: true, required: true, description: New content must remain a draft. Final publication will move to the controlled editorial workflow. }
-          - { name: seoTitle, label: SEO title, type: string, required: false }
-          - { name: seoDescription, label: SEO description, type: text, required: false }
+          - { name: applicationUrl, label: Official action or service URL, type: string, required: false }
           - name: governmentLevel
             label: Government level
             type: select
@@ -74,56 +73,21 @@ content:
               values:
                 - { value: central, label: "Central Government" }
                 - { value: state, label: "State Government" }
-          - name: state
-            label: State or Union Territory
-            type: select
-            required: false
-            description: Select this only for State Government information.
-            options:
-              values:
-                - { value: andhra-pradesh, label: "Andhra Pradesh" }
-                - { value: arunachal-pradesh, label: "Arunachal Pradesh" }
-                - { value: assam, label: "Assam" }
-                - { value: bihar, label: "Bihar" }
-                - { value: chhattisgarh, label: "Chhattisgarh" }
-                - { value: goa, label: "Goa" }
-                - { value: gujarat, label: "Gujarat" }
-                - { value: haryana, label: "Haryana" }
-                - { value: himachal-pradesh, label: "Himachal Pradesh" }
-                - { value: jharkhand, label: "Jharkhand" }
-                - { value: karnataka, label: "Karnataka" }
-                - { value: kerala, label: "Kerala" }
-                - { value: madhya-pradesh, label: "Madhya Pradesh" }
-                - { value: maharashtra, label: "Maharashtra" }
-                - { value: manipur, label: "Manipur" }
-                - { value: meghalaya, label: "Meghalaya" }
-                - { value: mizoram, label: "Mizoram" }
-                - { value: nagaland, label: "Nagaland" }
-                - { value: odisha, label: "Odisha" }
-                - { value: punjab, label: "Punjab" }
-                - { value: rajasthan, label: "Rajasthan" }
-                - { value: sikkim, label: "Sikkim" }
-                - { value: tamil-nadu, label: "Tamil Nadu" }
-                - { value: telangana, label: "Telangana" }
-                - { value: tripura, label: "Tripura" }
-                - { value: uttar-pradesh, label: "Uttar Pradesh" }
-                - { value: uttarakhand, label: "Uttarakhand" }
                 - { value: west-bengal, label: "West Bengal" }
-                - { value: andaman-and-nicobar-islands, label: "Andaman and Nicobar Islands" }
-                - { value: chandigarh, label: "Chandigarh" }
-                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "Dadra and Nagar Haveli and Daman and Diu" }
-                - { value: delhi, label: "Delhi" }
-                - { value: jammu-and-kashmir, label: "Jammu and Kashmir" }
-                - { value: ladakh, label: "Ladakh" }
-                - { value: lakshadweep, label: "Lakshadweep" }
-                - { value: puducherry, label: "Puducherry" }
-          - { name: regionLabel, label: Specific region label, type: string, required: false, description: Optional. Use only when the information is for a region smaller than a state. }
-          - { name: qualification, label: Eligibility or qualification, type: string, list: true, required: false }
-          - { name: quickSummary, label: Quick summary points, type: string, list: true, required: false }
+                - { value: other-state, label: "Another State or UT" }
+          - { name: regionLabel, label: State, UT or local area, type: string, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
+          - { name: quickSummary, label: Key points, type: string, list: true, required: false }
+          - { name: qualification, label: Eligibility or qualification notes, type: string, list: true, required: false }
           - { name: importantDates, label: Important dates, type: string, list: true, required: false }
-          - { name: amountOrVacancies, label: Benefits vacancies or amount, type: text, required: false }
+          - { name: amountOrVacancies, label: Benefit amount or vacancies, type: text, required: false }
           - { name: requiredDocuments, label: Required documents, type: string, list: true, required: false }
           - { name: updateHistory, label: Update history, type: string, list: true, required: false }
+          - { name: featured, label: Candidate for homepage feature, type: boolean, default: false }
+          - { name: featuredImage, label: Draft image, type: image, required: false }
+          - { name: featuredImageAlt, label: Image description, type: string, required: false }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: faqs
             label: FAQs
             type: object
@@ -132,123 +96,87 @@ content:
             fields:
               - { name: question, label: Question, type: string, required: true }
               - { name: answer, label: Answer, type: text, required: true }
-          - { name: body, label: Article content, type: rich-text, required: true }
+          - { name: body, label: Article draft, type: rich-text, required: true }
 
       - name: bengali-articles
-        label: বাংলা আর্টিকেল
+        label: বাংলা খসড়া
         type: collection
         path: src/content/articles/bn
         format: yaml-frontmatter
         filename: "{fields.urlSlug}.md"
         view:
           primary: title
-          fields: [title, category, verificationStatus, date, draft]
+          fields: [title, category, verificationStatus, lastVerified, nextReviewDate]
           sort: date
           order: desc
         fields:
           - { name: language, label: Language, type: string, default: bn, hidden: true, required: true }
-          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: URL slug-টি এখানে দিন। English version তৈরি করলে সেখানেও একই value ব্যবহার করুন। }
-          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: শুধু ছোট হাতের English অক্ষর, সংখ্যা ও hyphen ব্যবহার করুন; যেমন ayushman-card-guide। }
-          - { name: title, label: আর্টিকেলের শিরোনাম, type: string, required: true }
-          - { name: description, label: সংক্ষিপ্ত সারাংশ, type: text, required: true, description: Article card ও Google result-এর জন্য এক বা দুই বাক্য লিখুন। }
-          - { name: date, label: প্রকাশের তারিখ, type: date, required: true }
-          - { name: updated, label: আপডেটের তারিখ, type: date, required: false }
-          - { name: lastVerified, label: সর্বশেষ যাচাইয়ের তারিখ, type: date, required: false }
-          - { name: deadline, label: আবেদনের শেষ তারিখ, type: date, required: false, description: কোনো deadline না থাকলে ফাঁকা রাখুন। }
+          - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
+          - { name: workflowStatus, label: Workflow status, type: string, default: draft, hidden: true, required: true }
+          - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
           - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: সব ভাষার সংশ্লিষ্ট লেখায় একই lowercase ID ব্যবহার করুন। }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: শুধু ছোট হাতের English অক্ষর, সংখ্যা ও hyphen ব্যবহার করুন। }
+          - { name: title, label: আর্টিকেলের শিরোনাম, type: string, required: true }
+          - { name: description, label: সংক্ষিপ্ত সারাংশ, type: text, required: true, description: কার্ড ও সার্চ ফলাফলের জন্য এক বা দুইটি তথ্যভিত্তিক বাক্য লিখুন। }
+          - { name: date, label: খসড়া বা সম্ভাব্য প্রকাশের তারিখ, type: date, required: true }
+          - { name: updated, label: আপডেটের তারিখ, type: date, required: false }
+          - { name: lastVerified, label: সর্বশেষ অফিসিয়াল উৎস যাচাই, type: date, required: false }
+          - { name: nextReviewDate, label: আবার যাচাইয়ের তারিখ, type: date, required: false, description: সর্বশেষ যাচাইয়ের পরের একটি তারিখ দিন। }
+          - { name: deadline, label: শেষ তারিখ, type: date, required: false, description: Evergreen guide হলে ফাঁকা রাখুন। }
           - name: category
-            label: বিভাগ
+            label: পোর্টালের বিভাগ
             type: select
             required: true
             options:
               values:
                 - { value: jobs, label: "সরকারি চাকরি" }
-                - { value: projects, label: "জনকল্যাণ প্রকল্প" }
-                - { value: exams, label: "পরীক্ষা ও ফলাফল" }
-                - { value: notices, label: "সরকারি নোটিশ" }
+                - { value: exams, label: "ভর্তি, পরীক্ষা ও ফলাফল" }
                 - { value: materials, label: "শিক্ষা ও স্কলারশিপ" }
-                - { value: affairs, label: "জনপরিষেবা" }
+                - { value: projects, label: "জনকল্যাণ প্রকল্প ও সুবিধা" }
+                - { value: affairs, label: "নাগরিক পরিষেবা" }
+                - { value: notices, label: "নাগরিক সতর্কতা ও নোটিশ" }
+                - { value: guides, label: "নাগরিক গাইড" }
           - name: verificationStatus
-            label: তথ্য যাচাইয়ের অবস্থা
+            label: তথ্য যাচাইয়ের অবস্থা
             type: select
             required: true
             default: under-verification
-            description: Official source যাচাই করার পরেই officially-confirmed নির্বাচন করুন।
+            description: নতুন খসড়া সাধারণত যাচাই চলছে অবস্থায় রাখুন। অফিসিয়ালভাবে নিশ্চিত করতে protected workflow-এ আলাদা fact checker প্রয়োজন।
             options:
               values:
-                - { value: officially-confirmed, label: "অফিসিয়ালভাবে নিশ্চিত" }
                 - { value: under-verification, label: "যাচাই চলছে" }
+                - { value: partially-confirmed, label: "আংশিকভাবে যাচাই হয়েছে" }
+                - { value: officially-confirmed, label: "অফিসিয়ালভাবে নিশ্চিত" }
                 - { value: corrected, label: "সংশোধিত" }
-                - { value: withdrawn, label: "প্রত্যাহার করা হয়েছে" }
                 - { value: closed, label: "বন্ধ" }
-          - { name: sourceUrls, label: অফিসিয়াল তথ্যসূত্র, type: string, list: { min: 1 }, required: true, description: অন্তত একটি official government source যোগ করুন। }
-          - { name: officialNoticeUrl, label: অফিসিয়াল নোটিশ URL, type: string, required: false }
-          - { name: applicationUrl, label: আবেদন বা পরিষেবা URL, type: string, required: false }
-          - { name: tags, label: Search tags, type: string, list: true, required: false }
-          - { name: featured, label: Homepage-এ বিশেষভাবে দেখান, type: boolean, default: false }
-          - { name: featuredImage, label: Featured image, type: image, required: false }
-          - { name: featuredImageAlt, label: ছবির বর্ণনা, type: string, required: false, description: দৃষ্টিপ্রতিবন্ধী পাঠকের জন্য ছবিটি সংক্ষেপে বর্ণনা করুন। }
-          - { name: draft, label: Draft হিসেবে website থেকে লুকিয়ে রাখুন, type: boolean, default: true, hidden: true, required: true, description: নতুন লেখা Draft রাখুন। চূড়ান্ত প্রকাশ নিয়ন্ত্রিত সম্পাদকীয় workflow থেকে হবে। }
-          - { name: seoTitle, label: SEO title, type: string, required: false }
-          - { name: seoDescription, label: SEO description, type: text, required: false }
+                - { value: withdrawn, label: "প্রত্যাহার করা হয়েছে" }
+          - { name: sourceUrls, label: অফিসিয়াল উৎসের URL, type: string, list: { min: 1 }, required: true, description: শুধু সরকারি বা সংশ্লিষ্ট কর্তৃপক্ষের অফিসিয়াল পেজ যোগ করুন। }
+          - { name: officialNoticeUrl, label: অফিসিয়াল নোটিশ URL, type: string, required: false }
+          - { name: applicationUrl, label: অফিসিয়াল আবেদন বা পরিষেবা URL, type: string, required: false }
           - name: governmentLevel
             label: সরকারের স্তর
             type: select
             required: false
             options:
               values:
-                - { value: central, label: "কেন্দ্রীয় সরকার" }
+                - { value: central, label: "কেন্দ্রীয় সরকার" }
                 - { value: state, label: "রাজ্য সরকার" }
-          - name: state
-            label: রাজ্য বা কেন্দ্রশাসিত অঞ্চল
-            type: select
-            required: false
-            description: রাজ্য সরকারের তথ্য হলে এটি নির্বাচন করুন।
-            options:
-              values:
-                - { value: andhra-pradesh, label: "অন্ধ্রপ্রদেশ" }
-                - { value: arunachal-pradesh, label: "অরুণাচল প্রদেশ" }
-                - { value: assam, label: "অসম" }
-                - { value: bihar, label: "বিহার" }
-                - { value: chhattisgarh, label: "ছত্তিশগড়" }
-                - { value: goa, label: "গোয়া" }
-                - { value: gujarat, label: "গুজরাট" }
-                - { value: haryana, label: "হরিয়ানা" }
-                - { value: himachal-pradesh, label: "হিমাচল প্রদেশ" }
-                - { value: jharkhand, label: "ঝাড়খণ্ড" }
-                - { value: karnataka, label: "কর্ণাটক" }
-                - { value: kerala, label: "কেরালা" }
-                - { value: madhya-pradesh, label: "মধ্যপ্রদেশ" }
-                - { value: maharashtra, label: "মহারাষ্ট্র" }
-                - { value: manipur, label: "মণিপুর" }
-                - { value: meghalaya, label: "মেঘালয়" }
-                - { value: mizoram, label: "মিজোরাম" }
-                - { value: nagaland, label: "নাগাল্যান্ড" }
-                - { value: odisha, label: "ওডিশা" }
-                - { value: punjab, label: "পাঞ্জাব" }
-                - { value: rajasthan, label: "রাজস্থান" }
-                - { value: sikkim, label: "সিকিম" }
-                - { value: tamil-nadu, label: "তামিলনাড়ু" }
-                - { value: telangana, label: "তেলেঙ্গানা" }
-                - { value: tripura, label: "ত্রিপুরা" }
-                - { value: uttar-pradesh, label: "উত্তরপ্রদেশ" }
-                - { value: uttarakhand, label: "উত্তরাখণ্ড" }
                 - { value: west-bengal, label: "পশ্চিমবঙ্গ" }
-                - { value: andaman-and-nicobar-islands, label: "আন্দামান ও নিকোবর দ্বীপপুঞ্জ" }
-                - { value: chandigarh, label: "চণ্ডীগড়" }
-                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "দাদরা ও নগর হাভেলি এবং দমন ও দিউ" }
-                - { value: delhi, label: "দিল্লি" }
-                - { value: jammu-and-kashmir, label: "জম্মু ও কাশ্মীর" }
-                - { value: ladakh, label: "লাদাখ" }
-                - { value: lakshadweep, label: "লক্ষদ্বীপ" }
-                - { value: puducherry, label: "পুদুচেরি" }
-          - { name: regionLabel, label: নির্দিষ্ট অঞ্চলের নাম, type: string, required: false, description: তথ্যটি রাজ্যের চেয়ে ছোট কোনো অঞ্চলের জন্য হলে ব্যবহার করুন। }
-          - { name: qualification, label: যোগ্যতা, type: string, list: true, required: false }
-          - { name: quickSummary, label: সংক্ষিপ্ত সারাংশের পয়েন্ট, type: string, list: true, required: false }
+                - { value: other-state, label: "অন্য রাজ্য বা কেন্দ্রশাসিত অঞ্চল" }
+          - { name: regionLabel, label: রাজ্য, কেন্দ্রশাসিত অঞ্চল বা স্থানীয় এলাকার নাম, type: string, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
+          - { name: quickSummary, label: মূল পয়েন্ট, type: string, list: true, required: false }
+          - { name: qualification, label: যোগ্যতা বা eligibility নোট, type: string, list: true, required: false }
           - { name: importantDates, label: গুরুত্বপূর্ণ তারিখ, type: string, list: true, required: false }
-          - { name: amountOrVacancies, label: সুবিধা শূন্যপদ বা অর্থ, type: text, required: false }
-          - { name: requiredDocuments, label: প্রয়োজনীয় নথি, type: string, list: true, required: false }
+          - { name: amountOrVacancies, label: সুবিধার পরিমাণ বা শূন্যপদ, type: text, required: false }
+          - { name: requiredDocuments, label: প্রয়োজনীয় নথি, type: string, list: true, required: false }
           - { name: updateHistory, label: আপডেটের ইতিহাস, type: string, list: true, required: false }
+          - { name: featured, label: Homepage feature-এর প্রার্থী, type: boolean, default: false }
+          - { name: featuredImage, label: খসড়া ছবি, type: image, required: false }
+          - { name: featuredImageAlt, label: ছবির বর্ণনা, type: string, required: false }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: faqs
             label: সাধারণ প্রশ্ন
             type: object
@@ -257,64 +185,64 @@ content:
             fields:
               - { name: question, label: প্রশ্ন, type: string, required: true }
               - { name: answer, label: উত্তর, type: text, required: true }
-          - { name: body, label: সম্পূর্ণ Article, type: rich-text, required: true }
+          - { name: body, label: সম্পূর্ণ খসড়া, type: rich-text, required: true }
 
       - name: hindi-articles
-        label: हिन्दी लेख
+        label: हिन्दी ड्राफ्ट
         type: collection
         path: src/content/articles/hi
         format: yaml-frontmatter
         filename: "{fields.urlSlug}.md"
         view:
           primary: title
-          fields: [title, category, verificationStatus, date, draft]
+          fields: [title, category, verificationStatus, lastVerified, nextReviewDate]
           sort: date
           order: desc
         fields:
           - { name: language, label: Language, type: string, default: hi, hidden: true, required: true }
-          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: तीनों भाषाओं के संबंधित लेख में एक ही ID रखें। }
-          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: छोटे English अक्षर, संख्या और hyphen ही उपयोग करें। }
+          - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
+          - { name: workflowStatus, label: Workflow status, type: string, default: draft, hidden: true, required: true }
+          - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: translationKey, label: Translation pair ID, type: string, required: true, description: सभी भाषा संस्करणों में एक ही lowercase ID रखें। }
+          - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$", description: केवल छोटे English अक्षर, संख्या और hyphen उपयोग करें। }
           - { name: title, label: लेख का शीर्षक, type: string, required: true }
           - { name: description, label: संक्षिप्त सारांश, type: text, required: true }
-          - { name: date, label: प्रकाशन तिथि, type: date, required: true }
+          - { name: date, label: ड्राफ्ट या प्रस्तावित प्रकाशन तिथि, type: date, required: true }
           - { name: updated, label: अपडेट तिथि, type: date, required: false }
-          - { name: lastVerified, label: अंतिम सत्यापन तिथि, type: date, required: false }
-          - { name: deadline, label: आवेदन की अंतिम तिथि, type: date, required: false }
-          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: lastVerified, label: अंतिम आधिकारिक स्रोत जाँच, type: date, required: false }
+          - { name: nextReviewDate, label: अगली समीक्षा तिथि, type: date, required: false }
+          - { name: deadline, label: अंतिम तिथि, type: date, required: false }
           - name: category
-            label: श्रेणी
+            label: पोर्टल अनुभाग
             type: select
             required: true
             options:
               values:
                 - { value: jobs, label: "सरकारी नौकरियाँ" }
-                - { value: projects, label: "कल्याणकारी योजनाएँ" }
-                - { value: exams, label: "परीक्षाएँ और परिणाम" }
-                - { value: notices, label: "सरकारी सूचनाएँ" }
+                - { value: exams, label: "प्रवेश, परीक्षाएँ और परिणाम" }
                 - { value: materials, label: "शिक्षा और छात्रवृत्ति" }
-                - { value: affairs, label: "सार्वजनिक सेवाएँ" }
+                - { value: projects, label: "कल्याण योजनाएँ और लाभ" }
+                - { value: affairs, label: "नागरिक सेवाएँ" }
+                - { value: notices, label: "नागरिक अलर्ट और सूचनाएँ" }
+                - { value: guides, label: "नागरिक मार्गदर्शिकाएँ" }
           - name: verificationStatus
             label: सत्यापन स्थिति
             type: select
             required: true
             default: under-verification
+            description: नया ड्राफ्ट सामान्यतः सत्यापन जारी स्थिति में रखें। आधिकारिक पुष्टि के लिए protected workflow में स्वतंत्र fact checker आवश्यक है।
             options:
               values:
-                - { value: officially-confirmed, label: "आधिकारिक रूप से पुष्टि" }
                 - { value: under-verification, label: "सत्यापन जारी" }
+                - { value: partially-confirmed, label: "आंशिक रूप से पुष्टि" }
+                - { value: officially-confirmed, label: "आधिकारिक रूप से पुष्टि" }
                 - { value: corrected, label: "सुधारा गया" }
-                - { value: withdrawn, label: "वापस लिया गया" }
                 - { value: closed, label: "बंद" }
+                - { value: withdrawn, label: "वापस लिया गया" }
           - { name: sourceUrls, label: आधिकारिक स्रोत URL, type: string, list: { min: 1 }, required: true }
           - { name: officialNoticeUrl, label: आधिकारिक सूचना URL, type: string, required: false }
-          - { name: applicationUrl, label: आवेदन या सेवा URL, type: string, required: false }
-          - { name: tags, label: Search tags, type: string, list: true, required: false }
-          - { name: featured, label: Homepage पर दिखाएँ, type: boolean, default: false }
-          - { name: featuredImage, label: Featured image, type: image, required: false }
-          - { name: featuredImageAlt, label: चित्र विवरण, type: string, required: false }
-          - { name: draft, label: Draft के रूप में छिपाएँ, type: boolean, default: true, hidden: true, required: true, description: नई सामग्री Draft ही रखें। अंतिम प्रकाशन नियंत्रित संपादकीय workflow से होगा। }
-          - { name: seoTitle, label: SEO title, type: string, required: false }
-          - { name: seoDescription, label: SEO description, type: text, required: false }
+          - { name: applicationUrl, label: आधिकारिक आवेदन या सेवा URL, type: string, required: false }
           - name: governmentLevel
             label: सरकार का स्तर
             type: select
@@ -323,56 +251,21 @@ content:
               values:
                 - { value: central, label: "केंद्र सरकार" }
                 - { value: state, label: "राज्य सरकार" }
-          - name: state
-            label: राज्य या केंद्र शासित प्रदेश
-            type: select
-            required: false
-            description: राज्य सरकार की जानकारी होने पर इसे चुनें।
-            options:
-              values:
-                - { value: andhra-pradesh, label: "आंध्र प्रदेश" }
-                - { value: arunachal-pradesh, label: "अरुणाचल प्रदेश" }
-                - { value: assam, label: "असम" }
-                - { value: bihar, label: "बिहार" }
-                - { value: chhattisgarh, label: "छत्तीसगढ़" }
-                - { value: goa, label: "गोवा" }
-                - { value: gujarat, label: "गुजरात" }
-                - { value: haryana, label: "हरियाणा" }
-                - { value: himachal-pradesh, label: "हिमाचल प्रदेश" }
-                - { value: jharkhand, label: "झारखंड" }
-                - { value: karnataka, label: "कर्नाटक" }
-                - { value: kerala, label: "केरल" }
-                - { value: madhya-pradesh, label: "मध्य प्रदेश" }
-                - { value: maharashtra, label: "महाराष्ट्र" }
-                - { value: manipur, label: "मणिपुर" }
-                - { value: meghalaya, label: "मेघालय" }
-                - { value: mizoram, label: "मिज़ोरम" }
-                - { value: nagaland, label: "नागालैंड" }
-                - { value: odisha, label: "ओडिशा" }
-                - { value: punjab, label: "पंजाब" }
-                - { value: rajasthan, label: "राजस्थान" }
-                - { value: sikkim, label: "सिक्किम" }
-                - { value: tamil-nadu, label: "तमिलनाडु" }
-                - { value: telangana, label: "तेलंगाना" }
-                - { value: tripura, label: "त्रिपुरा" }
-                - { value: uttar-pradesh, label: "उत्तर प्रदेश" }
-                - { value: uttarakhand, label: "उत्तराखंड" }
                 - { value: west-bengal, label: "पश्चिम बंगाल" }
-                - { value: andaman-and-nicobar-islands, label: "अंडमान और निकोबार द्वीपसमूह" }
-                - { value: chandigarh, label: "चंडीगढ़" }
-                - { value: dadra-and-nagar-haveli-and-daman-and-diu, label: "दादरा और नगर हवेली और दमन और दीव" }
-                - { value: delhi, label: "दिल्ली" }
-                - { value: jammu-and-kashmir, label: "जम्मू और कश्मीर" }
-                - { value: ladakh, label: "लद्दाख" }
-                - { value: lakshadweep, label: "लक्षद्वीप" }
-                - { value: puducherry, label: "पुदुचेरी" }
-          - { name: regionLabel, label: विशेष क्षेत्र का नाम, type: string, required: false, description: राज्य से छोटे किसी क्षेत्र के लिए ही उपयोग करें। }
-          - { name: qualification, label: पात्रता, type: string, list: true, required: false }
-          - { name: quickSummary, label: त्वरित सारांश बिंदु, type: string, list: true, required: false }
+                - { value: other-state, label: "अन्य राज्य या केंद्र शासित प्रदेश" }
+          - { name: regionLabel, label: राज्य, केंद्र शासित प्रदेश या स्थानीय क्षेत्र, type: string, required: false }
+          - { name: tags, label: Search tags, type: string, list: true, required: false }
+          - { name: quickSummary, label: मुख्य बिंदु, type: string, list: true, required: false }
+          - { name: qualification, label: पात्रता नोट, type: string, list: true, required: false }
           - { name: importantDates, label: महत्वपूर्ण तिथियाँ, type: string, list: true, required: false }
-          - { name: amountOrVacancies, label: लाभ रिक्तियाँ या राशि, type: text, required: false }
+          - { name: amountOrVacancies, label: लाभ राशि या रिक्तियाँ, type: text, required: false }
           - { name: requiredDocuments, label: आवश्यक दस्तावेज़, type: string, list: true, required: false }
           - { name: updateHistory, label: अपडेट इतिहास, type: string, list: true, required: false }
+          - { name: featured, label: Homepage feature उम्मीदवार, type: boolean, default: false }
+          - { name: featuredImage, label: ड्राफ्ट चित्र, type: image, required: false }
+          - { name: featuredImageAlt, label: चित्र विवरण, type: string, required: false }
+          - { name: seoTitle, label: SEO title, type: string, required: false }
+          - { name: seoDescription, label: SEO description, type: text, required: false }
           - name: faqs
             label: सामान्य प्रश्न
             type: object
@@ -381,10 +274,10 @@ content:
             fields:
               - { name: question, label: प्रश्न, type: string, required: true }
               - { name: answer, label: उत्तर, type: text, required: true }
-          - { name: body, label: पूरा लेख, type: rich-text, required: true }
+          - { name: body, label: पूरा ड्राफ्ट, type: rich-text, required: true }
 
   - name: categories
-    label: Categories / বিভাগ
+    label: Category labels / বিভাগের নাম
     type: collection
     path: src/content/categories
     format: yaml
@@ -406,11 +299,11 @@ content:
 
 settings:
   content:
-    # Preserve controlled workflow fields that this temporary draft editor does not expose.
+    # Existing protected fields remain untouched when a draft is edited.
     merge: true
   commit:
     identity: user
     templates:
-      create: "content: add {filename}"
-      update: "content: update {filename}"
-      delete: "content: remove {filename}"
+      create: "content: add draft {filename}"
+      update: "content: update draft {filename}"
+      delete: "content: remove draft {filename}"
