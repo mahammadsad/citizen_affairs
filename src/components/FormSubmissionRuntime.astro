@@ -55,6 +55,18 @@
     } catch (_) {}
   };
 
+  const setBannerVisibility = (banner: HTMLElement | null, visible: boolean): void => {
+    if (!banner) return;
+
+    banner.hidden = !visible;
+
+    if (visible) {
+      banner.style.removeProperty('display');
+    } else {
+      banner.style.setProperty('display', 'none', 'important');
+    }
+  };
+
   const removeSubmissionParameters = (queryKeys: string[]): void => {
     const cleanUrl = new URL(window.location.href);
     let changed = false;
@@ -89,7 +101,7 @@
       returnedToken === expectedToken
     );
 
-    if (banner) banner.hidden = !verifiedReturn;
+    setBannerVisibility(banner, verifiedReturn);
 
     if (verifiedReturn) {
       removeSessionValue(configuration.storageKey);
@@ -114,7 +126,7 @@
         nextInput.value = returnUrl.toString();
       }
 
-      if (banner) banner.hidden = true;
+      setBannerVisibility(banner, false);
     });
   };
 
@@ -135,8 +147,14 @@
   window.addEventListener('pageshow', (event: PageTransitionEvent) => {
     if (!event.persisted) return;
     submissionForms.forEach(({ bannerId }) => {
-      const banner = document.getElementById(bannerId);
-      if (banner) banner.hidden = true;
+      setBannerVisibility(document.getElementById(bannerId), false);
     });
   });
 </script>
+
+<style is:global>
+  #applicationSuccess[hidden],
+  #contactSuccess[hidden] {
+    display: none !important;
+  }
+</style>
