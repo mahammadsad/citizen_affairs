@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+const headerLogoSelector = '.portal-navbar .portal-brand > .portal-brand-logo';
+
 test('mobile homepage is news-led and the brand does not collide at 390px', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
-  const logo = page.locator('.portal-brand-logo');
+  const logo = page.locator(headerLogoSelector);
   const actions = page.locator('.portal-header-actions');
   await expect(logo).toBeVisible();
   await expect(page.locator('.news-hero')).toBeVisible();
@@ -14,8 +16,8 @@ test('mobile homepage is news-led and the brand does not collide at 390px', asyn
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeVisible();
 
-  const measurements = await page.evaluate(() => {
-    const logo = document.querySelector('.portal-brand-logo');
+  const measurements = await page.evaluate((selector) => {
+    const logo = document.querySelector(selector);
     const actions = document.querySelector('.portal-header-actions');
     if (!(logo instanceof HTMLElement) || !(actions instanceof HTMLElement)) {
       throw new Error('Header elements missing');
@@ -30,7 +32,7 @@ test('mobile homepage is news-led and the brand does not collide at 390px', asyn
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: document.documentElement.clientWidth,
     };
-  });
+  }, headerLogoSelector);
 
   expect(measurements.logoLeft).toBeGreaterThanOrEqual(0);
   expect(measurements.logoWidth).toBeGreaterThanOrEqual(184);
@@ -59,6 +61,7 @@ test('mobile navigation covers the viewport and includes menu search', async ({ 
   await expect(search).toBeVisible();
   await expect(searchInput).toBeFocused();
   await expect(closeButton).toBeVisible();
+  await expect(page.locator('.portal-mobile-brand-logo')).toBeVisible();
   await expect(page.locator('.portal-mobile-home')).toBeVisible();
   await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
   await expect(page.locator('body')).toHaveClass(/portal-menu-open/);
@@ -97,7 +100,7 @@ test('very narrow homepage stays within the viewport', async ({ page }) => {
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   await expect(page.locator('.portal-theme-toggle')).toBeHidden();
-  await expect(page.locator('.portal-brand-logo')).toBeVisible();
+  await expect(page.locator(headerLogoSelector)).toBeVisible();
 
   const widths = await page.evaluate(() => ({
     documentWidth: document.documentElement.scrollWidth,
