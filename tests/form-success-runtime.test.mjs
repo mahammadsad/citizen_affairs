@@ -15,9 +15,19 @@ test('success banners require a verified same-tab submission token', async () =>
 
   assert.match(runtime, /returnedToken\s*&&\s*expectedToken/);
   assert.match(runtime, /returnedToken\s*===\s*expectedToken/);
-  assert.match(runtime, /banner\.hidden\s*=\s*!verifiedReturn/);
+  assert.match(runtime, /setBannerVisibility\(banner, verifiedReturn\)/);
   assert.match(runtime, /sessionStorage\.setItem/);
   assert.match(runtime, /sessionStorage\.removeItem/);
+});
+
+test('hidden success banners cannot be forced visible by component display rules', async () => {
+  const runtime = await read('src/components/FormSubmissionRuntime.astro');
+
+  assert.match(runtime, /#applicationSuccess\[hidden\]/);
+  assert.match(runtime, /#contactSuccess\[hidden\]/);
+  assert.match(runtime, /display:\s*none\s*!important/);
+  assert.match(runtime, /style\.setProperty\('display', 'none', 'important'\)/);
+  assert.match(runtime, /style\.removeProperty\('display'\)/);
 });
 
 test('form redirect tokens replace the legacy persistent sent flag', async () => {
@@ -35,5 +45,5 @@ test('stale back-forward cache pages cannot keep an old success banner visible',
 
   assert.match(runtime, /window\.addEventListener\('pageshow'/);
   assert.match(runtime, /event\.persisted/);
-  assert.match(runtime, /banner\.hidden\s*=\s*true/);
+  assert.match(runtime, /setBannerVisibility\(document\.getElementById\(bannerId\), false\)/);
 });
