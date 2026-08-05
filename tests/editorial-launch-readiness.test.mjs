@@ -24,6 +24,7 @@ const publishedStarters = new Set([
   'use-digilocker-education-documents-safely.md',
   'find-government-schemes-with-myscheme.md',
   'update-aadhaar-and-check-status-officially.md',
+  'report-fake-government-message-and-website.md',
 ]);
 
 function frontmatter(source) {
@@ -74,7 +75,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('starter queue keeps three drafts protected and permits four reviewed public guides', async () => {
+test('starter queue keeps two drafts protected and permits five reviewed public guides', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -85,7 +86,9 @@ test('starter queue keeps three drafts protected and permits four reviewed publi
     'www.india.gov.in',
     'igod.gov.in',
     'www.pib.gov.in',
+    'factcheck.pib.gov.in',
     'cybercrime.gov.in',
+    'www.dot.gov.in',
     'www.nta.ac.in',
     'www.digilocker.gov.in',
     'verify.digilocker.gov.in',
@@ -155,6 +158,19 @@ test('starter queue keeps three drafts protected and permits four reviewed publi
         assert.match(source, /14 June 2027 পর্যন্ত fee ছাড়া/);
         assert.match(source, /request accepted বা rejected/);
       }
+
+      if (file === 'report-fake-government-message-and-website.md') {
+        assert.ok(data.sourceUrls.includes('https://www.pib.gov.in/FAQ_fact.aspx?lang=1&reg=3'));
+        assert.ok(data.sourceUrls.includes('https://factcheck.pib.gov.in/'));
+        assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/cyber_suspect.aspx'));
+        assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/suspect_search_websites.aspx'));
+        assert.ok(data.sourceUrls.some((value) => value.startsWith('https://www.dot.gov.in/offerings/schemes-and-services/details/sanchar-saathi')));
+        assert.match(source, /Government of India claim হলে PIB Fact Check/);
+        assert.match(source, /Report Suspect facility/);
+        assert.match(source, /1930-এ অবিলম্বে call/);
+        assert.match(source, /Call, SMS বা WhatsApp হলে Chakshu/);
+        assert.match(source, /safe certificate নয়/);
+      }
     } else {
       draftCount += 1;
       assert.equal(data.workflowStatus, 'draft');
@@ -170,8 +186,8 @@ test('starter queue keeps three drafts protected and permits four reviewed publi
     }
   }
 
-  assert.equal(publicCount, 4);
-  assert.equal(draftCount, 3);
+  assert.equal(publicCount, 5);
+  assert.equal(draftCount, 2);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
