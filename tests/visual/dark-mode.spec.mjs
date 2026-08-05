@@ -41,11 +41,11 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.locator('.portal-navbar .portal-brand > .portal-brand-logo')).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-dark\.svg$/,
+    /citizen-affairs-horizontal\.png$/,
   );
   await expect(page.locator('.footer-brand-logo')).toHaveAttribute(
     'src',
-    /citizen-affairs-full-dark\.svg$/,
+    /citizen-affairs-full-tagline\.png$/,
   );
   await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
 
@@ -134,7 +134,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(panel).toBeVisible();
   await expect(page.locator('.portal-mobile-brand-logo')).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-dark\.svg$/,
+    /citizen-affairs-horizontal\.png$/,
   );
 
   const panelColours = await page.evaluate(() => {
