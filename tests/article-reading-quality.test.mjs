@@ -17,7 +17,7 @@ const assertReadingOrder = (route) => {
   const decisionWorkspace = route.indexOf('<ArticleEntryExperience');
 
   assert.ok(quickSummary >= 0, 'key points should render on article routes');
-  assert.ok(quickSummary < content, 'key points should precede the full article');
+  assert.ok(quickSummary < content, 'key points need a safe no-JavaScript position before the article');
   assert.ok(readingToolsIndex > content, 'long-article navigation should inspect the rendered article');
   assert.ok(decisionWorkspace > readingToolsIndex, 'secondary decision tools should remain below the story');
   assert.match(route, /quickSummary=\{\[\]\}/, 'the lower decision workspace must not duplicate key points');
@@ -28,17 +28,19 @@ test('English, Bengali and Hindi routes use the same content-first reading order
   assertReadingOrder(localizedRoute);
 });
 
-test('key points are compact, multilingual and limited to three visible items', () => {
+test('key points are compact, multilingual and follow the opening paragraph', () => {
   assert.match(summary, /slice\(0, 3\)/);
   assert.match(summary, /Key points/);
   assert.match(summary, /মূল তথ্য/);
   assert.match(summary, /मुख्य बातें/);
   assert.match(summary, /article-quick-summary/);
+  assert.match(summary, /firstParagraph\.insertAdjacentElement\('afterend', quickSummary\)/);
 });
 
-test('long articles receive progressive contents navigation after the opening paragraph', () => {
+test('long articles receive progressive contents navigation after the opening summary', () => {
   assert.match(readingTools, /headings\.length >= 4/);
-  assert.match(readingTools, /firstParagraph\.insertAdjacentElement\('afterend', details\)/);
+  assert.match(readingTools, /firstParagraph\?\.nextElementSibling === quickSummary/);
+  assert.match(readingTools, /insertionAnchor\.insertAdjacentElement\('afterend', details\)/);
   assert.match(readingTools, /In this article/);
   assert.match(readingTools, /এই প্রতিবেদনে/);
   assert.match(readingTools, /इस लेख में/);
