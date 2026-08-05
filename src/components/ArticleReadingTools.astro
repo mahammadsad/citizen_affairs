@@ -1,0 +1,143 @@
+---
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const labels: Record<Locale, string> = {
+  en: 'In this article',
+  bn: 'এই প্রতিবেদনে',
+  hi: 'इस लेख में'
+};
+---
+
+<span data-article-reading-tools data-toc-label={labels[locale]} hidden></span>
+
+<script>
+  const marker = document.querySelector<HTMLElement>('[data-article-reading-tools]');
+  const content = marker?.closest<HTMLElement>('.article-content');
+
+  if (marker && content) {
+    const headings = Array.from(content.querySelectorAll<HTMLElement>(':scope > h2'))
+      .filter((heading) => heading.textContent?.trim());
+
+    if (headings.length >= 4 && !content.querySelector('.article-toc')) {
+      const details = document.createElement('details');
+      details.className = 'article-toc';
+
+      const summary = document.createElement('summary');
+      summary.textContent = marker.dataset.tocLabel || 'In this article';
+      details.append(summary);
+
+      const list = document.createElement('ol');
+      headings.forEach((heading, index) => {
+        if (!heading.id) heading.id = `article-section-${index + 1}`;
+
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent?.trim() || `${index + 1}`;
+        link.addEventListener('click', () => {
+          if (window.matchMedia('(max-width: 680px)').matches) details.open = false;
+        });
+        item.append(link);
+        list.append(item);
+      });
+      details.append(list);
+
+      const firstParagraph = Array.from(content.children)
+        .find((element) => element.tagName === 'P');
+      if (firstParagraph) firstParagraph.insertAdjacentElement('afterend', details);
+      else content.prepend(details);
+    }
+
+    marker.remove();
+  }
+</script>
+
+<style is:global>
+  .article-toc {
+    max-width: var(--reading-measure);
+    margin: 1.2rem auto 1.5rem;
+    border-block: 1px solid var(--color-border);
+    background: transparent;
+  }
+
+  .article-toc summary {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .7rem;
+    padding: .65rem .1rem;
+    cursor: pointer;
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: .86rem;
+    font-weight: 800;
+    list-style: none;
+  }
+
+  .article-toc summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .article-toc summary::after {
+    content: '+';
+    flex: 0 0 auto;
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .article-toc[open] summary::after {
+    content: '−';
+  }
+
+  .article-toc ol {
+    display: grid;
+    gap: .45rem;
+    margin: 0 0 .9rem 1.25rem;
+    padding: 0;
+  }
+
+  .article-toc a {
+    color: var(--color-text);
+    font-size: .9rem;
+    line-height: 1.45;
+    text-decoration: none;
+    text-underline-offset: .18em;
+  }
+
+  .article-toc a:hover,
+  .article-toc a:focus-visible {
+    color: var(--color-primary);
+    text-decoration: underline;
+  }
+
+  .article-content h2[id] {
+    scroll-margin-top: calc(var(--nav-h) + 24px);
+  }
+
+  @media (max-width: 680px) {
+    .article-toc {
+      margin: .9rem auto 1.1rem;
+    }
+
+    .article-toc summary {
+      min-height: 42px;
+      padding-block: .5rem;
+      font-size: .8rem;
+    }
+
+    .article-toc ol {
+      gap: .35rem;
+      margin-bottom: .75rem;
+    }
+
+    .article-toc a {
+      font-size: .84rem;
+    }
+  }
+</style>
