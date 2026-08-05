@@ -15,12 +15,84 @@ const canonical = `${SITE.url}${normalizedTarget}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content={`0;url=${normalizedTarget}`} />
     <meta name="robots" content="noindex, follow" />
     <link rel="canonical" href={canonical} />
     <title>{title}</title>
+    <script is:inline define:vars={{ normalizedTarget }}>
+      document.documentElement.dataset.redirecting = 'true';
+      window.location.replace(normalizedTarget);
+    </script>
+    <meta http-equiv="refresh" content={`0;url=${normalizedTarget}`} />
+    <style>
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+        background: #f8fafc;
+      }
+
+      html[data-redirecting='true'] body {
+        visibility: hidden;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        padding: 1rem;
+        color: #0f172a;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .redirect-shell {
+        display: grid;
+        justify-items: center;
+        gap: 0.9rem;
+        max-width: 28rem;
+        text-align: center;
+      }
+
+      .spinner {
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid #cbd5e1;
+        border-top-color: #0f766e;
+        border-radius: 999px;
+        animation: spin 0.75s linear infinite;
+      }
+
+      p {
+        margin: 0;
+        color: #475569;
+        font-size: 0.95rem;
+      }
+
+      a {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        padding: 0.7rem 1rem;
+        border-radius: 0.75rem;
+        background: #0f766e;
+        color: #fff;
+        font-weight: 750;
+        text-decoration: none;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .spinner { animation: none; }
+      }
+    </style>
   </head>
   <body>
-    <p><a href={normalizedTarget}>{title}</a></p>
+    <main class="redirect-shell">
+      <span class="spinner" aria-hidden="true"></span>
+      <p>Opening Citizen Affairs…</p>
+      <a href={normalizedTarget}>{title}</a>
+    </main>
   </body>
 </html>
