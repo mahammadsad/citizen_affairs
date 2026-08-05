@@ -3,13 +3,34 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const homepage = await readFile('src/components/CitizenPortalHome.astro', 'utf8');
+const storyImage = await readFile('src/components/StoryImage.astro', 'utf8');
 
 test('homepage is led by published news instead of a duplicate search form', () => {
   assert.match(homepage, /class="news-hero"/);
   assert.match(homepage, /class="top-stories-grid"/);
-  assert.match(homepage, /class="lead-story"/);
+  assert.match(homepage, /'lead-story'/);
   assert.doesNotMatch(homepage, /class="portal-search"/);
   assert.doesNotMatch(homepage, /<form[^>]+action=\{localizedPath\(locale, 'search'\)\}/);
+});
+
+test('the lead story renders its approved responsive editorial image', () => {
+  assert.match(homepage, /import StoryImage from '\.\/StoryImage\.astro'/);
+  assert.match(homepage, /<StoryImage article=\{lead\} variant="lead" priority \/>/);
+  assert.match(homepage, /Boolean\(lead\.data\.featuredImage\)/);
+  assert.match(storyImage, /type="image\/avif"/);
+  assert.match(storyImage, /featuredImageSrcSet/);
+  assert.match(storyImage, /width=\{featuredImageWidth\}/);
+  assert.match(storyImage, /height=\{featuredImageHeight\}/);
+  assert.match(storyImage, /alt=\{featuredImageAlt \|\| title\}/);
+  assert.match(storyImage, /loading=\{priority \? 'eager' : 'lazy'\}/);
+  assert.match(storyImage, /fetchpriority=\{priority \? 'high' : 'auto'\}/);
+});
+
+test('secondary image slots remain conditional and never invent placeholders', () => {
+  assert.match(homepage, /Boolean\(article\.data\.featuredImage\)/);
+  assert.match(homepage, /<StoryImage article=\{article\} variant="thumbnail" \/>/);
+  assert.match(homepage, /article\.data\.featuredImage && \(/);
+  assert.doesNotMatch(storyImage, /placeholder|fallback-image|unsplash|picsum/i);
 });
 
 test('homepage includes a transparent BBC-style numbered trending block', () => {
