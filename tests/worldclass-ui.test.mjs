@@ -12,17 +12,19 @@ test('world-class visual system is loaded after legacy shared styles', () => {
   assert.ok(visualIndex > componentsIndex);
 });
 
-test('responsive interface uses vector Citizen Affairs brand assets', () => {
+test('responsive interface uses approved Citizen Affairs brand exports', () => {
   const logo = read('src/components/BrandLogo.astro');
   for (const asset of [
-    'citizen-affairs-full.svg',
-    'citizen-affairs-horizontal.svg',
-    'citizen-affairs-monogram.svg',
-    'citizen-affairs-circular.svg'
+    'citizen-affairs-full-tagline.png',
+    'citizen-affairs-horizontal.png',
+    'citizen-affairs-monogram.png',
+    'citizen-affairs-circular.png'
   ]) {
     assert.match(logo, new RegExp(asset.replace('.', '\\.')));
-    assert.match(read(`public/assets/brand/${asset}`), /<svg[\s>]/);
+    assert.ok(readFileSync(new URL(`../public/assets/brand/${asset}`, import.meta.url)).length > 0);
   }
+
+  assert.doesNotMatch(logo, /citizen-affairs-(?:full|horizontal|monogram|circular)(?:-dark)?\.svg/);
 });
 
 test('news category navigation is static and mobile footer is collapsible', () => {
