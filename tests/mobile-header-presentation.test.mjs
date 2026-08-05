@@ -12,11 +12,13 @@ test('redundant utility strip is removed from the rendered presentation', () => 
   assert.match(layout, /:global\(\.portal-utility\)[\s\S]*display: none !important/);
 });
 
-test('mobile brand is prominent, left aligned and collision free', () => {
+test('mobile brand is prominent, safely left aligned and collision free', () => {
   assert.match(layout, /--portal-logo-width: clamp\(168px, calc\(100vw - 176px\), 204px\)/);
   assert.match(layout, /max-height: 72px !important/);
   assert.match(layout, /padding-inline: \.75rem !important/);
-  assert.match(layout, /transform: translateX\(-\.75rem\)/);
+  assert.match(layout, /transform: translateX\(-\.3rem\)/);
+  assert.doesNotMatch(layout, /transform: translateX\(-\.75rem\)/);
+  assert.match(layout, /safe transparent gutter/);
   assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 0 1 var\(--portal-logo-width\) !important/);
   assert.match(layout, /:global\(\.portal-header-actions\)[\s\S]*flex: 0 0 auto !important/);
   assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 74px !important/);
