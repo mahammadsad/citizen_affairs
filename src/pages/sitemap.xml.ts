@@ -89,7 +89,11 @@ export async function GET() {
     const alternates = Object.fromEntries(
       group.map((article) => [
         article.data.language,
-        `${SITE.url}/${article.data.language}/articles/${article.data.urlSlug}/`,
+        localizedUrl(
+          article.data.language,
+          `articles/${article.data.urlSlug}`,
+          true
+        ),
       ])
     ) as LocaleUrls;
     const lastmods = Object.fromEntries(
