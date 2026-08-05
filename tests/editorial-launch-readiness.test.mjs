@@ -19,7 +19,10 @@ const starterFiles = [
   'report-fake-government-message-and-website.md',
   'find-official-government-websites-and-services.md',
 ];
-const publishedStarter = 'find-official-government-websites-and-services.md';
+const publishedStarters = new Set([
+  'find-official-government-websites-and-services.md',
+  'use-digilocker-education-documents-safely.md',
+]);
 
 function frontmatter(source) {
   const match = source.match(/^---\s*\n([\s\S]*?)\n---(?:\s*\n|$)/);
@@ -69,7 +72,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('starter queue keeps six drafts protected and permits one reviewed public guide', async () => {
+test('starter queue keeps five drafts protected and permits two reviewed public guides', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -83,6 +86,8 @@ test('starter queue keeps six drafts protected and permits one reviewed public g
     'cybercrime.gov.in',
     'www.nta.ac.in',
     'www.digilocker.gov.in',
+    'verify.digilocker.gov.in',
+    'nad.digilocker.gov.in',
     'www.uidai.gov.in',
     'uidai.gov.in',
     'myaadhaar.uidai.gov.in',
@@ -105,18 +110,30 @@ test('starter queue keeps six drafts protected and permits one reviewed public g
     assert.ok(data.nextReviewDate, `${file} should schedule re-verification`);
     assert.ok(new Date(data.nextReviewDate) > new Date(data.lastVerified), `${file} review should follow verification`);
 
-    if (file === publishedStarter) {
+    if (publishedStarters.has(file)) {
       publicCount += 1;
       assert.equal(data.workflowStatus, 'published');
       assert.equal(data.verificationStatus, 'partially-confirmed');
       assert.equal(data.draft, false);
       assert.ok(Array.isArray(data.sources) && data.sources.length >= 4);
       assert.ok(data.sources.every((entry) => entry.designation === 'primary'));
-      assert.ok(data.sourceUrls.includes('https://www.india.gov.in/services'));
-      assert.ok(data.sourceUrls.includes('https://igod.gov.in/about_us'));
-      assert.ok(data.sourceUrls.every((value) => !value.includes('services.india.gov.in')));
-      assert.match(source, /পুরোনো `services\.india\.gov\.in` ঠিকানা এখন/);
       assert.doesNotMatch(source, /সম্পাদকীয় অবস্থা:.*লুকানো খসড়া/);
+
+      if (file === 'find-official-government-websites-and-services.md') {
+        assert.ok(data.sourceUrls.includes('https://www.india.gov.in/services'));
+        assert.ok(data.sourceUrls.includes('https://igod.gov.in/about_us'));
+        assert.ok(data.sourceUrls.every((value) => !value.includes('services.india.gov.in')));
+        assert.match(source, /পুরোনো `services\.india\.gov\.in` ঠিকানা এখন/);
+      }
+
+      if (file === 'use-digilocker-education-documents-safely.md') {
+        assert.ok(data.sourceUrls.includes('https://www.digilocker.gov.in/web/about/faq'));
+        assert.ok(data.sourceUrls.includes('https://verify.digilocker.gov.in/'));
+        assert.ok(data.sourceUrls.includes('https://nad.digilocker.gov.in/faq'));
+        assert.ok(data.sourceUrls.every((value) => !value.includes('/web/case-study')));
+        assert.match(source, /Issued Documents এবং uploaded file-এর পার্থক্য/);
+        assert.match(source, /প্রতিটি institution একই upload field/);
+      }
     } else {
       draftCount += 1;
       assert.equal(data.workflowStatus, 'draft');
@@ -132,8 +149,8 @@ test('starter queue keeps six drafts protected and permits one reviewed public g
     }
   }
 
-  assert.equal(publicCount, 1);
-  assert.equal(draftCount, 6);
+  assert.equal(publicCount, 2);
+  assert.equal(draftCount, 5);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
