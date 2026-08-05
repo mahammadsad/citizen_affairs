@@ -100,7 +100,8 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     opacity: 1 !important;
     filter: none !important;
     mix-blend-mode: normal !important;
-    transform: translateX(-.75rem);
+    /* Trim only the PNG's safe transparent gutter. A larger offset clips the C. */
+    transform: translateX(-.3rem);
     transform-origin: left center;
   }
 
