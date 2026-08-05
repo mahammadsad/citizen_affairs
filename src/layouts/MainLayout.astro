@@ -95,6 +95,22 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     min-width: max-content;
   }
 
+  :global(.news-home .top-news) {
+    padding: clamp(1rem, 2.6vw, 1.8rem) 0 clamp(1.7rem, 3.5vw, 2.8rem) !important;
+  }
+
+  :global(.news-home .news-section-list) {
+    gap: clamp(1.7rem, 4vw, 3rem) !important;
+  }
+
+  :global(.news-home .news-section-block) {
+    padding-top: .7rem !important;
+  }
+
+  :global(.news-home .news-section-block > header) {
+    margin-bottom: .75rem !important;
+  }
+
   :global(body.article-reading-mode .category-nav-shell),
   :global(body.article-reading-mode .portal-mobile-bottom) {
     display: none !important;
@@ -130,6 +146,15 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-mobile-panel) {
       top: 70px !important;
       max-height: calc(100vh - 90px) !important;
+    }
+
+    :global(.news-home .top-news) {
+      padding-top: .7rem !important;
+    }
+
+    :global(.news-home .section-title-row) {
+      margin-bottom: .65rem !important;
+      padding-bottom: .45rem !important;
     }
   }
 
