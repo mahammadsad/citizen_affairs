@@ -31,9 +31,26 @@ const {
   alternateUrls,
   robots,
 } = Astro.props;
+
+const routeSegments = Astro.url.pathname.split('/').filter(Boolean);
+const articleSegmentIndex = routeSegments.indexOf('articles');
+const isArticleDetailPage =
+  articleSegmentIndex >= 0 && routeSegments.length > articleSegmentIndex + 1;
+const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 ---
 
-<BaseLayout {title} {description} {image} {canonical} {ogType} {structuredData} {locale} {alternateUrls} {robots}>
+<BaseLayout
+  {title}
+  {description}
+  {image}
+  {canonical}
+  {ogType}
+  {structuredData}
+  {locale}
+  {alternateUrls}
+  {robots}
+  {bodyClass}
+>
   <PortalHeader {locale} {alternateUrls} />
   <PortalRuntime />
   <MobileNavigationRuntime />
@@ -76,7 +93,16 @@ const {
     min-width: max-content;
   }
 
+  :global(body.article-reading-mode .category-nav-shell),
+  :global(body.article-reading-mode .portal-mobile-bottom) {
+    display: none !important;
+  }
+
   @media (max-width: 680px) {
+    :global(body.article-reading-mode) {
+      padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
     :global(.portal-navbar-inner) {
       min-height: 78px !important;
       gap: .25rem !important;

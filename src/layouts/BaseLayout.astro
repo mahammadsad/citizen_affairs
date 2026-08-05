@@ -25,6 +25,7 @@ export interface Props {
   locale?: Locale;
   alternateUrls?: Partial<Record<Locale, string>>;
   robots?: string;
+  bodyClass?: string;
 }
 
 const {
@@ -36,7 +37,8 @@ const {
   structuredData,
   locale = 'en',
   alternateUrls = {},
-  robots = 'index, follow'
+  robots = 'index, follow',
+  bodyClass
 } = Astro.props;
 
 const brandName = getBrandName(locale);
@@ -173,7 +175,7 @@ const t = ui(locale);
     <script is:inline type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
     {extraSchemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
-  <body id="top">
+  <body id="top" class={bodyClass}>
     <a href="#page-content" class="skip-link">{t.skipToContent}</a>
     <span id="page-content" class="sr-only" tabindex="-1"></span>
     <slot />
