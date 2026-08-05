@@ -4,6 +4,11 @@ import { localizedFeedUrl, schemaLanguage } from '@lib/seo';
 import { getBrandName, getBrandTagline, SITE } from '@utils/constants';
 import type { Locale } from '../i18n';
 
+const articleUrl = (locale: Locale, slug: string) =>
+  locale === 'en'
+    ? `${SITE.url}/articles/${slug}/`
+    : `${SITE.url}/${locale}/articles/${slug}/`;
+
 export async function createLocalizedFeed(locale: Locale) {
   const articles = await getLocalizedArticles(locale);
   const feedUrl = localizedFeedUrl(locale);
@@ -19,7 +24,7 @@ export async function createLocalizedFeed(locale: Locale) {
       title: article.data.title,
       description: article.data.description,
       pubDate: article.data.updated || article.data.date,
-      link: `${SITE.url}/${article.data.language}/articles/${article.data.urlSlug}/`,
+      link: articleUrl(article.data.language, article.data.urlSlug),
       author: article.data.author,
       categories: [article.data.category, ...article.data.tags],
     })),
