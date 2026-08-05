@@ -6,6 +6,7 @@ const rootRoute = await readFile('src/pages/articles/[slug].astro', 'utf8');
 const localizedRoute = await readFile('src/pages/[lang]/articles/[slug].astro', 'utf8');
 const sitemap = await readFile('src/pages/sitemap.xml.ts', 'utf8');
 const feed = await readFile('src/lib/feed.ts', 'utf8');
+const seoValidator = await readFile('scripts/validate-seo.mjs', 'utf8');
 
 test('English articles are generated at the language-neutral canonical route', () => {
   assert.match(rootRoute, /data\.language === 'en'/);
@@ -52,5 +53,20 @@ test('RSS uses canonical root links for English articles and localized links oth
   assert.doesNotMatch(
     feed,
     /link: `\$\{SITE\.url\}\/\$\{article\.data\.language\}\/articles\//
+  );
+});
+
+test('SEO validation recognises root English detail pages and feed items', () => {
+  assert.match(
+    seoValidator,
+    /\['rss\.xml', 'en-IN', `\$\{site\}\/rss\.xml`, '\/articles\/'\]/
+  );
+  assert.match(
+    seoValidator,
+    /\^\(\?:articles\|\(\?:bn\|hi\)\\\/articles\)\\\/\[\^\/\]\+\\\/index\\\.html\$/
+  );
+  assert.doesNotMatch(
+    seoValidator,
+    /\['rss\.xml', 'en-IN', `\$\{site\}\/rss\.xml`, '\/en\/articles\/'\]/
   );
 });
