@@ -94,6 +94,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
       headerBackground: getComputedStyle(header).backgroundColor,
       headerHeight: navbar.getBoundingClientRect().height,
       headerBrandLeft: brandRect.left,
+      headerLogoLeft: logoRect.left,
       headerLogoWidth: logoRect.width,
       headerLogoRight: logoRect.right,
       actionsLeft: actionsRect.left,
@@ -116,6 +117,8 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
 
   expect(colours.headerHeight).toBeLessThanOrEqual(80);
   expect(colours.headerBrandLeft).toBeLessThanOrEqual(13);
+  expect(colours.headerLogoLeft).toBeGreaterThanOrEqual(colours.headerBrandLeft - 6);
+  expect(colours.headerLogoLeft).toBeLessThanOrEqual(colours.headerBrandLeft);
   expect(colours.headerLogoWidth).toBeGreaterThanOrEqual(184);
   expect(colours.headerLogoRight).toBeLessThanOrEqual(colours.actionsLeft + 1);
   expect(colours.documentWidth).toBeLessThanOrEqual(colours.viewportWidth);
