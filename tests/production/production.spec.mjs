@@ -17,6 +17,11 @@ const collectSchemaTypes = (value) => {
   return types;
 };
 
+const extractJsonLd = (html) =>
+  [...html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)].map(
+    (match) => JSON.parse(match[1].trim())
+  );
+
 const requestFresh = (request, path) =>
   request.get(`${path}${path.includes('?') ? '&' : '?'}nonce=${Date.now()}`, {
     headers: noCacheHeaders
@@ -148,14 +153,15 @@ test('every sitemap URL resolves from the live deployment', async ({ request }, 
   }
 });
 
-test('published article is available when sitemap lists one', async ({ page, request }, testInfo) => {
+test('published article is available when sitemap lists one', async ({ request }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One project is sufficient for the live article schema check.');
   const sitemap = await (await requestFresh(request, '/sitemap.xml')).text();
   const article = sitemap.match(/<loc>(https:\/\/citizenaffairs\.in\/(?:en|bn|hi)\/articles\/[^<]+)<\/loc>/)?.[1];
   if (!article) return;
-  const response = await page.goto(`${article}?nonce=${Date.now()}`);
-  expect(response?.status()).toBe(200);
-  const schemas = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((source) => JSON.parse(source));
+
+  const response = await request.get(`${article}?nonce=${Date.now()}`, { headers: noCacheHeaders });
+  expect(response.status()).toBe(200);
+  const schemas = extractJsonLd(await response.text());
   const articleTypes = schemas.flatMap(collectSchemaTypes).filter((type) => type === 'Article' || type === 'NewsArticle');
   expect(articleTypes).toHaveLength(1);
 });
