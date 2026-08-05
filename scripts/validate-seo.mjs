@@ -153,7 +153,7 @@ for (const path of walk(dist, '.html')) {
     }
   }
 
-  if (/^(?:en|bn|hi)\/articles\/[^/]+\/index\.html$/.test(file)) {
+  if (/^(?:articles|(?:bn|hi)\/articles)\/[^/]+\/index\.html$/.test(file)) {
     const types = parsedSchemas.flatMap(schemaTypes);
     if (!types.some((type) => type === 'Article' || type === 'NewsArticle')) {
       errors.push(`${file}: article schema is missing`);
@@ -168,7 +168,7 @@ for (const url of utilityUrls) {
 }
 
 const feedExpectations = [
-  ['rss.xml', 'en-IN', `${site}/rss.xml`, '/en/articles/'],
+  ['rss.xml', 'en-IN', `${site}/rss.xml`, '/articles/'],
   ['bn/rss.xml', 'bn-IN', `${site}/bn/rss.xml`, '/bn/articles/'],
   ['hi/rss.xml', 'hi-IN', `${site}/hi/rss.xml`, '/hi/articles/'],
 ];
