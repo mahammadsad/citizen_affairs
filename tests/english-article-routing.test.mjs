@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const rootRoute = await readFile('src/pages/articles/[slug].astro', 'utf8');
 const localizedRoute = await readFile('src/pages/[lang]/articles/[slug].astro', 'utf8');
+const sitemap = await readFile('src/pages/sitemap.xml.ts', 'utf8');
 
 test('English articles are generated at the language-neutral canonical route', () => {
   assert.match(rootRoute, /data\.language === 'en'/);
@@ -21,4 +22,15 @@ test('Every article edition points English alternates to the root article route'
   for (const route of [rootRoute, localizedRoute]) {
     assert.match(route, /\.map\(\(\[lang, entry\]\) => \[lang, articleUrl\(lang, entry!\.data\.urlSlug\)\]\)/);
   }
+});
+
+test('The sitemap publishes the same canonical root route for English articles', () => {
+  assert.match(
+    sitemap,
+    /localizedUrl\(\s*article\.data\.language,\s*`articles\/\$\{article\.data\.urlSlug\}`,\s*true\s*\)/
+  );
+  assert.doesNotMatch(
+    sitemap,
+    /`\$\{SITE\.url\}\/\$\{article\.data\.language\}\/articles\/\$\{article\.data\.urlSlug\}\//
+  );
 });
