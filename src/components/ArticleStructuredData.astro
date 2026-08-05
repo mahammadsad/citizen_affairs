@@ -22,9 +22,17 @@ const locale = data.language as Locale;
 const pageUrl = normalizeCanonicalUrl(canonical, SITE.url);
 const articleId = `${pageUrl}#article`;
 const webpageId = `${pageUrl}#webpage`;
-const authorEntry = await getAuthorData(data.author);
-const authorName = authorEntry?.data.name || data.author;
-const authorUrl = toAbsoluteUrl(authorProfilePath(locale, data.author), SITE.url);
+const normalizedAuthor = data.author.trim();
+const showHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const authorEntry = showHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
+const authorName = showHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
+const articleAuthor = showHumanAuthor && authorName
+  ? {
+      '@type': 'Person',
+      name: authorName,
+      url: toAbsoluteUrl(authorProfilePath(locale, normalizedAuthor), SITE.url),
+    }
+  : { '@id': SCHEMA_IDS.organization };
 const imageUrl = data.featuredImage
   ? toAbsoluteUrl(resolveAssetPath(data.featuredImage), SITE.url)
   : undefined;
@@ -52,11 +60,7 @@ const schemas: object[] = [
     lastReviewed: data.lastVerified?.toISOString(),
     isPartOf: { '@id': SCHEMA_IDS.website },
     publisher: { '@id': SCHEMA_IDS.organization },
-    author: {
-      '@type': 'Person',
-      name: authorName,
-      url: authorUrl,
-    },
+    author: articleAuthor,
     primaryImageOfPage: imageUrl
       ? {
           '@type': 'ImageObject',
