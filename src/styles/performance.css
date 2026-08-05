@@ -13,9 +13,79 @@ html[lang="hi"] {
   --font-body: "Nirmala UI", "Noto Sans Devanagari", system-ui, sans-serif;
 }
 
+/* Article tables must always stay inside the reading column. */
+.article-content {
+  min-width: 0;
+}
+
+.article-content table {
+  width: 100%;
+  max-width: 100%;
+  margin: 1.35rem 0;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.article-content th,
+.article-content td {
+  min-width: 0;
+  padding: 0.9rem 0.85rem;
+  vertical-align: top;
+  text-align: start;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.article-content th {
+  background: var(--color-surface-alt);
+  color: var(--color-navy);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+[data-theme="dark"] .article-content th {
+  color: #F2F5F9;
+}
+
+.article-content tr > :last-child {
+  border-right: 0;
+}
+
+.article-content tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.article-content th:first-child:nth-last-child(2),
+.article-content th:first-child:nth-last-child(2) ~ th,
+.article-content td:first-child:nth-last-child(2),
+.article-content td:first-child:nth-last-child(2) ~ td {
+  width: 50%;
+}
+
 @media (max-width: 720px) {
   .site-header {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+
+  .article-content table {
+    margin-inline: 0;
+    border-radius: 14px;
+    font-size: 0.94rem;
+  }
+
+  .article-content th,
+  .article-content td {
+    padding: 0.78rem 0.65rem;
+    line-height: 1.65;
   }
 }
