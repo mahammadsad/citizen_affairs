@@ -4,24 +4,25 @@ contentType: explainer
 workflowStatus: published
 translationKey: india-major-welfare-schemes-official-guide
 urlSlug: india-major-welfare-schemes-official-guide
-title: "ভারতের ১৪টি প্রধান কেন্দ্রীয় সরকারি প্রকল্প: বর্তমান তথ্য ও অফিসিয়াল লিংক"
-description: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA, MGNREGA-সহ ভারতের প্রধান
-  কেন্দ্রীয় জনকল্যাণ কর্মসূচির বর্তমান তথ্য, গুরুত্বপূর্ণ সংশোধন ও সরকারি
-  পোর্টাল এক জায়গায়।
+title: "ভারতের ১৪টি প্রধান কেন্দ্রীয় সরকারি প্রকল্প: বর্তমান অবস্থা ও অফিসিয়াল লিংক"
+description: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA, MGNREGA-সহ ১৪টি কেন্দ্রীয় জনকল্যাণ কর্মসূচির উদ্দেশ্য, বর্তমান অনুমোদন-স্থিতি ও সরকারি পোর্টাল এক জায়গায়।
 date: 2026-07-13
-updated: 2026-07-13
-lastVerified: 2026-07-13
-nextReviewDate: 2026-08-13
+updated: 2026-08-05
+lastVerified: 2026-08-05
+nextReviewDate: 2026-09-05
 author: mahammad-sad
 category: projects
 verificationStatus: partially-confirmed
 sourceUrls:
-  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2203007
-  - https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1980689
   - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2237548
-  - https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2043921
-  - https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1749749
-  - https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=1946816
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2222493
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2179514
+  - https://www.pib.gov.in/Pressreleaseshare.aspx?PRID=2043919
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2244630
+  - https://www.pmjdy.gov.in/scheme-detail.aspx
+  - https://pmposhan.education.gov.in/PAB_PM_POSHAN.html
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2212941
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2290085
   - https://amrut.mohua.gov.in/
   - https://beneficiary.nha.gov.in/
   - https://nfsa.gov.in/
@@ -31,12 +32,59 @@ sourceUrls:
   - https://www.spniwcd.wcd.gov.in/detail-mission-shakti
   - https://nhm.gov.in/
   - https://pmayg.nic.in/
-  - https://pmjdy.gov.in/scheme
   - https://pmkisan.gov.in/
   - https://pmposhan.education.gov.in/
   - https://www.spniwcd.wcd.gov.in/mission-saksham-anganwadi-and-poshan-2-0
   - https://samagra.education.gov.in/
-  - https://accountabilityindia.in/blog/know-your-scheme/
+sources:
+  - title: Jal Jeevan Mission 2.0 Cabinet approval
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2237548
+    publishingAuthority: Press Information Bureau, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Ayushman Vay Vandana Card update
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2222493
+    publishingAuthority: Ministry of Health and Family Welfare, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: NFSA free foodgrain continuation
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2179514
+    publishingAuthority: Press Information Bureau, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: PMAY-G continuation from 2024-25 to 2028-29
+    url: https://www.pib.gov.in/Pressreleaseshare.aspx?PRID=2043919
+    publishingAuthority: Ministry of Rural Development, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: PM-KISAN 22 instalment status
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2244630
+    publishingAuthority: Ministry of Agriculture and Farmers Welfare, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: PMJDY scheme details
+    url: https://www.pmjdy.gov.in/scheme-detail.aspx
+    publishingAuthority: Department of Financial Services, Ministry of Finance, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: PM POSHAN Programme Approval Board 2026-27
+    url: https://pmposhan.education.gov.in/PAB_PM_POSHAN.html
+    publishingAuthority: Department of School Education and Literacy, Ministry of Education, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
+  - title: Samagra Shiksha 3.0 consultation and 2026-27 planning
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2212941
+    publishingAuthority: Ministry of Education, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-05
 tags:
   - ভারতের সরকারি প্রকল্প
   - কেন্দ্রীয় সরকারি স্কিম
@@ -55,50 +103,41 @@ featuredImageSrcSet: /uploads/india-major-welfare-schemes-480.webp 480w, /upload
 featuredImageAvifSrcSet: /uploads/india-major-welfare-schemes-480.avif 480w, /uploads/india-major-welfare-schemes-768.avif 768w, /uploads/india-major-welfare-schemes-1200.avif 1200w
 featuredImageWidth: 1200
 featuredImageHeight: 675
-featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত
-  কেন্দ্রীয় প্রকল্পের যাচাইকৃত গাইডের সম্পাদকীয় গ্রাফিক
+featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত কেন্দ্রীয় প্রকল্পের যাচাইকৃত গাইডের সম্পাদকীয় গ্রাফিক
 draft: false
-seoTitle: "ভারতের প্রধান সরকারি প্রকল্প: বর্তমান অফিসিয়াল গাইড"
-seoDescription: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA ও MGNREGA-সহ ১৪টি
-  কেন্দ্রীয় প্রকল্পের সুবিধা, যোগ্যতা ও অফিসিয়াল পোর্টাল দেখুন।
+seoTitle: "ভারতের ১৪টি প্রধান সরকারি প্রকল্প: বর্তমান অফিসিয়াল গাইড"
+seoDescription: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA ও MGNREGA-সহ ১৪টি কেন্দ্রীয় প্রকল্পের বর্তমান অবস্থা ও অফিসিয়াল পোর্টাল দেখুন।
 governmentLevel: central
 quickSummary:
-  - Jal Jeevan Mission 2.0 ডিসেম্বর ২০২৮ পর্যন্ত অনুমোদিত এবং PMAY-G-এর বর্তমান
-    পর্যায় ২০২৮-২৯ অর্থবর্ষ পর্যন্ত নির্ধারিত।
-  - AMRUT 2.0, PM POSHAN ও Samagra Shiksha-র ৩১ মার্চ ২০২৬-পরবর্তী পূর্ণাঙ্গ
-    কেন্দ্রীয় অনুমোদন-স্থিতি প্রকাশের আগে আবার যাচাই করা প্রয়োজন।
+  - Jal Jeevan Mission 2.0 ডিসেম্বর ২০২৮ পর্যন্ত এবং PMAY-G-এর বর্তমান পর্যায় ২০২৮-২৯ অর্থবর্ষ পর্যন্ত অনুমোদিত।
+  - PM POSHAN বর্তমান শর্তে ৩০ সেপ্টেম্বর ২০২৬ অথবা পরবর্তী অনুমোদনের তারিখ—যেটি আগে—পর্যন্ত অস্থায়ীভাবে চালু আছে।
+  - AMRUT 2.0 ও Samagra Shiksha-র নতুন পূর্ণাঙ্গ বহু-বছরের অনুমোদন উদ্ধৃত করার আগে সর্বশেষ কেন্দ্রীয় নথি আবার যাচাই করতে হবে।
+updateHistory:
+  - "2026-08-05: সব উৎস সরকারি পোর্টালে সীমাবদ্ধ করা হয়েছে; PM POSHAN-এর অস্থায়ী ২০২৬-২৭ continuation এবং Samagra Shiksha-র বর্তমান approval boundary স্পষ্ট করা হয়েছে।"
 faqs:
   - question: এই ১৪টি সরকারি প্রকল্প কি ভারতের সব নাগরিকের জন্য?
-    answer: না। প্রতিটি কর্মসূচির লক্ষ্যগোষ্ঠী, আয়, বয়স, জমির মালিকানা, বাসস্থান,
-      শিক্ষা বা অন্য যোগ্যতার শর্ত আলাদা।
+    answer: না। প্রতিটি কর্মসূচির লক্ষ্যগোষ্ঠী, আয়, বয়স, জমি, বাসস্থান, শিক্ষা বা অন্য যোগ্যতার শর্ত আলাদা।
   - question: সব সরকারি প্রকল্পের জন্য কি একটি পোর্টাল থেকে আবেদন করা যায়?
-    answer: না। প্রতিটি প্রকল্পের আলাদা সরকারি পোর্টাল, রাজ্যভিত্তিক ব্যবস্থা বা
-      স্থানীয় দপ্তর থাকতে পারে।
+    answer: না। প্রতিটি প্রকল্পের আলাদা সরকারি পোর্টাল, রাজ্যভিত্তিক ব্যবস্থা বা স্থানীয় দপ্তর থাকতে পারে।
   - question: PM-KISAN কি শুধু ক্ষুদ্র ও প্রান্তিক কৃষকদের জন্য?
-    answer: না। সরকারি বর্জন-শর্ত সাপেক্ষে যোগ্য চাষযোগ্য জমির মালিক কৃষক পরিবার
-      PM-KISAN-এর আওতায় আসতে পারে।
+    answer: না। সরকারি বর্জন-শর্ত সাপেক্ষে যোগ্য চাষযোগ্য জমির মালিক কৃষক পরিবার PM-KISAN-এর আওতায় আসতে পারে।
   - question: ৭০ বছর বা তার বেশি বয়সীরা কি আয়ুষ্মান ভারত স্বাস্থ্যকভারের জন্য যোগ্য?
-    answer: কেন্দ্রের ২০২৪ সালের সম্প্রসারণ অনুযায়ী ৭০ বছর বা তার বেশি বয়সী প্রবীণ
-      নাগরিকরা আর্থসামাজিক অবস্থান নির্বিশেষে Ayushman Vay Vandana Card-এর জন্য
-      নথিভুক্ত হতে পারেন। বাস্তবায়নকারী রাজ্য বা কেন্দ্রশাসিত অঞ্চলের বর্তমান
-      ব্যবস্থা যাচাই করুন।
+    answer: কেন্দ্রের সম্প্রসারণ অনুযায়ী ৭০ বছর বা তার বেশি বয়সী প্রবীণ নাগরিকরা আর্থসামাজিক অবস্থান নির্বিশেষে Ayushman Vay Vandana Card-এর জন্য নথিভুক্ত হতে পারেন। বাস্তবায়নকারী রাজ্য বা কেন্দ্রশাসিত অঞ্চলের বর্তমান ব্যবস্থা যাচাই করুন।
 ---
-ভারতের কেন্দ্রীয় সরকার স্বাস্থ্য, খাদ্য, বাসস্থান, কৃষি, কর্মসংস্থান, পুষ্টি, নারী ও শিশুসুরক্ষা এবং স্কুলশিক্ষার জন্য বহু কর্মসূচি পরিচালনা করে। তবে পুরোনো ব্লগ বা ভিডিও দেখে আবেদন করা নিরাপদ নয়, কারণ কয়েকটি প্রকল্পের মেয়াদ, সুবিধা, যোগ্যতা ও নাম সময়ের সঙ্গে বদলেছে।
+ভারতের কেন্দ্রীয় সরকার স্বাস্থ্য, খাদ্য, বাসস্থান, কৃষি, কর্মসংস্থান, পুষ্টি, নারী ও শিশুসুরক্ষা এবং স্কুলশিক্ষার জন্য বহু কর্মসূচি পরিচালনা করে। কিন্তু সুবিধা, যোগ্যতা, সময়সীমা ও বাস্তবায়ন সময়ের সঙ্গে বদলাতে পারে। তাই পুরোনো ভিডিও, পোস্ট বা এজেন্টের কথার বদলে সংশ্লিষ্ট সরকারি পোর্টাল যাচাই করা জরুরি।
 
-এই গাইডে ১৩ জুলাই ২০২৬ পর্যন্ত পাওয়া সরকারি তথ্যের ভিত্তিতে ১৪টি গুরুত্বপূর্ণ কর্মসূচির উদ্দেশ্য, উল্লেখযোগ্য আপডেট এবং অফিসিয়াল পোর্টাল দেওয়া হলো। **সিটিজেন অ্যাফেয়ার্স একটি স্বাধীন তথ্যপ্ল্যাটফর্ম; এটি কোনো সরকারি ওয়েবসাইট নয়।** আবেদন বা ব্যক্তিগত তথ্য দেওয়ার আগে সংশ্লিষ্ট সরকারি পোর্টাল ও স্থানীয় কর্তৃপক্ষের কাছে সর্বশেষ নিয়ম যাচাই করুন।
+এই গাইডটি ৫ আগস্ট ২০২৬ পর্যন্ত পাওয়া সরকারি তথ্যের ভিত্তিতে ১৪টি গুরুত্বপূর্ণ কর্মসূচির উদ্দেশ্য, বর্তমান approval boundary এবং অফিসিয়াল পোর্টাল সহজ ভাষায় ব্যাখ্যা করে। **সিটিজেন অ্যাফেয়ার্স কোনো সরকারি ওয়েবসাইট নয়।** আবেদন, OTP, ব্যাংক তথ্য বা নথি দেওয়ার আগে সংশ্লিষ্ট দপ্তরের বর্তমান নিয়ম আবার মিলিয়ে নিন।
 
-## পুরোনো তথ্য থেকে গুরুত্বপূর্ণ কী বদলেছে?
+## সাম্প্রতিক গুরুত্বপূর্ণ পরিবর্তন
 
-
-| বিষয় | পুরোনো বা অসম্পূর্ণ তথ্য | বর্তমান যাচাইকৃত তথ্য |
-| ---------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Ayushman Bharat PM-JAY | মূলত অর্থনৈতিকভাবে দুর্বল পরিবারের স্বাস্থ্যকভার | অক্টোবর ২০২৪ থেকে ৭০ বছর বা তার বেশি বয়সী প্রবীণ নাগরিকদের আর্থসামাজিক অবস্থান নির্বিশেষে অন্তর্ভুক্ত করা হয়েছে |
-| NFSA ও PMGKAY | ২০২৩ সালের জন্য সীমিত সময়ের বিনামূল্যের খাদ্যশস্য | ১ জানুয়ারি ২০২৪ থেকে পাঁচ বছরের জন্য বিনামূল্যের খাদ্যশস্য অনুমোদিত |
-| Jal Jeevan Mission | ২০২৪ সালের পুরোনো লক্ষ্য | JJM 2.0 ডিসেম্বর ২০২৮ পর্যন্ত অনুমোদিত |
-| PMAY-G | মার্চ ২০২৪ পর্যন্ত পূর্ববর্তী পর্যায় | বর্তমান পর্যায় ২০২৪-২৫ থেকে ২০২৮-২৯; অতিরিক্ত ২ কোটি গ্রামীণ বাড়ির অনুমোদন |
-| PMJDY দুর্ঘটনা বিমা | সাধারণভাবে ₹১ লক্ষ বলা হয় | ২৮ আগস্ট ২০১৮-এর পরে খোলা যোগ্য PMJDY অ্যাকাউন্টের RuPay কার্ডে ₹২ লক্ষ; তার আগের অ্যাকাউন্টের ক্ষেত্রে ₹১ লক্ষ |
-| PM-KISAN যোগ্যতা | শুধু ক্ষুদ্র ও প্রান্তিক কৃষক | বর্জন-শর্ত সাপেক্ষে যোগ্য চাষযোগ্য জমির মালিক কৃষক পরিবার |
-
+| বিষয় | বর্তমান যাচাইকৃত অবস্থা |
+| --- | --- |
+| Ayushman Bharat PM-JAY | ৭০ বছর বা তার বেশি বয়সী প্রবীণদের জন্য Ayushman Vay Vandana Card ব্যবস্থা চালু আছে |
+| NFSA খাদ্যশস্য | ১ জানুয়ারি ২০২৪ থেকে পাঁচ বছরের জন্য প্রাপ্য খাদ্যশস্য বিনামূল্যে দেওয়ার কেন্দ্রীয় সিদ্ধান্ত রয়েছে |
+| Jal Jeevan Mission | JJM 2.0 ডিসেম্বর ২০২৮ পর্যন্ত অনুমোদিত |
+| PMAY-G | ২০২৪-২৫ থেকে ২০২৮-২৯ পর্যায়ে অতিরিক্ত ২ কোটি গ্রামীণ বাড়ির অনুমোদন রয়েছে |
+| PM POSHAN | পরবর্তী পাঁচ বছরের appraisal চলাকালীন বর্তমান শর্তে ৩০ সেপ্টেম্বর ২০২৬ অথবা নতুন approval—যেটি আগে—পর্যন্ত অস্থায়ী continuation রয়েছে |
+| Samagra Shiksha | ২০২৬-২৭ পরিকল্পনা ও implementation চলছে; পূর্ণ নতুন বহু-বছরের approval পাওয়া ছাড়া নির্দিষ্ট শেষ-তারিখ দাবি করা উচিত নয় |
 
 ## ভারতের ১৪টি প্রধান কেন্দ্রীয় কর্মসূচি
 
@@ -106,127 +145,121 @@ faqs:
 
 **দায়িত্বপ্রাপ্ত মন্ত্রক:** Ministry of Housing and Urban Affairs
 
-AMRUT 2.0 শহরে পানীয় জল, নিকাশি, সেপটেজ ব্যবস্থাপনা, জলাশয় পুনরুজ্জীবন এবং জলনিরাপত্তা উন্নত করার অবকাঠামোগত কর্মসূচি। এটি ব্যক্তিগত নগদ-সহায়তার প্রকল্প নয়।
+AMRUT 2.0 শহরের পানীয় জল, sewerage, septage management, জলাশয় পুনরুজ্জীবন ও জলনিরাপত্তার অবকাঠামোগত কর্মসূচি। এটি ব্যক্তিগত নগদ-সহায়তার প্রকল্প নয়। মূল অনুমোদিত সময়কাল ছিল ২০২১-২২ থেকে ২০২৫-২৬।
 
-মূল পাঁচ বছরের পরিকল্পনা ২০২১-২২ থেকে ২০২৫-২৬ পর্যন্ত ছিল। ৩১ মার্চ ২০২৬-এর পর কোনো শহরের নতুন প্রকল্প, সংযোগ বা কাজের বর্তমান অবস্থা জানতে সংশ্লিষ্ট Urban Local Body এবং [AMRUT-এর সরকারি পোর্টাল](https://amrut.mohua.gov.in/) যাচাই করুন।
+কোনো শহরে কাজ, সংযোগ বা নতুন প্রকল্পের বর্তমান অবস্থা জানতে সংশ্লিষ্ট Urban Local Body এবং [AMRUT-এর সরকারি পোর্টাল](https://amrut.mohua.gov.in/) যাচাই করুন। ৩১ মার্চ ২০২৬-এর পর নতুন কেন্দ্রীয় approval না দেখে বহু-বছরের continuation দাবি করবেন না।
 
 ### ২. Ayushman Bharat
 
-Ayushman Bharat-এর প্রধান অংশগুলির মধ্যে রয়েছে:
+Ayushman Bharat-এর গুরুত্বপূর্ণ অংশগুলির মধ্যে রয়েছে:
 
-- **AB PM-JAY:** যোগ্য পরিবারের জন্য হাসপাতালে ভর্তি-ভিত্তিক মাধ্যমিক ও তৃতীয় স্তরের চিকিৎসায় পরিবারপিছু বছরে ₹৫ লক্ষ পর্যন্ত স্বাস্থ্যকভার।
-- **৭০+ সম্প্রসারণ:** ৭০ বছর বা তার বেশি বয়সী প্রবীণ নাগরিকদের জন্য Ayushman Vay Vandana Card।
-- **Ayushman Arogya Mandir:** প্রাথমিক ও সমন্বিত স্বাস্থ্য পরিষেবা।
-- **Ayushman Bharat Digital Mission:** ABHA-সহ ডিজিটাল স্বাস্থ্য পরিকাঠামোর পরিষেবা।
+- **AB PM-JAY:** যোগ্য পরিবারের জন্য হাসপাতালে ভর্তি-ভিত্তিক secondary ও tertiary care-এ পরিবারপিছু বছরে ₹৫ লক্ষ পর্যন্ত কভার;
+- **Ayushman Vay Vandana:** ৭০ বছর বা তার বেশি বয়সী প্রবীণদের জন্য আলাদা card;
+- **Ayushman Arogya Mandir:** প্রাথমিক ও সমন্বিত স্বাস্থ্য পরিষেবা;
+- **Ayushman Bharat Digital Mission:** ABHA-সহ digital health infrastructure।
 
-যোগ্যতা, কার্ড বা তালিকাভুক্ত হাসপাতাল যাচাই করতে [NHA-এর অফিসিয়াল beneficiary portal](https://beneficiary.nha.gov.in/) ব্যবহার করুন। রাজ্যভেদে বাস্তবায়নের অবস্থা আলাদা হতে পারে।
+যোগ্যতা, card এবং empanelled hospital যাচাই করতে [NHA beneficiary portal](https://beneficiary.nha.gov.in/) ব্যবহার করুন। রাজ্যভেদে বাস্তবায়ন ও hospital network আলাদা হতে পারে।
 
-### ৩. NFSA, PMGKAY ও One Nation One Ration Card
+### ৩. NFSA, বিনামূল্যের খাদ্যশস্য ও One Nation One Ration Card
 
-National Food Security Act-এর অধীনে Antyodaya Anna Yojana এবং Priority Household শ্রেণির উপভোক্তারা নির্ধারিত খাদ্যশস্য পান। কেন্দ্রীয় মন্ত্রিসভার সিদ্ধান্ত অনুযায়ী ১ জানুয়ারি ২০২৪ থেকে পাঁচ বছরের জন্য প্রাপ্য খাদ্যশস্য বিনামূল্যে দেওয়ার ব্যবস্থা অনুমোদিত।
+National Food Security Act-এর অধীনে Antyodaya Anna Yojana এবং Priority Household শ্রেণির উপভোক্তারা নির্ধারিত খাদ্যশস্য পান। কেন্দ্রীয় সিদ্ধান্ত অনুযায়ী ১ জানুয়ারি ২০২৪ থেকে পাঁচ বছরের জন্য NFSA entitlement অনুযায়ী খাদ্যশস্য বিনামূল্যে দেওয়ার ব্যবস্থা রয়েছে।
 
-One Nation One Ration Card যোগ্য রেশনকার্ডধারীদের অন্য রাজ্য বা এলাকায় পোর্টেবিলিটির মাধ্যমে খাদ্যশস্য তোলার সুযোগ দেয়।
-
-রেশনকার্ড, entitlement এবং নিকটবর্তী Fair Price Shop যাচাই করতে [NFSA-এর সরকারি পোর্টাল](https://nfsa.gov.in/) ব্যবহার করুন।
+One Nation One Ration Card যোগ্য ration-card holder-কে portability-এর মাধ্যমে অন্য এলাকা বা রাজ্য থেকে খাদ্যশস্য তোলার সুযোগ দেয়। নিজের entitlement, ration card ও Fair Price Shop যাচাই করতে [NFSA portal](https://nfsa.gov.in/) ব্যবহার করুন।
 
 ### ৪. Jal Jeevan Mission 2.0
 
-Jal Jeevan Mission গ্রামীণ পরিবারে নিরাপদ নলবাহিত পানীয় জল পৌঁছে দেওয়া এবং দীর্ঘমেয়াদি পরিষেবা নিশ্চিত করার উদ্দেশ্যে পরিচালিত হয়। ১০ মার্চ ২০২৬-এর কেন্দ্রীয় মন্ত্রিসভার সিদ্ধান্তে JJM 2.0 ডিসেম্বর ২০২৮ পর্যন্ত অনুমোদিত হয়েছে।
+Jal Jeevan Mission গ্রামীণ পরিবারে নিরাপদ নলবাহিত পানীয় জল এবং দীর্ঘমেয়াদি service delivery নিশ্চিত করার উদ্দেশ্যে পরিচালিত হয়। কেন্দ্রীয় মন্ত্রিসভা JJM 2.0-কে ডিসেম্বর ২০২৮ পর্যন্ত অনুমোদন করেছে।
 
-পরিবার বা গ্রামের সংযোগ-অবস্থা জানতে [Jal Jeevan Mission-এর সরকারি পোর্টাল](https://jaljeevanmission.gov.in/) এবং স্থানীয় জল সরবরাহ দপ্তর দেখুন।
+পরিবার বা গ্রামের connection status জানতে [Jal Jeevan Mission portal](https://jaljeevanmission.gov.in/) এবং স্থানীয় জল সরবরাহ দপ্তর দেখুন। Portal-এর সংখ্যা বাস্তব household service quality-এর বিকল্প নয়।
 
 ### ৫. Mahatma Gandhi NREGA
 
-MGNREGA গ্রামীণ পরিবারের প্রাপ্তবয়স্ক সদস্যদের চাহিদার ভিত্তিতে একটি আর্থিক বছরে সর্বোচ্চ ১০০ দিনের অদক্ষ কায়িক কাজের আইনি নিশ্চয়তা দেয়।
+MGNREGA গ্রামীণ পরিবারের প্রাপ্তবয়স্ক সদস্যদের demand-এর ভিত্তিতে একটি আর্থিক বছরে সর্বোচ্চ ১০০ দিনের অদক্ষ কায়িক কাজের আইনি নিশ্চয়তা দেয়। কাজ স্বয়ংক্রিয়ভাবে পাওয়া যায় না; বৈধ Job Card থাকা এবং Gram Panchayat বা নির্ধারিত কর্তৃপক্ষের কাছে কাজ চাইতে হয়।
 
-১০০ দিনের কাজ স্বয়ংক্রিয়ভাবে দেওয়া হয় না। বৈধ Job Card থাকা এবং Gram Panchayat বা নির্ধারিত কর্তৃপক্ষের কাছে কাজ চাওয়া প্রয়োজন।
-
-Job Card, কাজের তালিকা, muster roll এবং পেমেন্ট স্ট্যাটাসের জন্য [MGNREGA-এর সরকারি পোর্টাল](https://nrega.nic.in/) দেখুন।
+Job Card, muster roll, কাজের তালিকা ও payment status-এর জন্য [MGNREGA portal](https://nrega.nic.in/) দেখুন।
 
 ### ৬. Mission Vatsalya
 
-Mission Vatsalya শিশু অধিকার, শিশুসুরক্ষা, পরিবারভিত্তিক যত্ন, Juvenile Justice ব্যবস্থা এবং কঠিন পরিস্থিতিতে থাকা শিশুদের সহায়তার জন্য পরিচালিত হয়।
+Mission Vatsalya শিশু অধিকার, শিশুসুরক্ষা, family-based care, Juvenile Justice ব্যবস্থা এবং কঠিন পরিস্থিতিতে থাকা শিশুদের সহায়তার framework। প্রতিষ্ঠানভিত্তিক care-কে শেষ বিকল্প হিসেবে রেখে পরিবার ও community-based care-এ গুরুত্ব দেওয়া হয়।
 
-Child Helpline **1098**-এর পরিষেবা ও স্থানীয় সহায়তা সম্পর্কে জানতে [Mission Vatsalya-এর সরকারি পেজ](https://www.spniwcd.wcd.gov.in/detail-mission-vatsalya) এবং সংশ্লিষ্ট জেলা শিশুসুরক্ষা ইউনিটের সঙ্গে যোগাযোগ করুন।
+স্থানীয় সহায়তার জন্য [Mission Vatsalya page](https://www.spniwcd.wcd.gov.in/detail-mission-vatsalya), District Child Protection Unit এবং Child Helpline 1098-এর বর্তমান ব্যবস্থা যাচাই করুন।
 
 ### ৭. Mission Shakti
 
-Mission Shakti নারী নিরাপত্তা, সুরক্ষা ও ক্ষমতায়নের umbrella programme। এর প্রধান দুটি অংশ:
+Mission Shakti নারী নিরাপত্তা, সুরক্ষা ও ক্ষমতায়নের umbrella programme। এর দুটি sub-scheme:
 
-- **Sambal:** One Stop Centre, Women Helpline 181, Beti Bachao Beti Padhao-সহ নিরাপত্তা ও সহায়তা।
-- **Samarthya:** নারী ক্ষমতায়ন, আবাসন, শিশুযত্ন এবং সংশ্লিষ্ট পরিষেবা।
+- **Sambal:** One Stop Centre, Women Helpline, Beti Bachao Beti Padhao-সহ safety support;
+- **Samarthya:** empowerment, accommodation, childcare এবং সংশ্লিষ্ট support।
 
-উপাদানভিত্তিক তথ্যের জন্য [Mission Shakti-এর সরকারি পেজ](https://www.spniwcd.wcd.gov.in/detail-mission-shakti) দেখুন।
+Component ও স্থানীয় availability জানতে [Mission Shakti-এর সরকারি পেজ](https://www.spniwcd.wcd.gov.in/detail-mission-shakti) দেখুন।
 
 ### ৮. National Health Mission
 
-National Health Mission-এর মধ্যে National Rural Health Mission এবং National Urban Health Mission রয়েছে। এর কাজের মধ্যে স্বাস্থ্যব্যবস্থা শক্তিশালী করা, মাতৃ ও শিশুসেবা, সংক্রামক ও অসংক্রামক রোগ এবং জনস্বাস্থ্য পরিষেবা অন্তর্ভুক্ত।
+National Health Mission-এর মধ্যে National Rural Health Mission এবং National Urban Health Mission রয়েছে। স্বাস্থ্যব্যবস্থা শক্তিশালী করা, মাতৃ ও শিশুসেবা, communicable ও non-communicable disease এবং public-health delivery এর গুরুত্বপূর্ণ অংশ।
 
-রাজ্যভিত্তিক স্বাস্থ্য কর্মসূচি, অনুমোদন ও নথির জন্য [NHM-এর সরকারি পোর্টাল](https://nhm.gov.in/) ব্যবহার করুন।
+রাজ্যভিত্তিক programme, approval ও documents-এর জন্য [NHM portal](https://nhm.gov.in/) এবং সংশ্লিষ্ট State Health Mission দেখুন।
 
 ### ৯. Pradhan Mantri Awaas Yojana–Gramin
 
-PMAY-G যোগ্য গ্রামীণ পরিবারকে মৌলিক সুবিধাসহ পাকা বাড়ি নির্মাণে সহায়তা করে। কেন্দ্রীয় অনুমোদন অনুযায়ী বর্তমান পর্যায় ২০২৪-২৫ থেকে ২০২৮-২৯ পর্যন্ত এবং এতে অতিরিক্ত ২ কোটি গ্রামীণ বাড়ির সর্বোচ্চ লক্ষ্য রাখা হয়েছে।
+PMAY-G যোগ্য গ্রামীণ পরিবারকে basic amenities-সহ pucca house নির্মাণে সহায়তা করে। বর্তমান কেন্দ্রীয় পর্যায় ২০২৪-২৫ থেকে ২০২৮-২৯ এবং অতিরিক্ত ২ কোটি বাড়ির ceiling অনুমোদিত।
 
-উপভোক্তা নির্বাচন Gram Sabha, সরকারি সমীক্ষা, Awaas+ তালিকা এবং প্রযোজ্য বর্জন-শর্তের ওপর নির্ভর করে। কোনো ব্যক্তিগত এজেন্টকে টাকা দেবেন না।
-
-অফিসিয়াল তথ্যের জন্য [PMAY-G পোর্টাল](https://pmayg.nic.in/) দেখুন।
+Beneficiary selection SECC, Awaas+ list, modified exclusion criteria, Gram Sabha verification এবং appeal process-এর ওপর নির্ভর করে। [PMAY-G portal](https://pmayg.nic.in/) ব্যবহার করুন এবং কোনো agent-কে selection বা sanction-এর জন্য টাকা দেবেন না।
 
 ### ১০. Pradhan Mantri Jan-Dhan Yojana
 
-PMJDY-র লক্ষ্য ব্যাংকিং পরিষেবার বাইরে থাকা প্রাপ্তবয়স্কদের basic savings account, RuPay card, DBT এবং অন্যান্য আর্থিক পরিষেবার সঙ্গে যুক্ত করা।
+PMJDY banking access-এর বাইরে থাকা ব্যক্তিদের basic savings account, RuPay card, DBT এবং অন্যান্য financial service-এর সঙ্গে যুক্ত করার কর্মসূচি।
 
-গুরুত্বপূর্ণ বিষয়:
+মূল সুবিধা:
 
-- basic savings account-এ সাধারণত minimum balance রাখা বাধ্যতামূলক নয়;
-- যোগ্য অ্যাকাউন্টে overdraft সুবিধা সর্বোচ্চ ₹১০,০০০ হতে পারে; এটি স্বয়ংক্রিয় অধিকার নয়;
-- ২৮ আগস্ট ২০১৮-এর পরে খোলা যোগ্য PMJDY অ্যাকাউন্টের RuPay কার্ডে ₹২ লক্ষ দুর্ঘটনা বিমা; তার আগের অ্যাকাউন্টের ক্ষেত্রে ₹১ লক্ষ।
+- minimum balance রাখা বাধ্যতামূলক নয়;
+- eligible account-এ overdraft সর্বোচ্চ ₹১০,০০০ পর্যন্ত হতে পারে;
+- ২৮ আগস্ট ২০১৮-এর পরে খোলা eligible account-এর RuPay card-এ ₹২ লক্ষ accident insurance; আগের account-এ ₹১ লক্ষ।
 
-বিস্তারিত শর্তের জন্য [PMJDY-এর সরকারি scheme page](https://pmjdy.gov.in/scheme) এবং সংশ্লিষ্ট ব্যাংকের সঙ্গে যোগাযোগ করুন।
+বিস্তারিত শর্তের জন্য [PMJDY scheme page](https://www.pmjdy.gov.in/scheme-detail.aspx) এবং নিজের bank-এর official channel ব্যবহার করুন।
 
 ### ১১. Pradhan Mantri Kisan Samman Nidhi
 
-PM-KISAN-এ যোগ্য চাষযোগ্য জমির মালিক কৃষক পরিবারকে বছরে ₹৬,০০০ তিনটি সমান কিস্তিতে DBT-এর মাধ্যমে দেওয়া হয়।
+PM-KISAN-এ cultivable landholding farmer family-কে বছরে ₹৬,০০০ তিনটি সমান instalment-এ DBT-এর মাধ্যমে দেওয়া হয়। Institutional landholder এবং নির্দিষ্ট higher-income বা professional category-সহ সরকারি exclusion list প্রযোজ্য।
 
-প্রকল্পটি শুধু ক্ষুদ্র ও প্রান্তিক কৃষকের মধ্যে সীমাবদ্ধ নয়। তবে institutional landholder, নির্দিষ্ট উচ্চ-আয় বা পেশাগত শ্রেণি এবং সরকারি বর্জন-তালিকায় থাকা পরিবার যোগ্য নয়। জমির রেকর্ড, Aadhaar seeding, ব্যাংক তথ্য এবং e-KYC সম্পূর্ণ থাকা প্রয়োজন হতে পারে।
-
-নিবন্ধন, e-KYC ও beneficiary status-এর জন্য [PM-KISAN-এর সরকারি পোর্টাল](https://pmkisan.gov.in/) ব্যবহার করুন।
+Registration, e-KYC এবং beneficiary status-এর জন্য [PM-KISAN portal](https://pmkisan.gov.in/) ব্যবহার করুন। Aadhaar-seeded bank account ও land record-এর তথ্য মিলিয়ে রাখুন।
 
 ### ১২. PM POSHAN
 
-PM POSHAN, পূর্বের Mid-Day Meal Scheme, সরকারি ও সরকারি-সহায়তাপ্রাপ্ত বিদ্যালয়ের নির্ধারিত শিক্ষার্থীদের রান্না করা পুষ্টিকর খাবার দেওয়ার কেন্দ্রীয়ভাবে সহায়তাপ্রাপ্ত কর্মসূচি।
+PM POSHAN সরকারি ও সরকারি-সহায়তাপ্রাপ্ত বিদ্যালয়ের নির্ধারিত শিক্ষার্থীদের রান্না করা খাবার দেওয়ার centrally sponsored programme। আগের পাঁচ-বছরের approval ২০২৫-২৬-এ শেষ হয়েছে। পরবর্তী cycle-এর appraisal চলাকালীন Ministry of Finance বর্তমান scope, structure, coverage এবং cost norms-সহ scheme-টি **৩০ সেপ্টেম্বর ২০২৬ অথবা নতুন approval-এর তারিখ—যেটি আগে—পর্যন্ত** অস্থায়ীভাবে চালু রাখার অনুমতি দিয়েছে।
 
-পূর্ববর্তী কেন্দ্রীয় অনুমোদনের সময়সীমা ২০২৫-২৬ অর্থবর্ষ পর্যন্ত ছিল। ৩১ মার্চ ২০২৬-এর পর সংশ্লিষ্ট রাজ্যে বর্তমান অনুমোদন, শ্রেণি-কভারেজ, menu বা অভিযোগব্যবস্থা সম্পর্কে [PM POSHAN-এর সরকারি পোর্টাল](https://pmposhan.education.gov.in/) এবং বিদ্যালয় কর্তৃপক্ষের কাছে যাচাই করুন।
+State/UT Annual Work Plan, meal coverage ও grievance ব্যবস্থা জানতে [PM POSHAN PAB page](https://pmposhan.education.gov.in/PAB_PM_POSHAN.html) এবং বিদ্যালয় কর্তৃপক্ষের তথ্য মিলিয়ে নিন।
 
 ### ১৩. Saksham Anganwadi and Poshan 2.0
 
-এই umbrella programme-এর আওতায় রয়েছে:
+এই umbrella programme-এর মধ্যে রয়েছে:
 
-- ছয় বছরের কম বয়সী শিশুদের পুষ্টি সহায়তা;
-- গর্ভবতী ও স্তন্যদানকারী মায়েদের পরিষেবা;
-- নির্ধারিত শ্রেণির কিশোরীদের পুষ্টি সহায়তা;
+- ৬ মাস থেকে ৬ বছর বয়সী শিশুদের nutrition support;
+- pregnant ও lactating mother-এর services;
+- নির্ধারিত এলাকায় ১৪–১৮ বছরের adolescent girl-এর nutrition support;
 - Early Childhood Care and Education;
-- Anganwadi অবকাঠামো ও Poshan Tracker।
+- Anganwadi infrastructure, Poshan Abhiyaan ও Poshan Tracker।
 
-বাস্তবায়ন রাজ্য সরকার ও স্থানীয় Anganwadi ব্যবস্থার মাধ্যমে হয়। বিস্তারিত জানতে [Poshan 2.0-এর সরকারি পেজ](https://www.spniwcd.wcd.gov.in/mission-saksham-anganwadi-and-poshan-2-0) দেখুন।
+Services রাজ্য ও স্থানীয় Anganwadi system-এর মাধ্যমে দেওয়া হয়। [Poshan 2.0-এর সরকারি পেজ](https://www.spniwcd.wcd.gov.in/mission-saksham-anganwadi-and-poshan-2-0) থেকে বর্তমান beneficiary ও service details দেখুন।
 
 ### ১৪. Samagra Shiksha
 
-Samagra Shiksha প্রাক্-প্রাথমিক স্তর থেকে দ্বাদশ শ্রেণি পর্যন্ত স্কুলশিক্ষাকে সমন্বিতভাবে সহায়তা করে। এর মধ্যে অবকাঠামো, অন্তর্ভুক্তিমূলক শিক্ষা, শিক্ষক উন্নয়ন, মেয়েদের শিক্ষা এবং শিক্ষার ফল উন্নয়ন অন্তর্ভুক্ত।
+Samagra Shiksha pre-school থেকে Class XII পর্যন্ত school education-এর integrated programme। Infrastructure, inclusive education, teacher development, girls’ education, vocational education এবং learning outcome উন্নয়ন এর অংশ।
 
-পূর্ববর্তী কেন্দ্রীয় অনুমোদন-পর্ব ২০২১-২২ থেকে ২০২৫-২৬ পর্যন্ত ছিল। ২০২৬-২৭-এর নতুন framework, অর্থ বরাদ্দ বা নির্দিষ্ট সুবিধা উদ্ধৃত করার আগে [Samagra Shiksha-এর সরকারি পোর্টাল](https://samagra.education.gov.in/) ও শিক্ষা মন্ত্রকের সর্বশেষ নথি যাচাই করুন।
+আগের অনুমোদিত পাঁচ-বছরের phase ৩১ মার্চ ২০২৬-এ শেষ হয়েছে। ২০২৬ সালের সরকারি consultation ও ২০২৬-২৭ planning documents দেখায় যে programme implementation পরবর্তী পর্যায়ে চলছে; জুলাই ২০২৬-এর সরকারি উত্তরেও ICT lab ও smart classroom-এর কাজ Samagra Shiksha-এর মাধ্যমে চলার কথা বলা হয়েছে। তবে পূর্ণ নতুন বহু-বছরের Cabinet/CCEA approval না দেখে নির্দিষ্ট শেষ-তারিখ বা মোট outlay দাবি করা নিরাপদ নয়।
 
-## প্রকল্পের সুবিধা নেওয়ার আগে কী যাচাই করবেন?
+[Samagra Shiksha portal](https://samagra.education.gov.in/) এবং Ministry of Education-এর latest document যাচাই করুন।
 
-1. প্রকল্পটি কেন্দ্রীয়, রাজ্যভিত্তিক না স্থানীয়, তা দেখুন।
-2. নিজের বয়স, আয়, জমি, বাসস্থান, শিক্ষা বা অন্য যোগ্যতার শর্ত মিলিয়ে নিন।
-3. শুধুমাত্র `.gov.in`, `.nic.in` বা সংশ্লিষ্ট সরকারি কর্তৃপক্ষের অনুমোদিত পোর্টাল ব্যবহার করুন।
-4. Aadhaar, OTP, ব্যাংক তথ্য বা নথি অজানা ব্যক্তি, WhatsApp নম্বর বা অননুমোদিত ওয়েবসাইটে পাঠাবেন না।
-5. আবেদন নম্বর, acknowledgement এবং জমা দেওয়া নথির কপি সংরক্ষণ করুন।
-6. পুরোনো YouTube ভিডিও, ব্লগ বা সোশ্যাল মিডিয়ার দাবি সরকারি পোর্টালের সঙ্গে মিলিয়ে নিন।
+## সুবিধা নেওয়ার আগে ছয়টি যাচাই
 
-## অফিসিয়াল উৎস ও নিরাপত্তা নোট
+1. প্রকল্পটি central, state না local—তা দেখুন।
+2. বয়স, আয়, জমি, বাসস্থান, শিক্ষা ও exclusion condition মিলিয়ে নিন।
+3. official government portal বা সংশ্লিষ্ট department-এর verified link ব্যবহার করুন।
+4. OTP, PIN, Aadhaar, bank details বা documents কোনো agent বা WhatsApp number-এ দেবেন না।
+5. acknowledgement, application number ও জমা দেওয়া document-এর copy রাখুন।
+6. eligibility বা approval-এর নিশ্চয়তা দাবি করা paid agent এড়িয়ে চলুন।
 
-এই নিবন্ধটি সরকারি বিজ্ঞপ্তি ও সরকারি পোর্টালের তথ্য সহজ ভাষায় ব্যাখ্যা করে; এটি সরকারি কর্তৃপক্ষের বিকল্প নয়। প্রকল্পের যোগ্যতা, অর্থের পরিমাণ, স্থানীয় বাস্তবায়ন এবং আবেদন-পদ্ধতি রাজ্য বা সময় অনুযায়ী বদলাতে পারে।
+## সম্পাদকীয় সীমা
 
-**কোনো এজেন্ট নির্বাচনের নিশ্চয়তা, দ্রুত অনুমোদন বা টাকা নিয়ে সরকারি সুবিধা পাইয়ে দেওয়ার দাবি করলে সংশ্লিষ্ট দপ্তর বা সরকারি অভিযোগ ব্যবস্থায় জানান।**
+এই নিবন্ধ সরকারি portal ও release সহজ ভাষায় ব্যাখ্যা করে; এটি কোনো scheme-এ eligibility, sanction বা payment নিশ্চিত করে না। Local implementation, beneficiary list, fund release এবং application process সময় ও রাজ্য অনুযায়ী বদলাতে পারে।
+
+**কোনো ব্যক্তি টাকা নিয়ে সরকারি সুবিধা নিশ্চিত করার দাবি করলে সংশ্লিষ্ট department বা official grievance channel-এ জানান।**
