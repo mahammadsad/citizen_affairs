@@ -72,6 +72,7 @@ for (const viewport of viewports) {
       if (!content) throw new Error('Article table is not inside the article content column.');
       const tableRect = element.getBoundingClientRect();
       const contentRect = content.getBoundingClientRect();
+      const viewportWidth = document.documentElement.clientWidth;
       const cellOverflow = Array.from(element.querySelectorAll('th, td'))
         .filter((cell) => cell.scrollWidth > cell.clientWidth + 2)
         .map((cell) => ({
@@ -86,6 +87,9 @@ for (const viewport of viewports) {
         contentRight: contentRect.right,
         leftInset: tableRect.left - contentRect.left,
         rightInset: contentRect.right - tableRect.right,
+        leftViewportGutter: tableRect.left,
+        rightViewportGutter: viewportWidth - tableRect.right,
+        viewportWidth,
         clientWidth: element.clientWidth,
         scrollWidth: element.scrollWidth,
         cellOverflow,
@@ -102,9 +106,20 @@ for (const viewport of viewports) {
     expect(measurements.documentWidth, JSON.stringify(measurements.overflowing)).toBeLessThanOrEqual(measurements.viewportWidth);
     expect(Math.abs(measurements.renderedRatio - measurements.intrinsicRatio)).toBeLessThan(0.02);
 
-    expect(tableMeasurements.tableLeft).toBeGreaterThanOrEqual(tableMeasurements.contentLeft - 1);
-    expect(tableMeasurements.tableRight).toBeLessThanOrEqual(tableMeasurements.contentRight + 1);
-    expect(Math.abs(tableMeasurements.leftInset - tableMeasurements.rightInset)).toBeLessThanOrEqual(2);
+    expect(tableMeasurements.tableLeft).toBeGreaterThanOrEqual(0);
+    expect(tableMeasurements.tableRight).toBeLessThanOrEqual(tableMeasurements.viewportWidth + 1);
+    if (viewport.width <= 680) {
+      expect(tableMeasurements.leftViewportGutter).toBeGreaterThanOrEqual(12);
+      expect(tableMeasurements.rightViewportGutter).toBeGreaterThanOrEqual(12);
+      expect(
+        Math.abs(tableMeasurements.leftViewportGutter - tableMeasurements.rightViewportGutter),
+        JSON.stringify(tableMeasurements),
+      ).toBeLessThanOrEqual(2);
+    } else {
+      expect(tableMeasurements.tableLeft).toBeGreaterThanOrEqual(tableMeasurements.contentLeft - 1);
+      expect(tableMeasurements.tableRight).toBeLessThanOrEqual(tableMeasurements.contentRight + 1);
+      expect(Math.abs(tableMeasurements.leftInset - tableMeasurements.rightInset)).toBeLessThanOrEqual(2);
+    }
     expect(tableMeasurements.scrollWidth).toBeLessThanOrEqual(tableMeasurements.clientWidth + 2);
     expect(tableMeasurements.cellOverflow).toEqual([]);
   });
