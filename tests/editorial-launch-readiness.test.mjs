@@ -19,13 +19,7 @@ const starterFiles = [
   'report-fake-government-message-and-website.md',
   'find-official-government-websites-and-services.md',
 ];
-const publishedStarters = new Set([
-  'find-official-government-websites-and-services.md',
-  'use-digilocker-education-documents-safely.md',
-  'find-government-schemes-with-myscheme.md',
-  'update-aadhaar-and-check-status-officially.md',
-  'report-fake-government-message-and-website.md',
-]);
+const publishedStarters = new Set(starterFiles);
 
 function frontmatter(source) {
   const match = source.match(/^---\s*\n([\s\S]*?)\n---(?:\s*\n|$)/);
@@ -75,7 +69,7 @@ test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
 
-test('starter queue keeps two drafts protected and permits five reviewed public guides', async () => {
+test('starter queue permits all seven reviewed public Bengali guides', async () => {
   const files = await readdir(bengaliDirectory);
   const found = starterFiles.filter((file) => files.includes(file));
   assert.deepEqual(found.sort(), [...starterFiles].sort());
@@ -88,7 +82,9 @@ test('starter queue keeps two drafts protected and permits five reviewed public 
     'www.pib.gov.in',
     'factcheck.pib.gov.in',
     'cybercrime.gov.in',
+    'www.cybercrime.gov.in',
     'www.dot.gov.in',
+    'nta.ac.in',
     'www.nta.ac.in',
     'www.digilocker.gov.in',
     'verify.digilocker.gov.in',
@@ -99,7 +95,6 @@ test('starter queue keeps two drafts protected and permits five reviewed public 
     'www.myscheme.gov.in',
   ]);
 
-  let draftCount = 0;
   let publicCount = 0;
 
   for (const file of starterFiles) {
@@ -114,69 +109,62 @@ test('starter queue keeps two drafts protected and permits five reviewed public 
     assert.ok(data.lastVerified, `${file} should record source verification`);
     assert.ok(data.nextReviewDate, `${file} should schedule re-verification`);
     assert.ok(new Date(data.nextReviewDate) > new Date(data.lastVerified), `${file} review should follow verification`);
+    assert.ok(publishedStarters.has(file));
 
-    if (publishedStarters.has(file)) {
-      publicCount += 1;
-      assert.equal(data.workflowStatus, 'published');
-      assert.equal(data.verificationStatus, 'partially-confirmed');
-      assert.equal(data.draft, false);
-      assert.ok(Array.isArray(data.sources) && data.sources.length >= 4);
-      assert.ok(data.sources.every((entry) => entry.designation === 'primary'));
-      assert.doesNotMatch(source, /সম্পাদকীয় অবস্থা:.*লুকানো খসড়া/);
+    publicCount += 1;
+    assert.equal(data.workflowStatus, 'published');
+    assert.equal(data.verificationStatus, 'partially-confirmed');
+    assert.equal(data.draft, false);
+    assert.ok(Array.isArray(data.sources) && data.sources.length >= 4);
+    assert.ok(data.sources.every((entry) => entry.designation === 'primary'));
+    assert.doesNotMatch(source, /সম্পাদকীয় অবস্থা:.*লুকানো খসড়া/);
 
-      if (file === 'find-official-government-websites-and-services.md') {
-        assert.ok(data.sourceUrls.includes('https://www.india.gov.in/services'));
-        assert.ok(data.sourceUrls.includes('https://igod.gov.in/about_us'));
-        assert.ok(data.sourceUrls.every((value) => !value.includes('services.india.gov.in')));
-        assert.match(source, /পুরোনো `services\.india\.gov\.in` ঠিকানা এখন/);
-      }
+    if (file === 'find-official-government-websites-and-services.md') {
+      assert.ok(data.sourceUrls.includes('https://www.india.gov.in/services'));
+      assert.ok(data.sourceUrls.includes('https://igod.gov.in/about_us'));
+      assert.ok(data.sourceUrls.every((value) => !value.includes('services.india.gov.in')));
+      assert.match(source, /পুরোনো `services\.india\.gov\.in` ঠিকানা এখন/);
+    }
 
-      if (file === 'use-digilocker-education-documents-safely.md') {
-        assert.ok(data.sourceUrls.includes('https://www.digilocker.gov.in/web/about/faq'));
-        assert.ok(data.sourceUrls.includes('https://verify.digilocker.gov.in/'));
-        assert.ok(data.sourceUrls.includes('https://nad.digilocker.gov.in/faq'));
-        assert.ok(data.sourceUrls.every((value) => !value.includes('/web/case-study')));
-        assert.match(source, /Issued Documents এবং uploaded file-এর পার্থক্য/);
-        assert.match(source, /প্রতিটি institution একই upload field/);
-      }
+    if (file === 'use-digilocker-education-documents-safely.md') {
+      assert.ok(data.sourceUrls.includes('https://www.digilocker.gov.in/web/about/faq'));
+      assert.ok(data.sourceUrls.includes('https://verify.digilocker.gov.in/'));
+      assert.ok(data.sourceUrls.includes('https://nad.digilocker.gov.in/faq'));
+      assert.ok(data.sourceUrls.every((value) => !value.includes('/web/case-study')));
+      assert.match(source, /Issued Documents এবং uploaded file-এর পার্থক্য/);
+      assert.match(source, /প্রতিটি institution একই upload field/);
+    }
 
-      if (file === 'find-government-schemes-with-myscheme.md') {
-        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/faqs'));
-        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/terms-of-use'));
-        assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/find-scheme/scheme-category'));
-        assert.match(source, /চূড়ান্ত eligibility certificate বা benefit approval নয়/);
-        assert.match(source, /Application handoff নিরাপদে যাচাই করুন/);
-      }
+    if (file === 'find-government-schemes-with-myscheme.md') {
+      assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/faqs'));
+      assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/terms-of-use'));
+      assert.ok(data.sourceUrls.includes('https://www.myscheme.gov.in/find-scheme/scheme-category'));
+      assert.match(source, /চূড়ান্ত eligibility certificate বা benefit approval নয়/);
+      assert.match(source, /Application handoff নিরাপদে যাচাই করুন/);
+    }
 
-      if (file === 'update-aadhaar-and-check-status-officially.md') {
-        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/updating-data-on-aadhaar'));
-        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1474-english-uk/faqs/your-aadhaar/aadhaar-app/19854-how-to-update-a-mobile-number-through-the-aadhaar-app.html'));
-        assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1061-english-uk/faqs/aadhaar-online-services/document-update.html'));
-        assert.ok(data.sourceUrls.includes('https://myaadhaar.uidai.gov.in/'));
-        assert.match(source, /Mobile number update-এর বর্তমান নিয়ম/);
-        assert.match(source, /প্রথমবার mobile number register/);
-        assert.match(source, /14 June 2027 পর্যন্ত fee ছাড়া/);
-        assert.match(source, /request accepted বা rejected/);
-      }
+    if (file === 'update-aadhaar-and-check-status-officially.md') {
+      assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/updating-data-on-aadhaar'));
+      assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1474-english-uk/faqs/your-aadhaar/aadhaar-app/19854-how-to-update-a-mobile-number-through-the-aadhaar-app.html'));
+      assert.ok(data.sourceUrls.includes('https://uidai.gov.in/en/1061-english-uk/faqs/aadhaar-online-services/document-update.html'));
+      assert.ok(data.sourceUrls.includes('https://myaadhaar.uidai.gov.in/'));
+      assert.match(source, /Mobile number update-এর বর্তমান নিয়ম/);
+      assert.match(source, /প্রথমবার mobile number register/);
+      assert.match(source, /14 June 2027 পর্যন্ত fee ছাড়া/);
+      assert.match(source, /request accepted বা rejected/);
+    }
 
-      if (file === 'report-fake-government-message-and-website.md') {
-        assert.ok(data.sourceUrls.includes('https://www.pib.gov.in/FAQ_fact.aspx?lang=1&reg=3'));
-        assert.ok(data.sourceUrls.includes('https://factcheck.pib.gov.in/'));
-        assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/cyber_suspect.aspx'));
-        assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/suspect_search_websites.aspx'));
-        assert.ok(data.sourceUrls.some((value) => value.startsWith('https://www.dot.gov.in/offerings/schemes-and-services/details/sanchar-saathi')));
-        assert.match(source, /Government of India claim হলে PIB Fact Check/);
-        assert.match(source, /Report Suspect facility/);
-        assert.match(source, /1930-এ অবিলম্বে call/);
-        assert.match(source, /Call, SMS বা WhatsApp হলে Chakshu/);
-        assert.match(source, /safe certificate নয়/);
-      }
-    } else {
-      draftCount += 1;
-      assert.equal(data.workflowStatus, 'draft');
-      assert.equal(data.verificationStatus, 'under-verification');
-      assert.equal(data.draft, true);
-      assert.match(source, /লুকানো খসড়া/);
+    if (file === 'report-fake-government-message-and-website.md') {
+      assert.ok(data.sourceUrls.includes('https://www.pib.gov.in/FAQ_fact.aspx?lang=1&reg=3'));
+      assert.ok(data.sourceUrls.includes('https://factcheck.pib.gov.in/'));
+      assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/cyber_suspect.aspx'));
+      assert.ok(data.sourceUrls.includes('https://cybercrime.gov.in/Webform/suspect_search_websites.aspx'));
+      assert.ok(data.sourceUrls.some((value) => value.startsWith('https://www.dot.gov.in/offerings/schemes-and-services/details/sanchar-saathi')));
+      assert.match(source, /Government of India claim হলে PIB Fact Check/);
+      assert.match(source, /Report Suspect facility/);
+      assert.match(source, /1930-এ অবিলম্বে call/);
+      assert.match(source, /Call, SMS বা WhatsApp হলে Chakshu/);
+      assert.match(source, /safe certificate নয়/);
     }
 
     for (const value of data.sourceUrls) {
@@ -186,8 +174,7 @@ test('starter queue keeps two drafts protected and permits five reviewed public 
     }
   }
 
-  assert.equal(publicCount, 5);
-  assert.equal(draftCount, 2);
+  assert.equal(publicCount, 7);
   assert.deepEqual(
     [...categories].sort(),
     ['affairs', 'exams', 'guides', 'jobs', 'materials', 'notices', 'projects'],
