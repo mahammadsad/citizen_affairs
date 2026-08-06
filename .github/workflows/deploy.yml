@@ -180,15 +180,49 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.select_deployment.outputs.page_url }}
     outputs:
-      page-url: ${{ steps.deployment.outputs.page_url }}
+      page-url: ${{ steps.select_deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - name: Deploy to GitHub Pages (attempt 1)
+        id: deployment_one
+        continue-on-error: true
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         with:
-          timeout: 1200000
+          timeout: 600000
+
+      - name: Pause before Pages retry
+        if: steps.deployment_one.outcome == 'failure'
+        run: sleep 20
+
+      - name: Deploy to GitHub Pages (attempt 2)
+        id: deployment_two
+        if: steps.deployment_one.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        with:
+          timeout: 600000
+
+      - name: Select successful Pages deployment
+        id: select_deployment
+        if: always()
+        shell: bash
+        env:
+          FIRST_OUTCOME: ${{ steps.deployment_one.outcome }}
+          FIRST_URL: ${{ steps.deployment_one.outputs.page_url }}
+          SECOND_OUTCOME: ${{ steps.deployment_two.outcome }}
+          SECOND_URL: ${{ steps.deployment_two.outputs.page_url }}
+        run: |
+          if [[ "$FIRST_OUTCOME" == "success" ]]; then
+            echo "page_url=$FIRST_URL" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$SECOND_OUTCOME" == "success" ]]; then
+            echo "page_url=$SECOND_URL" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Both GitHub Pages deployment attempts failed." >&2
+          exit 1
 
   production-smoke:
     needs: deploy
