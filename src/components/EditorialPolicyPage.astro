@@ -1,0 +1,60 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import { locales, type Locale, ui } from '../i18n';
+import { SITE } from '@utils/constants';
+
+const { locale } = Astro.props as { locale: Locale };
+const t = ui(locale);
+const policy = {
+  en: [
+    ['Source hierarchy', 'Primary government notifications, orders, gazettes and official portals come first. Secondary sources may add context but cannot independently support an Officially Confirmed claim.'],
+    ['Independent review', 'The author cannot fact-check or approve the same article. Material facts require editorial, independent fact-check and final approval for the current version before publication.'],
+    ['Artificial intelligence', 'Automation may help with structure, translation drafts, link checks or repetitive formatting. A responsible human must verify every factual claim, source, translation and publication decision. We do not automatically publish generated information.'],
+    ['Corrections and withdrawals', 'Material mistakes are corrected transparently with the earlier problem, corrected information, reason and source. An unsupported central claim is withdrawn rather than quietly rewritten.'],
+    ['Conflicts and sponsorship', 'Editors and contributors must disclose a relevant conflict. Sponsored material, if ever accepted, must be clearly labelled and cannot purchase a verification status or influence factual conclusions.'],
+    ['Political and government independence', 'Citizen Affairs is independent of government departments and political organizations. It explains public information but does not issue jobs, benefits, approvals or official decisions.'],
+  ],
+  bn: [
+    ['সূত্রের অগ্রাধিকার', 'প্রাথমিক সরকারি বিজ্ঞপ্তি, আদেশ, গেজেট ও অফিসিয়াল পোর্টাল আগে দেখা হয়। দ্বিতীয়িক সূত্র প্রসঙ্গ দিতে পারে, কিন্তু একা Officially Confirmed দাবির ভিত্তি হতে পারে না।'],
+    ['স্বাধীন পর্যালোচনা', 'লেখক একই নিবন্ধের fact-check বা approval করতে পারেন না। প্রকাশের আগে বর্তমান version-এর editorial, independent fact-check এবং final approval প্রয়োজন।'],
+    ['কৃত্রিম বুদ্ধিমত্তা', 'Automation গঠন, translation draft, link check বা formatting-এ সাহায্য করতে পারে। প্রতিটি fact, source, translation এবং publication decision একজন দায়িত্বশীল মানুষ যাচাই করেন। Generated তথ্য স্বয়ংক্রিয়ভাবে প্রকাশ করা হয় না।'],
+    ['সংশোধন ও প্রত্যাহার', 'গুরুত্বপূর্ণ ভুল হলে আগের সমস্যা, সঠিক তথ্য, কারণ ও সূত্রসহ স্বচ্ছভাবে correction প্রকাশ করা হয়। মূল দাবি সমর্থিত না হলে নিবন্ধ নীরবে বদলানো নয়, withdrawn করা হয়।'],
+    ['স্বার্থের দ্বন্দ্ব ও sponsorship', 'প্রাসঙ্গিক conflict থাকলে সম্পাদক ও contributor-কে তা জানাতে হবে। ভবিষ্যতে sponsored content গ্রহণ করলে স্পষ্ট label থাকবে; টাকা দিয়ে verification status বা factual conclusion কেনা যাবে না।'],
+    ['রাজনৈতিক ও সরকারি স্বাধীনতা', 'সিটিজেন অ্যাফেয়ার্স কোনো সরকারি দপ্তর বা রাজনৈতিক সংগঠনের অংশ নয়। এটি জনতথ্য ব্যাখ্যা করে; চাকরি, সুবিধা, অনুমোদন বা সরকারি সিদ্ধান্ত দেয় না।'],
+  ],
+  hi: [
+    ['स्रोतों की प्राथमिकता', 'मूल सरकारी अधिसूचनाएँ, आदेश, राजपत्र और आधिकारिक पोर्टल पहले आते हैं। द्वितीयक स्रोत संदर्भ दे सकते हैं, लेकिन अकेले Officially Confirmed दावे का आधार नहीं बनते।'],
+    ['स्वतंत्र समीक्षा', 'लेखक अपने ही लेख की तथ्य-जाँच या स्वीकृति नहीं कर सकता। प्रकाशन से पहले मौजूदा version के लिए editorial, स्वतंत्र fact-check और final approval आवश्यक हैं।'],
+    ['कृत्रिम बुद्धिमत्ता', 'Automation संरचना, translation draft, link check या formatting में मदद कर सकता है। हर तथ्य, स्रोत, अनुवाद और प्रकाशन निर्णय की जिम्मेदार मानव समीक्षा होती है। Generated जानकारी अपने-आप प्रकाशित नहीं की जाती।'],
+    ['सुधार और वापसी', 'महत्वपूर्ण गलती को पुरानी समस्या, सही जानकारी, कारण और स्रोत के साथ पारदर्शी रूप से सुधारा जाता है। केंद्रीय दावा समर्थित न हो तो लेख चुपचाप बदलने के बजाय वापस लिया जाता है।'],
+    ['हितों का टकराव और sponsorship', 'प्रासंगिक conflict का खुलासा आवश्यक है। भविष्य में sponsored सामग्री स्वीकार हो तो स्पष्ट label होगा; भुगतान से verification status या तथ्यात्मक निष्कर्ष नहीं खरीदा जा सकता।'],
+    ['राजनीतिक और सरकारी स्वतंत्रता', 'सिटिजन अफेयर्स किसी सरकारी विभाग या राजनीतिक संगठन से संबद्ध नहीं है। यह सार्वजनिक जानकारी समझाता है; नौकरी, लाभ, मंजूरी या सरकारी निर्णय जारी नहीं करता।'],
+  ],
+}[locale];
+const policyUrl = (lang: Locale) => lang === 'en'
+  ? `${SITE.url}/editorial-policy/`
+  : `${SITE.url}/${lang}/editorial-policy/`;
+const canonical = policyUrl(locale);
+const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, policyUrl(lang)])) as Record<Locale,string>;
+---
+<MainLayout title={t.editorial} description={t.disclaimerShort} {locale} {canonical} {alternateUrls}>
+  <article class="policy container">
+    <span class="eyebrow">{t.editorial}</span>
+    <h1>{t.editorial}</h1>
+    <p>{t.disclaimerShort}</p>
+    <h2>{t.howItWorks}</h2>
+    <ol><li>{t.stepDiscover}</li><li>{t.stepVerify}</li><li>{t.stepExplain}</li><li>{t.stepUpdate}</li></ol>
+    {policy.map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}
+    <h2>{t.publishingCorrections}</h2>
+    <p>{t.publishingCorrectionsText}</p>
+  </article>
+</MainLayout>
+<style>
+  .policy{max-width:780px;padding-block:4rem}
+  .policy h1{font-size:clamp(2rem,5vw,3.4rem);margin-bottom:1.5rem}
+  .policy h2{margin:2rem 0 .7rem}
+  .policy p,.policy li{line-height:1.8;color:var(--color-text-muted)}
+  .policy ol{list-style:decimal;margin-left:1.3rem}
+  :global(html[lang='bn']) .policy p,:global(html[lang='bn']) .policy li,
+  :global(html[lang='hi']) .policy p,:global(html[lang='hi']) .policy li{font-size:1.03rem;line-height:1.9}
+</style>
