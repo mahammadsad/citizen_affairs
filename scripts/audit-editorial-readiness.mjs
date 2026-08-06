@@ -6,6 +6,7 @@ const root = resolve(import.meta.dirname, '..');
 const contentRoot = join(root, 'src/content/articles');
 const artifactRoot = join(root, '.artifacts');
 const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
+const configuredCategories = [...(brand.configuredCategoryIds || brand.activeCategoryIds)];
 const activeCategories = [...brand.activeCategoryIds];
 const languages = ['en', 'bn', 'hi'];
 const publicWorkflows = new Set(['published', 'corrected', 'closed']);
@@ -56,7 +57,7 @@ for (const path of walk(contentRoot)) {
     else identities.set(identity, file);
 
     if (!languages.includes(data.language)) errors.push(`${file}: unsupported language ${data.language}`);
-    if (!activeCategories.includes(data.category)) errors.push(`${file}: inactive or unknown category ${data.category}`);
+    if (!configuredCategories.includes(data.category)) errors.push(`${file}: inactive or unknown category ${data.category}`);
 
     const isPublic = data.draft === false && publicWorkflows.has(data.workflowStatus);
     const sourceCount = (data.sourceUrls?.length || 0) + (data.sources?.length || 0);
@@ -109,6 +110,10 @@ const report = {
     publicArticlesPerCategory: 2,
     totalPublicArticles: activeCategories.length * 2,
     primaryLanguage: 'bn',
+  },
+  categoryConfiguration: {
+    configured: configuredCategories,
+    promoted: activeCategories,
   },
   totals: {
     articles: records.length,
