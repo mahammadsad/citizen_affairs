@@ -6,6 +6,14 @@ const layout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 const header = await readFile('src/components/PortalHeader.astro', 'utf8');
 const brandLogo = await readFile('src/components/BrandLogo.astro', 'utf8');
 const brandConfig = JSON.parse(await readFile('brand.config.json', 'utf8'));
+const lightHorizontalLogo = await readFile(
+  'public/assets/brand/citizen-affairs-horizontal-quality-v2.svg',
+  'utf8',
+);
+const darkHorizontalLogo = await readFile(
+  'public/assets/brand/citizen-affairs-horizontal-quality-v2-dark.svg',
+  'utf8',
+);
 
 test('redundant utility strip is removed from the rendered presentation', () => {
   assert.match(header, /class="portal-utility"/);
@@ -36,15 +44,15 @@ test('dark header uses the dedicated dark artwork without a white logo card', ()
   assert.match(layout, /opacity: 1 !important/);
 });
 
-test('header renders transparent theme-specific horizontal SVG lockups', () => {
+test('header renders transparent zoom-safe theme-specific horizontal SVG lockups', () => {
   assert.match(header, /<BrandLogo variant="horizontal"/);
   assert.match(
     brandLogo,
-    /light: 'assets\/brand\/citizen-affairs-horizontal\.svg'/,
+    /light: 'assets\/brand\/citizen-affairs-horizontal-quality-v2\.svg'/,
   );
   assert.match(
     brandLogo,
-    /dark: 'assets\/brand\/citizen-affairs-horizontal-dark\.svg'/,
+    /dark: 'assets\/brand\/citizen-affairs-horizontal-quality-v2-dark\.svg'/,
   );
   assert.doesNotMatch(
     brandLogo,
@@ -52,8 +60,14 @@ test('header renders transparent theme-specific horizontal SVG lockups', () => {
   );
   assert.equal(
     brandConfig.logoHorizontal,
-    'assets/brand/citizen-affairs-horizontal.svg',
+    'assets/brand/citizen-affairs-horizontal-quality-v2.svg',
   );
+  for (const artwork of [lightHorizontalLogo, darkHorizontalLogo]) {
+    assert.match(artwork, /shape-rendering="geometricPrecision"/);
+    assert.match(artwork, /viewBox="0 0 395 150"/);
+    assert.doesNotMatch(artwork, /<text\b|font-family=/);
+    assert.ok(artwork.length < 20_000);
+  }
 });
 
 test('very narrow screens preserve the brand by dropping only the theme shortcut', () => {
