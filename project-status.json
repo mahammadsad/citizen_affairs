@@ -1,0 +1,26 @@
+{
+  "reviewedOn": "2026-08-06",
+  "framework": {
+    "name": "Astro",
+    "major": 7
+  },
+  "productionDomain": "https://citizenaffairs.in",
+  "editorialBackend": "disabled",
+  "cms": "Pages CMS draft-only",
+  "activeCategoryIds": [
+    "materials",
+    "projects",
+    "affairs",
+    "notices",
+    "guides"
+  ],
+  "pendingCategoryIds": [
+    "jobs",
+    "exams"
+  ],
+  "languages": [
+    "en",
+    "bn",
+    "hi"
+  ]
+}
