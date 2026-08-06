@@ -66,3 +66,32 @@ test('mobile filter sheet stays above the persistent bottom navigation and withi
   assert.match(regionFilter, /overscroll-behavior: contain/);
   assert.match(regionFilter, /scrollbar-gutter: stable/);
 });
+
+test('filter sheet provides an explicit localized Show results action beside Clear filters', () => {
+  assert.match(regionFilter, /applyPattern: 'Show \{count\} updates'/);
+  assert.match(regionFilter, /applyPattern: '\{count\}টি আপডেট দেখুন'/);
+  assert.match(regionFilter, /applyPattern: '\{count\} अपडेट दिखाएँ'/);
+  assert.match(regionFilter, /applyButton\.dataset\.jobApply/);
+  assert.match(regionFilter, /actions\.append\(applyButton, appliedStatus\)/);
+  assert.match(regionFilter, /resetButton\.classList\.add\('jobs-filter-clear'\)/);
+  assert.match(regionFilter, /grid-template-columns: minmax\(0, 0\.86fr\) minmax\(0, 1\.14fr\)/);
+  assert.match(regionFilter, /background: var\(--color-primary\) !important/);
+});
+
+test('Show results confirms the count, closes the sheet and moves focus to the result summary', () => {
+  assert.match(regionFilter, /new MutationObserver\(syncApplyButton\)/);
+  assert.match(regionFilter, /labels\.applyPattern\.replace\('\{count\}', String\(count\)\)/);
+  assert.match(regionFilter, /labels\.appliedPattern\.replace\('\{count\}', String\(count\)\)/);
+  assert.match(regionFilter, /filterDetails\.open = false/);
+  assert.match(regionFilter, /resultCount\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(regionFilter, /resultCount\.scrollIntoView/);
+  assert.match(regionFilter, /aria-controls/);
+});
+
+test('mobile actions stay fixed while the filter fields scroll independently', () => {
+  assert.match(regionFilter, /filterPanel\.classList\.add\('jobs-filter-panel-enhanced'\)/);
+  assert.match(regionFilter, /fields\.className = 'jobs-filter-fields'/);
+  assert.match(regionFilter, /overflow: hidden !important/);
+  assert.match(regionFilter, /\.jobs-filter-fields \{[\s\S]*overflow-y: auto/);
+  assert.match(regionFilter, /\.jobs-filter-actions \{[\s\S]*flex: 0 0 auto/);
+});
