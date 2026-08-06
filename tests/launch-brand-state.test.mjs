@@ -4,6 +4,8 @@ import test from 'node:test';
 
 const constants = await readFile('src/utils/constants.ts', 'utf8');
 const admin = await readFile('public/admin/index.html', 'utf8');
+const portalHeader = await readFile('src/components/PortalHeader.astro', 'utf8');
+const htmlValidator = await readFile('scripts/validate-html.mjs', 'utf8');
 const brand = JSON.parse(await readFile('brand.config.json', 'utf8'));
 
 test('legacy editorial artwork resolves to current Citizen Affairs branding', () => {
@@ -16,6 +18,12 @@ test('legacy editorial artwork resolves to current Citizen Affairs branding', ()
 test('empty jobs and exams sections remain pending rather than promoted', () => {
   assert.doesNotMatch(JSON.stringify(brand.activeCategoryIds), /jobs/);
   assert.doesNotMatch(JSON.stringify(brand.activeCategoryIds), /exams/);
+  assert.ok(brand.configuredCategoryIds.includes('jobs'));
+  assert.ok(brand.configuredCategoryIds.includes('exams'));
+  assert.doesNotMatch(portalHeader, /categories\/jobs/);
+  assert.doesNotMatch(portalHeader, /categories\/exams/);
+  assert.match(htmlValidator, /const promotedCategories = \[\.\.\.brand\.activeCategoryIds\]/);
+  assert.doesNotMatch(htmlValidator, /for \(const active of \['jobs', 'exams'/);
 });
 
 test('the public admin shell clearly reports the disconnected backend', () => {
