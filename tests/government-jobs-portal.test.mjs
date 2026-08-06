@@ -35,17 +35,30 @@ test('jobs schema supports qualification, sector and recruitment lifecycle disco
   assert.match(contentSchema, /'result'/);
 });
 
-test('government jobs portal is multilingual and explicitly excludes private jobs', () => {
+test('government jobs portal keeps the government-only rule without dominating the opening screen', () => {
   assert.match(portal, /Government and public-sector recruitment only/);
   assert.match(portal, /শুধু সরকারি ও সরকারি-অনুমোদিত প্রতিষ্ঠানের নিয়োগ/);
   assert.match(portal, /केवल सरकारी और सार्वजनिक क्षेत्र की भर्तियाँ/);
   assert.match(portal, /Private listings blocked/);
   assert.match(portal, /বেসরকারি চাকরি নিষিদ্ধ/);
+  assert.match(portal, /class="jobs-trust-note"/);
   assert.match(jobsCategory, /Private jobs are not listed/);
   assert.match(jobsCategory, /কোনো বেসরকারি চাকরি তালিকাভুক্ত করা হয় না/);
 });
 
-test('government jobs portal provides accessible search, filters, sorting and lifecycle tabs', () => {
+test('latest listings and compact discovery controls appear before secondary trust details', () => {
+  const listingIndex = portal.indexOf('class="jobs-listing"');
+  const trustIndex = portal.indexOf('class="jobs-trust-note"');
+  assert.ok(listingIndex > -1);
+  assert.ok(trustIndex > listingIndex);
+  assert.match(portal, /Latest government jobs/);
+  assert.match(portal, /সর্বশেষ সরকারি চাকরি/);
+  assert.match(portal, /class="jobs-controls"/);
+  assert.match(portal, /data-job-filter-details/);
+  assert.doesNotMatch(portal, /class="category-summary"/);
+});
+
+test('government jobs portal provides accessible search, compact filters, sorting and lifecycle tabs', () => {
   assert.match(portal, /data-job-search/);
   assert.match(portal, /data-job-filter="qualification"/);
   assert.match(portal, /data-job-filter="sector"/);
@@ -60,12 +73,12 @@ test('government jobs portal provides accessible search, filters, sorting and li
   assert.match(portal, /card\.hidden = !visible/);
 });
 
-test('job cards retain official identity and structured recruitment metadata', () => {
+test('job cards retain official identity and structured recruitment metadata in compact form', () => {
   assert.match(portal, /job\.recruitingOrganization/);
   assert.match(portal, /job\.notificationNumber/);
   assert.match(portal, /job\.employerType/);
   assert.match(portal, /job\.qualificationLevel/);
   assert.match(portal, /job\.recruitmentSector/);
   assert.match(portal, /job\.applicationDeadline\.getTime/);
-  assert.match(portal, /<ArticleCard \{article\} \{locale\} \/>/);
+  assert.match(portal, /<ArticleCard \{article\} \{locale\} compact \/>/);
 });
