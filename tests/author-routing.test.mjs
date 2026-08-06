@@ -25,7 +25,8 @@ test('the founder is presented through the public team page instead of an author
   assert.match(founderRedirect, /target="\/team\/"/);
   assert.match(localizedFounderRedirect, /target=\{`\/\$\{locale\}\/team\/`\}/);
   assert.match(teamPage, /title: 'Our Team'/);
-  assert.match(teamPage, /AI-assisted articles do not carry a personal author name/);
+  assert.match(teamPage, /class="member-grid"/);
+  assert.match(teamPage, /members\.map/);
 });
 
 test('the About page always labels and routes the founder destination as Team', () => {
