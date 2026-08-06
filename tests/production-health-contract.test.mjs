@@ -5,15 +5,16 @@ import test from 'node:test';
 const playwrightConfig = await readFile('playwright.production.config.mjs', 'utf8');
 const healthSummary = await readFile('scripts/summarize-production-health.mjs', 'utf8');
 
-test('production browser checks retry a transient CI failure once', () => {
-  assert.match(playwrightConfig, /retries: process\.env\.CI \? 1 : 0/);
+test('production browser checks remain serial and expose failures directly', () => {
+  assert.match(playwrightConfig, /workers: 1/);
+  assert.match(playwrightConfig, /retries: 0/);
   assert.match(playwrightConfig, /actionTimeout: 20_000/);
   assert.match(playwrightConfig, /navigationTimeout: 45_000/);
 });
 
-test('retry-assisted verification is visible and not reported as clean', () => {
-  assert.match(healthSummary, /verified-with-retry/);
-  assert.match(healthSummary, /retry-assisted/);
-  assert.match(healthSummary, /investigate flaky test/);
+test('production verification quality is explicit in the owner summary', () => {
+  assert.match(healthSummary, /verificationQuality/);
+  assert.match(healthSummary, /attention-required/);
   assert.match(healthSummary, /Verification quality/);
+  assert.match(healthSummary, /not marked verified until the complete production browser suite passes/);
 });
