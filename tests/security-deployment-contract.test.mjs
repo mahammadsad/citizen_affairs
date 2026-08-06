@@ -5,10 +5,14 @@ import test from 'node:test';
 const workflow = await readFile('.github/workflows/deploy.yml', 'utf8');
 const baseLayout = await readFile('src/layouts/BaseLayout.astro', 'utf8');
 
-test('production Pages deployment is not cancelled by a superseding run', () => {
+test('production Pages deployment is not cancelled and retries a queue timeout safely', () => {
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
   assert.match(workflow, /timeout-minutes: 25/);
-  assert.match(workflow, /timeout: 1200000/);
+  assert.equal((workflow.match(/timeout: 600000/g) || []).length, 2);
+  assert.match(workflow, /continue-on-error: true/);
+  assert.match(workflow, /steps\.deployment_one\.outcome == 'failure'/);
+  assert.match(workflow, /Both GitHub Pages deployment attempts failed/);
+  assert.doesNotMatch(workflow, /timeout: 1200000/);
 });
 
 test('static CSP blocks inline attributes, frames and unapproved workers', () => {

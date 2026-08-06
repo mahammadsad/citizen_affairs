@@ -44,7 +44,7 @@ The centralized brand configuration currently contains seven category IDs: `jobs
 
 Pull requests run type checks, formatting, unit tests, editorial validation, build validation, SEO checks, link checks, secret scanning, dependency auditing and responsive browser tests. A merged commit is not considered verified live until GitHub Pages deploys the same commit and the complete production smoke suite passes.
 
-Production deployment runs are serialized. Pull-request runs may be cancelled when superseded, but an active production deployment is allowed to finish so the GitHub Pages environment is not left in a cancelled state.
+Production deployment runs are serialized. Pull-request runs may be cancelled when superseded, but an active production deployment is not cancelled. Because the GitHub Pages action limits a single attempt to ten minutes, the workflow makes one controlled second attempt after a queue timeout before declaring the deployment failed.
 
 ## Important status
 
