@@ -1,0 +1,81 @@
+<script>
+  const setupSearchResultPlaceholders = () => {
+    const output = document.getElementById('searchPageResults');
+    if (!output || output.dataset.placeholderFixReady === 'true') return;
+
+    output.dataset.placeholderFixReady = 'true';
+
+    const createPlaceholderIcon = () => {
+      const namespace = 'http://www.w3.org/2000/svg';
+      const icon = document.createElementNS(namespace, 'svg');
+      icon.classList.add('result-placeholder-icon');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('stroke-width', '1.8');
+      icon.setAttribute('stroke-linecap', 'round');
+      icon.setAttribute('stroke-linejoin', 'round');
+      icon.setAttribute('aria-hidden', 'true');
+
+      const frame = document.createElementNS(namespace, 'rect');
+      frame.setAttribute('x', '3');
+      frame.setAttribute('y', '3');
+      frame.setAttribute('width', '18');
+      frame.setAttribute('height', '18');
+      frame.setAttribute('rx', '3');
+
+      const sun = document.createElementNS(namespace, 'circle');
+      sun.setAttribute('cx', '8.5');
+      sun.setAttribute('cy', '8.5');
+      sun.setAttribute('r', '1.5');
+
+      const landscape = document.createElementNS(namespace, 'path');
+      landscape.setAttribute('d', 'm4 18 5-5 3 3 4-4 4 4');
+
+      icon.append(frame, sun, landscape);
+      return icon;
+    };
+
+    const cleanPlaceholders = () => {
+      output.querySelectorAll<HTMLElement>('.result-media-placeholder:not([data-placeholder-clean])').forEach((placeholder) => {
+        placeholder.replaceChildren(createPlaceholderIcon());
+        placeholder.setAttribute('aria-hidden', 'true');
+        placeholder.dataset.placeholderClean = 'true';
+      });
+    };
+
+    const observer = new MutationObserver(cleanPlaceholders);
+    observer.observe(output, { childList: true, subtree: true });
+    cleanPlaceholders();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSearchResultPlaceholders, { once: true });
+  } else {
+    setupSearchResultPlaceholders();
+  }
+</script>
+
+<style is:global>
+  .citizen-search .search-page-results .result-media-placeholder {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-size: 0 !important;
+    color: var(--color-primary);
+  }
+
+  .citizen-search .search-page-results .result-placeholder-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    opacity: .42;
+  }
+
+  @media (max-width: 680px) {
+    .citizen-search .search-page-results .result-placeholder-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+</style>

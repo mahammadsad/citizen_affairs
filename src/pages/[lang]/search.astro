@@ -1,5 +1,6 @@
 ---
 import SearchPage from '@components/SearchPage.astro';
+import SearchResultPlaceholderFix from '@components/SearchResultPlaceholderFix.astro';
 import SearchResultsCardEnhancer from '@components/SearchResultsCardEnhancer.astro';
 import type { Locale } from '../../i18n';
 
@@ -10,3 +11,4 @@ const { locale } = Astro.props as { locale: Locale };
 ---
 <SearchPage {locale} />
 <SearchResultsCardEnhancer />
+<SearchResultPlaceholderFix />
