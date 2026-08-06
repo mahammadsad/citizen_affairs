@@ -7,11 +7,11 @@ const header = await readFile('src/components/PortalHeader.astro', 'utf8');
 const brandLogo = await readFile('src/components/BrandLogo.astro', 'utf8');
 const brandConfig = JSON.parse(await readFile('brand.config.json', 'utf8'));
 const lightHorizontalLogo = await readFile(
-  'public/assets/brand/citizen-affairs-horizontal-quality-v2.svg',
+  'public/assets/brand/citizen-affairs-horizontal-quality-v3.svg',
   'utf8',
 );
 const darkHorizontalLogo = await readFile(
-  'public/assets/brand/citizen-affairs-horizontal-quality-v2-dark.svg',
+  'public/assets/brand/citizen-affairs-horizontal-quality-v3-dark.svg',
   'utf8',
 );
 
@@ -44,15 +44,15 @@ test('dark header uses the dedicated dark artwork without a white logo card', ()
   assert.match(layout, /opacity: 1 !important/);
 });
 
-test('header renders transparent zoom-safe theme-specific horizontal SVG lockups', () => {
+test('header renders transparent clean theme-specific horizontal SVG lockups', () => {
   assert.match(header, /<BrandLogo variant="horizontal"/);
   assert.match(
     brandLogo,
-    /light: 'assets\/brand\/citizen-affairs-horizontal-quality-v2\.svg'/,
+    /light: 'assets\/brand\/citizen-affairs-horizontal-quality-v3\.svg'/,
   );
   assert.match(
     brandLogo,
-    /dark: 'assets\/brand\/citizen-affairs-horizontal-quality-v2-dark\.svg'/,
+    /dark: 'assets\/brand\/citizen-affairs-horizontal-quality-v3-dark\.svg'/,
   );
   assert.doesNotMatch(
     brandLogo,
@@ -60,12 +60,14 @@ test('header renders transparent zoom-safe theme-specific horizontal SVG lockups
   );
   assert.equal(
     brandConfig.logoHorizontal,
-    'assets/brand/citizen-affairs-horizontal-quality-v2.svg',
+    'assets/brand/citizen-affairs-horizontal-quality-v3.svg',
   );
   for (const artwork of [lightHorizontalLogo, darkHorizontalLogo]) {
+    assert.match(artwork, /width="395" height="150"/);
     assert.match(artwork, /shape-rendering="geometricPrecision"/);
     assert.match(artwork, /viewBox="0 0 395 150"/);
-    assert.doesNotMatch(artwork, /<text\b|font-family=/);
+    assert.match(artwork, /A48 48 0 1 0/);
+    assert.doesNotMatch(artwork, /<text\b|font-family=|<image\b|data:image/);
     assert.ok(artwork.length < 20_000);
   }
 });
