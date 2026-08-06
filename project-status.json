@@ -7,6 +7,15 @@
   "productionDomain": "https://citizenaffairs.in",
   "editorialBackend": "disabled",
   "cms": "Pages CMS draft-only",
+  "configuredCategoryIds": [
+    "materials",
+    "projects",
+    "affairs",
+    "notices",
+    "guides",
+    "jobs",
+    "exams"
+  ],
   "activeCategoryIds": [
     "materials",
     "projects",
