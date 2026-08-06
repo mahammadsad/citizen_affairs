@@ -14,41 +14,45 @@ test('redundant utility strip is removed from the rendered presentation', () => 
 
 test('mobile brand is prominent, safely left aligned and collision free', () => {
   assert.match(layout, /--portal-logo-width: clamp\(168px, calc\(100vw - 176px\), 204px\)/);
-  assert.match(layout, /max-height: 72px !important/);
+  assert.match(layout, /max-height: 52px !important/);
   assert.match(layout, /padding-inline: \.75rem !important/);
-  assert.match(layout, /transform: translateX\(-\.3rem\)/);
-  assert.doesNotMatch(layout, /transform: translateX\(-\.75rem\)/);
-  assert.match(layout, /safe transparent gutter/);
-  assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 0 1 var\(--portal-logo-width\) !important/);
+  assert.match(layout, /transform: none !important/);
+  assert.doesNotMatch(layout, /translateX\(/);
+  assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 0 0 var\(--portal-logo-width\) !important/);
   assert.match(layout, /:global\(\.portal-header-actions\)[\s\S]*flex: 0 0 auto !important/);
   assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 74px !important/);
   assert.doesNotMatch(layout, /width: 118px/);
 });
 
-test('dark header isolates the approved navy logo without recolouring it', () => {
+test('dark header uses the dedicated dark artwork without a white logo card', () => {
   assert.match(
     layout,
-    /:global\(html\[data-theme='dark'\] \.portal-header \.portal-brand\)[\s\S]*background: #ffffff !important/,
+    /:global\(html\[data-theme='dark'\] \.portal-header \.portal-brand\)[\s\S]*background: transparent !important/,
   );
+  assert.match(layout, /box-shadow: none !important/);
+  assert.doesNotMatch(layout, /background: #ffffff !important/);
   assert.match(layout, /filter: none !important/);
   assert.match(layout, /mix-blend-mode: normal !important/);
   assert.match(layout, /opacity: 1 !important/);
 });
 
-test('header renders the approved exported horizontal lockup', () => {
+test('header renders transparent theme-specific horizontal SVG lockups', () => {
   assert.match(header, /<BrandLogo variant="horizontal"/);
   assert.match(
     brandLogo,
-    /light: 'assets\/brand\/citizen-affairs-horizontal\.png'/,
+    /light: 'assets\/brand\/citizen-affairs-horizontal\.svg'/,
   );
   assert.match(
     brandLogo,
-    /dark: 'assets\/brand\/citizen-affairs-horizontal\.png'/,
+    /dark: 'assets\/brand\/citizen-affairs-horizontal-dark\.svg'/,
   );
-  assert.doesNotMatch(brandLogo, /citizen-affairs-horizontal(?:-dark)?\.svg/);
+  assert.doesNotMatch(
+    brandLogo,
+    /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/,
+  );
   assert.equal(
     brandConfig.logoHorizontal,
-    'assets/brand/citizen-affairs-horizontal.png',
+    'assets/brand/citizen-affairs-horizontal.svg',
   );
 });
 
@@ -60,10 +64,11 @@ test('very narrow screens preserve the brand by dropping only the theme shortcut
 
 test('desktop brand preserves the approved lockup proportions', () => {
   assert.match(layout, /--portal-logo-width: clamp\(196px, 20vw, 224px\)/);
-  assert.match(layout, /max-height: 82px !important/);
+  assert.match(layout, /max-height: 56px !important/);
   assert.match(layout, /min-height: 82px !important/);
   assert.match(layout, /object-fit: contain !important/);
   assert.match(layout, /object-position: left center !important/);
+  assert.match(layout, /overflow: visible !important/);
 });
 
 test('the shared layout does not inject a pre-hero homepage panel', () => {
