@@ -10,9 +10,9 @@ const t = ui(locale);
 
 const copy = {
   en: {
-    title: 'Search citizen information',
-    description: 'Find verified jobs, admissions, scholarships, schemes, public services, alerts and practical guides.',
-    guidance: 'Start with a keyword or information type. Open more filters only when you need to narrow the results further.',
+    title: 'Search Citizen Affairs',
+    description: 'Find verified articles, government jobs, welfare schemes, admissions and practical guides.',
+    guidance: 'Enter a keyword first. Use filters only when you need to narrow the list.',
     type: 'Information type', allTypes: 'All information types',
     types: { job: 'Government jobs', scheme: 'Welfare schemes', admission: 'Admissions and exams', scholarship: 'Scholarships', service: 'Citizen services', alert: 'Notices and alerts', explainer: 'Guides and explainers' },
     level: 'Government scope', allLevels: 'Any government scope', central: 'Central government', stateLevel: 'State or Union Territory government',
@@ -22,16 +22,17 @@ const copy = {
     verification: 'Verification', allVerification: 'All verification statuses', official: 'Officially confirmed', partial: 'Partially confirmed', checking: 'Under verification', corrected: 'Corrected', archived: 'Closed information',
     qualification: 'Qualification or audience', allQualifications: 'All qualifications',
     sort: 'Sort results', relevance: 'Best match', newest: 'Newest update', deadline: 'Nearest deadline', alphabetical: 'A–Z',
-    clear: 'Clear all filters', loading: 'Loading the verified search index…', count: '{count} result(s)', active: 'Active filters', remove: 'Remove',
+    clear: 'Clear all filters', loading: 'Loading search results…', count: '{count} result(s)', active: 'Active filters', remove: 'Remove',
+    resultsTitle: 'Search results', allResults: 'Latest articles and updates', resultsFor: 'Results for “{query}”', readArticle: 'Read article',
     emptyTitle: 'No exact match found', emptyBody: 'Try a broader keyword or remove one or more filters.', broaden: 'Clear filters and search again', browse: 'Browse all sections',
     loadErrorTitle: 'Search index could not be loaded', loadErrorBody: 'The rest of Citizen Affairs is still available. Browse the sections or reload this page.', reload: 'Reload search',
     verifiedNote: 'Before acting, confirm the latest eligibility, deadline and instructions on the linked official government source.',
     published: 'Updated', deadlineLabel: 'Deadline', sources: 'source(s)', action: 'Official action available'
   },
   bn: {
-    title: 'নাগরিক তথ্য খুঁজুন',
-    description: 'যাচাইকৃত চাকরি, ভর্তি, স্কলারশিপ, প্রকল্প, নাগরিক পরিষেবা, সতর্কতা ও ব্যবহারিক গাইড খুঁজুন।',
-    guidance: 'প্রথমে একটি শব্দ বা তথ্যের ধরন বেছে নিন। আরও নির্দিষ্ট ফল দরকার হলেই অতিরিক্ত ফিল্টার খুলুন।',
+    title: 'Citizen Affairs-এ খুঁজুন',
+    description: 'যাচাইকৃত নিবন্ধ, সরকারি চাকরি, কল্যাণ প্রকল্প, ভর্তি ও ব্যবহারিক গাইড খুঁজুন।',
+    guidance: 'প্রথমে একটি শব্দ লিখুন। ফলাফল আরও নির্দিষ্ট করতে প্রয়োজন হলে ফিল্টার ব্যবহার করুন।',
     type: 'তথ্যের ধরন', allTypes: 'সব ধরনের তথ্য',
     types: { job: 'সরকারি চাকরি', scheme: 'কল্যাণ প্রকল্প', admission: 'ভর্তি ও পরীক্ষা', scholarship: 'স্কলারশিপ', service: 'নাগরিক পরিষেবা', alert: 'নোটিশ ও সতর্কতা', explainer: 'গাইড ও ব্যাখ্যা' },
     level: 'সরকারের পরিধি', allLevels: 'যে কোনো সরকারি পরিধি', central: 'কেন্দ্রীয় সরকার', stateLevel: 'রাজ্য বা কেন্দ্রশাসিত অঞ্চলের সরকার',
@@ -41,16 +42,17 @@ const copy = {
     verification: 'যাচাই', allVerification: 'সব যাচাই অবস্থা', official: 'অফিসিয়ালি নিশ্চিত', partial: 'আংশিক নিশ্চিত', checking: 'যাচাই চলছে', corrected: 'সংশোধিত', archived: 'বন্ধ তথ্য',
     qualification: 'যোগ্যতা বা লক্ষ্যগোষ্ঠী', allQualifications: 'সব যোগ্যতা',
     sort: 'ফলাফল সাজান', relevance: 'সেরা মিল', newest: 'সর্বশেষ আপডেট', deadline: 'নিকটতম শেষ তারিখ', alphabetical: 'অ–হ',
-    clear: 'সব ফিল্টার মুছুন', loading: 'যাচাইকৃত সার্চ সূচি লোড হচ্ছে…', count: '{count}টি ফলাফল', active: 'সক্রিয় ফিল্টার', remove: 'সরান',
+    clear: 'সব ফিল্টার মুছুন', loading: 'সার্চ ফলাফল লোড হচ্ছে…', count: '{count}টি ফলাফল', active: 'সক্রিয় ফিল্টার', remove: 'সরান',
+    resultsTitle: 'সার্চ ফলাফল', allResults: 'সর্বশেষ নিবন্ধ ও আপডেট', resultsFor: '“{query}”-এর ফলাফল', readArticle: 'নিবন্ধটি পড়ুন',
     emptyTitle: 'সঠিক মিল পাওয়া যায়নি', emptyBody: 'আরও সাধারণ শব্দ লিখুন অথবা এক বা একাধিক ফিল্টার সরান।', broaden: 'ফিল্টার মুছে আবার খুঁজুন', browse: 'সব বিভাগ দেখুন',
     loadErrorTitle: 'সার্চ সূচি লোড করা যায়নি', loadErrorBody: 'Citizen Affairs-এর বাকি অংশ ব্যবহার করা যাবে। বিভাগগুলি দেখুন বা পেজটি আবার লোড করুন।', reload: 'সার্চ আবার লোড করুন',
     verifiedNote: 'পদক্ষেপ নেওয়ার আগে সংশ্লিষ্ট অফিসিয়াল সরকারি সূত্রে সর্বশেষ যোগ্যতা, শেষ তারিখ ও নির্দেশনা নিশ্চিত করুন।',
     published: 'আপডেট', deadlineLabel: 'শেষ তারিখ', sources: 'টি সূত্র', action: 'অফিসিয়াল পদক্ষেপ উপলব্ধ'
   },
   hi: {
-    title: 'नागरिक जानकारी खोजें',
-    description: 'सत्यापित नौकरियाँ, प्रवेश, छात्रवृत्तियाँ, योजनाएँ, नागरिक सेवाएँ, अलर्ट और उपयोगी मार्गदर्शिकाएँ खोजें।',
-    guidance: 'पहले कोई शब्द या जानकारी का प्रकार चुनें। अधिक सटीक परिणाम चाहिए तभी अतिरिक्त फ़िल्टर खोलें।',
+    title: 'Citizen Affairs में खोजें',
+    description: 'सत्यापित लेख, सरकारी नौकरियाँ, कल्याण योजनाएँ, प्रवेश और उपयोगी मार्गदर्शिकाएँ खोजें।',
+    guidance: 'पहले कोई शब्द लिखें। परिणाम सीमित करने के लिए जरूरत होने पर फ़िल्टर इस्तेमाल करें।',
     type: 'जानकारी का प्रकार', allTypes: 'सभी प्रकार की जानकारी',
     types: { job: 'सरकारी नौकरियाँ', scheme: 'कल्याण योजनाएँ', admission: 'प्रवेश और परीक्षाएँ', scholarship: 'छात्रवृत्तियाँ', service: 'नागरिक सेवाएँ', alert: 'सूचनाएँ और अलर्ट', explainer: 'मार्गदर्शिकाएँ और व्याख्या' },
     level: 'सरकारी दायरा', allLevels: 'कोई भी सरकारी दायरा', central: 'केंद्र सरकार', stateLevel: 'राज्य या केंद्र शासित प्रदेश सरकार',
@@ -60,7 +62,8 @@ const copy = {
     verification: 'सत्यापन', allVerification: 'सभी सत्यापन स्थितियाँ', official: 'आधिकारिक रूप से पुष्टि', partial: 'आंशिक पुष्टि', checking: 'सत्यापन जारी', corrected: 'सुधारा गया', archived: 'बंद जानकारी',
     qualification: 'योग्यता या लक्षित समूह', allQualifications: 'सभी योग्यताएँ',
     sort: 'परिणाम क्रम', relevance: 'सर्वोत्तम मिलान', newest: 'नवीनतम अपडेट', deadline: 'निकटतम अंतिम तिथि', alphabetical: 'अ–ज्ञ',
-    clear: 'सभी फ़िल्टर हटाएँ', loading: 'सत्यापित खोज सूची लोड हो रही है…', count: '{count} परिणाम', active: 'सक्रिय फ़िल्टर', remove: 'हटाएँ',
+    clear: 'सभी फ़िल्टर हटाएँ', loading: 'खोज परिणाम लोड हो रहे हैं…', count: '{count} परिणाम', active: 'सक्रिय फ़िल्टर', remove: 'हटाएँ',
+    resultsTitle: 'खोज परिणाम', allResults: 'नवीनतम लेख और अपडेट', resultsFor: '“{query}” के परिणाम', readArticle: 'लेख पढ़ें',
     emptyTitle: 'सटीक मिलान नहीं मिला', emptyBody: 'व्यापक शब्द आज़माएँ या एक या अधिक फ़िल्टर हटाएँ।', broaden: 'फ़िल्टर हटाकर फिर खोजें', browse: 'सभी अनुभाग देखें',
     loadErrorTitle: 'खोज सूची लोड नहीं हो सकी', loadErrorBody: 'Citizen Affairs का बाकी भाग उपलब्ध है। अनुभाग देखें या यह पेज फिर लोड करें।', reload: 'खोज फिर लोड करें',
     verifiedNote: 'कार्रवाई से पहले संबंधित आधिकारिक सरकारी स्रोत पर नवीनतम पात्रता, अंतिम तिथि और निर्देशों की पुष्टि करें।',
@@ -90,6 +93,8 @@ const browseUrl = localizedPath(locale, 'categories');
     data-search-page
     data-index-url={indexUrl}
     data-count={copy.count}
+    data-results-for={copy.resultsFor}
+    data-all-results={copy.allResults}
     data-empty-title={copy.emptyTitle}
     data-empty-body={copy.emptyBody}
     data-broaden={copy.broaden}
@@ -104,6 +109,7 @@ const browseUrl = localizedPath(locale, 'categories');
     data-deadline-label={copy.deadlineLabel}
     data-sources={copy.sources}
     data-action={copy.action}
+    data-read-article={copy.readArticle}
     data-type-labels={JSON.stringify(copy.types)}
     data-level-labels={JSON.stringify(levelLabels)}
   >
@@ -134,7 +140,13 @@ const browseUrl = localizedPath(locale, 'categories');
 
       <aside class="verification-note"><Icon name="check" size={19} /><strong>{copy.verifiedNote}</strong></aside>
       <div class="active-filters" id="activeFilters" aria-live="polite" hidden></div>
-      <div class="result-heading"><p id="resultCount" aria-live="polite">{copy.loading}</p></div>
+      <header class="result-heading">
+        <div>
+          <span>{copy.resultsTitle}</span>
+          <h2 id="resultContext">{copy.allResults}</h2>
+        </div>
+        <p id="resultCount" aria-live="polite">{copy.loading}</p>
+      </header>
       <div class="search-page-results" id="searchPageResults" aria-live="polite" aria-busy="true"></div>
       <noscript><p class="search-message">{locale === 'bn' ? 'ইন্টার‌্যাক্টিভ অনুসন্ধানের জন্য জাভাস্ক্রিপ্ট প্রয়োজন। ওয়েবসাইটের বাকি অংশ এটি ছাড়াও ব্যবহার করা যাবে।' : locale === 'hi' ? 'इंटरैक्टिव खोज के लिए जावास्क्रिप्ट आवश्यक है। वेबसाइट का बाकी भाग इसके बिना भी उपलब्ध है।' : 'JavaScript is required for interactive search. The rest of the website remains available without it.'}</p></noscript>
     </div>
@@ -147,6 +159,8 @@ const browseUrl = localizedPath(locale, 'categories');
     sub?: string;
     href: string;
     description?: string;
+    image?: string;
+    imageAlt?: string;
     keywords?: string[];
     verification?: string;
     verificationId?: string;
@@ -168,6 +182,7 @@ const browseUrl = localizedPath(locale, 'categories');
   const form = document.getElementById('structuredSearch') as HTMLFormElement | null;
   const output = document.getElementById('searchPageResults');
   const count = document.getElementById('resultCount');
+  const resultContext = document.getElementById('resultContext');
   const activeFilters = document.getElementById('activeFilters');
   const advancedFilters = document.getElementById('advancedSearchFilters') as HTMLDetailsElement | null;
   const fields = ['q', 'type', 'level', 'state', 'status', 'verification', 'qualification', 'sort'] as const;
@@ -323,6 +338,14 @@ const browseUrl = localizedPath(locale, 'categories');
     return Number.isNaN(timestamp) ? Number.POSITIVE_INFINITY : timestamp;
   };
 
+  const updateResultContext = (query: string) => {
+    if (!resultContext || !root) return;
+    const value = query.trim();
+    resultContext.textContent = value
+      ? (root.dataset.resultsFor || 'Results for “{query}”').replace('{query}', value)
+      : root.dataset.allResults || 'Latest articles and updates';
+  };
+
   const render = () => {
     if (!output || !root) return;
     output.replaceChildren();
@@ -360,33 +383,63 @@ const browseUrl = localizedPath(locale, 'categories');
         return b.score - a.score || Date.parse(b.item.updated || b.item.published || '') - Date.parse(a.item.updated || a.item.published || '');
       });
 
+    updateResultContext(q);
     if (count) count.textContent = (root.dataset.count || '{count} result(s)').replace('{count}', new Intl.NumberFormat(document.documentElement.lang).format(matches.length));
     if (!matches.length) { addMessage('empty'); return; }
 
     matches.forEach(({ item }) => {
-      const card = document.createElement('a');
-      card.className = 'search-result-card';
-      card.href = item.href;
+      const row = document.createElement('article');
+      row.className = 'search-result-row';
+      const link = document.createElement('a');
+      link.className = 'search-result-link';
+      link.href = item.href;
+
+      const body = document.createElement('div');
+      body.className = 'result-body';
       const meta = document.createElement('span');
       meta.className = 'result-meta';
       meta.textContent = [typeLabels[item.type || ''], item.verification].filter(Boolean).join(' · ');
-      const title = document.createElement('strong');
+      const title = document.createElement('h3');
       title.textContent = item.label;
-      const summary = document.createElement('span');
+      const summary = document.createElement('p');
       summary.className = 'result-summary';
       summary.textContent = item.description || item.sub || '';
+
+      const footer = document.createElement('div');
+      footer.className = 'result-footer';
       const facts = document.createElement('span');
       facts.className = 'result-facts';
       const factValues = [
         item.updated || item.published ? `${root.dataset.published}: ${formatDate(item.updated || item.published)}` : '',
+        item.category || '',
         item.deadline ? `${root.dataset.deadlineLabel}: ${formatDate(item.deadline)}` : '',
-        item.regionLabel || levelLabels[normalizeScope(item.governmentLevel)] || '',
-        item.sourceCount ? `${item.sourceCount} ${root.dataset.sources}` : '',
-        item.actionAvailable ? root.dataset.action || '' : ''
+        item.regionLabel || levelLabels[normalizeScope(item.governmentLevel)] || ''
       ].filter(Boolean);
       facts.textContent = factValues.join(' · ');
-      card.append(meta, title, summary, facts);
-      output.append(card);
+      const read = document.createElement('span');
+      read.className = 'result-read';
+      read.textContent = `${root.dataset.readArticle || 'Read article'} →`;
+      footer.append(facts, read);
+      body.append(meta, title, summary, footer);
+
+      const media = document.createElement('span');
+      media.className = 'result-media';
+      if (item.image) {
+        const image = document.createElement('img');
+        image.src = item.image;
+        image.alt = item.imageAlt || '';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        media.append(image);
+      } else {
+        media.classList.add('result-media-placeholder');
+        media.setAttribute('aria-hidden', 'true');
+        media.textContent = (typeLabels[item.type || ''] || 'CA').slice(0, 2).toUpperCase();
+      }
+
+      link.append(body, media);
+      row.append(link);
+      output.append(row);
     });
   };
 
@@ -434,14 +487,14 @@ const browseUrl = localizedPath(locale, 'categories');
 </script>
 
 <style>
-  .search-hero { padding: 3.5rem 0; background: linear-gradient(135deg, rgba(var(--color-primary-rgb), .1), rgba(var(--color-green-rgb), .07)); }
+  .search-hero { padding: 2.75rem 0 2.25rem; background: linear-gradient(135deg, rgba(var(--color-primary-rgb), .1), rgba(var(--color-green-rgb), .07)); }
   .search-hero-inner { max-width: 850px; }
   .search-hero .eyebrow { display: flex; align-items: center; gap: .4rem; color: var(--color-primary); font-weight: 850; }
-  .search-hero h1 { margin: .45rem 0; font-size: clamp(2rem, 5vw, 3.7rem); }
+  .search-hero h1 { margin: .45rem 0; font-size: clamp(2rem, 5vw, 3.35rem); }
   .search-hero p:not(.eyebrow) { max-width: 66ch; color: var(--color-text-muted); font-size: 1.05rem; }
-  .search-hero small { display: block; max-width: 75ch; margin-top: .8rem; color: var(--color-text-muted); line-height: 1.55; }
-  .search-layout { max-width: 1120px; }
-  .search-controls { display: grid; gap: 1rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); }
+  .search-hero small { display: block; max-width: 75ch; margin-top: .65rem; color: var(--color-text-muted); line-height: 1.55; }
+  .search-layout { max-width: 1040px; }
+  .search-controls { display: grid; gap: 1rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: 16px; background: var(--color-surface); box-shadow: var(--shadow-sm); }
   .search-controls label { display: grid; gap: .35rem; min-width: 0; }
   .search-controls label > span { color: var(--color-text-muted); font-size: .73rem; font-weight: 800; }
   .search-controls input, .search-controls select { width: 100%; min-width: 0; min-height: 46px; padding: .65rem .75rem; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-bg); color: var(--color-text); font: inherit; }
@@ -460,24 +513,51 @@ const browseUrl = localizedPath(locale, 'categories');
   .advanced-filters summary strong { color: var(--color-text); font-size: .92rem; }
   .advanced-filters summary small { color: var(--color-text-muted); line-height: 1.45; }
   .advanced-filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin-top: .9rem; }
-  .verification-note { display: flex; align-items: flex-start; gap: .55rem; margin: 1rem 0; padding: .85rem 1rem; border-left: 4px solid var(--color-green); border-radius: 8px; background: rgba(var(--color-green-rgb), .07); color: var(--color-text-muted); font-size: .82rem; }
+  .verification-note { display: flex; align-items: flex-start; gap: .55rem; margin: 1rem 0; padding: .8rem 1rem; border-left: 4px solid var(--color-green); border-radius: 8px; background: rgba(var(--color-green-rgb), .07); color: var(--color-text-muted); font-size: .82rem; }
   .verification-note svg { flex: 0 0 auto; color: var(--color-green-text); }
   .active-filters { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; margin: 1rem 0; }
   .active-filters strong { margin-right: .25rem; font-size: .78rem; }
   .active-filters button { min-height: 36px; padding: .35rem .65rem; border: 1px solid var(--color-border); border-radius: 999px; background: var(--color-surface); color: var(--color-text); font-size: .75rem; font-weight: 750; }
   .active-filters button:hover { border-color: var(--color-primary); color: var(--color-primary); }
-  .result-heading { margin: 1.35rem 0 .75rem; font-weight: 850; }
-  .search-page-results { display: grid; gap: .8rem; }
-  .search-result-card { display: grid; gap: .4rem; padding: 1.05rem 1.15rem; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
-  .search-result-card:hover, .search-result-card:focus-visible { transform: translateY(-2px); border-color: var(--color-primary); box-shadow: var(--shadow-md); }
-  .search-result-card strong { color: var(--color-text); font-size: 1.05rem; }
-  .result-meta { color: var(--color-green-text); font-size: .7rem; font-weight: 850; }
-  .result-summary { color: var(--color-text-muted); font-size: .86rem; line-height: 1.5; }
-  .result-facts { padding-top: .25rem; border-top: 1px solid var(--color-border); color: var(--color-text-muted); font-size: .7rem; }
-  .search-message { display: grid; justify-items: center; gap: .65rem; padding: 2.2rem 1rem; text-align: center; border: 1px dashed var(--color-border); border-radius: 12px; color: var(--color-text-muted); }
+  .result-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin: 1.6rem 0 .35rem; padding-bottom: .8rem; border-bottom: 3px solid var(--color-text); }
+  .result-heading span { color: var(--color-primary); font-size: .72rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+  .result-heading h2 { margin: .2rem 0 0; font-size: clamp(1.25rem, 3vw, 1.7rem); }
+  .result-heading p { margin: 0; color: var(--color-text-muted); font-size: .82rem; font-weight: 800; white-space: nowrap; }
+  .search-page-results { display: grid; }
+  .search-result-row { border-bottom: 1px solid var(--color-border); }
+  .search-result-link { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 1.2rem; padding: 1.25rem 0; color: inherit; }
+  .search-result-link:hover h3, .search-result-link:focus-visible h3 { color: var(--color-primary); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .search-result-link:focus-visible { outline: 3px solid rgba(var(--color-primary-rgb), .22); outline-offset: 4px; border-radius: 6px; }
+  .result-body { display: flex; min-width: 0; flex-direction: column; }
+  .result-meta { color: var(--color-green-text); font-size: .72rem; font-weight: 900; letter-spacing: .02em; }
+  .search-result-row h3 { margin: .38rem 0 .45rem; color: var(--color-text); font-size: clamp(1.08rem, 2.2vw, 1.35rem); line-height: 1.28; }
+  .result-summary { display: -webkit-box; overflow: hidden; margin: 0; color: var(--color-text-muted); font-size: .9rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .result-footer { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-top: auto; padding-top: .8rem; }
+  .result-facts { color: var(--color-text-muted); font-size: .72rem; line-height: 1.45; }
+  .result-read { flex: 0 0 auto; color: var(--color-primary); font-size: .78rem; font-weight: 850; }
+  .result-media { display: block; overflow: hidden; align-self: start; width: 100%; aspect-ratio: 16 / 9; border-radius: 9px; background: var(--color-bg-soft); }
+  .result-media img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s ease; }
+  .search-result-link:hover .result-media img { transform: scale(1.025); }
+  .result-media-placeholder { display: grid; place-items: center; color: var(--color-primary); font-size: 1.45rem; font-weight: 900; background: linear-gradient(135deg, rgba(var(--color-primary-rgb), .13), rgba(var(--color-green-rgb), .11)); }
+  .search-message { display: grid; justify-items: center; gap: .65rem; margin-top: 1rem; padding: 2.2rem 1rem; text-align: center; border: 1px dashed var(--color-border); border-radius: 12px; color: var(--color-text-muted); }
   .search-message h2 { margin: 0; color: var(--color-text); font-size: 1.25rem; }
   .search-message p { max-width: 55ch; margin: 0; }
   .search-message div { display: flex; justify-content: center; gap: .6rem; flex-wrap: wrap; margin-top: .35rem; }
   @media (max-width: 900px) { .primary-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .control-actions { grid-column: 1 / -1; } .advanced-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 540px) { .primary-filters, .advanced-filter-grid { grid-template-columns: 1fr; } .control-actions { display: grid; grid-column: auto; } .control-actions .btn, .search-message .btn { width: 100%; } .search-message div { width: 100%; } }
+  @media (max-width: 680px) {
+    .search-result-link { grid-template-columns: minmax(0, 1fr) 112px; gap: .8rem; padding: 1rem 0; }
+    .result-summary { font-size: .84rem; -webkit-line-clamp: 2; }
+    .result-footer { display: block; padding-top: .55rem; }
+    .result-read { display: inline-block; margin-top: .4rem; }
+    .result-media { border-radius: 7px; }
+  }
+  @media (max-width: 540px) {
+    .primary-filters, .advanced-filter-grid { grid-template-columns: 1fr; }
+    .control-actions { display: grid; grid-column: auto; }
+    .control-actions .btn, .search-message .btn { width: 100%; }
+    .search-message div { width: 100%; }
+    .result-heading { align-items: flex-start; }
+    .result-heading p { white-space: normal; text-align: right; }
+    .result-facts { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  }
 </style>
