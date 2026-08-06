@@ -66,3 +66,24 @@ test('live search presents one primary taxonomy and progressive secondary filter
   await expect.poll(() => page.url()).not.toContain('category=');
   await expect.poll(() => page.url()).toContain('type=job');
 });
+
+test('English search results use canonical article links that resolve', async ({ page, request }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'One browser is sufficient for the English route contract.');
+
+  const expectedCommit = process.env.EXPECTED_BUILD_COMMIT || '';
+  await waitForExpectedBuild(request, expectedCommit);
+
+  const response = await page.goto(`/search/?q=myscheme&nonce=${Date.now()}`, { waitUntil: 'networkidle' });
+  expect(response?.status()).toBe(200);
+
+  const result = page.locator('.search-result-link').filter({ hasText: /Find government schemes with myScheme/i }).first();
+  await expect(result).toBeVisible();
+  await expect(result).toHaveAttribute('href', '/articles/find-government-schemes-with-myscheme/');
+  await expect(page.locator('.search-result-row')).toHaveCount(1);
+  await expect(page.locator('a[href^="/en/articles/"]')).toHaveCount(0);
+
+  const article = await request.get(`/articles/find-government-schemes-with-myscheme/?nonce=${Date.now()}`, {
+    headers: noCacheHeaders,
+  });
+  expect(article.status()).toBe(200);
+});
