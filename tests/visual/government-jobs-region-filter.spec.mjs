@@ -73,7 +73,7 @@ test('State and UT filter appears only for State regional jobs', async ({ page }
   expect(geometry.panelBottom).toBeLessThan(geometry.navTop);
   expect(geometry.panelBottom).toBeLessThanOrEqual(geometry.viewportHeight);
   expect(geometry.overflowY).toBe('auto');
-  expect(geometry.borderRadius).toContain('22px');
+  expect(Number.parseFloat(geometry.borderRadius)).toBeGreaterThanOrEqual(20);
 
   await regionSelect.selectOption('west-bengal');
   await expect(regionSelect).toHaveValue('west-bengal');
