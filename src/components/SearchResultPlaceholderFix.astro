@@ -5,9 +5,40 @@
 
     output.dataset.placeholderFixReady = 'true';
 
+    const createPlaceholderIcon = () => {
+      const namespace = 'http://www.w3.org/2000/svg';
+      const icon = document.createElementNS(namespace, 'svg');
+      icon.classList.add('result-placeholder-icon');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('stroke-width', '1.8');
+      icon.setAttribute('stroke-linecap', 'round');
+      icon.setAttribute('stroke-linejoin', 'round');
+      icon.setAttribute('aria-hidden', 'true');
+
+      const frame = document.createElementNS(namespace, 'rect');
+      frame.setAttribute('x', '3');
+      frame.setAttribute('y', '3');
+      frame.setAttribute('width', '18');
+      frame.setAttribute('height', '18');
+      frame.setAttribute('rx', '3');
+
+      const sun = document.createElementNS(namespace, 'circle');
+      sun.setAttribute('cx', '8.5');
+      sun.setAttribute('cy', '8.5');
+      sun.setAttribute('r', '1.5');
+
+      const landscape = document.createElementNS(namespace, 'path');
+      landscape.setAttribute('d', 'm4 18 5-5 3 3 4-4 4 4');
+
+      icon.append(frame, sun, landscape);
+      return icon;
+    };
+
     const cleanPlaceholders = () => {
       output.querySelectorAll<HTMLElement>('.result-media-placeholder:not([data-placeholder-clean])').forEach((placeholder) => {
-        placeholder.replaceChildren();
+        placeholder.replaceChildren(createPlaceholderIcon());
         placeholder.setAttribute('aria-hidden', 'true');
         placeholder.dataset.placeholderClean = 'true';
       });
@@ -35,18 +66,14 @@
     color: var(--color-primary);
   }
 
-  .citizen-search .search-page-results .result-media-placeholder::before {
+  .citizen-search .search-page-results .result-placeholder-icon {
     width: 2.75rem;
     height: 2.75rem;
-    background: currentColor;
-    content: '';
     opacity: .42;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v11.17l3.59-3.58a2 2 0 0 1 2.82 0l1.59 1.58 2.59-2.58a2 2 0 0 1 2.82 0L19 12.17V5H5Zm14 10-2-2-4 4-3-3-5 5h14v-4ZM8.5 7A1.5 1.5 0 1 1 7 8.5 1.5 1.5 0 0 1 8.5 7Z'/%3E%3C/svg%3E") center / contain no-repeat;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v11.17l3.59-3.58a2 2 0 0 1 2.82 0l1.59 1.58 2.59-2.58a2 2 0 0 1 2.82 0L19 12.17V5H5Zm14 10-2-2-4 4-3-3-5 5h14v-4ZM8.5 7A1.5 1.5 0 1 1 7 8.5 1.5 1.5 0 0 1 8.5 7Z'/%3E%3C/svg%3E") center / contain no-repeat;
   }
 
   @media (max-width: 680px) {
-    .citizen-search .search-page-results .result-media-placeholder::before {
+    .citizen-search .search-page-results .result-placeholder-icon {
       width: 2.25rem;
       height: 2.25rem;
     }
