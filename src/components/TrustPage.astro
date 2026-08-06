@@ -52,8 +52,12 @@ const generalEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(
 const teamLabel = { en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' }[locale];
 const localizedTeamPath = localizedPath(locale, 'team');
 const teamHref = locale === 'en' ? localizedTeamPath.replace('/en/', '/') : localizedTeamPath;
+const localizedEditorialPolicyPath = localizedPath(locale, 'editorial-policy');
+const editorialPolicyHref = locale === 'en'
+  ? localizedEditorialPolicyPath.replace('/en/', '/')
+  : localizedEditorialPolicyPath;
 const trustLinks = [
-  { label: t.editorial, href: localizedPath(locale, 'editorial-policy') },
+  { label: t.editorial, href: editorialPolicyHref },
   { label: t.corrections, href: trustPagePath(locale, 'corrections') },
   { label: t.disclaimer, href: localizedPath(locale, 'disclaimer') },
   { label: t.contact, href: trustPagePath(locale, 'contact') },
@@ -100,7 +104,7 @@ const correctionListCopy = {
         <section><h2>{copy.author.interestsTitle}</h2><ul>{copy.author.interests.map((item) => <li>{item}</li>)}</ul></section>
         <section><h2>{copy.author.responsibilityTitle}</h2><p>{copy.author.responsibility}</p></section>
         <section><h2>{copy.author.verificationTitle}</h2><p>{copy.author.verification}</p></section>
-        <section><h2>{copy.author.contactTitle}</h2><p><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></p><p><a href={SITE.author.github} target="_blank" rel="noopener noreferrer">GitHub — mahammadsad <Icon name="external" /></a></p><p><a href={localizedPath(locale, 'editorial-policy')}>{t.editorial}</a> · <a href={trustPagePath(locale, 'corrections')}>{t.corrections}</a></p></section>
+        <section><h2>{copy.author.contactTitle}</h2><p><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></p><p><a href={SITE.author.github} target="_blank" rel="noopener noreferrer">GitHub — mahammadsad <Icon name="external" /></a></p><p><a href={editorialPolicyHref}>{t.editorial}</a> · <a href={trustPagePath(locale, 'corrections')}>{t.corrections}</a></p></section>
       </div>
       <section class="author-articles"><h2>{copy.author.articlesTitle}</h2>{authorArticles.length ? <div>{authorArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <p>{copy.author.noArticles}</p>}</section>
     </>}
