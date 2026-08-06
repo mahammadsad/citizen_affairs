@@ -1,4 +1,10 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+const brand = JSON.parse(
+  readFileSync(new URL('../../brand.config.json', import.meta.url), 'utf8')
+);
+const expectedNavigationLinks = brand.activeCategoryIds.length + 3;
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -10,7 +16,9 @@ for (const route of ['/bn/careers/', '/hi/careers/']) {
     await expect(categoryNavigation).toBeVisible();
 
     const categoryLinks = categoryNavigation.locator('a');
-    await expect(categoryLinks).toHaveCount(10);
+    await expect(categoryLinks).toHaveCount(expectedNavigationLinks);
+    await expect(categoryNavigation.locator('[data-category-link="jobs"]')).toHaveCount(0);
+    await expect(categoryNavigation.locator('[data-category-link="exams"]')).toHaveCount(0);
 
     const scrollsInternally = await categoryNavigation.locator('nav').evaluate(
       (element) => element.scrollWidth > element.clientWidth
