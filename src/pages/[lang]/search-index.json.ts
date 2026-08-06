@@ -95,6 +95,11 @@ export async function GET({ props }: { props: { locale: Locale } }) {
       ...(data.alert?.actionRequired || [])
     ].filter(Boolean);
 
+    const governmentScope = ['west-bengal', 'other-state'].includes(data.governmentLevel || '')
+      ? 'state'
+      : data.governmentLevel || '';
+    const state = data.state || (data.governmentLevel === 'west-bengal' ? 'west-bengal' : '');
+
     return {
       label: data.title,
       sub: categoryLabel,
@@ -105,9 +110,9 @@ export async function GET({ props }: { props: { locale: Locale } }) {
       verification: verificationLabels[locale][data.verificationStatus],
       verificationId: data.verificationStatus,
       status: deadlineState(data.deadline),
-      state: data.state || '',
-      regionLabel: data.regionLabel || regionName(data.state, locale),
-      governmentLevel: data.governmentLevel || '',
+      state,
+      regionLabel: data.regionLabel || regionName(state, locale),
+      governmentLevel: governmentScope,
       qualification,
       deadline: data.deadline?.toISOString() || '',
       published: data.date.toISOString(),
