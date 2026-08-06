@@ -4,6 +4,8 @@ import { extname, join, relative, resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const dist = join(root, 'dist');
 const errors = [];
+const brand = JSON.parse(readFileSync(join(root, 'brand.config.json'), 'utf8'));
+const promotedCategories = [...brand.activeCategoryIds];
 
 function walk(directory, extension) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -62,7 +64,7 @@ for (const path of walk(dist, '.html')) {
   }
 }
 
-for (const active of ['jobs', 'exams', 'materials', 'projects', 'affairs', 'notices', 'guides']) {
+for (const active of promotedCategories) {
   if (!existsSync(join(dist, 'en/categories', active, 'index.html'))) {
     errors.push(`active category was not generated: ${active}`);
   }
