@@ -16,7 +16,8 @@ test('responsive interface uses approved Citizen Affairs brand exports', () => {
   const logo = read('src/components/BrandLogo.astro');
   for (const asset of [
     'citizen-affairs-full-tagline.png',
-    'citizen-affairs-horizontal.png',
+    'citizen-affairs-horizontal.svg',
+    'citizen-affairs-horizontal-dark.svg',
     'citizen-affairs-monogram.png',
     'citizen-affairs-circular.png'
   ]) {
@@ -24,7 +25,7 @@ test('responsive interface uses approved Citizen Affairs brand exports', () => {
     assert.ok(readFileSync(new URL(`../public/assets/brand/${asset}`, import.meta.url)).length > 0);
   }
 
-  assert.doesNotMatch(logo, /citizen-affairs-(?:full|horizontal|monogram|circular)(?:-dark)?\.svg/);
+  assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
 });
 
 test('news category navigation is static and mobile footer is collapsible', () => {

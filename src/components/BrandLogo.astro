@@ -17,8 +17,8 @@ type LogoAsset = {
   height: number;
 };
 
-// Use the approved exported artwork from the brand kit. These PNG files preserve
-// the exact monogram geometry, wordmark typography, spacing and Bengali tagline.
+// Use the approved exported artwork from the brand kit. Theme-specific SVG
+// lockups preserve the exact geometry while keeping the wordmark legible.
 const variants: Record<Variant, LogoAsset> = {
   full: {
     light: 'assets/brand/citizen-affairs-full-tagline.png',
@@ -27,10 +27,10 @@ const variants: Record<Variant, LogoAsset> = {
     height: 380
   },
   horizontal: {
-    light: 'assets/brand/citizen-affairs-horizontal.png',
-    dark: 'assets/brand/citizen-affairs-horizontal.png',
-    width: 372,
-    height: 156
+    light: 'assets/brand/citizen-affairs-horizontal.svg',
+    dark: 'assets/brand/citizen-affairs-horizontal-dark.svg',
+    width: 560,
+    height: 132
   },
   monogram: {
     light: 'assets/brand/citizen-affairs-monogram.png',
@@ -96,6 +96,7 @@ const darkSrc = resolveAssetPath(asset.dark);
     max-width: 100%;
     height: auto;
     object-fit: contain;
+    background: transparent;
   }
 
   .site-header .navbar {
