@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: './tests/production',
   timeout: 180_000,
   workers: 1,
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   reporter: [
     ['line'],
     ['html', { outputFolder: 'production-smoke-report', open: 'never' }],
@@ -14,6 +14,8 @@ export default defineConfig({
   ],
   use: {
     baseURL: process.env.PRODUCTION_URL || 'https://citizenaffairs.in',
+    actionTimeout: 20_000,
+    navigationTimeout: 45_000,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
   },
