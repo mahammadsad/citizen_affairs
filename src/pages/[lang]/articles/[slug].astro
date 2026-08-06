@@ -10,6 +10,7 @@ import ArticleStructuredData from '@components/ArticleStructuredData.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
 import { canOfferApplicationAction } from '@lib/freshness';
+import { deduplicateSourceRecords, normalizeSourceUrl } from '@lib/source-records';
 import { locales, type Locale } from '../../../i18n';
 import { SITE } from '@utils/constants';
 
@@ -64,6 +65,11 @@ const applicationUrl =
   article.data.scholarship?.officialPortal ||
   article.data.service?.officialPortal;
 const safeApplicationUrl = canOfferApplicationAction(article.data) ? applicationUrl : undefined;
+const displaySourceRecords = deduplicateSourceRecords(
+  article.data.sources,
+  article.data.sourceUrls,
+  officialNoticeUrl
+);
 const decisionQualification = article.data.qualification.length
   ? article.data.qualification
   : article.data.job?.qualification ||
@@ -84,11 +90,14 @@ const decisionAmount =
   article.data.scheme?.benefitAmount ||
   article.data.scholarship?.benefitAmount;
 const sourceLinks = [
-  ...article.data.sources.map((source) => source.url),
-  ...article.data.sourceUrls,
+  ...displaySourceRecords.sources.map((source) => source.url),
+  ...displaySourceRecords.sourceUrls,
   officialNoticeUrl,
   applicationUrl
-].filter((value): value is string => Boolean(value));
+]
+  .filter((value): value is string => Boolean(value))
+  .map(normalizeSourceUrl)
+  .filter(Boolean);
 const sourceCount = new Set(sourceLinks).size;
 ---
 
@@ -120,8 +129,8 @@ const sourceCount = new Set(sourceLinks).size;
   seoTitle={article.data.seoTitle}
   seoDescription={article.data.seoDescription}
   verificationStatus={article.data.verificationStatus}
-  sourceUrls={article.data.sourceUrls}
-  sources={article.data.sources}
+  sourceUrls={displaySourceRecords.sourceUrls}
+  sources={displaySourceRecords.sources}
   {officialNoticeUrl}
   applicationUrl={safeApplicationUrl}
   urlSlug={article.data.urlSlug}
