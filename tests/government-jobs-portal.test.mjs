@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const portal = await readFile('src/components/GovernmentJobsPortal.astro', 'utf8');
+const icons = await readFile('src/components/Icon.astro', 'utf8');
 const contentSchema = await readFile('src/content.config.ts', 'utf8');
 const jobsCategory = await readFile('src/content/categories/jobs.yaml', 'utf8');
 
@@ -62,6 +63,16 @@ test('search, filters and recruitment stages appear before page identity and res
   assert.doesNotMatch(portal, /class="jobs-listing-head"/);
   assert.doesNotMatch(portal, /deadlineCentre/);
   assert.doesNotMatch(portal, /All citizen sections/);
+});
+
+test('filter trigger uses a conventional funnel and a visible localized label', () => {
+  assert.match(icons, /filter: '<path d="M4 5h16l-6\.5 7v6l-3 1\.5V12L4 5Z"\/>'/);
+  assert.match(portal, /<summary data-job-filter-trigger>/);
+  assert.match(portal, /<Icon name="filter" size=\{18\} class="jobs-filter-icon" \/>/);
+  assert.match(portal, /\{copy\.filters\}/);
+  assert.doesNotMatch(portal, /<Icon name="categories" size=\{17\} \/>/);
+  assert.match(portal, /min-width: 88px/);
+  assert.match(portal, /font-size: 0\.76rem/);
 });
 
 test('government jobs portal provides accessible search, compact filters, sorting and lifecycle tabs', () => {
