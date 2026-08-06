@@ -4,6 +4,10 @@ type BrandLocale = 'en' | 'bn' | 'hi';
 export const BRAND = brand;
 export const GITHUB_PAGES_URL = 'https://mahammadsad.github.io/citizen_affairs';
 const GITHUB_REPOSITORY_BASE = '/citizen_affairs/';
+const LEGACY_BRAND_ASSET_PREFIXES = [
+  'uploads/chatgpt-image-',
+  'uploads/india-major-welfare-schemes-'
+] as const;
 export const SITE_URL = BRAND.domain ? BRAND.domain.replace(/\/$/, '') : GITHUB_PAGES_URL;
 export const BASE_PATH = BRAND.domain ? '/' : GITHUB_REPOSITORY_BASE;
 
@@ -34,9 +38,14 @@ export function withBasePath(path = '') {
 
 export function resolveAssetPath(path: string) {
   if (/^(?:https?:|data:|blob:)/.test(path)) return path;
-  const relativePath = path.startsWith(GITHUB_REPOSITORY_BASE)
+  let relativePath = path.startsWith(GITHUB_REPOSITORY_BASE)
     ? path.slice(GITHUB_REPOSITORY_BASE.length)
     : path.replace(/^\/+/, '');
+
+  if (LEGACY_BRAND_ASSET_PREFIXES.some((prefix) => relativePath.startsWith(prefix))) {
+    relativePath = BRAND.logoSocialCard;
+  }
+
   return withBasePath(relativePath);
 }
 
