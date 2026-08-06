@@ -1,0 +1,304 @@
+<script>
+  const setupSearchResultCards = () => {
+    const root = document.querySelector<HTMLElement>('[data-search-page]');
+    const output = document.getElementById('searchPageResults');
+    if (!root || !output || output.dataset.cardEnhancerReady === 'true') return;
+
+    output.dataset.cardEnhancerReady = 'true';
+
+    const language = document.documentElement.lang.toLowerCase();
+    const readLabel = language.startsWith('bn')
+      ? 'পড়ুন'
+      : language.startsWith('hi')
+        ? 'पढ़ें'
+        : 'Read';
+
+    const cleanText = (value = '') => value
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const enhanceRows = () => {
+      output.querySelectorAll<HTMLElement>('.search-result-row:not([data-card-enhanced])').forEach((row) => {
+        const link = row.querySelector<HTMLAnchorElement>('.search-result-link');
+        const body = row.querySelector<HTMLElement>('.result-body');
+        const media = row.querySelector<HTMLElement>('.result-media');
+        if (!link || !body) return;
+
+        const title = body.querySelector<HTMLElement>('h3');
+        const meta = body.querySelector<HTMLElement>('.result-meta');
+        const summary = body.querySelector<HTMLElement>('.result-summary');
+        const facts = body.querySelector<HTMLElement>('.result-facts');
+        const read = body.querySelector<HTMLElement>('.result-read');
+        const image = media?.querySelector<HTMLImageElement>('img');
+
+        if (media && link.firstElementChild !== media) link.prepend(media);
+
+        if (meta) {
+          const primaryLabel = cleanText(meta.textContent || '').split('·')[0]?.trim();
+          meta.textContent = primaryLabel || '';
+          meta.hidden = !primaryLabel;
+        }
+
+        if (summary) {
+          const cleanedSummary = cleanText(summary.textContent || '');
+          summary.textContent = cleanedSummary;
+          summary.hidden = !cleanedSummary;
+        }
+
+        if (facts) {
+          const deadlineLabel = cleanText(root.dataset.deadlineLabel || '');
+          const factParts = cleanText(facts.textContent || '')
+            .split(' · ')
+            .map((part) => part.trim())
+            .filter(Boolean);
+          const compactFacts = factParts.filter((part, index) =>
+            index === 0 || Boolean(deadlineLabel && part.startsWith(`${deadlineLabel}:`))
+          );
+          facts.textContent = compactFacts.join(' · ');
+          facts.hidden = compactFacts.length === 0;
+        }
+
+        if (read) read.textContent = `${readLabel} →`;
+
+        if (image) {
+          image.width = 480;
+          image.height = 360;
+          image.loading = 'lazy';
+          image.decoding = 'async';
+        }
+
+        if (title?.textContent) link.setAttribute('aria-label', cleanText(title.textContent));
+        row.dataset.cardEnhanced = 'true';
+      });
+    };
+
+    const observer = new MutationObserver(enhanceRows);
+    observer.observe(output, { childList: true, subtree: true });
+    enhanceRows();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSearchResultCards, { once: true });
+  } else {
+    setupSearchResultCards();
+  }
+</script>
+
+<style is:global>
+  .citizen-search .search-page-results {
+    display: grid;
+    gap: 1rem;
+    padding: .7rem 0 1rem;
+  }
+
+  .citizen-search .search-page-results .search-result-row {
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+
+  .citizen-search .search-page-results .search-result-row:hover {
+    border-color: rgba(var(--color-primary-rgb), .42);
+    box-shadow: 0 12px 30px rgba(9, 30, 54, .1);
+    transform: translateY(-1px);
+  }
+
+  .citizen-search .search-page-results .search-result-link {
+    display: grid;
+    grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+    grid-template-areas: 'media content';
+    gap: 0;
+    min-height: 168px;
+    padding: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .citizen-search .search-page-results .search-result-link:focus-visible {
+    outline: 3px solid rgba(var(--color-primary-rgb), .28);
+    outline-offset: -3px;
+    border-radius: 14px;
+  }
+
+  .citizen-search .search-page-results .result-media {
+    grid-area: media;
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    min-height: 168px;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+    background: var(--color-bg-soft);
+  }
+
+  .citizen-search .search-page-results .result-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .citizen-search .search-page-results .result-media-placeholder {
+    min-height: 168px;
+    font-size: 1.35rem;
+    letter-spacing: .06em;
+  }
+
+  .citizen-search .search-page-results .result-body {
+    grid-area: content;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    padding: 1rem 1.1rem .95rem;
+  }
+
+  .citizen-search .search-page-results .result-meta {
+    overflow: hidden;
+    color: var(--color-green-text);
+    font-size: .76rem;
+    font-weight: 900;
+    line-height: 1.35;
+    letter-spacing: .01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .citizen-search .search-page-results .search-result-row h3 {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: .35rem 0 .42rem;
+    color: var(--color-text);
+    font-size: clamp(1.08rem, 2.1vw, 1.34rem);
+    line-height: 1.28;
+    text-wrap: pretty;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .citizen-search .search-page-results .result-summary {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: .9rem;
+    line-height: 1.48;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .citizen-search .search-page-results .result-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    min-width: 0;
+    margin-top: auto;
+    padding-top: .72rem;
+  }
+
+  .citizen-search .search-page-results .result-facts {
+    display: block;
+    overflow: hidden;
+    min-width: 0;
+    color: var(--color-text-muted);
+    font-size: .73rem;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .citizen-search .search-page-results .result-read {
+    flex: 0 0 auto;
+    color: var(--color-primary);
+    font-size: .78rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .citizen-search .search-page-results .search-result-link:hover h3,
+  .citizen-search .search-page-results .search-result-link:focus-visible h3 {
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  @media (max-width: 680px) {
+    .citizen-search .search-layout {
+      padding-bottom: calc(6.25rem + env(safe-area-inset-bottom));
+    }
+
+    .citizen-search .search-page-results {
+      gap: .85rem;
+      padding-top: .55rem;
+    }
+
+    .citizen-search .search-page-results .search-result-link {
+      grid-template-columns: 112px minmax(0, 1fr);
+      grid-template-areas: 'media content';
+      min-height: 146px;
+      padding: 0;
+    }
+
+    .citizen-search .search-page-results .result-media,
+    .citizen-search .search-page-results .result-media-placeholder {
+      min-height: 146px;
+      border-radius: 0;
+    }
+
+    .citizen-search .search-page-results .result-body {
+      padding: .78rem .82rem .72rem;
+    }
+
+    .citizen-search .search-page-results .result-meta {
+      font-size: .69rem;
+    }
+
+    .citizen-search .search-page-results .search-result-row h3 {
+      margin: .28rem 0 .34rem;
+      font-size: 1rem;
+      line-height: 1.25;
+      -webkit-line-clamp: 3;
+    }
+
+    .citizen-search .search-page-results .result-summary {
+      font-size: .8rem;
+      line-height: 1.42;
+      -webkit-line-clamp: 2;
+    }
+
+    .citizen-search .search-page-results .result-footer {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding-top: .5rem;
+    }
+
+    .citizen-search .search-page-results .result-facts {
+      font-size: .67rem;
+      -webkit-line-clamp: 1;
+    }
+
+    .citizen-search .search-page-results .result-read {
+      display: inline;
+      margin-top: 0;
+      font-size: .7rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .citizen-search .search-page-results .search-result-link {
+      grid-template-columns: 104px minmax(0, 1fr);
+    }
+
+    .citizen-search .search-page-results .result-body {
+      padding-inline: .7rem;
+    }
+
+    .citizen-search .search-page-results .result-summary {
+      -webkit-line-clamp: 1;
+    }
+  }
+</style>
