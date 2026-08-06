@@ -20,7 +20,7 @@ The reviewed operational state is stored in the repository root at `project-stat
 - Legacy Sarkari Tathya Kendra editorial artwork is no longer served as current Citizen Affairs imagery.
 - Empty jobs and exams sections are hidden from launch navigation while their articles remain drafts.
 - Search result card cleanup and image placeholders are handled by one enhancement layer instead of two competing MutationObservers.
-- Production browser checks retry one transient CI failure and clearly label retry-assisted verification rather than presenting it as a clean run.
+- Production browser checks remain serial and no-retry, with explicit action and navigation timeouts so any unresolved live failure remains visible.
 - Bengali and Hindi article metadata and body typography have improved mobile sizing and line height.
 - The static-site content security policy blocks script attributes, framing, external workers and unapproved media origins while retaining the inline allowances currently required by the Astro output.
 - README, this audit and machine-readable status now describe Astro 7 and the actual launch scope.
