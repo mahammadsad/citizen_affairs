@@ -40,14 +40,12 @@ const copy = {
   en: {
     independent: 'Independent citizen-information service',
     notGovernment: 'Not a government website',
-    jobs: 'Jobs',
     education: 'Education',
     schemes: 'Schemes',
     citizenServices: 'Citizen Services',
     deadlines: 'Deadlines',
     guides: 'Guides',
     more: 'More',
-    admissions: 'Admissions, Exams & Results',
     alerts: 'Citizen Alerts',
     allUpdates: 'All Updates',
     saved: 'Saved',
@@ -57,14 +55,12 @@ const copy = {
   bn: {
     independent: 'স্বাধীন নাগরিক তথ্য পরিষেবা',
     notGovernment: 'সরকারি ওয়েবসাইট নয়',
-    jobs: 'চাকরি',
     education: 'শিক্ষা',
     schemes: 'প্রকল্প',
     citizenServices: 'নাগরিক পরিষেবা',
     deadlines: 'সময়সীমা',
     guides: 'গাইড',
     more: 'আরও',
-    admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
     alerts: 'নাগরিক সতর্কতা',
     allUpdates: 'সব আপডেট',
     saved: 'সংরক্ষিত',
@@ -74,14 +70,12 @@ const copy = {
   hi: {
     independent: 'स्वतंत्र नागरिक सूचना सेवा',
     notGovernment: 'सरकारी वेबसाइट नहीं',
-    jobs: 'नौकरियाँ',
     education: 'शिक्षा',
     schemes: 'योजनाएँ',
     citizenServices: 'नागरिक सेवाएँ',
     deadlines: 'समय-सीमाएँ',
     guides: 'मार्गदर्शिकाएँ',
     more: 'अधिक',
-    admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
     alerts: 'नागरिक अलर्ट',
     allUpdates: 'सभी अपडेट',
     saved: 'सहेजे गए',
@@ -91,7 +85,6 @@ const copy = {
 }[locale];
 
 const primaryLinks = [
-  { label: copy.jobs, href: route('categories/jobs'), match: '/categories/jobs' },
   { label: copy.education, href: route('categories/materials'), match: '/categories/materials' },
   { label: copy.schemes, href: route('categories/projects'), match: '/categories/projects' },
   { label: copy.citizenServices, href: route('categories/affairs'), match: '/categories/affairs' },
@@ -100,7 +93,6 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
-  { label: copy.admissions, href: route('categories/exams'), icon: 'exams' },
   { label: copy.alerts, href: route('categories/notices'), icon: 'notices' },
   { label: copy.allUpdates, href: route('articles'), icon: 'updates' },
   { label: copy.officialPolicy, href: route('editorial-policy'), icon: 'check' }
@@ -110,19 +102,15 @@ const mobileCategories = categories.map((category) => ({
   label: categoryName(category, locale),
   href: route(`categories/${category.id}`),
   icon:
-    category.id === 'jobs'
-      ? 'briefcase'
-      : category.id === 'projects'
-        ? 'schemes'
-        : category.id === 'exams'
-          ? 'exams'
-          : category.id === 'materials'
-            ? 'education'
-            : category.id === 'affairs'
-              ? 'services'
-              : category.id === 'notices'
-                ? 'notices'
-                : 'book'
+    category.id === 'projects'
+      ? 'schemes'
+      : category.id === 'materials'
+        ? 'education'
+        : category.id === 'affairs'
+          ? 'services'
+          : category.id === 'notices'
+            ? 'notices'
+            : 'book'
 }));
 ---
 
