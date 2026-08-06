@@ -14,9 +14,14 @@ test('project status matches the deployed framework and domain configuration', (
   assert.equal(status.productionDomain, brand.domain);
 });
 
-test('project status matches the launch category configuration', () => {
+test('project status matches configured and promoted category states', () => {
+  assert.deepEqual(status.configuredCategoryIds, brand.configuredCategoryIds);
   assert.deepEqual(status.activeCategoryIds, brand.activeCategoryIds);
   assert.equal(status.editorialBackend, 'disabled');
   assert.ok(status.pendingCategoryIds.includes('jobs'));
   assert.ok(status.pendingCategoryIds.includes('exams'));
+  assert.ok(status.configuredCategoryIds.includes('jobs'));
+  assert.ok(status.configuredCategoryIds.includes('exams'));
+  assert.ok(!status.activeCategoryIds.includes('jobs'));
+  assert.ok(!status.activeCategoryIds.includes('exams'));
 });
