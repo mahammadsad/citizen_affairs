@@ -17,8 +17,9 @@ type LogoAsset = {
   height: number;
 };
 
-// Use the approved exported artwork from the brand kit. Theme-specific SVG
-// lockups preserve the exact geometry while keeping the wordmark legible.
+// The horizontal lockups are traced from the owner's approved brand master.
+// The dark export changes only the navy ink to the approved reverse white;
+// the monogram, divider, letterforms, spacing and proportions stay identical.
 const variants: Record<Variant, LogoAsset> = {
   full: {
     light: 'assets/brand/citizen-affairs-full-tagline.png',
@@ -29,8 +30,8 @@ const variants: Record<Variant, LogoAsset> = {
   horizontal: {
     light: 'assets/brand/citizen-affairs-horizontal.svg',
     dark: 'assets/brand/citizen-affairs-horizontal-dark.svg',
-    width: 560,
-    height: 132
+    width: 395,
+    height: 150
   },
   monogram: {
     light: 'assets/brand/citizen-affairs-monogram.png',
