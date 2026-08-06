@@ -11,8 +11,6 @@
   "transitionNoticeHi": "सिटिजन अफेयर्स — पूर्व में सरकारी तथ्य केंद्र",
   "description": "An independent citizen-information portal for verified opportunities, benefits, deadlines and public services across India.",
   "activeCategoryIds": [
-    "jobs",
-    "exams",
     "materials",
     "projects",
     "affairs",
