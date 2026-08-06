@@ -43,3 +43,26 @@ test('dependent selector integrates with existing filters, result count and rese
   assert.match(regionFilter, /queueMicrotask\(applyRegionFilter\)/);
   assert.match(regionFilter, /select\.value = 'all'/);
 });
+
+test('dynamic State and UT control receives the same branded form classes as the portal filters', () => {
+  assert.match(regionFilter, /field\.className = 'jobs-region-field'/);
+  assert.match(regionFilter, /select\.className = 'jobs-region-select'/);
+  assert.match(regionFilter, /<style is:global>/);
+  assert.match(regionFilter, /var\(--color-primary\)/);
+  assert.match(regionFilter, /var\(--color-green\)/);
+  assert.match(regionFilter, /var\(--color-orange\)/);
+  assert.match(regionFilter, /var\(--color-surface\)/);
+  assert.match(regionFilter, /var\(--color-border\)/);
+  assert.match(regionFilter, /var\(--shadow-lg\)/);
+});
+
+test('mobile filter sheet stays above the persistent bottom navigation and within the dynamic viewport', () => {
+  assert.match(
+    regionFilter,
+    /bottom: calc\(60px \+ env\(safe-area-inset-bottom\) \+ 0\.75rem\) !important/
+  );
+  assert.match(regionFilter, /max-height: calc\(100dvh - 60px - env\(safe-area-inset-bottom\) - 1\.5rem\)/);
+  assert.match(regionFilter, /z-index: 120 !important/);
+  assert.match(regionFilter, /overscroll-behavior: contain/);
+  assert.match(regionFilter, /scrollbar-gutter: stable/);
+});
