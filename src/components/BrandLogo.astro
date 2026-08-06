@@ -17,9 +17,9 @@ type LogoAsset = {
   height: number;
 };
 
-// The horizontal lockups are traced from the owner's approved brand master.
-// The dark export changes only the navy ink to the approved reverse white;
-// the monogram, divider, letterforms, spacing and proportions stay identical.
+// Use cache-busted, smooth native vector lockups derived from the approved
+// brand master. Curves and outlined letterforms remain crisp at browser zoom
+// without depending on fonts, raster images or pixel-following SVG traces.
 const variants: Record<Variant, LogoAsset> = {
   full: {
     light: 'assets/brand/citizen-affairs-full-tagline.png',
@@ -28,8 +28,8 @@ const variants: Record<Variant, LogoAsset> = {
     height: 380
   },
   horizontal: {
-    light: 'assets/brand/citizen-affairs-horizontal.svg',
-    dark: 'assets/brand/citizen-affairs-horizontal-dark.svg',
+    light: 'assets/brand/citizen-affairs-horizontal-quality-v3.svg',
+    dark: 'assets/brand/citizen-affairs-horizontal-quality-v3-dark.svg',
     width: 395,
     height: 150
   },
@@ -97,6 +97,7 @@ const darkSrc = resolveAssetPath(asset.dark);
     max-width: 100%;
     height: auto;
     object-fit: contain;
+    image-rendering: auto;
     background: transparent;
   }
 
