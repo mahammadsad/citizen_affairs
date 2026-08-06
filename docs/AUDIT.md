@@ -1,33 +1,46 @@
 # Repository and production audit
 
-Audit date: 17 July 2026.
+Audit reviewed: 6 August 2026.
 
-## Retained
+## Current foundation
 
-- Astro 5 static generation, TypeScript, multilingual English/Bengali/Hindi routes and localized dates.
-- Existing design tokens, responsive layout, dark mode, keyboard skip link, RSS, sitemap, saved articles, deadlines and static search index.
-- GitHub Pages deployment and portable Markdown content.
-- Pages CMS as an owner-only transitional draft tool.
+- Astro 7 static generation with TypeScript.
+- Multilingual English, Bengali and Hindi routes with localized dates and metadata.
+- GitHub Pages deployment on `https://citizenaffairs.in`.
+- Portable Markdown content with source, verification, review-date and workflow metadata.
+- Canonical URLs, hreflang, RSS, sitemap, structured data and social metadata.
+- Dark mode, keyboard skip link, saved articles, deadlines and offline fallback.
+- CI gates for types, formatting, content, freshness, editorial readiness, HTML, SEO, performance, links, secrets, dependencies, responsive screenshots and production smoke tests.
 
-## Problems found
+The reviewed operational state is stored in the repository root at `project-status.json` and validated during `npm test`.
 
-- The visible Sarkari Tathya Kendra identity did not explain the Citizen Affairs India domain.
-- Six categories were shown equally even though the public crawl had no content in most categories.
-- Articles were generic records with simple source URLs and no enforced editorial roles.
-- `draft` defaulted to false in Pages CMS and `admin` was assumed as hidden authorship.
-- Search overlay queries were not shareable and the `SearchAction` target did not implement searching.
-- Every factual article could be treated like news; image MIME metadata and large image handling needed improvement.
-- GitHub Actions built the site but did not run editorial, route, HTML, image or JSON-LD gates.
-- There was no private draft database, approval ledger, RLS permission model or deployment feedback loop.
+## Issues corrected in the August 2026 audit
 
-## Accessibility and SEO observations
+- Article source counts and source lists now share one normalized, deduplicated source collection.
+- Legacy Sarkari Tathya Kendra editorial artwork is no longer served as current Citizen Affairs imagery.
+- Empty jobs and exams sections are hidden from launch navigation while their articles remain drafts.
+- Search result card cleanup and image placeholders are handled by one enhancement layer instead of two competing MutationObservers.
+- Production browser checks retry one transient CI failure and clearly label retry-assisted verification rather than presenting it as a clean run.
+- Bengali and Hindi article metadata and body typography have improved mobile sizing and line height.
+- The static-site content security policy blocks script attributes, framing, external workers and unapproved media origins while retaining the inline allowances currently required by the Astro output.
+- README, this audit and machine-readable status now describe Astro 7 and the actual launch scope.
 
-The site already had semantic landmarks, a single main heading on standard pages, keyboard navigation, focus management and responsive layouts. The implementation preserves those and adds generated-HTML validation. Remaining production QA is listed in [Implementation report](IMPLEMENTATION-REPORT.md).
+## Deliberate current limitations
 
-## Asset audit
+- The Supabase editorial backend is disabled. Migrations and Edge Functions are retained as a reviewed blueprint only.
+- Pages CMS prepares drafts; it does not approve or publish content.
+- Government jobs and exams remain pending until their draft guides complete review.
+- GitHub Pages cannot set all desired response headers directly. The in-document CSP is therefore useful but not equivalent to an edge-delivered response header.
+- Some historical binary uploads remain in Git history even when removed from the active tree.
 
-The published article image was converted to compact WebP and AVIF variants. Four large unused PNG uploads were retained because they may be user assets and deletion was not necessary for the launch foundation.
+## Editorial launch rule
+
+A section should not be promoted in navigation merely because its route exists. It should have reviewed public content, an update owner and a repeatable source-check process. `brand.config.json` controls promoted categories, and `project-status.json` records both active and pending categories.
+
+## Accessibility and SEO
+
+The site uses semantic landmarks, visible focus treatment, a skip link, localized metadata, canonical URLs, hreflang, structured data and generated-output validation. Production QA should continue to test desktop, mobile, keyboard navigation, Indic-script readability and every sitemap URL after deployment.
 
 ## Rollback
 
-All work is additive or configuration-driven. Revert the pull request to restore the previous site. The Supabase migration is not applied automatically; if applied to a new empty project, the safest rollback is to discard that project. For a used project, restore from backup rather than manually dropping interdependent tables.
+Changes remain configuration-driven and reviewable in Git. Revert the relevant pull request to restore the previous static site. Supabase migrations are not applied automatically; if a replacement project is later provisioned, use verified backups rather than manually dropping interdependent tables.
