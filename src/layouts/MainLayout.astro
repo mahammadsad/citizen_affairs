@@ -85,33 +85,33 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     flex: 0 0 var(--portal-logo-width) !important;
     min-width: 196px !important;
     max-width: 224px !important;
-    overflow: hidden !important;
-    border-radius: 10px;
-    background: transparent;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     line-height: 0;
-    transition: background-color 160ms ease, box-shadow 160ms ease;
   }
 
   :global(.portal-brand-logo) {
     width: var(--portal-logo-width) !important;
     max-width: none !important;
-    max-height: 82px !important;
+    max-height: 56px !important;
     height: auto !important;
     object-fit: contain !important;
     object-position: left center !important;
     opacity: 1 !important;
     filter: none !important;
     mix-blend-mode: normal !important;
-    /* Trim only the PNG's safe transparent gutter. A larger offset clips the C. */
-    transform: translateX(-.3rem);
-    transform-origin: left center;
+    transform: none !important;
+    background: transparent !important;
   }
 
-  /* The approved artwork uses navy lettering. Keep the exact logo colours and
-     provide a restrained white isolation surface when the header is dark. */
+  /* The header uses a dedicated light wordmark in dark mode, so the approved
+     artwork stays clear without a white card or any CSS recolouring. */
   :global(html[data-theme='dark'] .portal-header .portal-brand) {
-    background: #ffffff !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 5px 16px rgba(0, 0, 0, .22);
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   :global(.portal-header-actions) {
@@ -161,7 +161,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-brand-logo) {
       width: var(--portal-logo-width) !important;
       max-width: none !important;
-      max-height: 72px !important;
+      max-height: 52px !important;
     }
 
     :global(.portal-language > summary) {
