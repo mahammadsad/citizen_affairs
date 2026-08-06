@@ -12,7 +12,7 @@ test('world-class visual system is loaded after legacy shared styles', () => {
   assert.ok(visualIndex > componentsIndex);
 });
 
-test('responsive interface uses approved Citizen Affairs brand exports', () => {
+test('responsive interface uses the approved Citizen Affairs brand master', () => {
   const logo = read('src/components/BrandLogo.astro');
   for (const asset of [
     'citizen-affairs-full-tagline.png',
@@ -25,6 +25,16 @@ test('responsive interface uses approved Citizen Affairs brand exports', () => {
     assert.ok(readFileSync(new URL(`../public/assets/brand/${asset}`, import.meta.url)).length > 0);
   }
 
+  for (const asset of ['citizen-affairs-horizontal.svg', 'citizen-affairs-horizontal-dark.svg']) {
+    const artwork = read(`public/assets/brand/${asset}`);
+    assert.match(artwork, /official brand master/);
+    assert.match(artwork, /viewBox="0 0 395 150"/);
+    assert.match(artwork, /fill-rule="evenodd"/);
+    assert.doesNotMatch(artwork, /<text\b|font-family=/);
+  }
+
+  assert.match(logo, /width:\s*395/);
+  assert.match(logo, /height:\s*150/);
   assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
 });
 
