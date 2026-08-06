@@ -67,7 +67,9 @@ export const SITE = {
 export const ADS = { enabled: false, publisherId: '' } as const;
 
 export const SOCIALS = {
-  telegram: 'https://t.me/SarkariTathyaKendra',
+  x: 'https://x.com/citizenaffairIn',
+  facebook: 'https://www.facebook.com/profile.php?id=61593098155563',
+  telegram: 'https://t.me/CitizenAffairsBangla',
   telegramMCQ: 'https://t.me/BongCompetitiveExam',
   whatsapp: 'https://whatsapp.com/channel/0029Vb8NQAX9cDDTfaEDwk3r',
   email: BRAND.contactEmail
