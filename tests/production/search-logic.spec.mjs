@@ -1,0 +1,68 @@
+import { expect, test } from '@playwright/test';
+
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+const noCacheHeaders = { 'Cache-Control': 'no-cache', Pragma: 'no-cache' };
+
+const waitForExpectedBuild = async (request, expectedCommit) => {
+  if (!expectedCommit) return;
+  let lastSeen = 'unavailable';
+  for (let attempt = 1; attempt <= 24; attempt += 1) {
+    const marker = await request.get(
+      `/deployment.json?expected=${encodeURIComponent(expectedCommit)}&attempt=${attempt}&nonce=${Date.now()}`,
+      { headers: noCacheHeaders },
+    );
+    if (marker.ok()) {
+      const payload = await marker.json().catch(() => ({}));
+      lastSeen = payload.commit || 'missing';
+      if (lastSeen === expectedCommit) return;
+    } else {
+      lastSeen = `HTTP ${marker.status()}`;
+    }
+    await sleep(5_000);
+  }
+  throw new Error(`Production did not reach commit ${expectedCommit}; last marker was ${lastSeen}`);
+};
+
+test('live search presents one primary taxonomy and progressive secondary filters', async ({ page, request }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'One browser is sufficient for the multilingual search contract.');
+
+  const expectedCommit = process.env.EXPECTED_BUILD_COMMIT || '';
+  await waitForExpectedBuild(request, expectedCommit);
+
+  const cases = [
+    { path: '/search/', more: 'More filters', scope: 'Government scope', location: 'Applicable location' },
+    { path: '/bn/search/', more: 'আরও ফিল্টার', scope: 'সরকারের পরিধি', location: 'প্রযোজ্য এলাকা' },
+    { path: '/hi/search/', more: 'और फ़िल्टर', scope: 'सरकारी दायरा', location: 'लागू क्षेत्र' },
+  ];
+
+  for (const item of cases) {
+    const response = await page.goto(
+      `${item.path}?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`,
+      { waitUntil: 'networkidle' },
+    );
+    expect(response?.status(), `${item.path} should resolve`).toBe(200);
+
+    await expect(page.locator('select[name="type"]')).toHaveCount(1);
+    await expect(page.locator('select[name="category"]')).toHaveCount(0);
+
+    const advanced = page.locator('#advancedSearchFilters');
+    await expect(advanced).toHaveCount(1);
+    expect(await advanced.evaluate((element) => element.open)).toBe(false);
+    await advanced.locator('summary').click();
+    expect(await advanced.evaluate((element) => element.open)).toBe(true);
+    await expect(advanced.getByText(item.more, { exact: true })).toBeVisible();
+    await expect(advanced.getByText(item.scope, { exact: true })).toBeVisible();
+    await expect(advanced.getByText(item.location, { exact: true })).toBeVisible();
+
+    const scopeValues = await advanced.locator('select[name="level"] option').evaluateAll((options) =>
+      options.map((option) => option.value),
+    );
+    expect(scopeValues).toEqual(['', 'central', 'state']);
+    await expect(page.locator('#resultCount')).not.toContainText(/Loading|লোড|लोड/);
+  }
+
+  await page.goto(`/search/?category=jobs&nonce=${Date.now()}`, { waitUntil: 'networkidle' });
+  await expect(page.locator('select[name="type"]')).toHaveValue('job');
+  await expect.poll(() => page.url()).not.toContain('category=');
+  await expect.poll(() => page.url()).toContain('type=job');
+});
