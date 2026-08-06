@@ -18,6 +18,37 @@
       .replace(/\s+/g, ' ')
       .trim();
 
+    const createPlaceholderIcon = () => {
+      const namespace = 'http://www.w3.org/2000/svg';
+      const icon = document.createElementNS(namespace, 'svg');
+      icon.classList.add('result-placeholder-icon');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('stroke-width', '1.8');
+      icon.setAttribute('stroke-linecap', 'round');
+      icon.setAttribute('stroke-linejoin', 'round');
+      icon.setAttribute('aria-hidden', 'true');
+
+      const frame = document.createElementNS(namespace, 'rect');
+      frame.setAttribute('x', '3');
+      frame.setAttribute('y', '3');
+      frame.setAttribute('width', '18');
+      frame.setAttribute('height', '18');
+      frame.setAttribute('rx', '3');
+
+      const sun = document.createElementNS(namespace, 'circle');
+      sun.setAttribute('cx', '8.5');
+      sun.setAttribute('cy', '8.5');
+      sun.setAttribute('r', '1.5');
+
+      const landscape = document.createElementNS(namespace, 'path');
+      landscape.setAttribute('d', 'm4 18 5-5 3 3 4-4 4 4');
+
+      icon.append(frame, sun, landscape);
+      return icon;
+    };
+
     const enhanceRows = () => {
       output.querySelectorAll<HTMLElement>('.search-result-row:not([data-card-enhanced])').forEach((row) => {
         const link = row.querySelector<HTMLAnchorElement>('.search-result-link');
@@ -66,6 +97,9 @@
           image.height = 360;
           image.loading = 'lazy';
           image.decoding = 'async';
+        } else if (media?.classList.contains('result-media-placeholder')) {
+          media.replaceChildren(createPlaceholderIcon());
+          media.setAttribute('aria-hidden', 'true');
         }
 
         if (title?.textContent) link.setAttribute('aria-label', cleanText(title.textContent));
@@ -143,9 +177,20 @@
   }
 
   .citizen-search .search-page-results .result-media-placeholder {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
     min-height: 168px;
-    font-size: 1.35rem;
+    font-size: 0 !important;
+    color: var(--color-primary);
     letter-spacing: .06em;
+  }
+
+  .citizen-search .search-page-results .result-placeholder-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    opacity: .42;
   }
 
   .citizen-search .search-page-results .result-body {
@@ -246,6 +291,11 @@
     .citizen-search .search-page-results .result-media-placeholder {
       min-height: 146px;
       border-radius: 0;
+    }
+
+    .citizen-search .search-page-results .result-placeholder-icon {
+      width: 2.25rem;
+      height: 2.25rem;
     }
 
     .citizen-search .search-page-results .result-body {
