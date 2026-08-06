@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCollection } from 'astro:content';
 import CategoryPortal from '@components/CategoryPortal.astro';
+import GovernmentJobsPortal from '@components/GovernmentJobsPortal.astro';
 import MainLayout from '@layouts/MainLayout.astro';
 import { categoryDescription, categoryName, getLocalizedArticlesByCategory } from '@lib/content';
 import { ACTIVE_CATEGORY_IDS, SITE } from '@utils/constants';
@@ -33,5 +34,9 @@ const alternateUrls = Object.fromEntries(
 ---
 
 <MainLayout title={name} {description} {locale} {canonical} {alternateUrls}>
-  <CategoryPortal {locale} {category} {articles} />
+  {category.id === 'jobs' ? (
+    <GovernmentJobsPortal {locale} {category} {articles} />
+  ) : (
+    <CategoryPortal {locale} {category} {articles} />
+  )}
 </MainLayout>
