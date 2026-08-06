@@ -3,7 +3,6 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const enhancer = await readFile('src/components/SearchResultsCardEnhancer.astro', 'utf8');
-const placeholderFix = await readFile('src/components/SearchResultPlaceholderFix.astro', 'utf8');
 const localizedSearchPage = await readFile('src/pages/[lang]/search.astro', 'utf8');
 const englishSearchPage = await readFile('src/pages/search.astro', 'utf8');
 
@@ -31,22 +30,20 @@ test('result metadata is compact and localized', () => {
   assert.match(enhancer, /image\.loading = 'lazy'/);
 });
 
-test('missing thumbnails use a neutral image icon instead of sliced Bengali text', () => {
-  assert.match(placeholderFix, /document\.createElementNS\(namespace, 'svg'\)/);
-  assert.match(placeholderFix, /placeholder\.replaceChildren\(createPlaceholderIcon\(\)\)/);
-  assert.match(placeholderFix, /font-size: 0 !important/);
-  assert.match(placeholderFix, /result-placeholder-icon/);
-  assert.doesNotMatch(placeholderFix, /mask: url/);
-  assert.doesNotMatch(placeholderFix, /গা/);
+test('missing thumbnails use a neutral image icon in the single card enhancer', () => {
+  assert.match(enhancer, /document\.createElementNS\(namespace, 'svg'\)/);
+  assert.match(enhancer, /media\.replaceChildren\(createPlaceholderIcon\(\)\)/);
+  assert.match(enhancer, /font-size: 0 !important/);
+  assert.match(enhancer, /result-placeholder-icon/);
+  assert.doesNotMatch(enhancer, /mask: url/);
+  assert.doesNotMatch(enhancer, /গা/);
+  assert.equal((enhancer.match(/new MutationObserver/g) || []).length, 1);
 });
 
-test('all public search routes load the card enhancer and placeholder fix', () => {
-  assert.match(localizedSearchPage, /import SearchResultsCardEnhancer/);
-  assert.match(localizedSearchPage, /<SearchResultsCardEnhancer \/>/);
-  assert.match(localizedSearchPage, /import SearchResultPlaceholderFix/);
-  assert.match(localizedSearchPage, /<SearchResultPlaceholderFix \/>/);
-  assert.match(englishSearchPage, /import SearchResultsCardEnhancer/);
-  assert.match(englishSearchPage, /<SearchResultsCardEnhancer \/>/);
-  assert.match(englishSearchPage, /import SearchResultPlaceholderFix/);
-  assert.match(englishSearchPage, /<SearchResultPlaceholderFix \/>/);
+test('all public search routes load only the consolidated card enhancer', () => {
+  for (const page of [localizedSearchPage, englishSearchPage]) {
+    assert.match(page, /import SearchResultsCardEnhancer/);
+    assert.match(page, /<SearchResultsCardEnhancer \/>/);
+    assert.doesNotMatch(page, /SearchResultPlaceholderFix/);
+  }
 });
