@@ -22,5 +22,7 @@ test('the public admin shell clearly reports the disconnected backend', () => {
   assert.match(admin, /noindex, nofollow, noarchive/);
   assert.match(admin, /Editorial backend disabled/);
   assert.match(admin, /contains no private drafts, credentials or database data/);
-  assert.match(admin, /cannot approve or publish directly/);
+  assert.match(admin, /creates hidden drafts only/);
+  assert.match(admin, /cannot publish directly/);
+  assert.match(admin, /cannot approve content/);
 });
