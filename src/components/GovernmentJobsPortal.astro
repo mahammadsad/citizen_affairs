@@ -23,12 +23,6 @@ const route = (value = '') => {
 
 const copy = {
   en: {
-    back: 'All citizen sections',
-    kicker: 'Government Jobs',
-    subtitle: 'Latest verified Central, State and government-affiliated recruitment updates.',
-    governmentOnly: 'Government only',
-    latestTitle: 'Latest government jobs',
-    latestBody: 'Fresh recruitment notices appear first.',
     searchLabel: 'Search government jobs',
     searchPlaceholder: 'Post, organisation or notification number',
     filters: 'Filters',
@@ -60,7 +54,6 @@ const copy = {
     noMatch: 'No recruitment update matches these filters.',
     emptyTitle: 'No verified jobs published yet',
     emptyBody: 'The latest official recruitment notices will appear here as soon as they pass verification.',
-    deadlineCentre: 'Deadline centre',
     trustSummary: 'About these listings',
     promise: 'Government and public-sector recruitment only',
     promiseBody: 'Every listing must identify an eligible government or government-affiliated employer and link to an official source.',
@@ -109,12 +102,6 @@ const copy = {
     },
   },
   bn: {
-    back: 'সব নাগরিক বিভাগ',
-    kicker: 'সরকারি চাকরি',
-    subtitle: 'কেন্দ্র, রাজ্য ও সরকার-অনুমোদিত প্রতিষ্ঠানের সর্বশেষ যাচাইকৃত নিয়োগ আপডেট।',
-    governmentOnly: 'শুধু সরকারি',
-    latestTitle: 'সর্বশেষ সরকারি চাকরি',
-    latestBody: 'নতুন নিয়োগ বিজ্ঞপ্তি আগে দেখানো হয়।',
     searchLabel: 'সরকারি চাকরি খুঁজুন',
     searchPlaceholder: 'পদ, সংস্থা বা বিজ্ঞপ্তি নম্বর',
     filters: 'ফিল্টার',
@@ -146,7 +133,6 @@ const copy = {
     noMatch: 'এই ফিল্টারে কোনো নিয়োগ আপডেট পাওয়া যায়নি।',
     emptyTitle: 'এখনও কোনো যাচাইকৃত চাকরি প্রকাশিত হয়নি',
     emptyBody: 'অফিসিয়াল নিয়োগ বিজ্ঞপ্তি যাচাই শেষ হলেই এখানে সর্বশেষ তালিকায় দেখা যাবে।',
-    deadlineCentre: 'শেষ তারিখ কেন্দ্র',
     trustSummary: 'এই তালিকা সম্পর্কে',
     promise: 'শুধু সরকারি ও সরকারি-অনুমোদিত প্রতিষ্ঠানের নিয়োগ',
     promiseBody: 'প্রতিটি তালিকায় অনুমোদিত সরকারি নিয়োগকারী ও অফিসিয়াল সূত্র থাকা বাধ্যতামূলক।',
@@ -195,12 +181,6 @@ const copy = {
     },
   },
   hi: {
-    back: 'सभी नागरिक अनुभाग',
-    kicker: 'सरकारी नौकरियाँ',
-    subtitle: 'केंद्र, राज्य और सरकार-संबद्ध संस्थानों की नवीनतम सत्यापित भर्ती अपडेट।',
-    governmentOnly: 'केवल सरकारी',
-    latestTitle: 'नवीनतम सरकारी नौकरियाँ',
-    latestBody: 'नई भर्ती सूचनाएँ पहले दिखाई जाती हैं।',
     searchLabel: 'सरकारी नौकरी खोजें',
     searchPlaceholder: 'पद, संस्था या अधिसूचना संख्या',
     filters: 'फ़िल्टर',
@@ -232,7 +212,6 @@ const copy = {
     noMatch: 'इन फ़िल्टरों से कोई भर्ती अपडेट नहीं मिला।',
     emptyTitle: 'अभी कोई सत्यापित नौकरी प्रकाशित नहीं हुई',
     emptyBody: 'आधिकारिक भर्ती सूचना सत्यापन पूरा होते ही नवीनतम सूची में दिखाई देगी।',
-    deadlineCentre: 'अंतिम तिथि केंद्र',
     trustSummary: 'इन सूचियों के बारे में',
     promise: 'केवल सरकारी और सार्वजनिक क्षेत्र की भर्तियाँ',
     promiseBody: 'हर सूची में मान्य सरकारी या सरकार-संबद्ध नियोक्ता और आधिकारिक स्रोत होना आवश्यक है।',
@@ -283,8 +262,6 @@ const copy = {
 }[locale];
 
 const jobs = articles.filter((article) => article.data.contentType === 'job' && article.data.job);
-const openStatuses = new Set(['open', 'closing-soon']);
-const openCount = jobs.filter((article) => openStatuses.has(article.data.job!.recruitmentStatus)).length;
 const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale === 'hi' ? 'hi-IN' : 'en-IN', {
   day: 'numeric',
   month: 'short',
@@ -298,31 +275,8 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
   data-result-pattern={copy.resultPattern}
   data-no-match={copy.noMatch}
 >
-  <header class="jobs-hero">
-    <div class="container">
-      <a class="jobs-back" href={route('categories')}><Icon name="arrow" size={15} />{copy.back}</a>
-      <div class="jobs-title-row">
-        <div>
-          <p class="jobs-kicker"><Icon name="briefcase" size={16} />{copy.kicker}</p>
-          <h1>{name}</h1>
-        </div>
-        <span class="government-only"><Icon name="check" size={14} />{copy.governmentOnly}</span>
-      </div>
-      <p class="jobs-subtitle">{copy.subtitle}</p>
-    </div>
-  </header>
-
   <main class="container jobs-main">
-    <section class="jobs-listing" aria-labelledby="latest-jobs-title">
-      <div class="jobs-listing-head">
-        <div>
-          <p>{jobs.length > 0 ? `${openCount}/${jobs.length}` : '0'}</p>
-          <h2 id="latest-jobs-title">{copy.latestTitle}</h2>
-          <span>{copy.latestBody}</span>
-        </div>
-        <a href={route('deadlines')}>{copy.deadlineCentre}<Icon name="arrow" size={15} /></a>
-      </div>
-
+    <section class="jobs-listing" aria-labelledby="jobs-page-title">
       <div class="jobs-controls">
         <label class="jobs-search">
           <span class="sr-only">{copy.searchLabel}</span>
@@ -391,6 +345,7 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
       </div>
 
       <div class="jobs-result-line">
+        <h1 id="jobs-page-title">{name}</h1>
         <p data-job-result-count aria-live="polite">{copy.resultPattern.replace('{count}', String(jobs.length))}</p>
       </div>
 
@@ -444,7 +399,7 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
       ) : (
         <div class="jobs-empty">
           <Icon name="briefcase" size={28} />
-          <h3>{copy.emptyTitle}</h3>
+          <h2>{copy.emptyTitle}</h2>
           <p>{copy.emptyBody}</p>
         </div>
       )}
@@ -544,85 +499,8 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     background: var(--color-bg);
   }
 
-  .jobs-hero {
-    padding: 1rem 0 1.35rem;
-    color: #fff;
-    background: linear-gradient(125deg, #073558, #086b70);
-  }
-
-  .jobs-back,
-  .jobs-kicker,
-  .jobs-title-row,
-  .government-only,
-  .jobs-listing-head,
-  .jobs-listing-head a,
-  .jobs-controls,
-  .jobs-search,
-  .jobs-filter-details summary,
-  .jobs-result-meta span,
-  .jobs-trust-note summary,
-  .jobs-trust-note span,
-  .jobs-trust-note a {
-    display: flex;
-    align-items: center;
-  }
-
-  .jobs-back {
-    width: fit-content;
-    gap: 0.35rem;
-    margin-bottom: 0.85rem;
-    color: rgba(255, 255, 255, 0.82);
-    font-size: 0.82rem;
-    text-decoration: none;
-  }
-
-  .jobs-back svg {
-    transform: rotate(180deg);
-  }
-
-  .jobs-title-row {
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .jobs-kicker {
-    gap: 0.4rem;
-    margin-bottom: 0.2rem;
-    color: #9fe4dc;
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .jobs-title-row h1 {
-    max-width: 760px;
-    font-family: var(--font-body);
-    font-size: clamp(1.9rem, 5vw, 3rem);
-    line-height: 1.08;
-  }
-
-  .government-only {
-    flex: 0 0 auto;
-    gap: 0.3rem;
-    padding: 0.38rem 0.68rem;
-    border: 1px solid rgba(255, 255, 255, 0.26);
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 0.76rem;
-    font-weight: 700;
-  }
-
-  .jobs-subtitle {
-    max-width: 680px;
-    margin-top: 0.55rem;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 0.94rem;
-    line-height: 1.55;
-  }
-
   .jobs-main {
-    padding-top: 1rem;
+    padding-top: 0.75rem;
     padding-bottom: 3rem;
   }
 
@@ -634,45 +512,21 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     box-shadow: var(--shadow-sm);
   }
 
-  .jobs-listing-head {
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1rem 0.8rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .jobs-listing-head p {
-    color: var(--color-green-text);
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-
-  .jobs-listing-head h2 {
-    margin-top: 0.05rem;
-    font-family: var(--font-body);
-    font-size: clamp(1.35rem, 4vw, 1.85rem);
-    line-height: 1.15;
-  }
-
-  .jobs-listing-head span {
-    display: block;
-    margin-top: 0.2rem;
-    color: var(--color-text-muted);
-    font-size: 0.82rem;
-  }
-
-  .jobs-listing-head a {
-    flex: 0 0 auto;
-    gap: 0.35rem;
-    color: var(--color-primary);
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-decoration: none;
+  .jobs-controls,
+  .jobs-search,
+  .jobs-filter-details summary,
+  .jobs-result-line,
+  .jobs-result-meta span,
+  .jobs-trust-note summary,
+  .jobs-trust-note span,
+  .jobs-trust-note a {
+    display: flex;
+    align-items: center;
   }
 
   .jobs-controls {
     gap: 0.65rem;
-    padding: 0.8rem 1rem 0.7rem;
+    padding: 0.85rem 1rem 0.7rem;
   }
 
   .jobs-search {
@@ -820,13 +674,28 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
   }
 
   .jobs-result-line {
+    justify-content: space-between;
+    gap: 0.75rem;
+    min-height: 42px;
     padding: 0.55rem 1rem;
     border-top: 1px solid var(--color-border);
     border-bottom: 1px solid var(--color-border);
     background: var(--color-bg);
   }
 
+  .jobs-result-line h1 {
+    overflow: hidden;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.86rem;
+    font-weight: 750;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .jobs-result-line p {
+    flex: 0 0 auto;
     color: var(--color-text-muted);
     font-size: 0.78rem;
     font-weight: 600;
@@ -873,7 +742,7 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     color: var(--color-primary);
   }
 
-  .jobs-empty h3 {
+  .jobs-empty h2 {
     font-family: var(--font-body);
     font-size: 1.12rem;
   }
@@ -898,7 +767,7 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
   }
 
   .jobs-trust-note {
-    margin-top: 0.75rem;
+    margin-top: 0.65rem;
     border: 1px solid var(--color-border);
     border-radius: 10px;
     background: var(--color-surface);
@@ -906,9 +775,9 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
 
   .jobs-trust-note summary {
     gap: 0.4rem;
-    padding: 0.75rem 0.9rem;
+    padding: 0.7rem 0.9rem;
     color: var(--color-text-muted);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
   }
@@ -956,52 +825,12 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
   }
 
   @media (max-width: 700px) {
-    .jobs-hero {
-      padding: 0.85rem 0 1.05rem;
-    }
-
-    .jobs-back {
-      margin-bottom: 0.65rem;
-    }
-
-    .government-only {
-      padding: 0.3rem 0.55rem;
-      font-size: 0.68rem;
-    }
-
-    .jobs-title-row h1 {
-      font-size: 1.75rem;
-    }
-
-    .jobs-subtitle {
-      margin-top: 0.4rem;
-      font-size: 0.84rem;
-      line-height: 1.45;
-    }
-
     .jobs-main {
-      padding-top: 0.65rem;
+      padding-top: 0.45rem;
     }
 
     .jobs-listing {
       border-radius: 12px;
-    }
-
-    .jobs-listing-head {
-      align-items: flex-start;
-      padding: 0.85rem 0.8rem 0.7rem;
-    }
-
-    .jobs-listing-head h2 {
-      font-size: 1.25rem;
-    }
-
-    .jobs-listing-head span {
-      font-size: 0.76rem;
-    }
-
-    .jobs-listing-head a {
-      font-size: 0.72rem;
     }
 
     .jobs-controls {
@@ -1056,7 +885,12 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     }
 
     .jobs-result-line {
+      min-height: 40px;
       padding: 0.48rem 0.8rem;
+    }
+
+    .jobs-result-line h1 {
+      font-size: 0.8rem;
     }
 
     .jobs-result {
@@ -1078,23 +912,11 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     }
 
     .jobs-trust-note {
-      margin-top: 0.6rem;
+      margin-top: 0.5rem;
     }
   }
 
   @media (max-width: 430px) {
-    .jobs-title-row {
-      align-items: flex-start;
-    }
-
-    .government-only {
-      margin-top: 1.25rem;
-    }
-
-    .jobs-listing-head a span {
-      display: none;
-    }
-
     .jobs-filter-panel {
       grid-template-columns: 1fr;
     }

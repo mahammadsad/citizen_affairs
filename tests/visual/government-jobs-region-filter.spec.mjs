@@ -2,8 +2,39 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
-test('State and UT filter appears only for State regional jobs', async ({ page }) => {
+test('jobs page is task-first and State UT filters remain fully usable', async ({ page }) => {
   await page.goto('/bn/categories/jobs/');
+
+  await expect(page.locator('.jobs-hero')).toHaveCount(0);
+  await expect(page.locator('.jobs-listing-head')).toHaveCount(0);
+  await expect(page.getByText('সব নাগরিক বিভাগ')).toHaveCount(0);
+
+  const search = page.locator('[data-job-search]');
+  const stageTabs = page.locator('.jobs-stage-tabs');
+  const pageTitle = page.locator('#jobs-page-title');
+  const resultCount = page.locator('[data-job-result-count]');
+  await expect(search).toBeVisible();
+  await expect(stageTabs).toBeVisible();
+  await expect(pageTitle).toBeVisible();
+
+  const taskOrder = await page.evaluate(() => {
+    const search = document.querySelector('[data-job-search]');
+    const stages = document.querySelector('.jobs-stage-tabs');
+    const title = document.querySelector('#jobs-page-title');
+    if (!(search instanceof HTMLElement) || !(stages instanceof HTMLElement) || !(title instanceof HTMLElement)) return null;
+
+    return {
+      searchTop: Math.round(search.getBoundingClientRect().top),
+      stagesTop: Math.round(stages.getBoundingClientRect().top),
+      titleTop: Math.round(title.getBoundingClientRect().top),
+      titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
+    };
+  });
+
+  expect(taskOrder).not.toBeNull();
+  expect(taskOrder.searchTop).toBeLessThan(taskOrder.stagesTop);
+  expect(taskOrder.stagesTop).toBeLessThan(taskOrder.titleTop);
+  expect(taskOrder.titleFontSize).toBeLessThanOrEqual(16);
 
   const filterDetails = page.locator('[data-job-filter-details]');
   await filterDetails.locator('summary').click();
@@ -15,7 +46,6 @@ test('State and UT filter appears only for State regional jobs', async ({ page }
   const regionSelect = page.locator('[data-job-region-filter]');
   const applyButton = page.locator('[data-job-apply]');
   const clearButton = panel.locator('[data-job-reset]');
-  const resultCount = page.locator('[data-job-result-count]');
 
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();
