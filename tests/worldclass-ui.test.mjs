@@ -16,8 +16,8 @@ test('responsive interface uses the approved Citizen Affairs brand master', () =
   const logo = read('src/components/BrandLogo.astro');
   for (const asset of [
     'citizen-affairs-full-tagline.png',
-    'citizen-affairs-horizontal.svg',
-    'citizen-affairs-horizontal-dark.svg',
+    'citizen-affairs-horizontal-quality-v2.svg',
+    'citizen-affairs-horizontal-quality-dark-v2.svg',
     'citizen-affairs-monogram.png',
     'citizen-affairs-circular.png'
   ]) {
@@ -25,17 +25,20 @@ test('responsive interface uses the approved Citizen Affairs brand master', () =
     assert.ok(readFileSync(new URL(`../public/assets/brand/${asset}`, import.meta.url)).length > 0);
   }
 
-  for (const asset of ['citizen-affairs-horizontal.svg', 'citizen-affairs-horizontal-dark.svg']) {
+  for (const asset of [
+    'citizen-affairs-horizontal-quality-v2.svg',
+    'citizen-affairs-horizontal-quality-dark-v2.svg'
+  ]) {
     const artwork = read(`public/assets/brand/${asset}`);
-    assert.match(artwork, /official brand master/);
-    assert.match(artwork, /viewBox="0 0 395 150"/);
-    assert.match(artwork, /fill-rule="evenodd"/);
-    assert.doesNotMatch(artwork, /<text\b|font-family=/);
+    assert.match(artwork, /Official Citizen Affairs horizontal brand artwork/);
+    assert.match(artwork, /viewBox="0 0 744 312"/);
+    assert.match(artwork, /citizen-affairs-horizontal\.png/);
+    assert.doesNotMatch(artwork, /<text\b|font-family=|<path\b/);
   }
 
-  assert.match(logo, /width:\s*395/);
-  assert.match(logo, /height:\s*150/);
-  assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
+  assert.match(logo, /width:\s*744/);
+  assert.match(logo, /height:\s*312/);
+  assert.match(logo, /image-rendering:\s*auto/);
 });
 
 test('news category navigation is static and mobile footer is collapsible', () => {
