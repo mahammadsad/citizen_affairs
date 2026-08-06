@@ -60,12 +60,23 @@ test('homepage provides useful empty-content and citizen-task experiences', () =
   assert.match(homepage, /verificationLabels/);
 });
 
-test('portal navigation exposes the active citizen sections on desktop and mobile', () => {
+test('portal navigation exposes only promoted citizen sections on desktop and mobile', () => {
   const header = read('src/components/PortalHeader.astro');
+  const brand = JSON.parse(read('brand.config.json'));
+
   assert.match(header, /portal-desktop-nav/);
   assert.match(header, /portal-mobile-bottom/);
-  assert.match(header, /categories\/jobs/);
+  assert.match(header, /ACTIVE_CATEGORY_IDS/);
   assert.match(header, /categories\/materials/);
   assert.match(header, /categories\/projects/);
   assert.match(header, /categories\/affairs/);
+  assert.match(header, /categories\/guides/);
+  assert.match(header, /categories\/notices/);
+  assert.doesNotMatch(header, /categories\/jobs/);
+  assert.doesNotMatch(header, /categories\/exams/);
+
+  assert.ok(brand.configuredCategoryIds.includes('jobs'));
+  assert.ok(brand.configuredCategoryIds.includes('exams'));
+  assert.ok(!brand.activeCategoryIds.includes('jobs'));
+  assert.ok(!brand.activeCategoryIds.includes('exams'));
 });
