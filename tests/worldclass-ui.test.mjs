@@ -12,12 +12,12 @@ test('world-class visual system is loaded after legacy shared styles', () => {
   assert.ok(visualIndex > componentsIndex);
 });
 
-test('responsive interface uses the approved Citizen Affairs brand master', () => {
+test('responsive interface uses zoom-safe Citizen Affairs brand artwork', () => {
   const logo = read('src/components/BrandLogo.astro');
   for (const asset of [
     'citizen-affairs-full-tagline.png',
-    'citizen-affairs-horizontal.svg',
-    'citizen-affairs-horizontal-dark.svg',
+    'citizen-affairs-horizontal-quality-v2.svg',
+    'citizen-affairs-horizontal-quality-v2-dark.svg',
     'citizen-affairs-monogram.png',
     'citizen-affairs-circular.png'
   ]) {
@@ -25,17 +25,21 @@ test('responsive interface uses the approved Citizen Affairs brand master', () =
     assert.ok(readFileSync(new URL(`../public/assets/brand/${asset}`, import.meta.url)).length > 0);
   }
 
-  for (const asset of ['citizen-affairs-horizontal.svg', 'citizen-affairs-horizontal-dark.svg']) {
+  for (const asset of [
+    'citizen-affairs-horizontal-quality-v2.svg',
+    'citizen-affairs-horizontal-quality-v2-dark.svg'
+  ]) {
     const artwork = read(`public/assets/brand/${asset}`);
-    assert.match(artwork, /official brand master/);
+    assert.match(artwork, /approved brand master/);
     assert.match(artwork, /viewBox="0 0 395 150"/);
-    assert.match(artwork, /fill-rule="evenodd"/);
+    assert.match(artwork, /shape-rendering="geometricPrecision"/);
+    assert.match(artwork, /stroke-linecap="round"/);
     assert.doesNotMatch(artwork, /<text\b|font-family=/);
+    assert.ok(artwork.length < 20_000, 'logo must not contain a pixel-by-pixel SVG trace');
   }
 
-  assert.match(logo, /width:\s*395/);
-  assert.match(logo, /height:\s*150/);
-  assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
+  assert.match(logo, /image-rendering:\s*auto/);
+  assert.doesNotMatch(logo, /citizen-affairs-horizontal(?:-dark)?\.svg/);
 });
 
 test('news category navigation is static and mobile footer is collapsible', () => {
