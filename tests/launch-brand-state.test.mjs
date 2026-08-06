@@ -5,6 +5,7 @@ import test from 'node:test';
 const constants = await readFile('src/utils/constants.ts', 'utf8');
 const admin = await readFile('public/admin/index.html', 'utf8');
 const portalHeader = await readFile('src/components/PortalHeader.astro', 'utf8');
+const notFoundPage = await readFile('src/pages/404.astro', 'utf8');
 const htmlValidator = await readFile('scripts/validate-html.mjs', 'utf8');
 const brand = JSON.parse(await readFile('brand.config.json', 'utf8'));
 
@@ -22,6 +23,10 @@ test('empty jobs and exams sections remain pending rather than promoted', () => 
   assert.ok(brand.configuredCategoryIds.includes('exams'));
   assert.doesNotMatch(portalHeader, /categories\/jobs/);
   assert.doesNotMatch(portalHeader, /categories\/exams/);
+  assert.doesNotMatch(notFoundPage, /categories\/jobs/);
+  assert.doesNotMatch(notFoundPage, /categories\/exams/);
+  assert.match(notFoundPage, /categories\/materials/);
+  assert.match(notFoundPage, /categories\/projects/);
   assert.match(htmlValidator, /const promotedCategories = \[\.\.\.brand\.activeCategoryIds\]/);
   assert.doesNotMatch(htmlValidator, /for \(const active of \['jobs', 'exams'/);
 });
