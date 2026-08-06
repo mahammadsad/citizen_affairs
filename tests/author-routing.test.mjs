@@ -10,6 +10,7 @@ const localizedFounderRedirect = await readFile(
   'utf8'
 );
 const teamPage = await readFile('src/components/TeamPage.astro', 'utf8');
+const trustPage = await readFile('src/components/TrustPage.astro', 'utf8');
 
 test('human article bylines remain optional and route to the attributed public profile', () => {
   assert.match(layout, /const normalizedAuthor=author\.trim\(\)/);
@@ -25,4 +26,12 @@ test('the founder is presented through the public team page instead of an author
   assert.match(localizedFounderRedirect, /target=\{`\/\$\{locale\}\/team\/`\}/);
   assert.match(teamPage, /title: 'Our Team'/);
   assert.match(teamPage, /AI-assisted articles do not carry a personal author name/);
+});
+
+test('the About page always labels and routes the founder destination as Team', () => {
+  assert.match(trustPage, /const teamLabel = \{ en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' \}\[locale\]/);
+  assert.match(trustPage, /const teamHref = locale === 'en' \? localizedTeamPath\.replace\('\/en\/', '\/'\) : localizedTeamPath/);
+  assert.match(trustPage, /\{ label: teamLabel, href: teamHref \}/);
+  assert.doesNotMatch(trustPage, /label: t\.authorProfile/);
+  assert.doesNotMatch(trustPage, /href: trustPagePath\(locale, 'author'\)/);
 });
