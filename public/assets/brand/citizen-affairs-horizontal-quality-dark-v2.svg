@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 744 312" role="img" aria-labelledby="title desc" shape-rendering="geometricPrecision">
+  <title id="title">Citizen Affairs</title>
+  <desc id="desc">Official Citizen Affairs horizontal brand artwork for dark surfaces.</desc>
+  <defs>
+    <filter id="reverseNavy" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" result="source" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+      <feColorMatrix in="SourceGraphic" result="luma" type="luminanceToAlpha"/>
+      <feComponentTransfer in="luma" result="darkMask">
+        <feFuncA type="table" tableValues="1 1 1 1 1 0 0 0 0 0"/>
+      </feComponentTransfer>
+      <feFlood flood-color="#F4F7FB" result="white"/>
+      <feComposite in="white" in2="darkMask" operator="in" result="whiteNavy"/>
+      <feComposite in="source" in2="darkMask" operator="out" result="brandColours"/>
+      <feMerge><feMergeNode in="brandColours"/><feMergeNode in="whiteNavy"/></feMerge>
+    </filter>
+  </defs>
+  <image href="citizen-affairs-horizontal.png" x="0" y="0" width="744" height="312" preserveAspectRatio="xMidYMid meet" image-rendering="auto" filter="url(#reverseNavy)"/>
+</svg>
