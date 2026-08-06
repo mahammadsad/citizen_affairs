@@ -1,0 +1,54 @@
+<script>
+  const setupSearchResultPlaceholders = () => {
+    const output = document.getElementById('searchPageResults');
+    if (!output || output.dataset.placeholderFixReady === 'true') return;
+
+    output.dataset.placeholderFixReady = 'true';
+
+    const cleanPlaceholders = () => {
+      output.querySelectorAll<HTMLElement>('.result-media-placeholder:not([data-placeholder-clean])').forEach((placeholder) => {
+        placeholder.replaceChildren();
+        placeholder.setAttribute('aria-hidden', 'true');
+        placeholder.dataset.placeholderClean = 'true';
+      });
+    };
+
+    const observer = new MutationObserver(cleanPlaceholders);
+    observer.observe(output, { childList: true, subtree: true });
+    cleanPlaceholders();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupSearchResultPlaceholders, { once: true });
+  } else {
+    setupSearchResultPlaceholders();
+  }
+</script>
+
+<style is:global>
+  .citizen-search .search-page-results .result-media-placeholder {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-size: 0 !important;
+    color: var(--color-primary);
+  }
+
+  .citizen-search .search-page-results .result-media-placeholder::before {
+    width: 2.75rem;
+    height: 2.75rem;
+    background: currentColor;
+    content: '';
+    opacity: .42;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v11.17l3.59-3.58a2 2 0 0 1 2.82 0l1.59 1.58 2.59-2.58a2 2 0 0 1 2.82 0L19 12.17V5H5Zm14 10-2-2-4 4-3-3-5 5h14v-4ZM8.5 7A1.5 1.5 0 1 1 7 8.5 1.5 1.5 0 0 1 8.5 7Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 2v11.17l3.59-3.58a2 2 0 0 1 2.82 0l1.59 1.58 2.59-2.58a2 2 0 0 1 2.82 0L19 12.17V5H5Zm14 10-2-2-4 4-3-3-5 5h14v-4ZM8.5 7A1.5 1.5 0 1 1 7 8.5 1.5 1.5 0 0 1 8.5 7Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+
+  @media (max-width: 680px) {
+    .citizen-search .search-page-results .result-media-placeholder::before {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+  }
+</style>
