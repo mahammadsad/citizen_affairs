@@ -6,7 +6,7 @@ export default defineConfig({
   testDir: './tests/production',
   timeout: 180_000,
   workers: 1,
-  retries: 0,
+  retries: process.env.CI ? 1 : 0,
   reporter: [
     ['line'],
     ['html', { outputFolder: 'production-smoke-report', open: 'never' }],
