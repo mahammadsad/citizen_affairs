@@ -32,10 +32,11 @@ test('result metadata is compact and localized', () => {
 });
 
 test('missing thumbnails use a neutral image icon instead of sliced Bengali text', () => {
-  assert.match(placeholderFix, /placeholder\.replaceChildren\(\)/);
+  assert.match(placeholderFix, /document\.createElementNS\(namespace, 'svg'\)/);
+  assert.match(placeholderFix, /placeholder\.replaceChildren\(createPlaceholderIcon\(\)\)/);
   assert.match(placeholderFix, /font-size: 0 !important/);
-  assert.match(placeholderFix, /result-media-placeholder::before/);
-  assert.match(placeholderFix, /mask: url/);
+  assert.match(placeholderFix, /result-placeholder-icon/);
+  assert.doesNotMatch(placeholderFix, /mask: url/);
   assert.doesNotMatch(placeholderFix, /গা/);
 });
 
