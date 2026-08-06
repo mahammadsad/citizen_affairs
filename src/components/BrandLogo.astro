@@ -17,9 +17,9 @@ type LogoAsset = {
   height: number;
 };
 
-// Use cache-busted, smoothly vectorised lockups derived from the approved
-// brand master. These assets keep the accepted identity while replacing the
-// earlier pixel-edge trace that became visibly jagged under browser zoom.
+// Use cache-busted, smooth native vector lockups derived from the approved
+// brand master. Curves and outlined letterforms remain crisp at browser zoom
+// without depending on fonts, raster images or pixel-following SVG traces.
 const variants: Record<Variant, LogoAsset> = {
   full: {
     light: 'assets/brand/citizen-affairs-full-tagline.png',
@@ -28,8 +28,8 @@ const variants: Record<Variant, LogoAsset> = {
     height: 380
   },
   horizontal: {
-    light: 'assets/brand/citizen-affairs-horizontal-quality-v2.svg',
-    dark: 'assets/brand/citizen-affairs-horizontal-quality-v2-dark.svg',
+    light: 'assets/brand/citizen-affairs-horizontal-quality-v3.svg',
+    dark: 'assets/brand/citizen-affairs-horizontal-quality-v3-dark.svg',
     width: 395,
     height: 150
   },
