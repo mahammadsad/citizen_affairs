@@ -285,8 +285,8 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
         </label>
 
         <details class="jobs-filter-details" data-job-filter-details>
-          <summary>
-            <Icon name="categories" size={17} />
+          <summary data-job-filter-trigger>
+            <Icon name="filter" size={18} class="jobs-filter-icon" />
             {copy.filters}
             <span data-active-filter-count hidden>0</span>
           </summary>
@@ -574,10 +574,22 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     font-weight: 700;
     cursor: pointer;
     list-style: none;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+  }
+
+  .jobs-filter-details summary:hover,
+  .jobs-filter-details[open] summary {
+    border-color: rgba(var(--color-primary-rgb), 0.55);
+    background: rgba(var(--color-primary-rgb), 0.07);
+    color: var(--color-primary);
   }
 
   .jobs-filter-details summary::-webkit-details-marker {
     display: none;
+  }
+
+  .jobs-filter-icon {
+    flex: 0 0 auto;
   }
 
   .jobs-filter-details summary span {
@@ -834,6 +846,7 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     }
 
     .jobs-controls {
+      gap: 0.5rem;
       padding: 0.7rem 0.8rem 0.6rem;
     }
 
@@ -847,10 +860,14 @@ const formatter = new Intl.DateTimeFormat(locale === 'bn' ? 'bn-BD' : locale ===
     }
 
     .jobs-filter-details summary {
-      width: 42px;
+      min-width: 88px;
       height: 42px;
-      padding: 0;
-      font-size: 0;
+      padding: 0 0.72rem;
+      border-color: rgba(var(--color-primary-rgb), 0.3);
+      background: rgba(var(--color-primary-rgb), 0.045);
+      color: var(--color-primary);
+      font-size: 0.76rem;
+      white-space: nowrap;
     }
 
     .jobs-filter-details summary span {

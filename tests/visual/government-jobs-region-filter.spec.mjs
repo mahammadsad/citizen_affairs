@@ -37,7 +37,30 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   expect(taskOrder.titleFontSize).toBeLessThanOrEqual(16);
 
   const filterDetails = page.locator('[data-job-filter-details]');
-  await filterDetails.locator('summary').click();
+  const filterTrigger = filterDetails.locator('[data-job-filter-trigger]');
+  const filterIcon = filterTrigger.locator('.jobs-filter-icon');
+  await expect(filterTrigger).toBeVisible();
+  await expect(filterTrigger).toContainText('ফিল্টার');
+  await expect(filterIcon).toBeVisible();
+
+  const triggerGeometry = await filterTrigger.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    return {
+      width: Math.round(box.width),
+      height: Math.round(box.height),
+      fontSize: Number.parseFloat(style.fontSize),
+      color: style.color,
+      backgroundColor: style.backgroundColor,
+    };
+  });
+
+  expect(triggerGeometry.width).toBeGreaterThanOrEqual(80);
+  expect(triggerGeometry.height).toBeGreaterThanOrEqual(42);
+  expect(triggerGeometry.fontSize).toBeGreaterThanOrEqual(12);
+  expect(triggerGeometry.color).not.toBe(triggerGeometry.backgroundColor);
+
+  await filterTrigger.click();
 
   const panel = page.locator('.jobs-filter-panel');
   const bottomNavigation = page.locator('.portal-mobile-bottom');
@@ -156,7 +179,7 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   await expect(filterDetails).not.toHaveAttribute('open', '');
   await expect(resultCount).toBeFocused();
 
-  await filterDetails.locator('summary').click();
+  await filterTrigger.click();
   await levelSelect.selectOption('central');
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();
