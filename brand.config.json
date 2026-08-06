@@ -10,6 +10,15 @@
   "transitionNoticeBn": "সিটিজেন অ্যাফেয়ার্স — পূর্বে সরকারি তথ্যকেন্দ্র",
   "transitionNoticeHi": "सिटिजन अफेयर्स — पूर्व में सरकारी तथ्य केंद्र",
   "description": "An independent citizen-information portal for verified opportunities, benefits, deadlines and public services across India.",
+  "configuredCategoryIds": [
+    "materials",
+    "projects",
+    "affairs",
+    "notices",
+    "guides",
+    "jobs",
+    "exams"
+  ],
   "activeCategoryIds": [
     "materials",
     "projects",
