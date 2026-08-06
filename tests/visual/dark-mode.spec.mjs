@@ -39,10 +39,16 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
-  await expect(page.locator('.portal-navbar .portal-brand > .portal-brand-logo')).toHaveAttribute(
+  const headerLogo = page.locator('.portal-navbar .portal-brand > .portal-brand-logo');
+  await expect(headerLogo).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-dark\.svg$/,
+    /citizen-affairs-horizontal-quality-v2-dark\.svg$/,
   );
+  const intrinsicLogoSize = await headerLogo.evaluate((element) => ({
+    width: element.naturalWidth,
+    height: element.naturalHeight,
+  }));
+  expect(intrinsicLogoSize).toEqual({ width: 395, height: 150 });
   await expect(page.locator('.footer-brand-logo')).toHaveAttribute(
     'src',
     /citizen-affairs-full-tagline\.png$/,
@@ -138,10 +144,12 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await page.locator('.portal-mobile-menu > summary').click();
   const panel = page.locator('.portal-mobile-panel');
   await expect(panel).toBeVisible();
-  await expect(page.locator('.portal-mobile-brand-logo')).toHaveAttribute(
+  const menuLogo = page.locator('.portal-mobile-brand-logo');
+  await expect(menuLogo).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-dark\.svg$/,
+    /citizen-affairs-horizontal-quality-v2-dark\.svg$/,
   );
+  expect(await menuLogo.evaluate((element) => element.naturalWidth)).toBe(395);
 
   const panelColours = await page.evaluate(() => {
     const panel = document.querySelector('.portal-mobile-panel');
