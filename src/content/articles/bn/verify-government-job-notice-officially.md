@@ -1,83 +1,175 @@
 ---
 language: bn
 contentType: explainer
-workflowStatus: draft
+workflowStatus: published
 translationKey: verify-government-job-notice-officially
 urlSlug: verify-government-job-notice-officially
 title: "সরকারি চাকরির বিজ্ঞপ্তি আসল কি না যাচাই করবেন যেভাবে"
-description: "কোনো নিয়োগ বিজ্ঞপ্তিতে আবেদন বা টাকা দেওয়ার আগে অফিসিয়াল ওয়েবসাইট, নোটিশ নম্বর, আবেদন লিংক ও সংশোধনী কীভাবে যাচাই করবেন—এই খসড়া গাইডে ধাপে ধাপে দেখানো হয়েছে।"
+description: "কোনো নিয়োগ বিজ্ঞপ্তিতে আবেদন বা টাকা দেওয়ার আগে অফিসিয়াল ওয়েবসাইট, নোটিশ নম্বর, আবেদন লিংক, সংশোধনী এবং পেমেন্ট পদ্ধতি কীভাবে যাচাই করবেন—ধাপে ধাপে বাংলা গাইড।"
 date: 2026-08-05
-updated: 2026-08-05
-lastVerified: 2026-08-05
-nextReviewDate: 2026-09-05
+updated: 2026-08-06
+lastVerified: 2026-08-06
+nextReviewDate: 2026-09-06
 author: mahammad-sad
 category: jobs
-verificationStatus: under-verification
+verificationStatus: partially-confirmed
 sourceUrls:
   - https://ssc.gov.in/
   - https://www.india.gov.in/directory/web-directory
-  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2163332&lang=2&reg=48
-  - https://cybercrime.gov.in/Webform/Advisory.aspx
+  - https://www.pib.gov.in/aboutfactchecke.aspx?lang=1&reg=1
+  - https://www.pib.gov.in/PressReleasePage.aspx?PRID=2260999&lang=1&reg=1
+  - https://www.cybercrime.gov.in/
+  - https://cybercrime.gov.in/webform/cyber_suspect.aspx
+sources:
+  - title: Staff Selection Commission Notice Board
+    url: https://ssc.gov.in/
+    publishingAuthority: Staff Selection Commission, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-06
+  - title: Government of India Web Directory
+    url: https://www.india.gov.in/directory/web-directory
+    publishingAuthority: National Informatics Centre, Ministry of Electronics and Information Technology, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-06
+  - title: About PIB Fact Check
+    url: https://www.pib.gov.in/aboutfactchecke.aspx?lang=1&reg=1
+    publishingAuthority: Press Information Bureau, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-06
+  - title: Warning against fraudulent recruitment drives
+    url: https://www.pib.gov.in/PressReleasePage.aspx?PRID=2260999&lang=1&reg=1
+    publishingAuthority: Press Information Bureau, Government of India
+    sourceType: press-release
+    designation: primary
+    accessedDate: 2026-08-06
+  - title: National Cyber Crime Reporting Portal
+    url: https://www.cybercrime.gov.in/
+    publishingAuthority: Ministry of Home Affairs, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-06
+  - title: Report Suspect cyber identifiers
+    url: https://cybercrime.gov.in/webform/cyber_suspect.aspx
+    publishingAuthority: Ministry of Home Affairs, Government of India
+    sourceType: official-portal
+    designation: primary
+    accessedDate: 2026-08-06
 tags:
   - সরকারি চাকরির বিজ্ঞপ্তি যাচাই
   - fake recruitment notice
   - SSC official notice
   - চাকরির প্রতারণা
 featured: false
-draft: true
+draft: false
 governmentLevel: central
 quickSummary:
   - সামাজিক মাধ্যমের পোস্ট নয়, সংশ্লিষ্ট নিয়োগকারী সংস্থার অফিসিয়াল নোটিশকে মূল উৎস ধরুন।
-  - নোটিশ নম্বর, প্রকাশের তারিখ, পদ, যোগ্যতা, শেষ তারিখ এবং আবেদন ডোমেন মিলিয়ে দেখুন।
-  - সন্দেহজনক পেমেন্ট, ব্যক্তিগত ব্যাংক তথ্য বা OTP চাওয়া হলে আবেদন থামিয়ে দিন।
+  - নোটিশ নম্বর, প্রকাশের তারিখ, পদ, যোগ্যতা, শেষ তারিখ, সংশোধনী এবং আবেদন ডোমেন মিলিয়ে দেখুন।
+  - ব্যক্তিগত UPI, ব্যাংক অ্যাকাউন্ট, অজানা QR code, OTP বা PIN চাওয়া হলে আবেদন থামিয়ে দিন।
+updateHistory:
+  - "2026-08-06: SSC Notice Board, India.gov.in directory, PIB Fact Check এবং National Cyber Crime Reporting Portal পুনরায় যাচাই করে প্রকাশ করা হয়েছে।"
 faqs:
-  - question: শুধু .gov.in ডোমেন দেখলেই কি বিজ্ঞপ্তি আসল ধরা যায়?
-    answer: না। ডোমেন, সংশ্লিষ্ট দপ্তরের ওয়েব ডিরেক্টরি, নোটিশ বোর্ড এবং PDF-এর তথ্য—সব মিলিয়ে যাচাই করা উচিত।
+  - question: শুধু .gov.in বা .nic.in ডোমেন দেখলেই কি বিজ্ঞপ্তি আসল ধরা যায়?
+    answer: না। ডোমেনের পাশাপাশি দায়িত্বপ্রাপ্ত দপ্তরের সরকারি directory entry, Notice Board, বিজ্ঞপ্তি নম্বর, PDF এবং আবেদন লিংক মিলিয়ে দেখুন।
   - question: WhatsApp বা Telegram-এ পাওয়া PDF দিয়ে আবেদন করা নিরাপদ?
-    answer: PDF-এর একই নোটিশ সংশ্লিষ্ট সরকারি সংস্থার অফিসিয়াল ওয়েবসাইটে না পাওয়া পর্যন্ত আবেদন বা টাকা দেওয়া নিরাপদ নয়।
+    answer: একই বিজ্ঞপ্তি সংশ্লিষ্ট সরকারি সংস্থার অফিসিয়াল Notice Board-এ না পাওয়া পর্যন্ত আবেদন, login বা payment করা নিরাপদ নয়।
+  - question: টাকা চলে গেলে কী করবেন?
+    answer: ব্যাংক বা payment provider-কে দ্রুত জানান। তাৎক্ষণিক cyber financial fraud হলে 1930-এ যোগাযোগ করুন এবং National Cyber Crime Reporting Portal-এ complaint করুন।
 ---
-সরকারি চাকরির নামে ভুয়া ওয়েবসাইট, নকল PDF, ভুয়া admit card এবং টাকা চাওয়া আবেদন ফর্ম ছড়ানোর ঘটনা নিয়মিত দেখা যায়। তাই কোনো পোস্ট দেখে সরাসরি আবেদন না করে প্রথমে বিজ্ঞপ্তির উৎস যাচাই করা জরুরি।
+সরকারি চাকরির নামে নকল website, পরিবর্তিত PDF, ভুয়া admit card এবং টাকা চাওয়া application form ছড়াতে পারে। তাই কোনো social-media post বা forwarded message দেখে সরাসরি আবেদন না করে প্রথমে নিয়োগকারী সংস্থার সরকারি notice যাচাই করুন।
 
-## ১. নিয়োগকারী সংস্থার অফিসিয়াল ওয়েবসাইট খুলুন
+**Citizen Affairs কোনো নিয়োগকারী সংস্থা নয় এবং কোনো চাকরি নিশ্চিত করে না।** আবেদন, যোগ্যতা, fee, vacancy ও deadline-এর চূড়ান্ত কর্তৃত্ব সংশ্লিষ্ট সরকারি notification-এর। Submit বা payment করার দিন notice এবং application portal আবার পরীক্ষা করুন।
 
-পোস্টে দেওয়া লিংকে ক্লিক না করে ব্রাউজারে নিজে সংস্থার নাম লিখে অফিসিয়াল ওয়েবসাইট খুঁজুন। কেন্দ্রীয় সরকারি দপ্তর বা সংস্থার ওয়েবসাইট India.gov.in-এর Web Directory-তেও মিলিয়ে দেখা যায়।
+## ১. নিয়োগকারী সংস্থার অফিসিয়াল ওয়েবসাইট নিজে খুলুন
+
+পোস্টে দেওয়া link-এ সরাসরি ক্লিক না করে browser-এ সংস্থার নাম লিখে সরকারি website খুঁজুন। কেন্দ্রীয় সরকারি দপ্তর ও সংস্থার website [India.gov.in Web Directory](https://www.india.gov.in/directory/web-directory)-তেও মিলিয়ে দেখা যায়।
+
+একই নামের নকল website এড়াতে:
+
+- domain-এর বানান অক্ষর ধরে মিলিয়ে দেখুন;
+- address bar-এ পুরো URL দেখুন;
+- search advertisement-কে official result ধরে নেবেন না;
+- official website-এর নিজস্ব link থেকেই recruitment portal খুলুন।
 
 ## ২. Notice Board বা Recruitment বিভাগে একই বিজ্ঞপ্তি খুঁজুন
 
-অফিসিয়াল সাইটে বিজ্ঞপ্তির শিরোনাম, নোটিশ নম্বর, প্রকাশের তারিখ এবং PDF আছে কি না দেখুন। SSC-র মতো নিয়োগকারী সংস্থা তাদের Notice Board-এ বিজ্ঞপ্তি, corrigendum, cancellation, answer key এবং result আলাদাভাবে প্রকাশ করে।
+Official site-এ বিজ্ঞপ্তির title, advertisement বা notice number, publication date এবং PDF আছে কি না দেখুন। SSC-এর Notice Board-এ notification-এর পাশাপাশি corrigendum, cancellation, answer key এবং result আলাদাভাবে প্রকাশ করা হয়।
+
+Forwarded PDF-এর logo বা signature দেখে সিদ্ধান্ত নেবেন না। Official Notice Board-এ একই document বা একই notice number পাওয়া জরুরি।
 
 ## ৩. PDF-এর গুরুত্বপূর্ণ তথ্য মিলিয়ে নিন
 
-নিচের তথ্যগুলো অফিসিয়াল PDF-এর সঙ্গে হুবহু মিলতে হবে:
+Official PDF-এর সঙ্গে নিচের তথ্যগুলো মিলিয়ে দেখুন:
 
-- নিয়োগকারী সংস্থার নাম ও যোগাযোগের তথ্য
-- নোটিশ বা বিজ্ঞাপন নম্বর
-- প্রকাশের তারিখ
-- পদের নাম ও শূন্যপদ
-- শিক্ষাগত যোগ্যতা ও বয়সের নিয়ম
-- আবেদন শুরুর ও শেষের তারিখ
-- আবেদন ফি ও পেমেন্ট পদ্ধতি
-- অফিসিয়াল আবেদন URL
+- নিয়োগকারী সংস্থার নাম ও যোগাযোগ;
+- advertisement বা notice number;
+- publication date;
+- post name ও vacancy;
+- qualification ও age rules;
+- application start ও closing date;
+- fee এবং authorised payment method;
+- selection process;
+- official application URL।
 
-## ৪. সংশোধনী ও বাতিলের নোটিশ দেখুন
+কোনো summary post-এর সঙ্গে official PDF-এর অমিল হলে PDF-কে প্রাধান্য দিন।
 
-পুরোনো PDF সঠিক হলেও পরে তারিখ, শূন্যপদ বা যোগ্যতা বদলাতে পারে। একই Notice Board-এ corrigendum, addendum বা cancellation প্রকাশ হয়েছে কি না দেখুন।
+## ৪. Corrigendum, extension ও cancellation খুঁজুন
 
-## ৫. পেমেন্টের আগে ডোমেন আবার পরীক্ষা করুন
+প্রথম PDF সঠিক হলেও পরে deadline, vacancy, exam date, eligibility বা application rule বদলাতে পারে। একই Notice Board-এ এই শব্দগুলো খুঁজুন:
 
-আবেদন ফি শুধু অফিসিয়াল আবেদন পোর্টালের অনুমোদিত পেমেন্ট ব্যবস্থায় দিন। ব্যক্তিগত UPI নম্বর, ব্যক্তিগত ব্যাংক অ্যাকাউন্ট, মেসেজে পাঠানো QR code বা অজানা payment link ব্যবহার করবেন না।
+- corrigendum;
+- addendum;
+- extension;
+- revised notice;
+- cancellation বা withdrawal।
 
-## ৬. সন্দেহজনক বিজ্ঞপ্তির প্রমাণ সংরক্ষণ করুন
+পুরোনো screenshot বা PDF দেখে বর্তমান status ধরে নেবেন না।
 
-URL, স্ক্রিনশট, ফোন নম্বর, মেসেজ এবং পেমেন্ট অনুরোধ সংরক্ষণ করুন। সরকারি তথ্যের নামে ভুয়া দাবি হলে PIB Fact Check-এর অফিসিয়াল চ্যানেলে যাচাই করুন। অনলাইন আর্থিক প্রতারণা বা fake job racket হলে National Cyber Crime Reporting Portal-এর নির্দেশনা অনুসরণ করুন।
+## ৫. Application login page যাচাই করুন
 
-## আবেদন করার আগে শেষ চেকলিস্ট
+Application portal-এর link official notice বা নিয়োগকারী সংস্থার website থেকেই খুলুন। Login-এর আগে:
 
-- বিজ্ঞপ্তি অফিসিয়াল Notice Board-এ আছে
-- PDF-এর নোটিশ নম্বর ও তারিখ মিলেছে
-- আবেদন লিংক অফিসিয়াল সাইট থেকেই খোলা হয়েছে
-- কোনো নতুন corrigendum বা cancellation নেই
-- পেমেন্ট ব্যক্তিগত অ্যাকাউন্টে যাচ্ছে না
-- OTP, PIN বা সম্পূর্ণ ব্যাংক তথ্য কাউকে দেওয়া হচ্ছে না
+1. exam বা recruitment-এর নাম মিলিয়ে নিন;
+2. portal domain notice-এর সঙ্গে মেলান;
+3. HTTPS connection আছে কি না দেখুন;
+4. password manager বা browser-এ অচেনা domain warning এলে থামুন;
+5. public computer হলে password save করবেন না এবং শেষে logout করুন।
 
-**সম্পাদকীয় অবস্থা:** এটি একটি লুকানো খসড়া। স্বাধীন fact-check এবং চূড়ান্ত সম্পাদকীয় অনুমোদনের আগে প্রকাশ করা যাবে না।
+## ৬. Payment-এর আগে সতর্ক থাকুন
+
+Application fee শুধু official portal-এ দেখানো authorised payment flow-তে দিন। নিচের অনুরোধগুলো বড় সতর্কসংকেত:
+
+- personal UPI ID;
+- ব্যক্তিগত bank account;
+- message-এ পাঠানো QR code;
+- অজানা payment link;
+- selection বা appointment letter নিশ্চিত করার বিনিময়ে টাকা;
+- OTP, UPI PIN, card PIN বা সম্পূর্ণ banking credential।
+
+Official recruitment fee থাকলেও তার amount, category exemption এবং payment window notification-এ স্পষ্ট থাকা উচিত।
+
+## ৭. ভুয়া সরকারি দাবি কোথায় যাচাই করবেন
+
+Government of India-সংক্রান্ত সন্দেহজনক claim [PIB Fact Check](https://www.pib.gov.in/aboutfactchecke.aspx?lang=1&reg=1)-এর official channel-এ যাচাই করা যায়। তবে PIB Fact Check কোনো recruitment authority-এর Notice Board-এর বিকল্প নয়; মূল notification-ই প্রধান evidence।
+
+## ৮. প্রতারণার প্রমাণ সংরক্ষণ ও report করুন
+
+সন্দেহ হলে URL, screenshot, phone number, email, social-media profile, message এবং payment request সংরক্ষণ করুন। [National Cyber Crime Reporting Portal](https://www.cybercrime.gov.in/)-এ cybercrime report করা যায় এবং suspect URL, phone number, WhatsApp/Telegram handle বা অন্য identifier report করার সুবিধাও রয়েছে।
+
+তাৎক্ষণিক cyber financial fraud হলে দ্রুত 1930-এ যোগাযোগ করুন। একই সঙ্গে bank বা payment provider-কে transaction সম্পর্কে জানান।
+
+## আবেদন করার আগে শেষ checklist
+
+- বিজ্ঞপ্তি official Notice Board-এ আছে;
+- notice number এবং publication date মিলেছে;
+- latest corrigendum, extension বা cancellation দেখা হয়েছে;
+- application link official site থেকেই খোলা হয়েছে;
+- fee এবং exemption official PDF-এর সঙ্গে মিলেছে;
+- payment personal account বা অজানা QR code-এ যাচ্ছে না;
+- OTP, PIN বা password কাউকে দেওয়া হচ্ছে না;
+- submission-এর acknowledgement সংরক্ষণ করা হয়েছে।
+
+এই guide সাধারণ verification পদ্ধতি ব্যাখ্যা করে। নির্দিষ্ট recruitment-এর eligibility বা application status জানতে সেই recruitment-এর latest official notice অনুসরণ করুন।
