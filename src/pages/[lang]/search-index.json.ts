@@ -9,6 +9,11 @@ export function getStaticPaths() {
   return locales.map((lang) => ({ params: { lang }, props: { locale: lang } }));
 }
 
+const articleHref = (locale: Locale, slug: string) =>
+  locale === 'en'
+    ? `${SITE.basePath}articles/${slug}/`
+    : `${SITE.basePath}${locale}/articles/${slug}/`;
+
 export async function GET({ props }: { props: { locale: Locale } }) {
   const { locale } = props;
   const articles = await getCollection('articles', ({ data }) =>
@@ -104,6 +109,8 @@ export async function GET({ props }: { props: { locale: Locale } }) {
       label: data.title,
       sub: categoryLabel,
       description: data.description,
+      image: data.featuredImage || '',
+      imageAlt: data.featuredImageAlt || data.title,
       category: categoryLabel,
       categoryId: data.category,
       type: data.contentType,
@@ -119,7 +126,7 @@ export async function GET({ props }: { props: { locale: Locale } }) {
       updated: (data.updated || data.lastVerified || data.date).toISOString(),
       sourceCount: sourceUrls.length,
       actionAvailable: Boolean(data.applicationUrl || data.officialNoticeUrl || structuredActionUrls.length),
-      href: `${SITE.basePath}${locale}/articles/${data.urlSlug}/`,
+      href: articleHref(locale, data.urlSlug),
       keywords
     };
   }));
