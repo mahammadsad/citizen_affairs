@@ -76,9 +76,9 @@ test('English search results use canonical article links that resolve', async ({
   const response = await page.goto(`/search/?q=myscheme&nonce=${Date.now()}`, { waitUntil: 'networkidle' });
   expect(response?.status()).toBe(200);
 
-  const result = page.locator('.search-result-link').filter({ hasText: /Find government schemes with myScheme/i }).first();
+  const result = page.locator('a.search-result-link[href="/articles/find-government-schemes-with-myscheme/"]');
   await expect(result).toBeVisible();
-  await expect(result).toHaveAttribute('href', '/articles/find-government-schemes-with-myscheme/');
+  await expect(result).toContainText(/How to Find Government Schemes for You on the myScheme Portal/i);
   await expect(page.locator('.search-result-row')).toHaveCount(1);
   await expect(page.locator('a[href^="/en/articles/"]')).toHaveCount(0);
 
