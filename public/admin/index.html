@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <meta name="referrer" content="no-referrer" />
     <title>Draft workspace — Citizen Affairs</title>
     <style>
       :root {
@@ -51,10 +52,21 @@
       }
 
       .intro {
-        margin: 1rem 0 1.5rem;
+        margin: 1rem 0 1.25rem;
         color: #526171;
         font-size: 1.05rem;
         line-height: 1.7;
+      }
+
+      .status {
+        margin: 0 0 1.5rem;
+        padding: 1rem;
+        border: 1px solid #f0c36a;
+        border-left: 4px solid #bd6a00;
+        border-radius: 12px;
+        background: #fff8e8;
+        color: #684300;
+        line-height: 1.6;
       }
 
       ol {
@@ -139,15 +151,20 @@
   </head>
   <body>
     <main>
-      <p class="eyebrow">Owner-only editorial workspace</p>
+      <p class="eyebrow">Owner-only draft workspace</p>
       <h1>Prepare a verified draft</h1>
       <p class="intro">
-        This workspace helps you prepare articles without editing Markdown or YAML. It creates hidden drafts only;
-        it cannot publish directly to the public website.
+        This public shell contains no private drafts, credentials or database data. It only explains the controlled
+        drafting workflow.
+      </p>
+
+      <p class="status" role="status">
+        <strong>Editorial backend disabled.</strong> The Supabase workspace and automatic publication flow are not
+        connected. Pages CMS can prepare repository drafts only; it cannot approve or publish directly.
       </p>
 
       <ol>
-        <li><strong>Write the draft.</strong> Choose one of the seven portal sections and complete the plain-language fields.</li>
+        <li><strong>Write the draft.</strong> Choose a configured content section and complete the plain-language fields.</li>
         <li><strong>Add official evidence.</strong> Include government source URLs and set a date to review the information again.</li>
         <li><strong>Use protected review.</strong> Fact-checking, approval, publication and live verification remain separate controlled steps.</li>
       </ol>
