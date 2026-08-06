@@ -1,8 +1,8 @@
 # Citizen Affairs
 
-Citizen Affairs is a fast, static, multilingual and independent public-information site focused initially on verified **Government Jobs** and **Welfare Schemes**. It is not a government department, an official government website or affiliated with a political party.
+Citizen Affairs is a fast, static, multilingual and independent public-information site built with Astro 7.1.6 and TypeScript. It covers verified opportunities, public benefits, deadlines and citizen services. It is not a government department, an official government website or affiliated with a political party.
 
-The public site uses Astro, TypeScript and portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. When that optional editorial backend is enabled, publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
+The public site uses portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. When that optional editorial backend is enabled, publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
 
 ## Owner quick start
 
@@ -31,12 +31,20 @@ The public site uses Astro, TypeScript and portable Markdown snapshots. Private 
 - `supabase/migrations/` — additive database schema, workflow rules and RLS
 - `supabase/functions/` — authenticated publication request and deployment callback
 - `.github/workflows/` — PR validation, Pages deployment and protected content export
-- `brand.config.json` — centralized brand, legacy vertical, domain and contact settings
+- `brand.config.json` — centralized brand, category, domain and contact settings
 - `docs/` — owner, editorial, security, deployment and recovery guides
 
-## Languages and launch scope
+## Languages and category scope
 
-English, Bengali and Hindi remain supported. Equivalent translations share one `translationKey`. Only the `jobs` and `projects` categories are active; future sections remain configured but hidden until they have an editorial owner and enough verified content.
+English, Bengali and Hindi are supported. Equivalent translations share one `translationKey`.
+
+The centralized brand configuration currently contains seven category IDs: `jobs`, `exams`, `materials`, `projects`, `affairs`, `notices` and `guides`. A configured category is not evidence that it has approved launch content. Jobs and Exams currently contain protected Bengali drafts and must remain unpublished until verification and editorial approval are complete.
+
+## Release verification
+
+Pull requests run type checks, formatting, unit tests, editorial validation, build validation, SEO checks, link checks, secret scanning, dependency auditing and responsive browser tests. A merged commit is not considered verified live until GitHub Pages deploys the same commit and the complete production smoke suite passes.
+
+Production deployment runs are serialized. Pull-request runs may be cancelled when superseded, but an active production deployment is allowed to finish so the GitHub Pages environment is not left in a cancelled state.
 
 ## Important status
 

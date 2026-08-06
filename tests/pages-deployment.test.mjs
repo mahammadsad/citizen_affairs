@@ -10,9 +10,11 @@ const productionConfig = await readFile('playwright.production.config.mjs', 'utf
 test('production deployments no longer share one queue with pull request validation', () => {
   assert.match(workflow, /pages-pr-\{0\}/);
   assert.match(workflow, /pages-production/);
-  assert.match(workflow, /cancel-in-progress: true/);
-  assert.match(workflow, /timeout-minutes: 15/);
+  assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
+  assert.match(workflow, /timeout-minutes: 25/);
+  assert.match(workflow, /timeout: 1200000/);
   assert.doesNotMatch(workflow, /group: ["']pages["']/);
+  assert.doesNotMatch(workflow, /cancel-in-progress: true/);
 });
 
 test('the static build exposes an exact deployment marker', () => {

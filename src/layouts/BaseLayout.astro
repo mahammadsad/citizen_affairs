@@ -102,8 +102,8 @@ const organizationSchema = {
   email: BRAND.contactEmail,
   description: SITE.description,
   sameAs: [SOCIALS.telegram, SOCIALS.whatsapp],
-  publishingPrinciples: `${SITE.url}/en/editorial-policy/`,
-  ethicsPolicy: `${SITE.url}/en/editorial-policy/`,
+  publishingPrinciples: `${SITE.url}/editorial-policy/`,
+  ethicsPolicy: `${SITE.url}/editorial-policy/`,
   correctionsPolicy: `${SITE.url}/corrections/`
 };
 
@@ -120,7 +120,7 @@ const supabaseOrigin = (() => {
     return '';
   }
 })();
-const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''}; form-action 'self' mailto:; upgrade-insecure-requests`;
+const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''}; form-action 'self' mailto:; frame-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self'; upgrade-insecure-requests`;
 const t = ui(locale);
 ---
 <!doctype html>
@@ -138,6 +138,7 @@ const t = ui(locale);
       })();
     </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author.name} />
