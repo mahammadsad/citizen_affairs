@@ -12,8 +12,13 @@ test('the English policy route renders content without an interstitial', () => {
   assert.doesNotMatch(rootPolicy, /LanguageRedirect/);
 });
 
-test('policy metadata uses the root English route and localized alternatives', () => {
+test('the localized route generates only Bengali and Hindi policy pages', () => {
+  assert.match(localizedPolicy, /\['bn', 'hi'\]/);
+  assert.doesNotMatch(localizedPolicy, /locales\.map/);
   assert.match(localizedPolicy, /EditorialPolicyPage/);
+});
+
+test('policy metadata uses the root English route and localized alternatives', () => {
   assert.match(policyPage, /lang === 'en'/);
   assert.match(policyPage, /\$\{SITE\.url\}\/editorial-policy\//);
   assert.match(baseLayout, /publishingPrinciples: `\$\{SITE\.url\}\/editorial-policy\/`/);
