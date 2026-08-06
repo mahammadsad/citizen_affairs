@@ -1,0 +1,202 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../i18n';
+import { REGIONS, normalizeRegionLabel } from '../lib/regions';
+
+type Article = CollectionEntry<'articles'>;
+
+interface Props {
+  locale: Locale;
+  articles: Article[];
+}
+
+const { locale, articles } = Astro.props;
+const jobs = articles.filter((article) => article.data.contentType === 'job' && article.data.job);
+
+const regionAliases = REGIONS.map((region) => ({
+  id: region.id,
+  aliases: [region.id, region.en, region.bn, region.hi]
+    .map((value) => normalizeRegionLabel(value))
+    .filter(Boolean),
+}));
+
+const cardRegions = jobs.map((article) => {
+  const found = new Set<string>();
+  if (article.data.state) found.add(article.data.state);
+
+  for (const location of article.data.job!.jobLocation) {
+    const normalizedLocation = normalizeRegionLabel(location);
+    if (!normalizedLocation) continue;
+
+    for (const region of regionAliases) {
+      if (
+        region.aliases.some(
+          (alias) =>
+            normalizedLocation === alias ||
+            normalizedLocation.includes(alias) ||
+            alias.includes(normalizedLocation)
+        )
+      ) {
+        found.add(region.id);
+      }
+    }
+  }
+
+  return [...found];
+});
+
+const labels = {
+  en: {
+    field: 'State / Union Territory',
+    all: 'All states and UTs',
+    states: 'States',
+    uts: 'Union Territories',
+  },
+  bn: {
+    field: 'রাজ্য / কেন্দ্রশাসিত অঞ্চল',
+    all: 'সব রাজ্য ও কেন্দ্রশাসিত অঞ্চল',
+    states: 'রাজ্য',
+    uts: 'কেন্দ্রশাসিত অঞ্চল',
+  },
+  hi: {
+    field: 'राज्य / केंद्र शासित प्रदेश',
+    all: 'सभी राज्य और केंद्र शासित प्रदेश',
+    states: 'राज्य',
+    uts: 'केंद्र शासित प्रदेश',
+  },
+}[locale];
+
+const states = REGIONS.slice(0, 28).map((region) => ({
+  id: region.id,
+  label: region[locale],
+}));
+const unionTerritories = REGIONS.slice(28).map((region) => ({
+  id: region.id,
+  label: region[locale],
+}));
+---
+
+<script is:inline define:vars={{ cardRegions, states, unionTerritories, labels }}>
+  (() => {
+    const initRegionFilter = () => {
+      const portal = document.querySelector('[data-jobs-portal]');
+      if (!portal || portal.dataset.regionFilterReady === 'true') return;
+      portal.dataset.regionFilterReady = 'true';
+
+      const filterPanel = portal.querySelector('.jobs-filter-panel');
+      const levelSelect = portal.querySelector('[data-job-filter="level"]');
+      const levelField = levelSelect?.closest('label');
+      if (!filterPanel || !levelSelect || !levelField) return;
+
+      const field = document.createElement('label');
+      field.dataset.jobRegionField = '';
+      field.hidden = true;
+
+      const fieldLabel = document.createElement('span');
+      fieldLabel.textContent = labels.field;
+
+      const select = document.createElement('select');
+      select.dataset.jobRegionFilter = '';
+      select.disabled = true;
+      select.setAttribute('aria-label', labels.field);
+
+      const allOption = document.createElement('option');
+      allOption.value = 'all';
+      allOption.textContent = labels.all;
+      select.append(allOption);
+
+      const appendGroup = (label, options) => {
+        const group = document.createElement('optgroup');
+        group.label = label;
+        options.forEach(({ id, label: optionLabel }) => {
+          const option = document.createElement('option');
+          option.value = id;
+          option.textContent = optionLabel;
+          group.append(option);
+        });
+        select.append(group);
+      };
+
+      appendGroup(labels.states, states);
+      appendGroup(labels.uts, unionTerritories);
+      field.append(fieldLabel, select);
+      levelField.insertAdjacentElement('afterend', field);
+
+      const cards = [...portal.querySelectorAll('[data-job-card]')];
+      cards.forEach((card, index) => {
+        card.dataset.region = (cardRegions[index] || []).join('|');
+      });
+
+      const resultCount = portal.querySelector('[data-job-result-count]');
+      const noMatch = portal.querySelector('[data-job-no-match]');
+      const activeFilterCount = portal.querySelector('[data-active-filter-count]');
+      const baseFilters = [...portal.querySelectorAll('[data-job-filter]')];
+      const search = portal.querySelector('[data-job-search]');
+      const resetButtons = [...portal.querySelectorAll('[data-job-reset]')];
+      const stageButtons = [...portal.querySelectorAll('[data-job-stage]')];
+
+      const syncField = () => {
+        const stateSelected = levelSelect.value === 'state';
+        field.hidden = !stateSelected;
+        select.disabled = !stateSelected;
+        if (!stateSelected) select.value = 'all';
+      };
+
+      const updateSummary = () => {
+        const visibleCount = cards.filter((card) => !card.hidden).length;
+        const pattern = portal.dataset.resultPattern || '{count}';
+        if (resultCount) resultCount.textContent = pattern.replace('{count}', String(visibleCount));
+        if (noMatch) noMatch.hidden = visibleCount !== 0;
+
+        const baseCount =
+          baseFilters.filter((filter) => filter.value !== 'all').length +
+          (search?.value.trim() ? 1 : 0);
+        const regionCount = levelSelect.value === 'state' && select.value !== 'all' ? 1 : 0;
+        const count = baseCount + regionCount;
+        if (activeFilterCount) {
+          activeFilterCount.textContent = String(count);
+          activeFilterCount.hidden = count === 0;
+        }
+      };
+
+      const applyRegionFilter = () => {
+        syncField();
+        const selected = levelSelect.value === 'state' ? select.value : 'all';
+
+        if (selected !== 'all') {
+          cards.forEach((card) => {
+            if (card.hidden) return;
+            const regions = (card.dataset.region || '').split('|').filter(Boolean);
+            if (!regions.includes(selected)) card.hidden = true;
+          });
+        }
+
+        updateSummary();
+      };
+
+      const scheduleApply = () => queueMicrotask(applyRegionFilter);
+
+      select.addEventListener('change', () => {
+        levelSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      baseFilters.forEach((filter) => filter.addEventListener('change', scheduleApply));
+      search?.addEventListener('input', scheduleApply);
+      stageButtons.forEach((button) => button.addEventListener('click', scheduleApply));
+      resetButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          select.value = 'all';
+          scheduleApply();
+        });
+      });
+
+      syncField();
+      applyRegionFilter();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRegionFilter, { once: true });
+    } else {
+      initRegionFilter();
+    }
+  })();
+</script>
