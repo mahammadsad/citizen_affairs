@@ -24,7 +24,7 @@ test('mobile brand is prominent, safely left aligned and collision free', () => 
   assert.doesNotMatch(layout, /width: 118px/);
 });
 
-test('dark header uses the dedicated dark artwork without a white logo card', () => {
+test('dark header uses dedicated artwork without a white logo card', () => {
   assert.match(
     layout,
     /:global\(html\[data-theme='dark'\] \.portal-header \.portal-brand\)[\s\S]*background: transparent !important/,
@@ -36,23 +36,19 @@ test('dark header uses the dedicated dark artwork without a white logo card', ()
   assert.match(layout, /opacity: 1 !important/);
 });
 
-test('header renders transparent theme-specific horizontal SVG lockups', () => {
+test('header renders high-resolution theme-specific horizontal lockups', () => {
   assert.match(header, /<BrandLogo variant="horizontal"/);
   assert.match(
     brandLogo,
-    /light: 'assets\/brand\/citizen-affairs-horizontal\.svg'/,
+    /light: 'assets\/brand\/citizen-affairs-horizontal-quality-v2\.svg'/,
   );
   assert.match(
     brandLogo,
-    /dark: 'assets\/brand\/citizen-affairs-horizontal-dark\.svg'/,
-  );
-  assert.doesNotMatch(
-    brandLogo,
-    /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/,
+    /dark: 'assets\/brand\/citizen-affairs-horizontal-quality-dark-v2\.svg'/,
   );
   assert.equal(
     brandConfig.logoHorizontal,
-    'assets/brand/citizen-affairs-horizontal.svg',
+    'assets/brand/citizen-affairs-horizontal-quality-v2.svg',
   );
 });
 
