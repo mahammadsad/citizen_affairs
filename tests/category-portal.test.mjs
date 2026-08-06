@@ -5,13 +5,16 @@ import test from 'node:test';
 const categoryPortal = await readFile('src/components/CategoryPortal.astro', 'utf8');
 const localizedCategoryRoute = await readFile('src/pages/[lang]/categories/[category].astro', 'utf8');
 
-test('localized category routes use the task-focused category portal', () => {
+test('localized category routes use the task-focused category portals', () => {
   assert.match(localizedCategoryRoute, /import CategoryPortal from '@components\/CategoryPortal\.astro'/);
+  assert.match(localizedCategoryRoute, /import GovernmentJobsPortal from '@components\/GovernmentJobsPortal\.astro'/);
+  assert.match(localizedCategoryRoute, /category\.id === 'jobs'/);
+  assert.match(localizedCategoryRoute, /<GovernmentJobsPortal \{locale\} \{category\} \{articles\} \/>/);
   assert.match(localizedCategoryRoute, /<CategoryPortal \{locale\} \{category\} \{articles\} \/>/);
   assert.doesNotMatch(localizedCategoryRoute, /listing-hero/);
 });
 
-test('category portal provides localized guidance and useful summary counts', () => {
+test('generic category portal provides localized guidance and useful summary counts', () => {
   assert.match(categoryPortal, /Before you take action/);
   assert.match(categoryPortal, /কোনো পদক্ষেপ নেওয়ার আগে/);
   assert.match(categoryPortal, /कार्रवाई करने से पहले/);
@@ -22,7 +25,7 @@ test('category portal provides localized guidance and useful summary counts', ()
   assert.match(categoryPortal, /<ArticleCard \{article\} \{locale\} \/>/);
 });
 
-test('category filters remain accessible and update result visibility without navigation', () => {
+test('generic category filters remain accessible and update result visibility without navigation', () => {
   assert.match(categoryPortal, /role="group"/);
   assert.match(categoryPortal, /aria-pressed="true"/);
   assert.match(categoryPortal, /aria-live="polite"/);
