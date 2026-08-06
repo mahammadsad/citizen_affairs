@@ -49,12 +49,15 @@ const authorArticles = page === 'author'
 const correctionsEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.reportTitle} — ${brandName}`)}`;
 const updateEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.suggestTitle} — ${brandName}`)}`;
 const generalEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.generalTitle} — ${brandName}`)}`;
+const teamLabel = { en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' }[locale];
+const localizedTeamPath = localizedPath(locale, 'team');
+const teamHref = locale === 'en' ? localizedTeamPath.replace('/en/', '/') : localizedTeamPath;
 const trustLinks = [
   { label: t.editorial, href: localizedPath(locale, 'editorial-policy') },
   { label: t.corrections, href: trustPagePath(locale, 'corrections') },
   { label: t.disclaimer, href: localizedPath(locale, 'disclaimer') },
   { label: t.contact, href: trustPagePath(locale, 'contact') },
-  { label: t.authorProfile, href: trustPagePath(locale, 'author') }
+  { label: teamLabel, href: teamHref }
 ];
 const correctionRecords = page === 'corrections' ? (await getCollection('corrections')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()) : [];
 const correctionListCopy = {
