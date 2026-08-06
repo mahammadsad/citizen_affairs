@@ -14,6 +14,8 @@ export default defineConfig({
   ],
   use: {
     baseURL: process.env.PRODUCTION_URL || 'https://citizenaffairs.in',
+    actionTimeout: 20_000,
+    navigationTimeout: 45_000,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
   },

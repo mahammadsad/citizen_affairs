@@ -57,7 +57,16 @@ const deployed = Boolean(
 const testsPassed = tests.available && tests.unexpected === 0 && tests.expected > 0;
 const healthReady = health.ok && health.payload.status === 'ready' && health.payload.scope === 'served-build';
 const verifiedLive = deployed && testsPassed && healthReady;
-const state = verifiedLive ? 'verified-live' : 'attention-required';
+const verificationQuality = !verifiedLive
+  ? 'failed'
+  : tests.flaky > 0
+    ? 'retry-assisted'
+    : 'clean';
+const state = !verifiedLive
+  ? 'attention-required'
+  : tests.flaky > 0
+    ? 'verified-with-retry'
+    : 'verified-live';
 
 const report = {
   generatedAt,
@@ -80,6 +89,7 @@ const report = {
     },
     verifiedLive: {
       status: verifiedLive,
+      quality: verificationQuality,
       testsPassed,
       healthReady
     }
@@ -91,11 +101,16 @@ const report = {
   }
 };
 
-const icon = verifiedLive ? '✅' : '❌';
+const icon = !verifiedLive ? '❌' : tests.flaky > 0 ? '⚠️' : '✅';
+const overallLabel = !verifiedLive
+  ? 'Attention required'
+  : tests.flaky > 0
+    ? 'Verified with retry — investigate flaky test'
+    : 'Verified live';
 const stageIcon = (value) => value === true ? '✅' : value === false ? '❌' : '➖';
 const markdown = `# Citizen Affairs production health
 
-**Overall:** ${icon} ${verifiedLive ? 'Verified live' : 'Attention required'}
+**Overall:** ${icon} ${overallLabel}
 
 | Release stage | Status | Evidence |
 |---|---:|---|
@@ -103,13 +118,14 @@ const markdown = `# Citizen Affairs production health
 | Deployed | ${stageIcon(deployed)} | Served commit: \`${servedCommit}\` |
 | Verified live | ${stageIcon(verifiedLive)} | ${tests.expected} passed, ${tests.unexpected} failed, ${tests.flaky} flaky |
 
+- **Verification quality:** ${verificationQuality}
 - **Production:** ${productionUrl}
 - **Health contract:** ${health.ok ? 'available' : `unavailable (HTTP ${health.status || 'error'})`}
 - **Deployment marker:** ${deployment.ok ? 'available' : `unavailable (HTTP ${deployment.status || 'error'})`}
 - **Workflow run:** ${runId}
 - **Generated:** ${generatedAt}
 
-> “Merged”, “deployed” and “verified live” are separate stages. A served commit is not marked verified until the complete production browser suite passes.
+> “Merged”, “deployed” and “verified live” are separate stages. A served commit is not marked verified until the complete production browser suite passes. Retry-assisted verification remains visible as a warning rather than being presented as a clean run.
 `;
 
 mkdirSync(artifactDirectory, { recursive: true });
