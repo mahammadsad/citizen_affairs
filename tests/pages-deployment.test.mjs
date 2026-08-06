@@ -12,7 +12,12 @@ test('production deployments no longer share one queue with pull request validat
   assert.match(workflow, /pages-production/);
   assert.match(workflow, /cancel-in-progress: \$\{\{ github\.event_name == 'pull_request' \}\}/);
   assert.match(workflow, /timeout-minutes: 25/);
-  assert.match(workflow, /timeout: 1200000/);
+  assert.equal((workflow.match(/timeout: 600000/g) || []).length, 2);
+  assert.match(workflow, /Deploy to GitHub Pages \(attempt 1\)/);
+  assert.match(workflow, /Deploy to GitHub Pages \(attempt 2\)/);
+  assert.match(workflow, /Pause before Pages retry/);
+  assert.match(workflow, /Select successful Pages deployment/);
+  assert.doesNotMatch(workflow, /timeout: 1200000/);
   assert.doesNotMatch(workflow, /group: ["']pages["']/);
   assert.doesNotMatch(workflow, /cancel-in-progress: true/);
 });
