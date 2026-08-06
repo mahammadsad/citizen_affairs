@@ -42,7 +42,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   const headerLogo = page.locator('.portal-navbar .portal-brand > .portal-brand-logo');
   await expect(headerLogo).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-quality-v2-dark\.svg$/,
+    /citizen-affairs-horizontal-quality-v3-dark\.svg$/,
   );
   const intrinsicLogoSize = await headerLogo.evaluate((element) => ({
     width: element.naturalWidth,
@@ -147,7 +147,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   const menuLogo = page.locator('.portal-mobile-brand-logo');
   await expect(menuLogo).toHaveAttribute(
     'src',
-    /citizen-affairs-horizontal-quality-v2-dark\.svg$/,
+    /citizen-affairs-horizontal-quality-v3-dark\.svg$/,
   );
   expect(await menuLogo.evaluate((element) => element.naturalWidth)).toBe(395);
 
