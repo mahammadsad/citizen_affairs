@@ -13,9 +13,36 @@ test('State and UT filter appears only for State regional jobs', async ({ page }
   const levelSelect = page.locator('[data-job-filter="level"]');
   const regionField = page.locator('[data-job-region-field]');
   const regionSelect = page.locator('[data-job-region-filter]');
+  const applyButton = page.locator('[data-job-apply]');
+  const clearButton = panel.locator('[data-job-reset]');
+  const resultCount = page.locator('[data-job-result-count]');
 
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();
+  await expect(applyButton).toBeVisible();
+  await expect(clearButton).toBeVisible();
+  await expect(applyButton).toContainText(/আপডেট দেখুন/);
+
+  const actionGeometry = await page.evaluate(() => {
+    const apply = document.querySelector('[data-job-apply]');
+    const clear = document.querySelector('.jobs-filter-panel [data-job-reset]');
+    if (!(apply instanceof HTMLButtonElement) || !(clear instanceof HTMLButtonElement)) return null;
+
+    const applyBox = apply.getBoundingClientRect();
+    const clearBox = clear.getBoundingClientRect();
+    return {
+      sameRow: Math.abs(applyBox.top - clearBox.top) <= 2,
+      applyWidth: Math.round(applyBox.width),
+      clearWidth: Math.round(clearBox.width),
+      applyBackground: getComputedStyle(apply).backgroundColor,
+      clearBackground: getComputedStyle(clear).backgroundColor,
+    };
+  });
+
+  expect(actionGeometry).not.toBeNull();
+  expect(actionGeometry.sameRow).toBe(true);
+  expect(actionGeometry.applyWidth).toBeGreaterThan(actionGeometry.clearWidth);
+  expect(actionGeometry.applyBackground).not.toBe(actionGeometry.clearBackground);
 
   await levelSelect.selectOption('state');
   await expect(regionField).toBeVisible();
@@ -53,18 +80,31 @@ test('State and UT filter appears only for State regional jobs', async ({ page }
   const geometry = await page.evaluate(() => {
     const filterPanel = document.querySelector('.jobs-filter-panel');
     const bottomNav = document.querySelector('.portal-mobile-bottom');
-    if (!(filterPanel instanceof HTMLElement) || !(bottomNav instanceof HTMLElement)) return null;
+    const fields = document.querySelector('[data-job-filter-fields]');
+    const actions = document.querySelector('[data-job-filter-actions]');
+    if (
+      !(filterPanel instanceof HTMLElement) ||
+      !(bottomNav instanceof HTMLElement) ||
+      !(fields instanceof HTMLElement) ||
+      !(actions instanceof HTMLElement)
+    ) return null;
 
     const panelBox = filterPanel.getBoundingClientRect();
     const navBox = bottomNav.getBoundingClientRect();
+    const fieldsBox = fields.getBoundingClientRect();
+    const actionsBox = actions.getBoundingClientRect();
     const panelStyle = getComputedStyle(filterPanel);
+    const fieldsStyle = getComputedStyle(fields);
     return {
       panelBottom: Math.round(panelBox.bottom),
       navTop: Math.round(navBox.top),
       panelTop: Math.round(panelBox.top),
       viewportHeight: window.innerHeight,
-      overflowY: panelStyle.overflowY,
+      panelOverflowY: panelStyle.overflowY,
+      fieldsOverflowY: fieldsStyle.overflowY,
       borderRadius: panelStyle.borderRadius,
+      actionsInsidePanel: actionsBox.bottom <= panelBox.bottom && actionsBox.top >= panelBox.top,
+      fieldsAboveActions: fieldsBox.bottom <= actionsBox.top + 1,
     };
   });
 
@@ -72,12 +112,21 @@ test('State and UT filter appears only for State regional jobs', async ({ page }
   expect(geometry.panelTop).toBeGreaterThanOrEqual(0);
   expect(geometry.panelBottom).toBeLessThan(geometry.navTop);
   expect(geometry.panelBottom).toBeLessThanOrEqual(geometry.viewportHeight);
-  expect(geometry.overflowY).toBe('auto');
+  expect(geometry.panelOverflowY).toBe('hidden');
+  expect(geometry.fieldsOverflowY).toBe('auto');
+  expect(geometry.actionsInsidePanel).toBe(true);
+  expect(geometry.fieldsAboveActions).toBe(true);
   expect(Number.parseFloat(geometry.borderRadius)).toBeGreaterThanOrEqual(20);
 
   await regionSelect.selectOption('west-bengal');
   await expect(regionSelect).toHaveValue('west-bengal');
+  await expect(applyButton).toContainText(/\d+টি আপডেট দেখুন/);
 
+  await applyButton.click();
+  await expect(filterDetails).not.toHaveAttribute('open', '');
+  await expect(resultCount).toBeFocused();
+
+  await filterDetails.locator('summary').click();
   await levelSelect.selectOption('central');
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();

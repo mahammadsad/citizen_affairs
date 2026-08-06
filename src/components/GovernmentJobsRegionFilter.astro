@@ -51,18 +51,27 @@ const labels = {
     all: 'All states and UTs',
     states: 'States',
     uts: 'Union Territories',
+    apply: 'Show results',
+    applyPattern: 'Show {count} updates',
+    appliedPattern: '{count} updates shown',
   },
   bn: {
     field: 'রাজ্য / কেন্দ্রশাসিত অঞ্চল',
     all: 'সব রাজ্য ও কেন্দ্রশাসিত অঞ্চল',
     states: 'রাজ্য',
     uts: 'কেন্দ্রশাসিত অঞ্চল',
+    apply: 'ফলাফল দেখুন',
+    applyPattern: '{count}টি আপডেট দেখুন',
+    appliedPattern: '{count}টি আপডেট দেখানো হচ্ছে',
   },
   hi: {
     field: 'राज्य / केंद्र शासित प्रदेश',
     all: 'सभी राज्य और केंद्र शासित प्रदेश',
     states: 'राज्य',
     uts: 'केंद्र शासित प्रदेश',
+    apply: 'परिणाम दिखाएँ',
+    applyPattern: '{count} अपडेट दिखाएँ',
+    appliedPattern: '{count} अपडेट दिखाए जा रहे हैं',
   },
 }[locale];
 
@@ -84,6 +93,7 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       portal.dataset.regionFilterReady = 'true';
 
       const filterPanel = portal.querySelector('.jobs-filter-panel');
+      const filterDetails = portal.querySelector('[data-job-filter-details]');
       const levelSelect = portal.querySelector('[data-job-filter="level"]');
       const levelField = levelSelect?.closest('label');
       if (!filterPanel || !levelSelect || !levelField) return;
@@ -124,6 +134,41 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       field.append(fieldLabel, select);
       levelField.insertAdjacentElement('afterend', field);
 
+      const resetButton = filterPanel.querySelector('[data-job-reset]');
+      const fields = document.createElement('div');
+      fields.className = 'jobs-filter-fields';
+      fields.dataset.jobFilterFields = '';
+
+      [...filterPanel.children].forEach((child) => {
+        if (child !== resetButton) fields.append(child);
+      });
+
+      const actions = document.createElement('div');
+      actions.className = 'jobs-filter-actions';
+      actions.dataset.jobFilterActions = '';
+
+      const applyButton = document.createElement('button');
+      applyButton.type = 'button';
+      applyButton.className = 'jobs-filter-apply';
+      applyButton.dataset.jobApply = '';
+      applyButton.textContent = labels.apply;
+
+      const appliedStatus = document.createElement('span');
+      appliedStatus.className = 'sr-only';
+      appliedStatus.dataset.jobFilterAppliedStatus = '';
+      appliedStatus.setAttribute('role', 'status');
+      appliedStatus.setAttribute('aria-live', 'polite');
+      appliedStatus.setAttribute('aria-atomic', 'true');
+
+      if (resetButton) {
+        resetButton.classList.add('jobs-filter-clear');
+        actions.append(resetButton);
+      }
+      actions.append(applyButton, appliedStatus);
+
+      filterPanel.classList.add('jobs-filter-panel-enhanced');
+      filterPanel.append(fields, actions);
+
       const cards = [...portal.querySelectorAll('[data-job-card]')];
       cards.forEach((card, index) => {
         card.dataset.region = (cardRegions[index] || []).join('|');
@@ -137,6 +182,18 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       const resetButtons = [...portal.querySelectorAll('[data-job-reset]')];
       const stageButtons = [...portal.querySelectorAll('[data-job-stage]')];
 
+      if (resultCount && !resultCount.id) resultCount.id = 'jobs-filter-result-count';
+      if (resultCount) applyButton.setAttribute('aria-controls', resultCount.id);
+
+      const visibleCount = () => cards.filter((card) => !card.hidden).length;
+
+      const syncApplyButton = () => {
+        const count = visibleCount();
+        const text = labels.applyPattern.replace('{count}', String(count));
+        applyButton.textContent = text;
+        applyButton.setAttribute('aria-label', text);
+      };
+
       const syncField = () => {
         const stateSelected = levelSelect.value === 'state';
         field.hidden = !stateSelected;
@@ -145,20 +202,22 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       };
 
       const updateSummary = () => {
-        const visibleCount = cards.filter((card) => !card.hidden).length;
+        const count = visibleCount();
         const pattern = portal.dataset.resultPattern || '{count}';
-        if (resultCount) resultCount.textContent = pattern.replace('{count}', String(visibleCount));
-        if (noMatch) noMatch.hidden = visibleCount !== 0;
+        if (resultCount) resultCount.textContent = pattern.replace('{count}', String(count));
+        if (noMatch) noMatch.hidden = count !== 0;
 
         const baseCount =
           baseFilters.filter((filter) => filter.value !== 'all').length +
           (search?.value.trim() ? 1 : 0);
         const regionCount = levelSelect.value === 'state' && select.value !== 'all' ? 1 : 0;
-        const count = baseCount + regionCount;
+        const activeCount = baseCount + regionCount;
         if (activeFilterCount) {
-          activeFilterCount.textContent = String(count);
-          activeFilterCount.hidden = count === 0;
+          activeFilterCount.textContent = String(activeCount);
+          activeFilterCount.hidden = activeCount === 0;
         }
+
+        syncApplyButton();
       };
 
       const applyRegionFilter = () => {
@@ -191,6 +250,34 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
         });
       });
 
+      const resultObserver =
+        resultCount && typeof MutationObserver !== 'undefined'
+          ? new MutationObserver(syncApplyButton)
+          : null;
+      resultObserver?.observe(resultCount, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+
+      applyButton.addEventListener('click', () => {
+        applyRegionFilter();
+        const count = visibleCount();
+        appliedStatus.textContent = labels.appliedPattern.replace('{count}', String(count));
+
+        if (filterDetails instanceof HTMLDetailsElement) filterDetails.open = false;
+
+        requestAnimationFrame(() => {
+          if (!(resultCount instanceof HTMLElement)) return;
+          resultCount.tabIndex = -1;
+          resultCount.focus({ preventScroll: true });
+          resultCount.scrollIntoView({
+            behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+            block: 'center',
+          });
+        });
+      });
+
       syncField();
       applyRegionFilter();
     };
@@ -204,6 +291,19 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
 </script>
 
 <style is:global>
+  .jobs-filter-panel.jobs-filter-panel-enhanced {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .jobs-filter-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    gap: 0.65rem;
+    min-height: 0;
+  }
+
   .jobs-filter-panel .jobs-region-field {
     display: grid;
     gap: 0.25rem;
@@ -241,6 +341,38 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
     box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.14);
   }
 
+  .jobs-filter-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+    gap: 0.55rem;
+    flex: 0 0 auto;
+  }
+
+  .jobs-filter-panel .jobs-filter-actions button {
+    min-height: 42px;
+    border-radius: 10px;
+  }
+
+  .jobs-filter-panel .jobs-filter-clear {
+    border-color: rgba(var(--color-primary-rgb), 0.28) !important;
+    background: transparent !important;
+    color: var(--color-primary) !important;
+  }
+
+  .jobs-filter-panel .jobs-filter-apply {
+    border-color: var(--color-primary) !important;
+    background: var(--color-primary) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.22);
+  }
+
+  .jobs-filter-panel .jobs-filter-apply:hover,
+  .jobs-filter-panel .jobs-filter-apply:focus-visible {
+    border-color: var(--color-primary) !important;
+    background: var(--color-primary) !important;
+    color: #fff !important;
+  }
+
   @media (max-width: 700px) {
     .jobs-filter-panel {
       z-index: 120 !important;
@@ -260,6 +392,10 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
         var(--shadow-lg) !important;
     }
 
+    .jobs-filter-panel.jobs-filter-panel-enhanced {
+      overflow: hidden !important;
+    }
+
     .jobs-filter-panel::before {
       position: absolute;
       top: 0.38rem;
@@ -270,6 +406,14 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       background: linear-gradient(90deg, var(--color-primary), var(--color-green), var(--color-orange));
       content: '';
       transform: translateX(-50%);
+    }
+
+    .jobs-filter-fields {
+      grid-template-columns: 1fr 1fr;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      padding: 0.05rem 0.15rem 0.15rem 0.05rem;
     }
 
     .jobs-filter-panel label,
@@ -319,15 +463,38 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.14) !important;
     }
 
-    .jobs-filter-panel button {
-      border-color: rgba(var(--color-primary-rgb), 0.26) !important;
-      background: rgba(var(--color-primary-rgb), 0.065) !important;
+    .jobs-filter-actions {
+      position: relative;
+      z-index: 2;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(var(--color-primary-rgb), 0.16);
+      background: var(--color-surface);
+    }
+
+    .jobs-filter-panel .jobs-filter-clear {
+      border-color: rgba(var(--color-primary-rgb), 0.28) !important;
+      background: transparent !important;
       color: var(--color-primary) !important;
       font-weight: 750 !important;
     }
 
-    .jobs-filter-panel button:hover,
-    .jobs-filter-panel button:focus-visible {
+    .jobs-filter-panel .jobs-filter-apply {
+      border-color: var(--color-primary) !important;
+      background: var(--color-primary) !important;
+      color: #fff !important;
+      font-weight: 800 !important;
+      box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.24);
+    }
+
+    .jobs-filter-panel .jobs-filter-clear:hover,
+    .jobs-filter-panel .jobs-filter-clear:focus-visible {
+      border-color: var(--color-primary) !important;
+      background: rgba(var(--color-primary-rgb), 0.08) !important;
+      color: var(--color-primary) !important;
+    }
+
+    .jobs-filter-panel .jobs-filter-apply:hover,
+    .jobs-filter-panel .jobs-filter-apply:focus-visible {
       border-color: var(--color-primary) !important;
       background: var(--color-primary) !important;
       color: #fff !important;
@@ -341,6 +508,10 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
       left: 0.65rem !important;
       max-height: calc(100vh - 60px - env(safe-area-inset-bottom) - 1.3rem) !important;
       max-height: calc(100dvh - 60px - env(safe-area-inset-bottom) - 1.3rem) !important;
+    }
+
+    .jobs-filter-fields {
+      grid-template-columns: 1fr;
     }
   }
 </style>
