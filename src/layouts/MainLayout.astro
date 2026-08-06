@@ -3,6 +3,7 @@ import BaseLayout from './BaseLayout.astro';
 import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
 import MobileNavigationRuntime from '@components/MobileNavigationRuntime.astro';
+import MobileBottomNavigationRuntime from '@components/MobileBottomNavigationRuntime.astro';
 import FormSubmissionRuntime from '@components/FormSubmissionRuntime.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
@@ -56,6 +57,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   <PortalHeader {locale} {alternateUrls} />
   <PortalRuntime />
   <MobileNavigationRuntime />
+  <MobileBottomNavigationRuntime />
   <main id="main-content">
     <slot />
   </main>
