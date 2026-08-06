@@ -9,11 +9,12 @@ on:
 
 permissions: {}
 
-# Pull-request validation must never hold up production. Superseded runs are
-# cancelled so the newest main commit is always the one that reaches Pages.
+# Pull-request validation can be cancelled when superseded, but a production
+# Pages deployment must finish once it starts so GitHub does not leave the
+# environment in a cancelled state for the next attempt.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.event.pull_request.number) || 'pages-production' }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -173,6 +174,7 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     permissions:
       pages: write
       id-token: write
@@ -185,6 +187,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        with:
+          timeout: 1200000
 
   production-smoke:
     needs: deploy
