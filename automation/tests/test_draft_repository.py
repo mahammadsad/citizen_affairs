@@ -134,3 +134,22 @@ def test_duplicate_detection_uses_existing_official_source(tmp_path: Path):
         encoding="utf-8",
     )
     assert DraftRepository(tmp_path).is_duplicate(candidate()) is True
+
+
+def test_internal_link_context_excludes_private_drafts(tmp_path: Path):
+    article_dir = tmp_path / "src" / "content" / "articles" / "en"
+    article_dir.mkdir(parents=True)
+    (article_dir / "public.md").write_text(
+        "---\nurlSlug: public-guide\ntitle: Public guide\nworkflowStatus: published\ndraft: false\n---\nBody\n",
+        encoding="utf-8",
+    )
+    (article_dir / "private.md").write_text(
+        "---\nurlSlug: private-draft\ntitle: Private draft\nworkflowStatus: draft\ndraft: true\n---\nBody\n",
+        encoding="utf-8",
+    )
+
+    links = DraftRepository(tmp_path).internal_link_context()
+    assert links == [{
+        "title": "Public guide",
+        "url": "https://citizenaffairs.in/en/public-guide/",
+    }]
