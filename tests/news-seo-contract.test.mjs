@@ -31,7 +31,7 @@ test('articles expose visible publication metadata with real timestamps and an e
   assert.match(publicationMeta, /timeZone: 'Asia\/Kolkata'/);
   assert.match(publicationMeta, /hasExplicitTime/);
   assert.match(publicationMeta, /Editorial Desk/);
-  assert.match(publicationMeta, /localizedPath\(locale, 'team'\)/);
+  assert.match(publicationMeta, /locale === 'en' \? '\/team\/' : localizedPath\(locale, 'team'\)/);
   assert.match(englishArticleRoute, /<ArticlePublicationMeta/);
   assert.match(localizedArticleRoute, /<ArticlePublicationMeta/);
 });
