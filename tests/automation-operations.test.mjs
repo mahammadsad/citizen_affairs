@@ -13,6 +13,8 @@ test('review workflow is the only scheduled repository draft generator', () => {
   assert.match(reviewWorkflow, /gh pr merge/);
   assert.match(reviewWorkflow, /--match-head-commit/);
   assert.match(reviewWorkflow, /draft:\[\[:space:\]\]\*true/);
+  assert.match(reviewWorkflow, /src\/content\/articles\/\*\/drafts\/\*\.md/);
+  assert.match(reviewWorkflow, /src\/content\/articles\/en\/drafts\/\*\.md/);
 
   assert.doesNotMatch(legacyWorkflow, /schedule:/);
   assert.doesNotMatch(legacyWorkflow, /workflow_dispatch:/);
