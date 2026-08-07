@@ -3,30 +3,34 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const runtime = await readFile('src/components/MobileNavigationRuntime.astro', 'utf8');
+const header = await readFile('src/components/PortalHeader.astro', 'utf8');
 const layout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 
-test('mobile navigation is mounted as a full-screen modal surface', () => {
+test('mobile navigation expands below the header and stays in document flow', () => {
   assert.match(layout, /MobileNavigationRuntime/);
-  assert.match(runtime, /portal-mobile-menu\[open\] > \.portal-mobile-panel/);
-  assert.match(runtime, /inset: 0 !important/);
-  assert.match(runtime, /height: 100dvh !important/);
-  assert.match(runtime, /aria-modal/);
-  assert.match(runtime, /portal-menu-open/);
+  assert.match(header, /class="portal-icon-action portal-mobile-trigger"/);
+  assert.match(header, /id="portalMobilePanel"/);
+  assert.match(header, /grid-template-rows: 0fr/);
+  assert.match(header, /grid-template-rows: 1fr/);
+  assert.doesNotMatch(header, /\.portal-mobile-panel\s*\{[^}]*position:\s*fixed/);
+  assert.doesNotMatch(runtime, /aria-modal/);
+  assert.doesNotMatch(runtime, /portal-menu-open/);
 });
 
-test('mobile navigation includes localized search and newsroom-style rows', () => {
-  assert.match(runtime, /portal-mobile-menu-search/);
-  assert.match(runtime, /searchInput\.name = 'q'/);
-  assert.match(runtime, /খবর, চাকরি, প্রকল্প ও আরও তথ্য খুঁজুন/);
-  assert.match(runtime, /portal-mobile-home/);
-  assert.match(runtime, /portal-mobile-row-arrow/);
-  assert.match(runtime, /nav a > svg:first-child/);
+test('hamburger morph and menu rows use reference-style motion', () => {
+  assert.match(header, /portal-menu-icon/);
+  assert.match(header, /rotate\(45deg\)/);
+  assert.match(header, /rotate\(-45deg\)/);
+  assert.match(header, /cubic-bezier\(\.22, 1, \.36, 1\)/);
+  assert.match(header, /translateY\(-7px\)/);
+  assert.match(header, /border-bottom: 1px solid var\(--color-border\)/);
 });
 
-test('mobile navigation supports close, Escape, focus restoration and trapping', () => {
-  assert.match(runtime, /portal-mobile-close/);
+test('mobile navigation supports accessible toggle, Escape and focus restoration', () => {
+  assert.match(runtime, /aria-expanded/);
+  assert.match(runtime, /aria-hidden/);
+  assert.match(runtime, /setAttribute\('inert'/);
   assert.match(runtime, /event\.key === 'Escape'/);
   assert.match(runtime, /trigger\.focus\(\)/);
-  assert.match(runtime, /focusableSelector/);
-  assert.match(runtime, /event\.key !== 'Tab'/);
+  assert.match(runtime, /desktopQuery/);
 });

@@ -1,32 +1,24 @@
 <script is:inline>
   (() => {
-    const copy = {
-      en: {
-        close: 'Close menu',
-        search: 'Search',
-        searchPlaceholder: 'Search news, jobs, schemes and more',
-        home: 'Home',
-        sections: 'Sections',
-        follow: 'Follow Citizen Affairs on'
-      },
-      bn: {
-        close: 'মেনু বন্ধ করুন',
-        search: 'খুঁজুন',
-        searchPlaceholder: 'খবর, চাকরি, প্রকল্প ও আরও তথ্য খুঁজুন',
-        home: 'হোম',
-        sections: 'বিভাগ',
-        follow: 'সিটিজেন অ্যাফেয়ার্সকে অনুসরণ করুন'
-      },
-      hi: {
-        close: 'मेनू बंद करें',
-        search: 'खोजें',
-        searchPlaceholder: 'समाचार, नौकरियाँ, योजनाएँ और अधिक खोजें',
-        home: 'होम',
-        sections: 'अनुभाग',
-        follow: 'Citizen Affairs को फ़ॉलो करें'
-      }
-    };
+    const trigger = document.querySelector('.portal-mobile-trigger');
+    const panel = document.querySelector('.portal-mobile-panel');
+    const panelInner = panel?.querySelector('.portal-mobile-panel-inner');
+    if (
+      !(trigger instanceof HTMLButtonElement) ||
+      !(panel instanceof HTMLElement) ||
+      !(panelInner instanceof HTMLElement)
+    ) return;
+    if (trigger.dataset.menuReady === 'true') return;
+    trigger.dataset.menuReady = 'true';
 
+    const locale = ['bn', 'hi'].includes(document.documentElement.lang)
+      ? document.documentElement.lang
+      : 'en';
+    const followCopy = {
+      en: 'Follow Citizen Affairs on',
+      bn: 'সিটিজেন অ্যাফেয়ার্সকে অনুসরণ করুন',
+      hi: 'Citizen Affairs को फ़ॉलो करें'
+    }[locale];
     const socialPlatforms = [
       {
         name: 'X',
@@ -54,107 +46,19 @@
       }
     ];
 
-    const locale = ['bn', 'hi'].includes(document.documentElement.lang)
-      ? document.documentElement.lang
-      : 'en';
-    const text = copy[locale];
-    const details = document.querySelector('.portal-mobile-menu');
-    if (!(details instanceof HTMLDetailsElement)) return;
-    if (details.dataset.fullscreenMenuReady === 'true') return;
-
-    const trigger = details.querySelector(':scope > summary');
-    const panel = details.querySelector('.portal-mobile-panel');
-    const head = panel?.querySelector('.portal-mobile-head');
-    const nav = panel?.querySelector('nav');
-    if (
-      !(trigger instanceof HTMLElement) ||
-      !(panel instanceof HTMLElement) ||
-      !(head instanceof HTMLElement) ||
-      !(nav instanceof HTMLElement)
-    ) {
-      return;
-    }
-
-    details.dataset.fullscreenMenuReady = 'true';
-    const originalTriggerLabel = trigger.getAttribute('aria-label') || text.sections;
-
-    const createSpan = (value, className = '') => {
-      const span = document.createElement('span');
-      span.textContent = value;
-      if (className) span.className = className;
-      return span;
-    };
-
     const socialAriaLabel = (platform) => {
       if (locale === 'bn') return `সিটিজেন অ্যাফেয়ার্সকে ${platform}-এ অনুসরণ করুন`;
       if (locale === 'hi') return `Citizen Affairs को ${platform} पर फ़ॉलो करें`;
       return `Follow Citizen Affairs on ${platform}`;
     };
 
-    panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-modal', 'true');
-    panel.setAttribute('aria-label', text.sections);
-    panel.tabIndex = -1;
-
-    const closeButton = document.createElement('button');
-    closeButton.type = 'button';
-    closeButton.className = 'portal-mobile-close';
-    closeButton.setAttribute('aria-label', text.close);
-    closeButton.append(createSpan('×', 'portal-mobile-close-symbol'));
-
-    const sourceBrand = document.querySelector('.portal-brand');
-    const mobileBrand = sourceBrand?.cloneNode(true);
-    if (mobileBrand instanceof HTMLAnchorElement) {
-      mobileBrand.className = 'portal-mobile-brand';
-      mobileBrand.removeAttribute('aria-current');
-      mobileBrand.querySelector('.portal-brand-logo')?.classList.add('portal-mobile-brand-logo');
-    }
-
-    const spacer = document.createElement('span');
-    spacer.className = 'portal-mobile-head-spacer';
-    spacer.setAttribute('aria-hidden', 'true');
-    head.replaceChildren(closeButton, mobileBrand || createSpan(text.sections), spacer);
-
-    const searchSource =
-      document.querySelector('.portal-mobile-bottom a[href*="/search"]') ||
-      document.querySelector('.portal-search-action');
-    const searchForm = document.createElement('form');
-    searchForm.className = 'portal-mobile-menu-search';
-    searchForm.method = 'get';
-    searchForm.action =
-      searchSource instanceof HTMLAnchorElement ? searchSource.href : `/${locale}/search/`;
-    searchForm.setAttribute('role', 'search');
-
-    const searchInput = document.createElement('input');
-    searchInput.type = 'search';
-    searchInput.name = 'q';
-    searchInput.autocomplete = 'off';
-    searchInput.placeholder = text.searchPlaceholder;
-    searchInput.setAttribute('aria-label', text.searchPlaceholder);
-
-    const searchButton = document.createElement('button');
-    searchButton.type = 'submit';
-    searchButton.setAttribute('aria-label', text.search);
-    searchButton.innerHTML =
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m15.5 15.5 5 5"></path></svg>';
-    searchForm.append(searchInput, searchButton);
-    panel.insertBefore(searchForm, nav);
-
-    const homeSource = document.querySelector('.portal-mobile-bottom a:first-child');
-    const homeLink = document.createElement('a');
-    homeLink.className = 'portal-mobile-home';
-    homeLink.href = homeSource instanceof HTMLAnchorElement ? homeSource.href : '/';
-    const homeLabel = homeSource?.querySelector('span')?.textContent?.trim() || text.home;
-    homeLink.append(createSpan(homeLabel), createSpan('→', 'portal-mobile-row-arrow'));
-    nav.prepend(homeLink);
-
     const socialSection = document.createElement('section');
-    socialSection.className = 'portal-mobile-social';
+    socialSection.className = 'container portal-mobile-social';
     socialSection.setAttribute('aria-labelledby', 'portalMobileSocialTitle');
 
     const socialHeading = document.createElement('h2');
     socialHeading.id = 'portalMobileSocialTitle';
-    socialHeading.textContent = text.follow;
+    socialHeading.textContent = followCopy;
 
     const socialLinks = document.createElement('div');
     socialLinks.className = 'portal-mobile-social-links';
@@ -171,372 +75,132 @@
       socialLinks.append(link);
     });
     socialSection.append(socialHeading, socialLinks);
-    panel.append(socialSection);
-
-    const closeMenu = (restoreFocus = true) => {
-      if (!details.open) return;
-      details.removeAttribute('open');
-      if (restoreFocus) window.setTimeout(() => trigger.focus(), 0);
-    };
-
-    const syncOpenState = () => {
-      const isOpen = details.open;
-      document.documentElement.classList.toggle('portal-menu-open', isOpen);
-      document.body.classList.toggle('portal-menu-open', isOpen);
-      trigger.setAttribute('aria-label', isOpen ? text.close : originalTriggerLabel);
-      if (isOpen) {
-        window.setTimeout(() => {
-          searchInput.focus();
-          searchInput.select();
-        }, 0);
-      }
-    };
-
-    details.addEventListener('toggle', syncOpenState);
-    closeButton.addEventListener('click', () => closeMenu(true));
-    panel.addEventListener('click', (event) => {
-      const target = event.target;
-      if (target instanceof Element && target.closest('a')) closeMenu(false);
-    });
-    searchForm.addEventListener('submit', () => closeMenu(false));
-
-    const focusableSelector = [
-      'a[href]',
-      'button:not([disabled])',
-      'input:not([disabled])',
-      'select:not([disabled])',
-      'textarea:not([disabled])',
-      '[tabindex]:not([tabindex="-1"])'
-    ].join(',');
-
-    document.addEventListener('keydown', (event) => {
-      if (!details.open) return;
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeMenu(true);
-        return;
-      }
-      if (event.key !== 'Tab') return;
-
-      const focusable = [...panel.querySelectorAll(focusableSelector)].filter(
-        (element) =>
-          element instanceof HTMLElement &&
-          !element.hidden &&
-          element.getAttribute('aria-hidden') !== 'true' &&
-          element.getClientRects().length > 0
-      );
-      if (!focusable.length) {
-        event.preventDefault();
-        panel.focus();
-        return;
-      }
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (!(first instanceof HTMLElement) || !(last instanceof HTMLElement)) return;
-
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    });
+    panelInner.append(socialSection);
 
     const desktopQuery = window.matchMedia('(min-width: 1100px)');
-    desktopQuery.addEventListener?.('change', (event) => {
-      if (event.matches) closeMenu(false);
+    const menuLabel = trigger.dataset.menuLabel || trigger.getAttribute('aria-label') || 'Menu';
+    const closeLabel = trigger.dataset.closeLabel || menuLabel;
+
+    const setOpen = (open, restoreFocus = false) => {
+      trigger.setAttribute('aria-expanded', String(open));
+      trigger.setAttribute('aria-label', open ? closeLabel : menuLabel);
+      panel.classList.toggle('is-open', open);
+      panel.setAttribute('aria-hidden', String(!open));
+
+      if (open) panel.removeAttribute('inert');
+      else panel.setAttribute('inert', '');
+
+      if (!open && restoreFocus) trigger.focus();
+    };
+
+    trigger.addEventListener('click', () => {
+      setOpen(trigger.getAttribute('aria-expanded') !== 'true');
     });
-    syncOpenState();
+
+    panel.addEventListener('click', (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('a')) setOpen(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && trigger.getAttribute('aria-expanded') === 'true') {
+        event.preventDefault();
+        setOpen(false, true);
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (trigger.getAttribute('aria-expanded') !== 'true') return;
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (!panel.contains(target) && !trigger.contains(target)) setOpen(false);
+    });
+
+    const closeForDesktop = (event) => {
+      if (event.matches) setOpen(false);
+    };
+    desktopQuery.addEventListener('change', closeForDesktop);
+
+    window.addEventListener('pageshow', () => setOpen(false));
+    setOpen(false);
   })();
 </script>
 
 <style is:global>
-  html.portal-menu-open,
-  body.portal-menu-open {
-    overflow: hidden !important;
-    overscroll-behavior: none;
-  }
-
-  body.portal-menu-open .portal-mobile-bottom {
-    visibility: hidden;
-    pointer-events: none;
+  .portal-mobile-social {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .9rem;
+    padding-block: .8rem .95rem;
+    border-bottom: 1px solid var(--color-border);
     opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 170ms ease 55ms, transform 240ms cubic-bezier(.22, 1, .36, 1) 55ms;
   }
 
-  @media (max-width: 1099px) {
-    html body .portal-mobile-menu[open] > .portal-mobile-panel {
-      position: fixed !important;
-      inset: 0 !important;
-      z-index: 1000 !important;
-      display: flex !important;
-      flex-direction: column;
-      width: 100vw !important;
-      height: 100vh !important;
-      height: 100dvh !important;
-      max-height: none !important;
-      overflow: hidden !important;
-      border: 0 !important;
-      border-radius: 0 !important;
-      background: var(--color-surface) !important;
-      box-shadow: none !important;
-      overscroll-behavior: contain;
-    }
-
-    html body .portal-mobile-panel .portal-mobile-head {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      flex: 0 0 auto;
-      grid-template-columns: 52px minmax(0, 1fr) 52px;
-      align-items: center;
-      min-height: calc(72px + env(safe-area-inset-top));
-      padding: env(safe-area-inset-top) 1rem 0;
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
-    }
-
-    .portal-mobile-close {
-      display: grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: transparent;
-      color: var(--color-text);
-      cursor: pointer;
-    }
-
-    .portal-mobile-close:hover,
-    .portal-mobile-close:focus-visible {
-      background: var(--color-surface-alt);
-    }
-
-    .portal-mobile-close-symbol {
-      font-family: Arial, sans-serif;
-      font-size: 2.7rem;
-      font-weight: 300;
-      line-height: .8;
-    }
-
-    .portal-mobile-brand {
-      display: grid;
-      place-items: center;
-      justify-self: center;
-      width: min(180px, 52vw);
-      min-width: 0;
-      line-height: 0;
-    }
-
-    .portal-mobile-brand .portal-mobile-brand-logo,
-    .portal-mobile-brand .portal-brand-logo {
-      display: block;
-      width: min(174px, 50vw) !important;
-      max-width: 100% !important;
-      max-height: 50px !important;
-      height: auto !important;
-      object-fit: contain;
-    }
-
-    .portal-mobile-head-spacer {
-      display: block;
-      width: 48px;
-      height: 48px;
-    }
-
-    .portal-mobile-menu-search {
-      display: grid;
-      flex: 0 0 auto;
-      grid-template-columns: minmax(0, 1fr) 58px;
-      margin: .85rem 1rem;
-      border: 3px solid var(--color-text);
-      background: var(--color-surface);
-    }
-
-    .portal-mobile-menu-search input {
-      min-width: 0;
-      min-height: 58px;
-      padding: .75rem 1rem;
-      border: 0;
-      border-radius: 0;
-      outline: 0;
-      background: transparent;
-      color: var(--color-text);
-      font: inherit;
-      font-size: 1rem;
-    }
-
-    .portal-mobile-menu-search input::placeholder {
-      color: var(--color-text-muted);
-      opacity: 1;
-    }
-
-    .portal-mobile-menu-search:focus-within {
-      outline: 3px solid rgba(var(--color-primary-rgb), .24);
-      outline-offset: 2px;
-    }
-
-    .portal-mobile-menu-search button {
-      display: grid;
-      place-items: center;
-      min-width: 58px;
-      min-height: 58px;
-      padding: 0;
-      border: 0;
-      border-radius: 0;
-      background: var(--color-navy);
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .portal-mobile-menu-search button:hover,
-    .portal-mobile-menu-search button:focus-visible {
-      background: #173a66;
-    }
-
-    .portal-mobile-menu-search svg {
-      width: 29px;
-      height: 29px;
-      fill: none;
-      stroke: currentColor;
-      stroke-linecap: round;
-      stroke-width: 2;
-    }
-
-    html body .portal-mobile-panel nav {
-      display: block;
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
-      padding: 0 1rem 1.25rem !important;
-      scrollbar-gutter: stable;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    html body .portal-mobile-panel nav a {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 1rem;
-      min-height: 64px;
-      padding: .8rem 1rem;
-      border-bottom: 1px solid var(--color-border);
-      border-radius: 0 !important;
-      color: var(--color-text);
-      font-size: 1rem;
-      font-weight: 800;
-    }
-
-    html body .portal-mobile-panel nav a:first-child {
-      border-left: 5px solid var(--color-primary);
-      background: var(--color-surface-alt);
-    }
-
-    html body .portal-mobile-panel nav a > svg:first-child {
-      display: none;
-    }
-
-    html body .portal-mobile-panel nav a > svg:last-child,
-    .portal-mobile-row-arrow {
-      width: 22px;
-      color: var(--color-text);
-      font-size: 1.35rem;
-      line-height: 1;
-    }
-
-    html body .portal-mobile-panel nav a:hover,
-    html body .portal-mobile-panel nav a:focus-visible {
-      background: var(--color-surface-alt);
-      color: var(--color-primary);
-    }
-
-    html body .portal-mobile-panel .portal-nav-count {
-      position: absolute;
-      top: 50%;
-      right: 3.35rem;
-      margin: 0;
-      transform: translateY(-50%);
-    }
-
-    .portal-mobile-social {
-      display: flex;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: .8rem 1rem calc(.8rem + env(safe-area-inset-bottom));
-      border-top: 1px solid var(--color-border);
-      background: var(--color-surface-alt);
-    }
-
-    .portal-mobile-social h2 {
-      max-width: 16rem;
-      margin: 0;
-      color: var(--color-text);
-      font-size: .82rem;
-      font-weight: 850;
-      line-height: 1.25;
-    }
-
-    .portal-mobile-social-links {
-      display: flex;
-      flex: 0 0 auto;
-      align-items: center;
-      gap: .45rem;
-    }
-
-    .portal-mobile-social-link {
-      display: grid;
-      place-items: center;
-      width: 44px;
-      height: 44px;
-      border: 1px solid var(--color-border);
-      border-radius: 12px;
-      background: #fff;
-      color: var(--social-color);
-      line-height: 0;
-    }
-
-    .portal-mobile-social-link svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-
-    .portal-mobile-social-link:hover {
-      border-color: var(--social-color);
-      transform: translateY(-1px);
-    }
-
-    .portal-mobile-social-link:focus-visible {
-      outline: 3px solid var(--color-primary);
-      outline-offset: 2px;
-    }
+  .portal-mobile-panel.is-open .portal-mobile-social {
+    opacity: 1;
+    transform: translateY(0);
   }
 
-  @media (max-width: 470px) {
+  .portal-mobile-social h2 {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: .72rem;
+    font-weight: 800;
+    line-height: 1.35;
+  }
+
+  .portal-mobile-social-links {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex: 0 0 auto;
+  }
+
+  .portal-mobile-social-link {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface-alt);
+    color: var(--social-color);
+    transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .portal-mobile-social-link svg {
+    width: 19px;
+    height: 19px;
+    fill: currentColor;
+  }
+
+  .portal-mobile-social-link:hover,
+  .portal-mobile-social-link:focus-visible {
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--social-color) 50%, var(--color-border));
+  }
+
+  .portal-mobile-social-link:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 420px) {
     .portal-mobile-social {
       align-items: flex-start;
       flex-direction: column;
-      gap: .65rem;
-    }
-
-    .portal-mobile-social-links {
-      width: 100%;
-      justify-content: flex-start;
+      gap: .55rem;
     }
   }
 
-  html[data-theme='dark'] .portal-mobile-menu-search button {
-    background: #0a4f57;
-  }
-
-  html[data-theme='dark'] .portal-mobile-menu-search button:hover,
-  html[data-theme='dark'] .portal-mobile-menu-search button:focus-visible {
-    background: #0d6871;
+  @media (prefers-reduced-motion: reduce) {
+    .portal-mobile-social,
+    .portal-mobile-social-link {
+      transition-duration: .01ms !important;
+      transition-delay: 0ms !important;
+    }
   }
 </style>

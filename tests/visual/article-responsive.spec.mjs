@@ -33,10 +33,15 @@ for (const viewport of viewports) {
     }
 
     if (viewport.width < 1100) {
-      await expect(page.locator('.portal-mobile-menu > summary')).toBeVisible();
+      const trigger = page.locator('.portal-mobile-trigger');
+      const panel = page.locator('.portal-mobile-panel');
+      await expect(trigger).toBeVisible();
+      await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+      await expect(panel).toBeHidden();
     } else {
       await expect(page.locator('.portal-desktop-nav')).toBeVisible();
-      await expect(page.locator('.portal-mobile-menu')).toBeHidden();
+      await expect(page.locator('.portal-mobile-trigger')).toBeHidden();
+      await expect(page.locator('.portal-mobile-panel')).toBeHidden();
     }
 
     const measurements = await image.evaluate((element) => {
