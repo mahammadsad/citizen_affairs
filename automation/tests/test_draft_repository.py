@@ -111,6 +111,13 @@ def test_rendered_article_is_always_private_draft(tmp_path: Path):
     assert "workflowStatus: published" not in content
 
 
+def test_generated_drafts_use_separate_language_draft_folder(tmp_path: Path):
+    repo = DraftRepository(tmp_path)
+    assert repo.target_path("en", "example-recruitment-2026") == (
+        tmp_path / "src" / "content" / "articles" / "en" / "drafts" / "example-recruitment-2026.md"
+    )
+
+
 def test_blocked_factcheck_marks_verification_failed_but_stays_draft(tmp_path: Path):
     repo = DraftRepository(tmp_path)
     topic = candidate()
@@ -126,24 +133,26 @@ def test_blocked_factcheck_marks_verification_failed_but_stays_draft(tmp_path: P
     assert "workflowStatus: verification-failed" in content
 
 
-def test_duplicate_detection_uses_existing_official_source(tmp_path: Path):
-    article_dir = tmp_path / "src" / "content" / "articles" / "en"
+def test_duplicate_detection_uses_nested_existing_official_source(tmp_path: Path):
+    article_dir = tmp_path / "src" / "content" / "articles" / "en" / "drafts"
     article_dir.mkdir(parents=True)
     (article_dir / "existing.md").write_text(
-        "---\nurlSlug: existing\ntitle: Existing article\nsourceUrls:\n  - https://example.gov.in/notice\ndraft: true\n---\nBody\n",
+        "---\nurlSlug: existing\ntitle: Existing article\nsourceUrls:\n  - https://example.gov.in/notice\nworkflowStatus: draft\ndraft: true\n---\nBody\n",
         encoding="utf-8",
     )
     assert DraftRepository(tmp_path).is_duplicate(candidate()) is True
 
 
-def test_internal_link_context_excludes_private_drafts(tmp_path: Path):
+def test_internal_link_context_excludes_nested_private_drafts(tmp_path: Path):
     article_dir = tmp_path / "src" / "content" / "articles" / "en"
+    draft_dir = article_dir / "drafts"
     article_dir.mkdir(parents=True)
+    draft_dir.mkdir(parents=True)
     (article_dir / "public.md").write_text(
         "---\nurlSlug: public-guide\ntitle: Public guide\nworkflowStatus: published\ndraft: false\n---\nBody\n",
         encoding="utf-8",
     )
-    (article_dir / "private.md").write_text(
+    (draft_dir / "private.md").write_text(
         "---\nurlSlug: private-draft\ntitle: Private draft\nworkflowStatus: draft\ndraft: true\n---\nBody\n",
         encoding="utf-8",
     )
