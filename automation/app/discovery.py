@@ -114,8 +114,15 @@ async def discover_from_official_feeds(feed_urls: list[str], limit: int = 20) ->
         for source_url in feed_urls:
             if not is_official_url(source_url):
                 continue
-            response = await client.get(source_url)
-            response.raise_for_status()
+            try:
+                response = await client.get(source_url)
+                response.raise_for_status()
+            except httpx.HTTPError:
+                # Government portals sometimes block cloud/GitHub runner IPs or are
+                # temporarily unavailable. One inaccessible source must not stop
+                # discovery from the remaining independent official sources.
+                continue
+
             final_url = str(response.url)
             if not is_official_url(final_url):
                 continue
