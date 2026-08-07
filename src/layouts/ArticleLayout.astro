@@ -233,40 +233,6 @@ const breadcrumbSchema = generateBreadcrumbs([
   { name: title },
 ]);
 
-const articleSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: title,
-  description,
-  ...(ogImage ? { image: [ogImage] } : {}),
-  datePublished: date.toISOString(),
-  dateModified: (updated || lastVerified || date).toISOString(),
-  mainEntityOfPage: pageUrl,
-  articleSection: categoryLabel,
-  ...(tags.length ? { keywords: tags.join(', ') } : {}),
-  inLanguage: locale === 'bn' ? 'bn-IN' : locale === 'hi' ? 'hi-IN' : 'en-IN',
-  author: showHumanCredits && authorName
-    ? {
-        '@type': 'Person',
-        name: authorName,
-        url: toAbsoluteUrl(authorProfilePath(locale, normalizedAuthor), SITE.url),
-      }
-    : {
-        '@type': 'Organization',
-        name: brandName,
-        url: SITE.url,
-      },
-  publisher: {
-    '@type': 'Organization',
-    name: brandName,
-    url: SITE.url,
-    logo: {
-      '@type': 'ImageObject',
-      url: toAbsoluteUrl(SITE.logo, SITE.url),
-    },
-  },
-};
-
 const faqSchema = faqs.length
   ? {
       '@context': 'https://schema.org',
@@ -279,7 +245,7 @@ const faqSchema = faqs.length
     }
   : undefined;
 
-const schemas = faqSchema ? [breadcrumbSchema, articleSchema, faqSchema] : [breadcrumbSchema, articleSchema];
+const schemas = faqSchema ? [breadcrumbSchema, faqSchema] : [breadcrumbSchema];
 ---
 
 <MainLayout
