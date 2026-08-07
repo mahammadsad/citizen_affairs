@@ -115,6 +115,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   }
 
   :global(.portal-header-actions) {
+    position: relative;
     flex: 0 0 auto !important;
     min-width: max-content;
   }
@@ -174,9 +175,22 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
       max-height: 52px !important;
     }
 
+    :global(.portal-language) {
+      position: static !important;
+    }
+
     :global(.portal-language > summary) {
       min-width: 54px !important;
       padding-inline: .42rem !important;
+    }
+
+    :global(.portal-language > div) {
+      right: 0 !important;
+      left: auto !important;
+      width: 170px;
+      min-width: 0 !important;
+      max-width: calc(100vw - 1.5rem);
+      overflow-wrap: anywhere;
     }
 
     :global(.news-home .top-news) {
