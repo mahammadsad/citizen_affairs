@@ -13,7 +13,7 @@ test('production opens and verifies the live expanding mobile menu', () => {
   assert.match(production, /portal-mobile-trigger/);
   assert.match(production, /portal-mobile-panel/);
   assert.match(production, /aria-expanded/);
-  assert.match(production, /after\.top - before\.top/);
+  assert.match(production, /after\.y - before\.y/);
   assert.match(production, /keyboard\.press\(["']Escape["']\)/);
   assert.doesNotMatch(production, /aria-modal/);
 });
