@@ -10,45 +10,532 @@ import type { Locale } from '../i18n';
 import { authorProfilePath, dateLocale, localizedPath, trustPagePath, ui, verificationLabels } from '../i18n';
 
 export interface Props {
-  locale:Locale; alternateUrls?:Partial<Record<Locale,string>>; contentType:'job'|'scheme'|'explainer'; title:string; description:string; author:string; assignedEditor?:string; factCheckedBy?:string; reviewedBy?:string; publishedBy?:string; date:Date; updated?:Date; lastVerified?:Date; deadline?:Date; category:string; tags?:string[]; canonical?:string; featuredImage?:string; featuredImageAvif?:string; featuredImageSrcSet?:string; featuredImageAvifSrcSet?:string; featuredImageWidth?:number; featuredImageHeight?:number; featuredImageAlt?:string; seoTitle?:string; seoDescription?:string; verificationStatus:'officially-confirmed'|'partially-confirmed'|'under-verification'|'corrected'|'withdrawn'|'closed'; sourceUrls?:string[]; sources?:Array<{title:string;url:string;publishingAuthority:string;designation:'primary'|'secondary';documentNumber?:string;publicationDate?:Date;accessedDate:Date;notes?:string}>; officialNoticeUrl?:string; applicationUrl?:string; urlSlug:string; quickSummary?:string[]; importantDates?:string[]; qualification?:string[]; requiredDocuments?:string[]; updateHistory?:string[]; amountOrVacancies?:string; faqs?:Array<{question:string;answer:string}>; related?:CollectionEntry<'articles'>[];
+  locale: Locale;
+  alternateUrls?: Partial<Record<Locale, string>>;
+  contentType: 'job' | 'scheme' | 'explainer';
+  title: string;
+  description: string;
+  author: string;
+  assignedEditor?: string;
+  factCheckedBy?: string;
+  reviewedBy?: string;
+  publishedBy?: string;
+  date: Date;
+  updated?: Date;
+  lastVerified?: Date;
+  deadline?: Date;
+  category: string;
+  tags?: string[];
+  canonical?: string;
+  featuredImage?: string;
+  featuredImageAvif?: string;
+  featuredImageSrcSet?: string;
+  featuredImageAvifSrcSet?: string;
+  featuredImageWidth?: number;
+  featuredImageHeight?: number;
+  featuredImageAlt?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  verificationStatus: 'officially-confirmed' | 'partially-confirmed' | 'under-verification' | 'corrected' | 'withdrawn' | 'closed';
+  sourceUrls?: string[];
+  sources?: Array<{
+    title: string;
+    url: string;
+    publishingAuthority: string;
+    designation: 'primary' | 'secondary';
+    documentNumber?: string;
+    publicationDate?: Date;
+    accessedDate: Date;
+    notes?: string;
+  }>;
+  officialNoticeUrl?: string;
+  applicationUrl?: string;
+  urlSlug: string;
+  quickSummary?: string[];
+  importantDates?: string[];
+  qualification?: string[];
+  requiredDocuments?: string[];
+  updateHistory?: string[];
+  amountOrVacancies?: string;
+  faqs?: Array<{ question: string; answer: string }>;
+  related?: CollectionEntry<'articles'>[];
 }
-const p=Astro.props; const { locale, alternateUrls, contentType, title, description, author, assignedEditor, factCheckedBy, reviewedBy, publishedBy, date, updated, lastVerified, deadline, category, tags=[], canonical, featuredImage, featuredImageAvif, featuredImageSrcSet, featuredImageAvifSrcSet, featuredImageWidth=1200, featuredImageHeight=675, featuredImageAlt, seoTitle, seoDescription, verificationStatus, sourceUrls=[], sources=[], officialNoticeUrl, applicationUrl, urlSlug, quickSummary=[], importantDates=[], qualification=[], requiredDocuments=[], updateHistory=[], amountOrVacancies, faqs=[], related=[] }=p;
-const resolveSrcSet=(value?:string)=>value?.split(',').map((entry)=>{const [url,width]=entry.trim().split(/\s+/);return `${resolveAssetPath(url)} ${width}`}).join(', ');
-const t=ui(locale), categoryEntry=await getCategoryData(category); const categoryLabel=categoryEntry?categoryName(categoryEntry,locale):category;
-const normalizedAuthor=author.trim();
-const showHumanCredits=normalizedAuthor.length>0&&normalizedAuthor!=='mahammad-sad';
-const authorEntry=showHumanCredits?await getAuthorData(normalizedAuthor):undefined;
-const authorName=showHumanCredits?(authorEntry?.data.name??normalizedAuthor):undefined;
-const resolveStaffName=async(slug?:string)=>slug?(await getAuthorData(slug))?.data.name??slug:undefined;
-const editorName=showHumanCredits?await resolveStaffName(assignedEditor):undefined;
-const factCheckerName=showHumanCredits?await resolveStaffName(factCheckedBy):undefined;
-const reviewerName=showHumanCredits?await resolveStaffName(reviewedBy):undefined;
-const publisherName=showHumanCredits?await resolveStaffName(publishedBy):undefined;
-const pageUrl=canonical||Astro.url.href; const formatter=new Intl.DateTimeFormat(dateLocale(locale),{year:'numeric',month:'long',day:'numeric'}); const resolvedFeaturedImage=featuredImage?resolveAssetPath(featuredImage):undefined; const resolvedFeaturedImageAvif=featuredImageAvif?resolveAssetPath(featuredImageAvif):undefined; const resolvedFeaturedImageSrcSet=resolveSrcSet(featuredImageSrcSet); const resolvedFeaturedImageAvifSrcSet=resolveSrcSet(featuredImageAvifSrcSet); const ogImage=resolvedFeaturedImage?toAbsoluteUrl(resolvedFeaturedImage,SITE.url):undefined;
-const brandName=getBrandName(locale);
-const reportCopy={
-  en:{title:'Report outdated or incorrect information',intro:'Tell the editorial team exactly what needs review. An official supporting source helps us respond faster.',issue:'Reported issue',source:'Supporting official source',contact:'Your email (optional)',consent:'I consent to this information being used to review my report.',send:'Prepare email report'},
-  bn:{title:'পুরোনো বা ভুল তথ্য জানান',intro:'কোন তথ্যটি পর্যালোচনা করা দরকার তা স্পষ্টভাবে লিখুন। অফিসিয়াল সমর্থনকারী সূত্র দিলে দ্রুত যাচাই করা যায়।',issue:'সমস্যার বিবরণ',source:'সমর্থনকারী অফিসিয়াল সূত্র',contact:'আপনার ইমেইল (ঐচ্ছিক)',consent:'আমার প্রতিবেদন যাচাইয়ের জন্য এই তথ্য ব্যবহারে আমি সম্মত।',send:'ইমেইল প্রতিবেদন তৈরি করুন'},
-  hi:{title:'पुरानी या गलत जानकारी की सूचना दें',intro:'संपादकीय टीम को स्पष्ट बताएँ कि किस जानकारी की समीक्षा चाहिए। आधिकारिक समर्थक स्रोत से जाँच तेज होती है।',issue:'समस्या का विवरण',source:'समर्थक आधिकारिक स्रोत',contact:'आपका ईमेल (वैकल्पिक)',consent:'मैं अपनी रिपोर्ट की समीक्षा के लिए इस जानकारी के उपयोग पर सहमत हूँ।',send:'ईमेल रिपोर्ट तैयार करें'},
+
+const p = Astro.props;
+const {
+  locale,
+  alternateUrls,
+  contentType,
+  title,
+  description,
+  author,
+  assignedEditor,
+  factCheckedBy,
+  reviewedBy,
+  publishedBy,
+  date,
+  updated,
+  lastVerified,
+  deadline,
+  category,
+  tags = [],
+  canonical,
+  featuredImage,
+  featuredImageAvif,
+  featuredImageSrcSet,
+  featuredImageAvifSrcSet,
+  featuredImageWidth = 1200,
+  featuredImageHeight = 675,
+  featuredImageAlt,
+  seoTitle,
+  seoDescription,
+  verificationStatus,
+  sourceUrls = [],
+  sources = [],
+  officialNoticeUrl,
+  applicationUrl,
+  urlSlug,
+  quickSummary = [],
+  importantDates = [],
+  qualification = [],
+  requiredDocuments = [],
+  updateHistory = [],
+  amountOrVacancies,
+  faqs = [],
+  related = [],
+} = p;
+
+const resolveSrcSet = (value?: string) =>
+  value
+    ?.split(',')
+    .map((entry) => {
+      const [url, width] = entry.trim().split(/\s+/);
+      return `${resolveAssetPath(url)} ${width}`;
+    })
+    .join(', ');
+
+const t = ui(locale);
+const categoryEntry = await getCategoryData(category);
+const categoryLabel = categoryEntry ? categoryName(categoryEntry, locale) : category;
+const normalizedAuthor = author.trim();
+const showHumanCredits = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const authorEntry = showHumanCredits ? await getAuthorData(normalizedAuthor) : undefined;
+const authorName = showHumanCredits ? (authorEntry?.data.name ?? normalizedAuthor) : undefined;
+const resolveStaffName = async (slug?: string) => (slug ? (await getAuthorData(slug))?.data.name ?? slug : undefined);
+const editorName = showHumanCredits ? await resolveStaffName(assignedEditor) : undefined;
+const factCheckerName = showHumanCredits ? await resolveStaffName(factCheckedBy) : undefined;
+const reviewerName = showHumanCredits ? await resolveStaffName(reviewedBy) : undefined;
+const publisherName = showHumanCredits ? await resolveStaffName(publishedBy) : undefined;
+const pageUrl = canonical || Astro.url.href;
+const formatter = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'long', day: 'numeric' });
+const resolvedFeaturedImage = featuredImage ? resolveAssetPath(featuredImage) : undefined;
+const resolvedFeaturedImageAvif = featuredImageAvif ? resolveAssetPath(featuredImageAvif) : undefined;
+const resolvedFeaturedImageSrcSet = resolveSrcSet(featuredImageSrcSet);
+const resolvedFeaturedImageAvifSrcSet = resolveSrcSet(featuredImageAvifSrcSet);
+const ogImage = resolvedFeaturedImage ? toAbsoluteUrl(resolvedFeaturedImage, SITE.url) : undefined;
+const brandName = getBrandName(locale);
+
+const articleCopy = {
+  en: {
+    minutesRead: 'min read',
+    onThisPage: 'On this page',
+    verifiedInformation: 'Verification',
+    officialActions: 'Official actions',
+    officialNotice: 'Open official notice',
+    officialApplication: 'Open official application',
+    primary: 'Primary',
+    secondary: 'Secondary',
+    accessed: 'Accessed',
+    sourceNotes: 'Source note',
+    topics: 'Topics',
+    shareStory: 'Share this guide',
+    sourcesIntro: 'Use the original authority or document to verify important details before you act.',
+    transparency: 'Transparency & updates',
+    related: 'Continue reading',
+  },
+  bn: {
+    minutesRead: 'মিনিট পড়া',
+    onThisPage: 'এই পাতায়',
+    verifiedInformation: 'যাচাই তথ্য',
+    officialActions: 'অফিসিয়াল লিংক',
+    officialNotice: 'অফিসিয়াল নোটিশ খুলুন',
+    officialApplication: 'অফিসিয়াল আবেদন খুলুন',
+    primary: 'প্রাথমিক সূত্র',
+    secondary: 'সহায়ক সূত্র',
+    accessed: 'যাচাই করা হয়েছে',
+    sourceNotes: 'সূত্র নোট',
+    topics: 'বিষয়',
+    shareStory: 'গাইডটি শেয়ার করুন',
+    sourcesIntro: 'কোনও পদক্ষেপ নেওয়ার আগে গুরুত্বপূর্ণ তথ্য মূল কর্তৃপক্ষ বা নথি থেকে যাচাই করুন।',
+    transparency: 'স্বচ্ছতা ও আপডেট',
+    related: 'আরও পড়ুন',
+  },
+  hi: {
+    minutesRead: 'मिनट पढ़ने का समय',
+    onThisPage: 'इस पेज पर',
+    verifiedInformation: 'सत्यापन',
+    officialActions: 'आधिकारिक लिंक',
+    officialNotice: 'आधिकारिक सूचना खोलें',
+    officialApplication: 'आधिकारिक आवेदन खोलें',
+    primary: 'प्राथमिक स्रोत',
+    secondary: 'सहायक स्रोत',
+    accessed: 'जाँचा गया',
+    sourceNotes: 'स्रोत नोट',
+    topics: 'विषय',
+    shareStory: 'गाइड साझा करें',
+    sourcesIntro: 'कोई कदम उठाने से पहले महत्वपूर्ण जानकारी मूल प्राधिकरण या दस्तावेज़ से जाँचें।',
+    transparency: 'पारदर्शिता और अपडेट',
+    related: 'आगे पढ़ें',
+  },
 }[locale];
-const breadcrumbSchema=generateBreadcrumbs([{name:t.home,url:locale==='en'?`${SITE.url}/`:`${SITE.url}/${locale}/`},{name:t.articles,url:`${SITE.url}/${locale}/articles/`},{name:categoryLabel,url:`${SITE.url}/${locale}/categories/${category}/`},{name:title}]);
-const faqSchema=faqs.length?{'@context':'https://schema.org','@type':'FAQPage',mainEntity:faqs.map(f=>({'@type':'Question',name:f.question,acceptedAnswer:{'@type':'Answer',text:f.answer}}))}:undefined;
-const schemas=faqSchema?[breadcrumbSchema,faqSchema]:[breadcrumbSchema];
+
+const reportCopy = {
+  en: {
+    title: 'Report outdated or incorrect information',
+    intro: 'Tell the editorial team exactly what needs review. An official supporting source helps us respond faster.',
+    issue: 'Reported issue',
+    source: 'Supporting official source',
+    contact: 'Your email (optional)',
+    consent: 'I consent to this information being used to review my report.',
+    send: 'Prepare email report',
+  },
+  bn: {
+    title: 'পুরোনো বা ভুল তথ্য জানান',
+    intro: 'কোন তথ্যটি পর্যালোচনা করা দরকার তা স্পষ্টভাবে লিখুন। অফিসিয়াল সমর্থনকারী সূত্র দিলে দ্রুত যাচাই করা যায়।',
+    issue: 'সমস্যার বিবরণ',
+    source: 'সমর্থনকারী অফিসিয়াল সূত্র',
+    contact: 'আপনার ইমেইল (ঐচ্ছিক)',
+    consent: 'আমার প্রতিবেদন যাচাইয়ের জন্য এই তথ্য ব্যবহারে আমি সম্মত।',
+    send: 'ইমেইল প্রতিবেদন তৈরি করুন',
+  },
+  hi: {
+    title: 'पुरानी या गलत जानकारी की सूचना दें',
+    intro: 'संपादकीय टीम को स्पष्ट बताएँ कि किस जानकारी की समीक्षा चाहिए। आधिकारिक समर्थक स्रोत से जाँच तेज होती है।',
+    issue: 'समस्या का विवरण',
+    source: 'समर्थक आधिकारिक स्रोत',
+    contact: 'आपका ईमेल (वैकल्पिक)',
+    consent: 'मैं अपनी रिपोर्ट की समीक्षा के लिए इस जानकारी के उपयोग पर सहमत हूँ।',
+    send: 'ईमेल रिपोर्ट तैयार करें',
+  },
+}[locale];
+
+const knownSourceUrls = new Set(sources.map((source) => source.url));
+const fallbackSourceUrls = sourceUrls.filter((url) => !knownSourceUrls.has(url) && url !== officialNoticeUrl);
+const officialNoticeIsUnique = Boolean(officialNoticeUrl && !knownSourceUrls.has(officialNoticeUrl));
+const sourceCount = sources.length + fallbackSourceUrls.length + (officialNoticeIsUnique ? 1 : 0);
+const hasFactPanels = importantDates.length > 0 || qualification.length > 0 || Boolean(amountOrVacancies) || requiredDocuments.length > 0;
+const hasOfficialActions = Boolean(officialNoticeUrl || applicationUrl);
+
+const breadcrumbSchema = generateBreadcrumbs([
+  { name: t.home, url: locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/` },
+  { name: t.articles, url: `${SITE.url}/${locale}/articles/` },
+  { name: categoryLabel, url: `${SITE.url}/${locale}/categories/${category}/` },
+  { name: title },
+]);
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  ...(ogImage ? { image: [ogImage] } : {}),
+  datePublished: date.toISOString(),
+  dateModified: (updated || lastVerified || date).toISOString(),
+  mainEntityOfPage: pageUrl,
+  articleSection: categoryLabel,
+  ...(tags.length ? { keywords: tags.join(', ') } : {}),
+  inLanguage: locale === 'bn' ? 'bn-IN' : locale === 'hi' ? 'hi-IN' : 'en-IN',
+  author: showHumanCredits && authorName
+    ? {
+        '@type': 'Person',
+        name: authorName,
+        url: toAbsoluteUrl(authorProfilePath(locale, normalizedAuthor), SITE.url),
+      }
+    : {
+        '@type': 'Organization',
+        name: brandName,
+        url: SITE.url,
+      },
+  publisher: {
+    '@type': 'Organization',
+    name: brandName,
+    url: SITE.url,
+    logo: {
+      '@type': 'ImageObject',
+      url: toAbsoluteUrl(SITE.logo, SITE.url),
+    },
+  },
+};
+
+const faqSchema = faqs.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.question,
+        acceptedAnswer: { '@type': 'Answer', text: f.answer },
+      })),
+    }
+  : undefined;
+
+const schemas = faqSchema ? [breadcrumbSchema, articleSchema, faqSchema] : [breadcrumbSchema, articleSchema];
 ---
-<MainLayout title={seoTitle||title} description={seoDescription||description} canonical={pageUrl} ogType="article" image={ogImage} structuredData={schemas} {locale} {alternateUrls}>
-  <article class="article-shell" data-article data-id={`${locale}:${urlSlug}`} data-url={pageUrl} data-title={title} data-description={description}>
+
+<MainLayout
+  title={seoTitle || title}
+  description={seoDescription || description}
+  canonical={pageUrl}
+  ogType="article"
+  image={ogImage}
+  structuredData={schemas}
+  {locale}
+  {alternateUrls}
+>
+  <div class="reading-progress" aria-hidden="true"><span id="readingProgressBar"></span></div>
+
+  <article
+    class="article-shell"
+    data-article
+    data-id={`${locale}:${urlSlug}`}
+    data-url={pageUrl}
+    data-title={title}
+    data-description={description}
+    data-reading-wpm={locale === 'en' ? '220' : '180'}
+  >
     <div class="container article-container">
-      <nav class="breadcrumbs" aria-label={t.breadcrumb}><a href={localizedPath(locale)}>{t.home}</a><span>›</span><a href={localizedPath(locale,'articles')}>{t.articles}</a><span>›</span><a href={localizedPath(locale,`categories/${category}`)}>{categoryLabel}</a></nav>
-      <header class="article-header"><div class="article-labels"><span>{categoryLabel}</span><span class={`status-${verificationStatus}`}>● {verificationLabels[locale][verificationStatus]}</span></div><h1>{title}</h1><p class="article-deck">{description}</p><div class="article-byline"><span>{t.published}: {formatter.format(date)}</span>{updated&&<span>{t.updated}: {formatter.format(updated)}</span>}{showHumanCredits&&authorName&&<a href={authorProfilePath(locale,normalizedAuthor)}>{t.writtenBy}: {authorName}</a>}{editorName&&<span>{t.editedBy}: {editorName}</span>}{factCheckerName&&<span>{t.factCheckedBy}: {factCheckerName}</span>}{reviewerName&&<span>{t.reviewedBy}: {reviewerName}</span>}{publisherName&&<span>{t.publishedBy}: {publisherName}</span>}</div></header>
-      {resolvedFeaturedImage&&<picture class="article-hero-picture">{resolvedFeaturedImageAvif&&<source srcset={resolvedFeaturedImageAvifSrcSet||resolvedFeaturedImageAvif} sizes="(max-width: 900px) calc(100vw - 2rem), 860px" type="image/avif"/>}<img src={resolvedFeaturedImage} srcset={resolvedFeaturedImageSrcSet} sizes="(max-width: 900px) calc(100vw - 2rem), 860px" alt={featuredImageAlt||title} class="article-hero-image" width={featuredImageWidth} height={featuredImageHeight} loading="eager" fetchpriority="high" decoding="async"/></picture>}
-      <aside class={`trust-box status-${verificationStatus}`}><div><Icon name="check"/><span><strong>{verificationLabels[locale][verificationStatus]}</strong><small>{t.primarySource}</small></span></div><dl>{lastVerified&&<div><dt>{t.lastVerified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}{deadline&&<div><dt>{t.deadline}</dt><dd>{formatter.format(deadline)}</dd></div>}<div><dt>{t.source}</dt><dd>{sources.length+sourceUrls.length+(officialNoticeUrl?1:0)}</dd></div></dl></aside>
-      <div class="article-actions"><button id="saveArticle" data-save-label={t.save} data-saved-label={t.savedLabel} aria-pressed="false"><Icon name="bookmark"/><span aria-live="polite">{t.save}</span></button><button id="nativeShare"><Icon name="share"/><span>{t.share}</span></button><a data-share="whatsapp" href="#">WhatsApp</a><a data-share="telegram" href="#">Telegram</a><a data-share="facebook" href="#">Facebook</a><button id="copyLink" data-copy-label={t.copyLink} data-copied-label={t.copied}><Icon name="copy"/><span aria-live="polite">{t.copyLink}</span></button></div>
-      {quickSummary.length>0&&<section class="info-panel"><h2>{t.quickSummary}</h2><ul>{quickSummary.map(item=><li>{item}</li>)}</ul></section>} {importantDates.length>0&&<section class="info-panel"><h2>{t.importantDates}</h2><ul>{importantDates.map(item=><li>{item}</li>)}</ul></section>} {qualification.length>0&&<section class="info-panel"><h2>{t.eligibility}</h2><ul>{qualification.map(item=><li>{item}</li>)}</ul></section>} {amountOrVacancies&&<section class="info-panel"><h2>{t.amount}</h2><p>{amountOrVacancies}</p></section>} {requiredDocuments.length>0&&<section class="info-panel"><h2>{t.requiredDocuments}</h2><ul>{requiredDocuments.map(item=><li>{item}</li>)}</ul></section>}
-      <div class="article-content"><slot /></div>
-      {(officialNoticeUrl||applicationUrl||sources.length>0||sourceUrls.length>0)&&<section class="source-panel"><h2>{t.officialLinks}</h2><p>{t.checkOriginal}</p><div class="source-actions">{officialNoticeUrl&&<a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{t.source} ↗</a>}{applicationUrl&&<a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">{t.apply} ↗</a>}</div>{sources.length>0&&<ol>{sources.map((source)=><li><a href={source.url} target="_blank" rel="noopener noreferrer"><strong>{source.title}</strong> — {source.publishingAuthority}</a>{source.documentNumber&&<small>{source.documentNumber}</small>}</li>)}</ol>}{sourceUrls.length>0&&<ol>{sourceUrls.map((url,i)=><li><a href={url} target="_blank" rel="noopener noreferrer">{t.sourceItem} {i+1} — {new URL(url).hostname}</a></li>)}</ol>}</section>}
-      {faqs.length>0&&<section class="faq-section"><h2>{t.faq}</h2>{faqs.map(f=><details><summary>{f.question}</summary><p>{f.answer}</p></details>)}</section>}
-      {updateHistory.length>0&&<section class="info-panel"><h2>{t.updateHistory}</h2><ul>{updateHistory.map(item=><li>{item}</li>)}</ul></section>} {tags.length>0&&<div class="article-tags">{tags.map(tag=><span>#{tag}</span>)}</div>}
-      {related.length>0&&<section class="related"><h2>{t.relatedArticles}</h2><div>{related.map(article=><ArticleCard {article} {locale}/>)}</div></section>}
+      <nav class="breadcrumbs" aria-label={t.breadcrumb}>
+        <a href={localizedPath(locale)}>{t.home}</a><span>›</span>
+        <a href={localizedPath(locale, 'articles')}>{t.articles}</a><span>›</span>
+        <a href={localizedPath(locale, `categories/${category}`)}>{categoryLabel}</a>
+      </nav>
+
+      <header class="article-header">
+        <div class="article-labels">
+          <a href={localizedPath(locale, `categories/${category}`)}>{categoryLabel}</a>
+          <span class={`status-${verificationStatus}`}>● {verificationLabels[locale][verificationStatus]}</span>
+        </div>
+
+        <h1>{title}</h1>
+        <p class="article-deck">{description}</p>
+
+        <div class="article-meta-row">
+          <div class="article-byline">
+            {showHumanCredits && authorName && (
+              <a class="author-credit" href={authorProfilePath(locale, normalizedAuthor)}>{t.writtenBy}: {authorName}</a>
+            )}
+            <span>{t.published}: {formatter.format(date)}</span>
+            {updated && <span>{t.updated}: {formatter.format(updated)}</span>}
+            <span class="reading-time"><Icon name="clock" size={16} /><span id="readingTime">— {articleCopy.minutesRead}</span></span>
+          </div>
+          {(editorName || factCheckerName || reviewerName || publisherName) && (
+            <details class="editorial-credits">
+              <summary>{articleCopy.transparency}</summary>
+              <div>
+                {editorName && <span>{t.editedBy}: {editorName}</span>}
+                {factCheckerName && <span>{t.factCheckedBy}: {factCheckerName}</span>}
+                {reviewerName && <span>{t.reviewedBy}: {reviewerName}</span>}
+                {publisherName && <span>{t.publishedBy}: {publisherName}</span>}
+              </div>
+            </details>
+          )}
+        </div>
+      </header>
+
+      {resolvedFeaturedImage && (
+        <picture class="article-hero-picture">
+          {resolvedFeaturedImageAvif && (
+            <source
+              srcset={resolvedFeaturedImageAvifSrcSet || resolvedFeaturedImageAvif}
+              sizes="(max-width: 900px) calc(100vw - 2rem), 920px"
+              type="image/avif"
+            />
+          )}
+          <img
+            src={resolvedFeaturedImage}
+            srcset={resolvedFeaturedImageSrcSet}
+            sizes="(max-width: 900px) calc(100vw - 2rem), 920px"
+            alt={featuredImageAlt || title}
+            class="article-hero-image"
+            width={featuredImageWidth}
+            height={featuredImageHeight}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </picture>
+      )}
+
+      <aside class={`verification-strip status-${verificationStatus}`} aria-label={articleCopy.verifiedInformation}>
+        <div class="verification-state">
+          <Icon name="check" />
+          <span><strong>{verificationLabels[locale][verificationStatus]}</strong><small>{t.primarySource}</small></span>
+        </div>
+        <dl>
+          {lastVerified && <div><dt>{t.lastVerified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}
+          {deadline && <div><dt>{t.deadline}</dt><dd>{formatter.format(deadline)}</dd></div>}
+          <div><dt>{t.source}</dt><dd>{sourceCount}</dd></div>
+        </dl>
+      </aside>
+
+      <div class="article-actions" aria-label={t.share}>
+        <button id="saveArticle" data-save-label={t.save} data-saved-label={t.savedLabel} aria-pressed="false">
+          <Icon name="bookmark" /><span aria-live="polite">{t.save}</span>
+        </button>
+        <button id="nativeShare"><Icon name="share" /><span>{t.share}</span></button>
+        <a data-share="whatsapp" href="#">WhatsApp</a>
+        <a data-share="telegram" href="#">Telegram</a>
+        <a data-share="facebook" href="#">Facebook</a>
+        <button id="copyLink" data-copy-label={t.copyLink} data-copied-label={t.copied}>
+          <Icon name="copy" /><span aria-live="polite">{t.copyLink}</span>
+        </button>
+      </div>
+
+      {quickSummary.length > 0 && (
+        <section class="key-takeaways" aria-labelledby="key-takeaways-title">
+          <div class="panel-kicker">{categoryLabel}</div>
+          <h2 id="key-takeaways-title">{t.quickSummary}</h2>
+          <ul>{quickSummary.map((item) => <li>{item}</li>)}</ul>
+        </section>
+      )}
+
+      {hasFactPanels && (
+        <div class="fact-grid">
+          {importantDates.length > 0 && (
+            <section class="info-panel"><h2>{t.importantDates}</h2><ul>{importantDates.map((item) => <li>{item}</li>)}</ul></section>
+          )}
+          {qualification.length > 0 && (
+            <section class="info-panel"><h2>{t.eligibility}</h2><ul>{qualification.map((item) => <li>{item}</li>)}</ul></section>
+          )}
+          {amountOrVacancies && (
+            <section class="info-panel"><h2>{t.amount}</h2><p>{amountOrVacancies}</p></section>
+          )}
+          {requiredDocuments.length > 0 && (
+            <section class="info-panel"><h2>{t.requiredDocuments}</h2><ul>{requiredDocuments.map((item) => <li>{item}</li>)}</ul></section>
+          )}
+        </div>
+      )}
+
+      <div class="reading-grid">
+        <div class="reading-column">
+          <div class="article-content"><slot /></div>
+        </div>
+
+        <aside class="article-rail" aria-label={articleCopy.onThisPage}>
+          <nav class="toc-card" id="articleToc" hidden>
+            <strong>{articleCopy.onThisPage}</strong>
+            <ol id="articleTocList"></ol>
+          </nav>
+
+          <section class="rail-card">
+            <strong>{articleCopy.verifiedInformation}</strong>
+            <dl>
+              <div><dt>{verificationLabels[locale][verificationStatus]}</dt><dd>{lastVerified ? formatter.format(lastVerified) : formatter.format(updated || date)}</dd></div>
+              <div><dt>{t.source}</dt><dd>{sourceCount}</dd></div>
+            </dl>
+            <a class="rail-trust-link" href={trustPagePath(locale, 'editorial')}>{t.editorialPolicy ?? articleCopy.transparency} →</a>
+          </section>
+
+          {hasOfficialActions && (
+            <section class="rail-card official-actions-card">
+              <strong>{articleCopy.officialActions}</strong>
+              {officialNoticeUrl && <a href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{articleCopy.officialNotice} ↗</a>}
+              {applicationUrl && <a href={applicationUrl} target="_blank" rel="noopener noreferrer">{articleCopy.officialApplication} ↗</a>}
+            </section>
+          )}
+        </aside>
+      </div>
+
+      {(officialNoticeUrl || applicationUrl || sources.length > 0 || fallbackSourceUrls.length > 0) && (
+        <section class="source-panel" aria-labelledby="official-sources-title">
+          <div class="section-heading-row">
+            <div>
+              <div class="panel-kicker">{articleCopy.verifiedInformation}</div>
+              <h2 id="official-sources-title">{t.officialLinks}</h2>
+            </div>
+            <span class="source-count">{sourceCount} {t.source}</span>
+          </div>
+          <p>{articleCopy.sourcesIntro}</p>
+
+          {hasOfficialActions && (
+            <div class="source-actions">
+              {officialNoticeUrl && <a class="btn btn-secondary" href={officialNoticeUrl} target="_blank" rel="noopener noreferrer">{articleCopy.officialNotice} ↗</a>}
+              {applicationUrl && <a class="btn btn-primary" href={applicationUrl} target="_blank" rel="noopener noreferrer">{articleCopy.officialApplication} ↗</a>}
+            </div>
+          )}
+
+          {sources.length > 0 && (
+            <ol class="structured-sources">
+              {sources.map((source) => (
+                <li>
+                  <div class="source-line">
+                    <span class={`source-designation source-${source.designation}`}>{source.designation === 'primary' ? articleCopy.primary : articleCopy.secondary}</span>
+                    <a href={source.url} target="_blank" rel="noopener noreferrer"><strong>{source.title}</strong></a>
+                  </div>
+                  <div class="source-meta">
+                    <span>{source.publishingAuthority}</span>
+                    {source.documentNumber && <span>{source.documentNumber}</span>}
+                    {source.publicationDate && <span>{t.published}: {formatter.format(source.publicationDate)}</span>}
+                    <span>{articleCopy.accessed}: {formatter.format(source.accessedDate)}</span>
+                  </div>
+                  {source.notes && <p class="source-note"><strong>{articleCopy.sourceNotes}:</strong> {source.notes}</p>}
+                </li>
+              ))}
+            </ol>
+          )}
+
+          {fallbackSourceUrls.length > 0 && (
+            <ol class="fallback-sources">
+              {fallbackSourceUrls.map((url, i) => (
+                <li><a href={url} target="_blank" rel="noopener noreferrer">{t.sourceItem} {i + 1} — {new URL(url).hostname}</a></li>
+              ))}
+            </ol>
+          )}
+        </section>
+      )}
+
+      {updateHistory.length > 0 && (
+        <section class="update-panel">
+          <div class="panel-kicker">{articleCopy.transparency}</div>
+          <h2>{t.updateHistory}</h2>
+          <ol>{updateHistory.map((item) => <li>{item}</li>)}</ol>
+        </section>
+      )}
+
+      {faqs.length > 0 && (
+        <section class="faq-section">
+          <h2>{t.faq}</h2>
+          {faqs.map((f) => <details><summary>{f.question}</summary><p>{f.answer}</p></details>)}
+        </section>
+      )}
+
+      <section class="article-endcap">
+        {tags.length > 0 && (
+          <div class="article-topics">
+            <strong>{articleCopy.topics}</strong>
+            <div class="article-tags">
+              {tags.map((tag) => <a href={`${localizedPath(locale, 'search')}?q=${encodeURIComponent(tag)}`}>#{tag}</a>)}
+            </div>
+          </div>
+        )}
+
+        <div class="bottom-share">
+          <strong>{articleCopy.shareStory}</strong>
+          <div>
+            <a data-share="whatsapp" href="#">WhatsApp</a>
+            <a data-share="telegram" href="#">Telegram</a>
+            <a data-share="facebook" href="#">Facebook</a>
+          </div>
+        </div>
+      </section>
+
+      {related.length > 0 && (
+        <section class="related">
+          <div class="section-heading-row"><h2>{articleCopy.related}</h2><a href={localizedPath(locale, `categories/${category}`)}>{categoryLabel} →</a></div>
+          <div>{related.slice(0, 3).map((article) => <ArticleCard {article} {locale} />)}</div>
+        </section>
+      )}
+
       <details class="correction-report">
         <summary>{reportCopy.title}</summary>
         <p>{reportCopy.intro}</p>
@@ -60,16 +547,165 @@ const schemas=faqSchema?[breadcrumbSchema,faqSchema]:[breadcrumbSchema];
           <button class="btn btn-primary" type="submit">{reportCopy.send}</button>
         </form>
       </details>
-      <p class="article-disclaimer"><strong>{brandName}</strong> — {t.disclaimerShort} <a href={trustPagePath(locale,'corrections')}>{t.corrections}</a> · <a href={trustPagePath(locale,'contact')}>{t.reportCorrection}</a></p>
+
+      <p class="article-disclaimer">
+        <strong>{brandName}</strong> — {t.disclaimerShort}
+        <a href={trustPagePath(locale, 'corrections')}>{t.corrections}</a> ·
+        <a href={trustPagePath(locale, 'contact')}>{t.reportCorrection}</a>
+      </p>
     </div>
   </article>
 </MainLayout>
+
 <script>
-  const article=document.querySelector<HTMLElement>('[data-article]');if(article){const item={id:article.dataset.id,title:article.dataset.title,url:article.dataset.url,description:article.dataset.description};try{const viewed=JSON.parse(localStorage.getItem('recently-viewed')||'[]');localStorage.setItem('recently-viewed',JSON.stringify([item,...viewed.filter((v:{id:string})=>v.id!==item.id)].slice(0,8)))}catch{}
-  const save=document.getElementById('saveArticle');const updateSave=()=>{try{const saved=JSON.parse(localStorage.getItem('saved-articles')||'[]');const exists=saved.some((v:{id:string})=>v.id===item.id);save?.classList.toggle('is-saved',exists);save?.setAttribute('aria-pressed',String(exists));const span=save?.querySelector('span');if(span)span.textContent=exists?(save?.dataset.savedLabel||'Saved'):(save?.dataset.saveLabel||'Save for later')}catch{}};save?.addEventListener('click',()=>{try{const saved=JSON.parse(localStorage.getItem('saved-articles')||'[]');const next=saved.some((v:{id:string})=>v.id===item.id)?saved.filter((v:{id:string})=>v.id!==item.id):[item,...saved];localStorage.setItem('saved-articles',JSON.stringify(next));updateSave()}catch{}});updateSave();
-  const shareUrl=encodeURIComponent(item.url||location.href),shareText=encodeURIComponent(item.title||'');document.querySelectorAll<HTMLAnchorElement>('[data-share]').forEach(a=>{const type=a.dataset.share;a.href=type==='whatsapp'?`https://wa.me/?text=${shareText}%20${shareUrl}`:type==='telegram'?`https://t.me/share/url?url=${shareUrl}&text=${shareText}`:`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;a.target='_blank';a.rel='noopener noreferrer'});document.getElementById('nativeShare')?.addEventListener('click',()=>navigator.share?navigator.share({title:item.title,text:item.description,url:item.url}):navigator.clipboard.writeText(item.url||location.href));const copyLink=document.getElementById('copyLink');copyLink?.addEventListener('click',async()=>{await navigator.clipboard.writeText(item.url||location.href);const label=copyLink.querySelector('span');if(label){label.textContent=copyLink.dataset.copiedLabel||'Copied';setTimeout(()=>label.textContent=copyLink.dataset.copyLabel||'Copy link',1600)}});}
-  const report=document.getElementById('correctionReport') as HTMLFormElement|null;report?.addEventListener('submit',(event)=>{event.preventDefault();if(!report.reportValidity())return;const data=new FormData(report);const body=[`Article: ${report.dataset.articleTitle||''}`,`URL: ${report.dataset.articleUrl||location.href}`,`Reported issue: ${data.get('issue')||''}`,`Supporting official source: ${data.get('source')||''}`,`Optional contact: ${data.get('contact')||''}`,`Privacy consent: yes`].join('\n\n');const subject=`Correction report — ${report.dataset.articleTitle||'Citizen Affairs'}`;location.href=`mailto:${report.dataset.email||''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`});
+  const article = document.querySelector<HTMLElement>('[data-article]');
+
+  if (article) {
+    const item = {
+      id: article.dataset.id,
+      title: article.dataset.title,
+      url: article.dataset.url,
+      description: article.dataset.description,
+    };
+
+    try {
+      const viewed = JSON.parse(localStorage.getItem('recently-viewed') || '[]');
+      localStorage.setItem('recently-viewed', JSON.stringify([item, ...viewed.filter((v: { id: string }) => v.id !== item.id)].slice(0, 8)));
+    } catch {}
+
+    const save = document.getElementById('saveArticle');
+    const updateSave = () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('saved-articles') || '[]');
+        const exists = saved.some((v: { id: string }) => v.id === item.id);
+        save?.classList.toggle('is-saved', exists);
+        save?.setAttribute('aria-pressed', String(exists));
+        const span = save?.querySelector('span');
+        if (span) span.textContent = exists ? (save?.dataset.savedLabel || 'Saved') : (save?.dataset.saveLabel || 'Save for later');
+      } catch {}
+    };
+
+    save?.addEventListener('click', () => {
+      try {
+        const saved = JSON.parse(localStorage.getItem('saved-articles') || '[]');
+        const next = saved.some((v: { id: string }) => v.id === item.id)
+          ? saved.filter((v: { id: string }) => v.id !== item.id)
+          : [item, ...saved];
+        localStorage.setItem('saved-articles', JSON.stringify(next));
+        updateSave();
+      } catch {}
+    });
+    updateSave();
+
+    const shareUrl = encodeURIComponent(item.url || location.href);
+    const shareText = encodeURIComponent(item.title || '');
+    document.querySelectorAll<HTMLAnchorElement>('[data-share]').forEach((a) => {
+      const type = a.dataset.share;
+      a.href = type === 'whatsapp'
+        ? `https://wa.me/?text=${shareText}%20${shareUrl}`
+        : type === 'telegram'
+          ? `https://t.me/share/url?url=${shareUrl}&text=${shareText}`
+          : `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    });
+
+    document.getElementById('nativeShare')?.addEventListener('click', () =>
+      navigator.share
+        ? navigator.share({ title: item.title, text: item.description, url: item.url })
+        : navigator.clipboard.writeText(item.url || location.href),
+    );
+
+    const copyLink = document.getElementById('copyLink');
+    copyLink?.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(item.url || location.href);
+      const label = copyLink.querySelector('span');
+      if (label) {
+        label.textContent = copyLink.dataset.copiedLabel || 'Copied';
+        setTimeout(() => (label.textContent = copyLink.dataset.copyLabel || 'Copy link'), 1600);
+      }
+    });
+
+    const content = document.querySelector<HTMLElement>('.article-content');
+    const readingTime = document.getElementById('readingTime');
+    if (content && readingTime) {
+      const wordCount = (content.textContent || '').trim().split(/\s+/).filter(Boolean).length;
+      const wpm = Number(article.dataset.readingWpm || 220);
+      const minutes = Math.max(1, Math.ceil(wordCount / wpm));
+      readingTime.textContent = `${minutes} ${readingTime.textContent?.replace(/^—\s*/, '').replace(/^\d+\s*/, '') || 'min read'}`;
+    }
+
+    const toc = document.getElementById('articleToc');
+    const tocList = document.getElementById('articleTocList');
+    if (content && toc && tocList) {
+      const headings = Array.from(content.querySelectorAll<HTMLHeadingElement>('h2, h3'));
+      const usedIds = new Set<string>();
+      headings.forEach((heading, index) => {
+        let id = heading.id || heading.textContent?.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || `section-${index + 1}`;
+        const baseId = id;
+        let suffix = 2;
+        while (usedIds.has(id) || (document.getElementById(id) && document.getElementById(id) !== heading)) id = `${baseId}-${suffix++}`;
+        usedIds.add(id);
+        heading.id = id;
+        const li = document.createElement('li');
+        li.className = heading.tagName === 'H3' ? 'toc-level-3' : 'toc-level-2';
+        const link = document.createElement('a');
+        link.href = `#${id}`;
+        link.textContent = heading.textContent || '';
+        li.appendChild(link);
+        tocList.appendChild(li);
+      });
+      if (headings.length >= 2) toc.hidden = false;
+    }
+
+    const progressBar = document.getElementById('readingProgressBar');
+    const updateProgress = () => {
+      if (!progressBar) return;
+      const rect = article.getBoundingClientRect();
+      const available = Math.max(1, article.offsetHeight - window.innerHeight);
+      const travelled = Math.min(available, Math.max(0, -rect.top));
+      progressBar.style.transform = `scaleX(${travelled / available})`;
+    };
+    updateProgress();
+    addEventListener('scroll', updateProgress, { passive: true });
+    addEventListener('resize', updateProgress, { passive: true });
+  }
+
+  const report = document.getElementById('correctionReport') as HTMLFormElement | null;
+  report?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    if (!report.reportValidity()) return;
+    const data = new FormData(report);
+    const body = [
+      `Article: ${report.dataset.articleTitle || ''}`,
+      `URL: ${report.dataset.articleUrl || location.href}`,
+      `Reported issue: ${data.get('issue') || ''}`,
+      `Supporting official source: ${data.get('source') || ''}`,
+      `Optional contact: ${data.get('contact') || ''}`,
+      'Privacy consent: yes',
+    ].join('\n\n');
+    const subject = `Correction report — ${report.dataset.articleTitle || 'Citizen Affairs'}`;
+    location.href = `mailto:${report.dataset.email || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
 </script>
+
 <style is:global>
-  .article-shell{padding:2rem 0 5rem}.article-container{max-width:860px}.breadcrumbs{display:flex;gap:.5rem;flex-wrap:wrap;color:var(--color-text-muted);font-size:.82rem;margin-bottom:1.6rem}.article-header h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.12;margin:.8rem 0}.article-labels,.article-byline,.article-actions{display:flex;gap:.7rem;flex-wrap:wrap}.article-labels{justify-content:space-between;font-weight:800;font-size:.78rem;color:var(--color-primary)}.article-deck{font-size:1.14rem;color:var(--color-text-muted)}.article-byline{font-size:.8rem;color:var(--color-text-muted);margin-top:1rem}.article-byline a,.article-disclaimer a{color:var(--color-primary);text-decoration:underline;text-underline-offset:.15em}.article-hero-picture{display:block;width:100%;margin:1.8rem 0;border-radius:22px;overflow:hidden;background:var(--color-surface-alt)}.article-hero-image{display:block;width:100%;max-width:100%;height:auto;object-fit:contain;object-position:center}.trust-box{padding:1.1rem;border:1px solid rgba(var(--color-green-rgb),.28);border-radius:18px;background:linear-gradient(135deg,rgba(var(--color-green-rgb),.08),rgba(var(--color-primary-rgb),.05));margin:1.5rem 0}.trust-box>div{display:flex;gap:.8rem}.trust-box>div>span{display:flex;flex-direction:column}.trust-box small{color:var(--color-text-muted)}.trust-box dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.6rem;margin-top:1rem}.trust-box dl div{padding:.65rem;background:var(--color-surface);border-radius:10px}.trust-box dt{font-size:.7rem;color:var(--color-text-muted)}.trust-box dd{font-weight:800}.article-actions{position:sticky;top:122px;z-index:5;background:var(--color-surface);border:1px solid var(--color-border);padding:.55rem;border-radius:14px;margin:1.2rem 0}.article-actions button,.article-actions a{display:flex;align-items:center;gap:.35rem;min-height:44px;padding:.45rem .65rem;border-radius:9px;font-weight:700;font-size:.78rem}.article-actions button:hover,.article-actions a:hover,.article-actions .is-saved{background:var(--color-surface-alt);color:var(--color-primary)}.info-panel,.source-panel,.faq-section{margin:1.5rem 0;padding:1.25rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:18px}.info-panel h2,.source-panel h2,.faq-section h2,.related h2{font-size:1.3rem;margin-bottom:.7rem}.info-panel ul,.source-panel ol{list-style:revert;margin-left:1.2rem}.article-content{font-size:1.04rem;line-height:1.85}.article-content h2,.article-content h3{margin:2rem 0 .8rem}.article-content p{margin-bottom:1rem}.article-content ul,.article-content ol{list-style:revert;margin:0 0 1rem 1.3rem}.source-panel p{color:var(--color-text-muted)}.source-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}.source-panel a,.article-content a{color:var(--color-primary);text-decoration:underline}.faq-section details{border-top:1px solid var(--color-border);padding:.8rem 0}.faq-section summary{font-weight:800;cursor:pointer}.faq-section p{color:var(--color-text-muted);padding-top:.5rem}.article-tags{display:flex;gap:.4rem;flex-wrap:wrap}.article-tags span{padding:.3rem .6rem;background:var(--color-surface-alt);border-radius:999px}.related{margin-top:2.5rem}.related>div{display:grid;gap:1rem}@media(min-width:700px){.related>div{grid-template-columns:repeat(3,1fr)}}.correction-report{margin-top:2.5rem;padding:1rem 1.2rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.correction-report summary{cursor:pointer;font-weight:850;color:var(--color-primary);min-height:44px;display:flex;align-items:center}.correction-report>p{color:var(--color-text-muted);font-size:.88rem}.correction-report form{display:grid;gap:.9rem;margin-top:1rem}.correction-report label:not(.report-consent){display:grid;gap:.35rem}.correction-report label>span{font-size:.8rem;font-weight:750}.correction-report textarea,.correction-report input[type='url'],.correction-report input[type='email']{width:100%;padding:.7rem;border:1px solid var(--color-border);border-radius:9px;background:var(--color-bg);color:var(--color-text);font:inherit}.report-consent{display:flex;align-items:start;gap:.55rem}.report-consent input{margin-top:.2rem}.correction-report button{width:max-content}.article-disclaimer{margin-top:2rem;border-top:1px solid var(--color-border);padding-top:1rem;color:var(--color-text-muted);font-size:.82rem}@media(max-width:620px){.article-actions{position:static}.article-actions a[data-share]{display:none}.correction-report button{width:100%}}
+  .reading-progress{position:fixed;left:0;right:0;top:0;height:3px;z-index:100;background:transparent;pointer-events:none}.reading-progress span{display:block;width:100%;height:100%;background:var(--color-primary);transform:scaleX(0);transform-origin:left center;transition:transform .08s linear}
+  .article-shell{padding:1.7rem 0 5rem}.article-container{max-width:1120px}.breadcrumbs{display:flex;gap:.5rem;flex-wrap:wrap;color:var(--color-text-muted);font-size:.8rem;margin:0 auto 1.5rem;max-width:920px}.breadcrumbs a:hover{color:var(--color-primary)}
+  .article-header{max-width:920px;margin:0 auto}.article-labels{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;font-weight:850;font-size:.76rem;letter-spacing:.02em;color:var(--color-primary)}.article-labels>a{color:inherit}.article-header h1{font-size:clamp(2.15rem,5.2vw,4rem);line-height:1.06;letter-spacing:-.035em;margin:.8rem 0 1rem;max-width:18ch}.article-deck{font-size:clamp(1.08rem,2vw,1.3rem);line-height:1.55;color:var(--color-text-muted);max-width:72ch}
+  .article-meta-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--color-border)}.article-byline{display:flex;gap:.55rem 1rem;flex-wrap:wrap;align-items:center;font-size:.8rem;color:var(--color-text-muted)}.article-byline a,.article-disclaimer a{color:var(--color-primary);text-decoration:underline;text-underline-offset:.15em}.author-credit{font-weight:800}.reading-time{display:inline-flex;align-items:center;gap:.3rem}.editorial-credits{font-size:.78rem;color:var(--color-text-muted)}.editorial-credits summary{cursor:pointer;font-weight:750;color:var(--color-primary)}.editorial-credits div{display:grid;gap:.25rem;margin-top:.5rem;text-align:right}
+  .article-hero-picture{display:block;width:100%;max-width:920px;margin:1.8rem auto 1.2rem;border-radius:20px;overflow:hidden;background:var(--color-surface-alt);box-shadow:0 16px 44px rgba(0,0,0,.07)}.article-hero-image{display:block;width:100%;max-width:100%;height:auto;object-fit:contain;object-position:center}
+  .verification-strip{max-width:920px;margin:1rem auto 0;padding:.95rem 1rem;border:1px solid rgba(var(--color-green-rgb),.28);border-radius:16px;background:linear-gradient(135deg,rgba(var(--color-green-rgb),.08),rgba(var(--color-primary-rgb),.04));display:flex;align-items:center;justify-content:space-between;gap:1rem}.verification-state{display:flex;gap:.65rem;align-items:center}.verification-state>span{display:flex;flex-direction:column}.verification-state small{color:var(--color-text-muted)}.verification-strip dl{display:flex;gap:.5rem;flex-wrap:wrap}.verification-strip dl div{min-width:120px;padding:.5rem .7rem;background:var(--color-surface);border-radius:9px}.verification-strip dt{font-size:.66rem;color:var(--color-text-muted)}.verification-strip dd{font-size:.82rem;font-weight:850}
+  .article-actions{max-width:920px;margin:1rem auto 1.6rem;display:flex;gap:.45rem;flex-wrap:wrap;padding-bottom:1rem;border-bottom:1px solid var(--color-border)}.article-actions button,.article-actions a,.bottom-share a{display:inline-flex;align-items:center;gap:.35rem;min-height:40px;padding:.4rem .65rem;border:1px solid var(--color-border);border-radius:999px;font-weight:750;font-size:.75rem;background:var(--color-surface)}.article-actions button:hover,.article-actions a:hover,.article-actions .is-saved,.bottom-share a:hover{background:var(--color-surface-alt);color:var(--color-primary)}
+  .key-takeaways{max-width:920px;margin:0 auto 1.4rem;padding:1.25rem 1.35rem;border-left:4px solid var(--color-primary);background:var(--color-surface-alt);border-radius:0 16px 16px 0}.panel-kicker{text-transform:uppercase;letter-spacing:.08em;font-size:.66rem;font-weight:900;color:var(--color-primary);margin-bottom:.35rem}.key-takeaways h2,.info-panel h2,.source-panel h2,.faq-section h2,.update-panel h2,.related h2{font-size:1.32rem;line-height:1.25;margin:0 0 .7rem}.key-takeaways ul,.info-panel ul,.source-panel ol,.update-panel ol{list-style:revert;margin-left:1.15rem}.key-takeaways li+li{margin-top:.42rem}
+  .fact-grid{max-width:920px;margin:0 auto 1.7rem;display:grid;gap:.8rem;grid-template-columns:repeat(2,minmax(0,1fr))}.info-panel{margin:0;padding:1.05rem 1.1rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:15px}.info-panel p,.info-panel li{font-size:.9rem}.info-panel li+li{margin-top:.35rem}
+  .reading-grid{display:grid;grid-template-columns:minmax(0,720px) 220px;justify-content:center;align-items:start;gap:52px;margin-top:2rem}.reading-column{min-width:0}.article-content{font-size:1.06rem;line-height:1.86}.article-content>p:first-child{font-size:1.12rem;line-height:1.8}.article-content h2{font-size:clamp(1.55rem,3vw,2rem);line-height:1.2;letter-spacing:-.02em;margin:2.6rem 0 .85rem;scroll-margin-top:110px}.article-content h3{font-size:1.25rem;line-height:1.3;margin:2rem 0 .7rem;scroll-margin-top:110px}.article-content p{margin-bottom:1.05rem}.article-content ul,.article-content ol{list-style:revert;margin:0 0 1.1rem 1.3rem}.article-content li+li{margin-top:.35rem}.article-content a{color:var(--color-primary);text-decoration:underline;text-underline-offset:.14em}.article-content blockquote{margin:1.8rem 0;padding:1rem 1.2rem;border-left:3px solid var(--color-primary);background:var(--color-surface-alt);font-size:1.08rem}.article-content img{max-width:100%;height:auto;border-radius:14px}
+  .article-rail{position:sticky;top:110px;display:grid;gap:.8rem}.toc-card,.rail-card{padding:1rem;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface)}.toc-card>strong,.rail-card>strong{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.65rem}.toc-card ol{list-style:none;margin:0;padding:0;display:grid;gap:.42rem}.toc-card a{display:block;font-size:.77rem;line-height:1.35;color:var(--color-text-muted)}.toc-card a:hover{color:var(--color-primary)}.toc-level-3{padding-left:.7rem;border-left:1px solid var(--color-border)}.rail-card dl{display:grid;gap:.55rem}.rail-card dl div{display:grid;gap:.12rem}.rail-card dt{font-size:.72rem;font-weight:800}.rail-card dd{font-size:.72rem;color:var(--color-text-muted)}.rail-trust-link{display:inline-block;margin-top:.7rem;font-size:.72rem;color:var(--color-primary);font-weight:750}.official-actions-card a{display:block;margin-top:.55rem;padding:.62rem .7rem;border:1px solid var(--color-border);border-radius:9px;font-size:.75rem;font-weight:750;color:var(--color-primary)}.official-actions-card a:hover{background:var(--color-surface-alt)}
+  .source-panel,.faq-section,.update-panel{max-width:920px;margin:2.5rem auto 0;padding:1.35rem;border:1px solid var(--color-border);background:var(--color-surface);border-radius:18px}.section-heading-row{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem}.source-panel>p{color:var(--color-text-muted);font-size:.9rem;max-width:70ch}.source-count{white-space:nowrap;padding:.3rem .55rem;border-radius:999px;background:var(--color-surface-alt);font-size:.7rem;font-weight:800}.source-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin:1rem 0}.structured-sources{display:grid;gap:.9rem;margin-top:1rem!important}.structured-sources>li{padding:.95rem 1rem;border:1px solid var(--color-border);border-radius:12px;background:var(--color-bg)}.source-line{display:flex;align-items:flex-start;gap:.55rem;flex-wrap:wrap}.source-line a{color:var(--color-primary);text-decoration:underline;text-underline-offset:.14em}.source-designation{padding:.2rem .42rem;border-radius:999px;font-size:.62rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.source-primary{background:rgba(var(--color-green-rgb),.12);color:var(--color-green)}.source-secondary{background:var(--color-surface-alt);color:var(--color-text-muted)}.source-meta{display:flex;gap:.35rem .75rem;flex-wrap:wrap;margin-top:.4rem;font-size:.7rem;color:var(--color-text-muted)}.source-note{margin:.45rem 0 0!important;font-size:.76rem!important;color:var(--color-text-muted)}.fallback-sources{margin-top:1rem!important}.fallback-sources li+li{margin-top:.35rem}.fallback-sources a{color:var(--color-primary);text-decoration:underline}
+  .update-panel ol{display:grid;gap:.45rem}.update-panel li{font-size:.86rem}.faq-section details{border-top:1px solid var(--color-border);padding:.85rem 0}.faq-section details:first-of-type{margin-top:.2rem}.faq-section summary{font-weight:850;cursor:pointer}.faq-section p{color:var(--color-text-muted);padding-top:.55rem;margin:0}
+  .article-endcap{max-width:920px;margin:2.2rem auto 0;padding:1.15rem 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}.article-topics,.bottom-share{display:grid;gap:.55rem}.article-topics>strong,.bottom-share>strong{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}.article-tags,.bottom-share>div{display:flex;gap:.4rem;flex-wrap:wrap}.article-tags a{padding:.32rem .6rem;background:var(--color-surface-alt);border-radius:999px;font-size:.76rem}.article-tags a:hover{color:var(--color-primary)}
+  .related{max-width:1040px;margin:2.8rem auto 0}.related .section-heading-row{margin-bottom:1rem}.related .section-heading-row>a{font-size:.8rem;font-weight:800;color:var(--color-primary)}.related>div{display:grid;gap:1rem;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .correction-report{max-width:920px;margin:2.5rem auto 0;padding:1rem 1.2rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.correction-report summary{cursor:pointer;font-weight:850;color:var(--color-primary);min-height:44px;display:flex;align-items:center}.correction-report>p{color:var(--color-text-muted);font-size:.88rem}.correction-report form{display:grid;gap:.9rem;margin-top:1rem}.correction-report label:not(.report-consent){display:grid;gap:.35rem}.correction-report label>span{font-size:.8rem;font-weight:750}.correction-report textarea,.correction-report input[type='url'],.correction-report input[type='email']{width:100%;padding:.7rem;border:1px solid var(--color-border);border-radius:9px;background:var(--color-bg);color:var(--color-text);font:inherit}.report-consent{display:flex;align-items:start;gap:.55rem}.report-consent input{margin-top:.2rem}.correction-report button{width:max-content}.article-disclaimer{max-width:920px;margin:2rem auto 0;border-top:1px solid var(--color-border);padding-top:1rem;color:var(--color-text-muted);font-size:.82rem}
+  @media(max-width:980px){.article-container{max-width:920px}.reading-grid{grid-template-columns:minmax(0,720px);gap:0}.article-rail{display:none}.related{max-width:920px}}
+  @media(max-width:700px){.article-shell{padding-top:1.1rem}.article-header h1{font-size:clamp(2rem,10vw,3rem);max-width:none}.article-meta-row{display:block}.editorial-credits{margin-top:.8rem}.editorial-credits div{text-align:left}.verification-strip{align-items:flex-start;flex-direction:column}.verification-strip dl{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.verification-strip dl div{min-width:0}.article-actions{overflow-x:auto;flex-wrap:nowrap;padding-bottom:.8rem}.article-actions a[data-share]{display:none}.fact-grid{grid-template-columns:1fr}.reading-grid{margin-top:1.5rem}.article-content{font-size:1.02rem;line-height:1.8}.article-endcap{display:grid}.related>div{grid-template-columns:1fr}.correction-report button{width:100%}.source-panel,.faq-section,.update-panel{padding:1.1rem}.section-heading-row{align-items:flex-start}.source-count{margin-top:.1rem}}
 </style>
