@@ -4,6 +4,7 @@ import ArticleEntryExperience from '@components/ArticleEntryExperience.astro';
 import ArticleDecisionWorkspace from '@components/ArticleDecisionWorkspace.astro';
 import ArticleChangeHistory from '@components/ArticleChangeHistory.astro';
 import ArticleFreshnessNotice from '@components/ArticleFreshnessNotice.astro';
+import ArticlePublicationMeta from '@components/ArticlePublicationMeta.astro';
 import ArticleQuickSummary from '@components/ArticleQuickSummary.astro';
 import ArticleReadingTools from '@components/ArticleReadingTools.astro';
 import ArticleStructuredData from '@components/ArticleStructuredData.astro';
@@ -147,6 +148,12 @@ const sourceCount = new Set(sourceLinks).size;
     {article}
     {canonical}
     applicationUrl={safeApplicationUrl}
+  />
+  <ArticlePublicationMeta
+    locale={locale}
+    author={article.data.author}
+    date={article.data.date}
+    updated={article.data.updated}
   />
   <ArticleQuickSummary locale={locale} items={article.data.quickSummary} />
   <Content />

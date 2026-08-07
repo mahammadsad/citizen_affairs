@@ -36,6 +36,17 @@ const articleAuthor = showHumanAuthor && authorName
 const imageUrl = data.featuredImage
   ? toAbsoluteUrl(resolveAssetPath(data.featuredImage), SITE.url)
   : undefined;
+const imageObject = imageUrl
+  ? {
+      '@type': 'ImageObject',
+      url: imageUrl,
+      contentUrl: imageUrl,
+      width: data.featuredImageWidth,
+      height: data.featuredImageHeight,
+      caption: data.featuredImageCaption || data.featuredImageAlt || data.title,
+      creditText: data.featuredImageCredit,
+    }
+  : undefined;
 const modifiedDates = [data.date, data.updated, data.lastVerified].filter(
   (date): date is Date => Boolean(date)
 );
@@ -45,8 +56,14 @@ const significantLinks = [
   ...data.sourceUrls,
   data.officialNoticeUrl,
 ].filter((url): url is string => Boolean(url));
+const newsCategories = new Set(['jobs', 'exams', 'affairs', 'notices']);
 const articleSchemaType =
-  data.contentType === 'job' || data.contentType === 'scheme' ? 'NewsArticle' : 'Article';
+  data.contentType === 'job' ||
+  data.contentType === 'scheme' ||
+  data.contentType === 'alert' ||
+  newsCategories.has(data.category)
+    ? 'NewsArticle'
+    : 'Article';
 
 const schemas: object[] = [
   {
@@ -55,7 +72,7 @@ const schemas: object[] = [
     '@id': articleId,
     headline: data.title,
     description: data.description,
-    image: imageUrl,
+    image: imageObject,
     datePublished: data.date.toISOString(),
     dateModified: dateModified.toISOString(),
     inLanguage: schemaLanguage(locale),
@@ -83,13 +100,7 @@ const schemas: object[] = [
     isPartOf: { '@id': SCHEMA_IDS.website },
     publisher: { '@id': SCHEMA_IDS.organization },
     author: articleAuthor,
-    primaryImageOfPage: imageUrl
-      ? {
-          '@type': 'ImageObject',
-          url: imageUrl,
-          caption: data.featuredImageAlt || data.title,
-        }
-      : undefined,
+    primaryImageOfPage: imageObject,
     mainEntity: { '@id': articleId },
     about: {
       '@type': 'Thing',

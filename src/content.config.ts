@@ -250,6 +250,15 @@ const alertDetails = z.object({
   urgency: z.enum(['information', 'important', 'urgent']),
 });
 
+const newsroomChecklist = z.object({
+  headlineReviewed: z.boolean().default(false),
+  metaReviewed: z.boolean().default(false),
+  imageReviewed: z.boolean().default(false),
+  sourcesReviewed: z.boolean().default(false),
+  internalLinksReviewed: z.boolean().default(false),
+  factualClaimsReviewed: z.boolean().default(false),
+});
+
 const articlesCollection = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/articles' }),
   schema: z.object({
@@ -302,10 +311,14 @@ const articlesCollection = defineCollection({
     featuredImageWidth: z.number().int().positive().optional(),
     featuredImageHeight: z.number().int().positive().optional(),
     featuredImageAlt: z.string().optional(),
+    featuredImageCaption: z.string().optional(),
+    featuredImageCredit: z.string().optional(),
+    featuredImageCreditUrl: z.url().optional(),
     draft: z.boolean().default(false),
     seoTitle: z.string().optional(),
     seoDescription: z.string().optional(),
     canonical: z.string().optional(),
+    newsroomChecklist: newsroomChecklist.optional(),
     verificationStatus: z.enum([
       'officially-confirmed',
       'partially-confirmed',

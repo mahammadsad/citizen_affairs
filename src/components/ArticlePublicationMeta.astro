@@ -1,0 +1,80 @@
+---
+import { getBrandName } from '@utils/constants';
+import { authorProfilePath, dateLocale, localizedPath, type Locale } from '../i18n';
+import { getAuthorData } from '@lib/content';
+
+interface Props {
+  locale: Locale;
+  author: string;
+  date: Date;
+  updated?: Date;
+}
+
+const { locale, author, date, updated } = Astro.props;
+const normalizedAuthor = author.trim();
+const hasHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const authorEntry = hasHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
+const authorName = hasHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
+const brandName = getBrandName(locale);
+const teamUrl = locale === 'en' ? '/team/' : localizedPath(locale, 'team');
+const copy = {
+  en: { by: 'By', desk: `${brandName} Editorial Desk`, published: 'Published', updated: 'Updated' },
+  bn: { by: 'প্রকাশক', desk: `${brandName} সম্পাদকীয় ডেস্ক`, published: 'প্রকাশিত', updated: 'আপডেট' },
+  hi: { by: 'प्रकाशक', desk: `${brandName} संपादकीय डेस्क`, published: 'प्रकाशित', updated: 'अपडेट' },
+}[locale];
+
+const hasExplicitTime = (value: Date) =>
+  value.getUTCHours() !== 0 || value.getUTCMinutes() !== 0 || value.getUTCSeconds() !== 0 || value.getUTCMilliseconds() !== 0;
+
+const format = (value: Date) => new Intl.DateTimeFormat(dateLocale(locale), {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  ...(hasExplicitTime(value) ? { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata', timeZoneName: 'short' } : {}),
+}).format(value);
+---
+
+<div class="article-publication-meta" aria-label="Article publication details">
+  <span class="article-publication-byline">
+    {copy.by}:{' '}
+    {hasHumanAuthor && authorName ? (
+      <a href={authorProfilePath(locale, normalizedAuthor)}>{authorName}</a>
+    ) : (
+      <a href={teamUrl}>{copy.desk}</a>
+    )}
+  </span>
+  <span>
+    {copy.published}:{' '}
+    <time datetime={date.toISOString()}>{format(date)}</time>
+  </span>
+  {updated && updated.getTime() > date.getTime() && (
+    <span>
+      {copy.updated}:{' '}
+      <time datetime={updated.toISOString()}>{format(updated)}</time>
+    </span>
+  )}
+</div>
+
+<style>
+  .article-publication-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem 1rem;
+    margin: 0 0 1.25rem;
+    padding: 0.8rem 0;
+    border-block: 1px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .article-publication-meta a {
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+
+  .article-publication-meta time {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+</style>
