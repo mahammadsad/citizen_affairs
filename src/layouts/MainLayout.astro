@@ -4,6 +4,7 @@ import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
 import ThemeTransitionRuntime from '@components/ThemeTransitionRuntime.astro';
 import MobileNavigationRuntime from '@components/MobileNavigationRuntime.astro';
+import MobileBottomNavigationRuntime from '@components/MobileBottomNavigationRuntime.astro';
 import FormSubmissionRuntime from '@components/FormSubmissionRuntime.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
@@ -67,6 +68,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   <PortalRuntime />
   <ThemeTransitionRuntime />
   <MobileNavigationRuntime />
+  <MobileBottomNavigationRuntime />
   <main id="main-content">
     <slot />
   </main>
@@ -78,6 +80,14 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   main { min-height: calc(100vh - 420px); }
 
   :global(.portal-utility) {
+    display: none !important;
+  }
+
+  /* The fixed five-item mobile bar duplicated routes already available in the
+     header/menu and permanently consumed useful reading space. Keep its legacy
+     markup hidden for compatibility while the expanding menu owns mobile nav. */
+  :global(.portal-mobile-bottom),
+  :global(body.article-reading-mode .portal-mobile-bottom) {
     display: none !important;
   }
 
@@ -164,6 +174,12 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   }
 
   @media (max-width: 680px) {
+    /* PortalHeader used to reserve 60px for the fixed bottom navigation. With
+       that bar gone, content can extend to the safe area on every mobile page. */
+    :global(body) {
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+
     :global(body.article-reading-mode) {
       padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
     }
@@ -194,7 +210,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-brand-logo) {
       width: var(--portal-logo-width) !important;
       max-width: none !important;
-      max-height: 46px !important;
+      max-height: 52px !important;
     }
 
     :global(.portal-header-actions) {
