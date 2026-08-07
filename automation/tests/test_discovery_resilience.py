@@ -51,3 +51,4 @@ def test_discovery_skips_blocked_source_and_continues(monkeypatch):
     assert len(candidates) == 1
     assert candidates[0].source_authority == "Staff Selection Commission"
     assert str(candidates[0].source_url).startswith("https://ssc.gov.in/notice/")
+    assert "Official listing URL: https://ssc.gov.in/" in candidates[0].discovery_evidence

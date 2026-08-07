@@ -4,9 +4,11 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+import httpx
+
 from .clients import GeminiClient, SupabaseRepository, TavilyClient
 from .config import Settings
-from .discovery import discover_from_official_feeds
+from .discovery import discover_from_official_feeds, is_official_url
 from .draft_repository import DraftRepository
 from .schemas import FactCheckResult, GeneratedDraft, ResearchDossier, SeoAnalysis, TopicCandidate
 from .source_material import OfficialSourceFetcher, SourceMaterial
@@ -37,6 +39,7 @@ corrigenda and newer notices; if the supplied evidence is insufficient to make t
 false. Do not approve your own assumptions and do not use general model memory as evidence."""
 
 LANGUAGE_NAMES = {"en": "English", "bn": "Bengali", "hi": "Hindi"}
+_DISCOVERY_URL_PREFIX = "Official listing URL: "
 
 
 def idempotency_key(prefix: str, value: str) -> str:
@@ -71,6 +74,16 @@ def _allowed_source_urls(materials: list[SourceMaterial]) -> set[str]:
     return allowed
 
 
+def _discovery_listing_url(candidate: TopicCandidate) -> str | None:
+    for evidence in candidate.discovery_evidence:
+        if not evidence.startswith(_DISCOVERY_URL_PREFIX):
+            continue
+        value = evidence[len(_DISCOVERY_URL_PREFIX):].strip()
+        if is_official_url(value):
+            return value
+    return None
+
+
 class AutomationPipeline:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -98,12 +111,27 @@ class AutomationPipeline:
             saved.append(await self.db.insert("topic_candidates", payload))
         return saved
 
+    async def _fetch_candidate_materials(self, candidate: TopicCandidate) -> list[SourceMaterial]:
+        detail_url = str(candidate.source_url)
+        try:
+            return await self.fetcher.fetch_bundle(detail_url)
+        except (httpx.HTTPError, ValueError) as detail_error:
+            listing_url = _discovery_listing_url(candidate)
+            if not listing_url or listing_url.rstrip("/") == detail_url.rstrip("/"):
+                raise
+            try:
+                return await self.fetcher.fetch_bundle(listing_url)
+            except (httpx.HTTPError, ValueError):
+                raise detail_error
+
     async def research(self, topic: TopicCandidate, materials: list[SourceMaterial] | None = None) -> ResearchDossier:
-        evidence = materials or await self.fetcher.fetch_bundle(str(topic.source_url))
+        evidence = materials or await self._fetch_candidate_materials(topic)
         prompt = (
             f"TOPIC CANDIDATE\n{topic.model_dump_json()}\n\n"
             "The following text/PDF attachments were fetched directly from approved official domains. "
-            "Use only these sources.\n\n"
+            "The candidate detail URL may be a link referenced by a captured official listing page; if the detail "
+            "page itself is not among the captured sources, do not use it as factual evidence. Use only the captured "
+            "sources below for facts.\n\n"
             f"{_material_prompt(evidence, self.settings.max_source_text_chars)}"
         )
         dossier = await self.ai.structured(
@@ -165,7 +193,7 @@ class AutomationPipeline:
         draft: GeneratedDraft,
         materials: list[SourceMaterial] | None = None,
     ) -> FactCheckResult:
-        evidence = materials or await self.fetcher.fetch_bundle(str(dossier.topic.source_url))
+        evidence = materials or await self._fetch_candidate_materials(dossier.topic)
         prompt = (
             f"DOSSIER\n{dossier.model_dump_json()}\n\nDRAFT\n{draft.model_dump_json()}\n\n"
             f"CAPTURED OFFICIAL EVIDENCE\n{_material_prompt(evidence, self.settings.max_source_text_chars)}"
@@ -208,7 +236,7 @@ class AutomationPipeline:
             processed_topics += 1
             try:
                 async with asyncio.timeout(topic_timeout_seconds):
-                    materials = await self.fetcher.fetch_bundle(str(candidate.source_url))
+                    materials = await self._fetch_candidate_materials(candidate)
                     dossier = await self.research(candidate, materials)
                     seo = await self.seo(dossier)
                     topic_created = 0
