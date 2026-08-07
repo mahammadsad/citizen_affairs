@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     api_concurrency: int = 2
     max_topics_per_run: int = 20
     max_drafts_per_run: int = 3
+    max_candidate_attempts_per_run: int = 3
+    topic_processing_timeout_seconds: float = 360
     related_source_limit: int = 4
     max_source_bytes: int = 8_000_000
     max_source_text_chars: int = 45_000
@@ -59,11 +61,24 @@ class Settings(BaseSettings):
             raise ValueError("model names must be configured as safe provider model IDs")
         return value.strip()
 
-    @field_validator("max_topics_per_run", "max_drafts_per_run", "related_source_limit", "seo_search_results")
+    @field_validator(
+        "max_topics_per_run",
+        "max_drafts_per_run",
+        "max_candidate_attempts_per_run",
+        "related_source_limit",
+        "seo_search_results",
+    )
     @classmethod
     def positive_limits(cls, value: int) -> int:
         if value < 1:
             raise ValueError("automation limits must be positive")
+        return value
+
+    @field_validator("topic_processing_timeout_seconds")
+    @classmethod
+    def positive_topic_timeout(cls, value: float) -> float:
+        if value <= 0:
+            raise ValueError("topic processing timeout must be positive")
         return value
 
     @property
