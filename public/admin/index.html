@@ -95,13 +95,24 @@
         color: #0b2341;
       }
 
+      .mobile-note,
       .warning {
         margin: 1.5rem 0;
         padding: 1rem;
+        border-radius: 12px;
+        line-height: 1.55;
+      }
+
+      .mobile-note {
+        border-left: 4px solid #087f78;
+        background: #eefaf8;
+        color: #174f4b;
+      }
+
+      .warning {
         border-left: 4px solid #bd6a00;
         background: #fff8e8;
         color: #684300;
-        line-height: 1.55;
       }
 
       .actions {
@@ -142,13 +153,19 @@
       <p class="eyebrow">Owner-only editorial workspace</p>
       <h1>Review drafts and published articles separately</h1>
       <p class="intro">
-        Pages CMS now separates private drafts from articles that are already live. Drafts stay editable; live articles
-        are shown in a view-only section so their publication state is unmistakable.
+        Pages CMS separates private drafts from articles that are already live. Drafts stay editable; live articles are
+        shown in a view-only section so their publication state is unmistakable.
       </p>
 
       <ol>
         <li>
-          <strong>🟡 Draft articles — NOT LIVE.</strong> Review and edit generated or manually prepared drafts here.
+          <strong>🟡 Draft articles — NOT LIVE.</strong> Use the rich editor on a computer when you want visual formatting
+          controls.
+        </li>
+        <li>
+          <strong>📱 Mobile draft editor — KEYBOARD FRIENDLY.</strong> On phones, use the mobile editor. It removes the
+          Pages CMS rich-text formatting bar, preventing it from being sandwiched between the Android Copy/Paste menu and
+          the on-screen keyboard.
         </li>
         <li>
           <strong>🟢 Live articles — PUBLISHED.</strong> Use this section to confirm which articles are already public.
@@ -159,18 +176,31 @@
         </li>
       </ol>
 
+      <p class="mobile-note">
+        <strong>Editing from Android?</strong> Open the mobile-friendly editor below. The article body is shown as plain
+        Markdown text, so there is no CMS formatting toolbar competing with Android's text-selection controls. You can edit
+        normal wording without changing Markdown symbols such as <code>##</code>, <code>**</code>, or list dashes.
+      </p>
+
       <p class="warning">
-        A draft is not public merely because it appears in Pages CMS. Only articles in the green Live section are
-        intended to be publicly available.
+        A draft is not public merely because it appears in Pages CMS. Only articles in the green Live section are intended
+        to be publicly available.
       </p>
 
       <div class="actions">
         <a
           class="primary"
+          href="https://app.pagescms.org/mahammadsad/citizen_affairs/cms/collection/english-drafts-mobile"
+          rel="noopener noreferrer"
+        >
+          📱 Open mobile-friendly English drafts →
+        </a>
+        <a
+          class="secondary"
           href="https://app.pagescms.org/mahammadsad/citizen_affairs/cms/collection/english-drafts"
           rel="noopener noreferrer"
         >
-          Open English drafts →
+          Open rich editor (desktop)
         </a>
         <a
           class="secondary"
