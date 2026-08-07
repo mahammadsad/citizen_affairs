@@ -22,7 +22,9 @@ test('production smoke verifies the professional news homepage', () => {
 
 test('production smoke keeps search discoverable through viewport-appropriate navigation', () => {
   assert.match(production, /\.portal-search-action\[href\*="\/search"\]/);
-  assert.match(production, /\.portal-mobile-bottom a\[href\*="\/search"\]/);
+  assert.match(production, /portal-mobile-utility-link\[href\*="\/search"\]/);
+  assert.match(production, /portal-mobile-utility-link\[href\*="\/saved"\]/);
+  assert.match(production, /page\.locator\('\.portal-mobile-bottom'\)\)\.toBeHidden\(\)/);
   assert.match(production, /testInfo\.project\.name === 'mobile'/);
 });
 
