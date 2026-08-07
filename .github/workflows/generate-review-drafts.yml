@@ -56,17 +56,25 @@ jobs:
         run: python -m app.cli generate-drafts
 
       - name: Stage generated drafts only
-        run: git add -- 'src/content/articles/*/*.md'
+        id: drafts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- 'src/content/articles/*/*.md'
+          if git diff --cached --quiet; then
+            echo "has_drafts=false" >> "$GITHUB_OUTPUT"
+            echo "No new review drafts were generated."
+          else
+            echo "has_drafts=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --name-only
+          fi
 
       - name: Enforce draft-only publication boundary
+        if: steps.drafts.outputs.has_drafts == 'true'
         shell: bash
         run: |
           set -euo pipefail
           files="$(git diff --cached --name-only)"
-          if [ -z "$files" ]; then
-            echo "No new review drafts were generated."
-            exit 0
-          fi
           while IFS= read -r file; do
             case "$file" in
               src/content/articles/en/*.md|src/content/articles/bn/*.md|src/content/articles/hi/*.md) ;;
@@ -84,28 +92,29 @@ jobs:
           done <<< "$files"
 
       - name: Setup Node
+        if: steps.drafts.outputs.has_drafts == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
           cache: npm
 
       - name: Install site dependencies
+        if: steps.drafts.outputs.has_drafts == 'true'
         run: npm ci
 
       - name: Validate generated content
+        if: steps.drafts.outputs.has_drafts == 'true'
         run: |
           npm run check
           npm run validate:content
+          npm run build
           npm run validate:seo
 
       - name: Open protected draft review pull request
+        if: steps.drafts.outputs.has_drafts == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --cached --quiet; then
-            echo "Nothing to commit."
-            exit 0
-          fi
           git config user.name "Citizen Affairs Draft Bot"
           git config user.email "actions@users.noreply.github.com"
           branch="automation/review-draft-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
