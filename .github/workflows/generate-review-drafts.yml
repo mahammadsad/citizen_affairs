@@ -29,7 +29,7 @@ jobs:
       OFFICIAL_FEED_URLS: ${{ vars.OFFICIAL_FEED_URLS }}
       DRAFT_LANGUAGES: ${{ vars.DRAFT_LANGUAGES || 'en' }}
       MAX_DRAFTS_PER_RUN: "1"
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN || github.token }}
 
     steps:
       - name: Checkout main
