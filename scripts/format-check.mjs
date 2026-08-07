@@ -5,6 +5,8 @@ const roots = ['.github', 'docs', 'scripts', 'src', 'supabase', 'tests'];
 const extensions = new Set(['.astro', '.css', '.html', '.js', '.json', '.md', '.mjs', '.sql', '.toml', '.ts', '.tsx', '.yaml', '.yml']);
 const write = process.argv.includes('--write');
 const files = [];
+// Pages CMS may serialize article Markdown without a terminal newline; preserve that harmless style.
+const articlesRoot = `${path.join('src', 'content', 'articles')}${path.sep}`;
 const walk = async (directory) => {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const filename = path.join(directory, entry.name);
@@ -17,7 +19,9 @@ for (const root of roots) await walk(root);
 const errors = [];
 for (const filename of files) {
   const source = await readFile(filename, 'utf8');
-  const normalized = source.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, '').replace(/\n*$/, '\n');
+  const isCmsManagedArticle = filename.startsWith(articlesRoot) && path.extname(filename) === '.md';
+  let normalized = source.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, '');
+  if (!isCmsManagedArticle) normalized = normalized.replace(/\n*$/, '\n');
   if (source !== normalized) {
     if (write) await writeFile(filename, normalized, 'utf8');
     else errors.push(filename);

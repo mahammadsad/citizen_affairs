@@ -1,0 +1,176 @@
+name: Publish Pages CMS changes
+
+on:
+  push:
+    branches: [cms]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-cms-publish
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
+    steps:
+      - name: Checkout CMS branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: cms
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch protected main
+        run: git fetch origin main
+
+      - name: Optimize oversized CMS images
+        run: node scripts/optimize-cms-images.mjs origin/main
+
+      - name: Commit CMS image optimization
+        id: optimize
+        shell: bash
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "Citizen Affairs CMS"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A src/content/articles public/uploads
+          git commit -m "content: optimize CMS images"
+          git push origin HEAD:cms
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Verify editorial GitHub token
+        shell: bash
+        run: |
+          if [[ -z "$GH_TOKEN" ]]; then
+            echo "::error::EDITORIAL_GITHUB_TOKEN is required for automatic CMS pull requests and protected merges."
+            exit 1
+          fi
+          gh api user --jq '.login' >/dev/null
+
+      - name: Validate CMS-only change scope
+        id: scope
+        shell: bash
+        run: |
+          git fetch origin main
+          mapfile -t changed < <(git diff --name-only origin/main...HEAD)
+          if [[ ${#changed[@]} -eq 0 ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "CMS branch already matches main."
+            exit 0
+          fi
+
+          for file in "${changed[@]}"; do
+            case "$file" in
+              src/content/articles/*|public/uploads/*) ;;
+              *)
+                echo "::error::Automatic CMS publishing only accepts article and upload changes; rejected path: $file"
+                exit 1
+                ;;
+            esac
+          done
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          printf 'Validated CMS paths:\n%s\n' "${changed[*]}"
+
+      - name: Open or refresh protected CMS pull request
+        if: steps.scope.outputs.skip != 'true'
+        id: pr
+        shell: bash
+        run: |
+          pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head cms --state open --json number --jq '.[0].number // empty')"
+
+          # A GITHUB_TOKEN optimization commit does not emit a new pull_request
+          # synchronize event. Reopening through the editorial token guarantees
+          # required checks run against the optimized head.
+          if [[ "${{ steps.optimize.outputs.changed }}" == "true" && -n "$pr_number" ]]; then
+            gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY" --comment "Refreshing the CMS pull request after automatic image optimization."
+            pr_number=""
+          fi
+
+          if [[ -z "$pr_number" ]]; then
+            pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head cms --title "content: publish Pages CMS updates" --body "Automatic Pages CMS publication. Only article files and uploaded media are allowed. Main remains protected and all required checks must pass before merge.")"
+            pr_number="${pr_url##*/}"
+          fi
+          if [[ ! "$pr_number" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::Could not resolve a valid CMS pull request number."
+            exit 1
+          fi
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "CMS pull request: #$pr_number" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Wait for required checks to register
+        if: steps.scope.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        shell: bash
+        run: |
+          for attempt in $(seq 1 60); do
+            count="$(gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --json name 2>/dev/null | jq 'length' 2>/dev/null || echo 0)"
+            if [[ "$count" =~ ^[0-9]+$ ]] && (( count > 0 )); then
+              echo "Required checks registered: $count"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Required pull-request checks did not register in time."
+          exit 1
+
+      - name: Wait for required checks to pass
+        if: steps.scope.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        run: gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --watch --fail-fast --interval 10
+
+      - name: Confirm CMS head did not change during validation
+        if: steps.scope.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        shell: bash
+        run: |
+          git fetch origin cms
+          remote_cms="$(git rev-parse origin/cms)"
+          pr_head="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+          if [[ "$remote_cms" != "$pr_head" ]]; then
+            echo "::error::CMS changed while checks were running. A newer workflow run will publish the latest save."
+            exit 1
+          fi
+
+      - name: Merge validated CMS pull request
+        if: steps.scope.outputs.skip != 'true'
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.number }}
+        shell: bash
+        run: |
+          gh pr merge "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --squash
+          state="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
+          if [[ "$state" != "MERGED" ]]; then
+            echo "::error::CMS pull request was not merged."
+            exit 1
+          fi
+          echo "CMS pull request #$PR_NUMBER merged after required checks." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Resync CMS branch to protected main
+        if: steps.scope.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          main_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/cms" -f sha="$main_sha" -F force=true >/dev/null
+          echo "CMS branch resynced to main at $main_sha." >> "$GITHUB_STEP_SUMMARY"
