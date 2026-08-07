@@ -28,6 +28,22 @@ const pauseThemeWipeHalfway = async (page) => {
   });
 };
 
+const finishThemeWipe = async (page) => {
+  await page.evaluate(() => {
+    document.documentElement
+      .getAnimations({ subtree: true })
+      .filter((animation) => animation.effect?.pseudoElement?.startsWith('::view-transition-'))
+      .forEach((animation) => animation.finish());
+  });
+
+  // The runtime deliberately ignores a second tap while a transition is still
+  // being settled. Wait for its finally block before testing the reverse wipe.
+  await page.waitForFunction(() => {
+    const toggle = document.querySelector('.portal-theme-toggle');
+    return toggle && !toggle.hasAttribute('data-theme-transition');
+  });
+};
+
 const captureEdgeLuminance = async (page) => {
   const screenshot = await page.screenshot();
   const { data, info } = await sharp(screenshot).raw().toBuffer({ resolveWithObject: true });
@@ -56,9 +72,7 @@ test('theme toggle uses a 300ms top-to-bottom reference wipe in both directions'
   expect(darkHalfway.top).toBeLessThan(100);
   expect(darkHalfway.bottom).toBeGreaterThan(165);
 
-  await page.evaluate(() => {
-    document.documentElement.getAnimations({ subtree: true }).forEach((animation) => animation.finish());
-  });
+  await finishThemeWipe(page);
   await expect(root).toHaveAttribute('data-theme', 'dark');
 
   await toggle.click();
@@ -69,8 +83,6 @@ test('theme toggle uses a 300ms top-to-bottom reference wipe in both directions'
   expect(lightHalfway.top).toBeGreaterThan(165);
   expect(lightHalfway.bottom).toBeLessThan(100);
 
-  await page.evaluate(() => {
-    document.documentElement.getAnimations({ subtree: true }).forEach((animation) => animation.finish());
-  });
+  await finishThemeWipe(page);
   await expect(root).toHaveAttribute('data-theme', 'light');
 });
