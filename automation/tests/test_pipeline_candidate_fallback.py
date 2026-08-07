@@ -8,7 +8,7 @@ from app.pipeline import AutomationPipeline, repository_root
 from app.schemas import TopicCandidate
 
 
-def candidate(name: str, url: str) -> TopicCandidate:
+def candidate(name: str, url: str, discovery_evidence: list[str] | None = None) -> TopicCandidate:
     return TopicCandidate(
         normalized_topic=name,
         language="en",
@@ -19,7 +19,7 @@ def candidate(name: str, url: str) -> TopicCandidate:
         freshness_label="high",
         deadline_urgency="none",
         official_source_available=True,
-        discovery_evidence=["test"],
+        discovery_evidence=discovery_evidence or ["test"],
         priority_score=80,
         selection_reasons=["test"],
     )
@@ -43,6 +43,18 @@ class SlowFetcher:
     async def fetch_bundle(self, _url: str):
         await asyncio.sleep(10)
         return [object()]
+
+
+class ListingFallbackFetcher:
+    def __init__(self):
+        self.calls: list[str] = []
+
+    async def fetch_bundle(self, url: str):
+        self.calls.append(url)
+        if "/whats-new/" in url:
+            request = httpx.Request("GET", url)
+            raise httpx.ReadTimeout("detail route timed out", request=request)
+        return ["captured official listing"]
 
 
 class FakeDrafts:
@@ -153,3 +165,25 @@ def test_pipeline_times_out_one_slow_topic_without_hanging_the_run():
     assert result["created_count"] == 0
     assert len(result["failures"]) == 1
     assert result["failures"][0]["error"] == "TimeoutError"
+
+
+def test_pipeline_uses_official_listing_when_detail_page_times_out():
+    fetcher = ListingFallbackFetcher()
+    pipeline = AutomationPipeline.__new__(AutomationPipeline)
+    pipeline.fetcher = fetcher
+    topic = candidate(
+        "Written Result: Combined Defence Services Examination (I), 2026",
+        "https://www.upsc.gov.in/whats-new/cds-result",
+        [
+            "Discovered on official source: Union Public Service Commission",
+            "Official listing URL: https://www.upsc.gov.in/",
+        ],
+    )
+
+    materials = asyncio.run(pipeline._fetch_candidate_materials(topic))
+
+    assert materials == ["captured official listing"]
+    assert fetcher.calls == [
+        "https://www.upsc.gov.in/whats-new/cds-result",
+        "https://www.upsc.gov.in/",
+    ]
