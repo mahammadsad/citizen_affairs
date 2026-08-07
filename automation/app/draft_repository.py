@@ -93,7 +93,7 @@ class DraftRepository:
         articles: list[ExistingArticle] = []
         if not self.article_root.exists():
             return articles
-        for path in self.article_root.glob("*/*.md"):
+        for path in self.article_root.glob("**/*.md"):
             source = path.read_text(encoding="utf-8")
             match = _FRONTMATTER_RE.match(source)
             if not match:
@@ -120,7 +120,8 @@ class DraftRepository:
         for article in self.existing_articles():
             if not article.is_public or not article.title or not article.url_slug:
                 continue
-            language = article.path.parent.name
+            relative = article.path.relative_to(self.article_root)
+            language = relative.parts[0]
             context.append({
                 "title": article.title,
                 "url": f"https://citizenaffairs.in/{language}/{article.url_slug}/",
@@ -130,7 +131,7 @@ class DraftRepository:
         return context
 
     def target_path(self, language: str, slug: str) -> Path:
-        return self.article_root / language / f"{slug}.md"
+        return self.article_root / language / "drafts" / f"{slug}.md"
 
     def render(
         self,
