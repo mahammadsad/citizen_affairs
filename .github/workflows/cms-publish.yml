@@ -2,7 +2,9 @@ name: Publish Pages CMS changes
 
 on:
   push:
-    branches: [cms]
+    # Pages CMS reads the cms branch. Wake this workflow for protected-main
+    # updates too so newly merged private drafts become reviewable in the CMS.
+    branches: [cms, main]
   workflow_dispatch:
 
 permissions:
@@ -47,6 +49,8 @@ jobs:
         shell: bash
         run: |
           before="$(git rev-parse HEAD)"
+          # Merge instead of resetting so an in-flight Pages CMS edit can never
+          # be destroyed by an automated main -> cms synchronization.
           if ! git merge --no-edit origin/main; then
             git merge --abort || true
             echo "::error::CMS changes conflict with the latest main branch. Nothing was published."
