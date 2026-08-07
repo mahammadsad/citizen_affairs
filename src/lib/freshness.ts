@@ -57,7 +57,12 @@ export function getArticleFreshness(
 
   const terminalWorkflow = ['closed', 'withdrawn', 'archived'].includes(data.workflowStatus);
   const terminalVerification = ['closed', 'withdrawn'].includes(data.verificationStatus);
-  const expiredDeadline = deadlineTime !== undefined && deadlineTime < nowTime;
+  // Explainers are evergreen reference content. A date stored in their generic
+  // `deadline` field may describe an event mentioned in the guide, but it must
+  // not remove the article from homepage/category discovery after that date.
+  const deadlineCanExpireListing = data.contentType !== 'explainer';
+  const expiredDeadline =
+    deadlineCanExpireListing && deadlineTime !== undefined && deadlineTime < nowTime;
   const expired = terminalWorkflow || terminalVerification || expiredDeadline;
 
   let state: ArticleFreshnessState = 'current';
