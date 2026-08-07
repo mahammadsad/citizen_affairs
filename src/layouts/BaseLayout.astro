@@ -71,7 +71,7 @@ const ogImageType = ogImage.toLowerCase().endsWith('.png')
   : ogImage.toLowerCase().endsWith('.webp')
     ? 'image/webp'
     : 'image/jpeg';
-const ogImageAlt = imageAlt || `${brandName} — ${getBrandTagline(locale)}`;
+const ogImageAlt = imageAlt || (ogType === 'article' ? resolvedTitle : `${brandName} — ${getBrandTagline(locale)}`);
 const searchUrl = locale === 'en' ? `${SITE.url}/search/` : `${SITE.url}/${locale}/search/`;
 
 const websiteSchema = {
