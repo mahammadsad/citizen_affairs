@@ -44,6 +44,37 @@ def _clean_list(values: list[str], limit: int) -> list[str]:
     return cleaned
 
 
+def _sanitize_body_markdown(value: str) -> str:
+    """Keep generated article bodies compatible with the site's heading contract.
+
+    ArticleLayout owns the single page H1, so any accidental model-generated Markdown
+    H1 is demoted to H2. Fenced code blocks are left untouched.
+    """
+    lines = value.strip().splitlines()
+    cleaned: list[str] = []
+    fence_marker: str | None = None
+
+    for line in lines:
+        stripped = line.lstrip()
+        marker = stripped[:3] if stripped.startswith(("```", "~~~")) else None
+        if marker:
+            if fence_marker is None:
+                fence_marker = marker
+            elif fence_marker == marker:
+                fence_marker = None
+            cleaned.append(line)
+            continue
+
+        if fence_marker is None:
+            match = re.match(r"^(\s*)#(?!#)(?=\s)(.*)$", line)
+            if match:
+                line = f"{match.group(1)}##{match.group(2)}"
+
+        cleaned.append(line)
+
+    return "\n".join(cleaned).strip()
+
+
 @dataclass(slots=True)
 class ExistingArticle:
     path: Path
@@ -198,7 +229,7 @@ class DraftRepository:
         else:
             lines.append("faqs: []")
         lines.append("---")
-        lines.append(draft.body_markdown.strip())
+        lines.append(_sanitize_body_markdown(draft.body_markdown))
         lines.append("")
         return "\n".join(lines)
 
