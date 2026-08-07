@@ -20,7 +20,8 @@ test('mobile brand is prominent, safely left aligned and collision free', () => 
   assert.doesNotMatch(layout, /translateX\(/);
   assert.match(layout, /:global\(\.portal-brand\)[\s\S]*flex: 0 0 var\(--portal-logo-width\) !important/);
   assert.match(layout, /:global\(\.portal-header-actions\)[\s\S]*flex: 0 0 auto !important/);
-  assert.match(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 74px !important/);
+  assert.match(header, /\.portal-mobile-panel\.is-open[\s\S]*grid-template-rows: 1fr/);
+  assert.doesNotMatch(layout, /:global\(\.portal-mobile-panel\)[\s\S]*top: 74px !important/);
   assert.doesNotMatch(layout, /width: 118px/);
 });
 
