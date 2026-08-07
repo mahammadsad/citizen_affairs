@@ -5,6 +5,9 @@ import { parse } from 'yaml';
 
 const baseLayout = await readFile('src/layouts/BaseLayout.astro', 'utf8');
 const articleSchema = await readFile('src/components/ArticleStructuredData.astro', 'utf8');
+const publicationMeta = await readFile('src/components/ArticlePublicationMeta.astro', 'utf8');
+const englishArticleRoute = await readFile('src/pages/articles/[slug].astro', 'utf8');
+const localizedArticleRoute = await readFile('src/pages/[lang]/articles/[slug].astro', 'utf8');
 const newsSitemap = await readFile('src/pages/news-sitemap.xml.ts', 'utf8');
 const robots = await readFile('src/pages/robots.txt.ts', 'utf8');
 const cms = parse(await readFile('.pages.yml', 'utf8'));
@@ -21,6 +24,16 @@ test('news-like citizen updates emit NewsArticle with rich image metadata', () =
   assert.match(articleSchema, /width: data\.featuredImageWidth/);
   assert.match(articleSchema, /height: data\.featuredImageHeight/);
   assert.match(articleSchema, /caption: data\.featuredImageAlt \|\| data\.title/);
+});
+
+test('articles expose visible publication metadata with real timestamps and an editorial byline fallback', () => {
+  assert.match(publicationMeta, /<time datetime=\{date\.toISOString\(\)\}>/);
+  assert.match(publicationMeta, /timeZone: 'Asia\/Kolkata'/);
+  assert.match(publicationMeta, /hasExplicitTime/);
+  assert.match(publicationMeta, /Editorial Desk/);
+  assert.match(publicationMeta, /localizedPath\(locale, 'team'\)/);
+  assert.match(englishArticleRoute, /<ArticlePublicationMeta/);
+  assert.match(localizedArticleRoute, /<ArticlePublicationMeta/);
 });
 
 test('Google News sitemap contains only fresh public news-category articles', () => {
