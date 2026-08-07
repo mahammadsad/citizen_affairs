@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { isCurrentListingCandidate } from '@lib/freshness';
 import { SITE } from '@utils/constants';
 
 const NEWS_CATEGORIES = new Set(['jobs', 'exams', 'affairs', 'notices']);
@@ -28,6 +29,7 @@ export async function GET() {
       PUBLIC_WORKFLOWS.has(data.workflowStatus) &&
       data.verificationStatus !== 'withdrawn' &&
       NEWS_CATEGORIES.has(data.category) &&
+      isCurrentListingCandidate(data) &&
       data.date >= cutoff &&
       data.date <= now
   ))
