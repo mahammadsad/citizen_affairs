@@ -70,6 +70,7 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   const applyButton = page.locator('[data-job-apply]');
   const clearButton = panel.locator('[data-job-reset]');
 
+  await expect(bottomNavigation).toBeHidden();
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();
   await expect(applyButton).toBeVisible();
@@ -132,26 +133,23 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   await page.waitForTimeout(250);
   const geometry = await page.evaluate(() => {
     const filterPanel = document.querySelector('.jobs-filter-panel');
-    const bottomNav = document.querySelector('.portal-mobile-bottom');
     const fields = document.querySelector('[data-job-filter-fields]');
     const actions = document.querySelector('[data-job-filter-actions]');
     if (
       !(filterPanel instanceof HTMLElement) ||
-      !(bottomNav instanceof HTMLElement) ||
       !(fields instanceof HTMLElement) ||
       !(actions instanceof HTMLElement)
     ) return null;
 
     const panelBox = filterPanel.getBoundingClientRect();
-    const navBox = bottomNav.getBoundingClientRect();
     const fieldsBox = fields.getBoundingClientRect();
     const actionsBox = actions.getBoundingClientRect();
     const panelStyle = getComputedStyle(filterPanel);
     const fieldsStyle = getComputedStyle(fields);
     return {
       panelBottom: Math.round(panelBox.bottom),
-      navTop: Math.round(navBox.top),
       panelTop: Math.round(panelBox.top),
+      bottomGap: Math.round(window.innerHeight - panelBox.bottom),
       viewportHeight: window.innerHeight,
       panelOverflowY: panelStyle.overflowY,
       fieldsOverflowY: fieldsStyle.overflowY,
@@ -163,8 +161,9 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
 
   expect(geometry).not.toBeNull();
   expect(geometry.panelTop).toBeGreaterThanOrEqual(0);
-  expect(geometry.panelBottom).toBeLessThan(geometry.navTop);
   expect(geometry.panelBottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.bottomGap).toBeGreaterThanOrEqual(0);
+  expect(geometry.bottomGap).toBeLessThanOrEqual(24);
   expect(geometry.panelOverflowY).toBe('hidden');
   expect(geometry.fieldsOverflowY).toBe('auto');
   expect(geometry.actionsInsidePanel).toBe(true);
