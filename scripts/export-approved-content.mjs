@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { createClient } from '@supabase/supabase-js';
@@ -133,8 +133,12 @@ const frontmatter = clean({
 });
 const directory = path.join(process.cwd(), 'src', 'content', 'articles', article.language);
 const output = path.join(directory, `${article.slug}.md`);
+const privateDraft = path.join(directory, 'drafts', `${article.slug}.md`);
 await mkdir(directory, { recursive: true });
 await writeFile(output, `---\n${YAML.stringify(frontmatter, { lineWidth: 0 }).trim()}\n---\n\n${normalizePublishedBody(article.body_markdown, article.title)}`, 'utf8');
+await unlink(privateDraft).catch((error) => {
+  if (error?.code !== 'ENOENT') throw error;
+});
 
 const authorOutputs = [];
 for (const profile of profiles || []) {

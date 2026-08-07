@@ -27,18 +27,52 @@ function frontmatter(source) {
   return parse(match[1]);
 }
 
-test('Pages CMS is a protected draft-only intake for all three languages', () => {
-  for (const collection of ['english-articles', 'bengali-articles', 'hindi-articles']) {
-    assert.match(cms, new RegExp(`name: ${collection}`));
+test('Pages CMS keeps protected draft intake separate from view-only live articles', () => {
+  const config = parse(cms);
+  const draftGroup = config.content.find((entry) => entry.name === 'draft-articles');
+  const liveGroup = config.content.find((entry) => entry.name === 'live-articles');
+
+  assert.ok(draftGroup, 'Pages CMS should expose an explicit private-draft group');
+  assert.ok(liveGroup, 'Pages CMS should expose an explicit published/live group');
+  assert.equal(draftGroup.items.length, 3);
+  assert.equal(liveGroup.items.length, 3);
+
+  const expectedDrafts = {
+    'english-drafts': 'src/content/articles/en/drafts',
+    'bengali-drafts': 'src/content/articles/bn/drafts',
+    'hindi-drafts': 'src/content/articles/hi/drafts',
+  };
+  for (const collection of draftGroup.items) {
+    assert.equal(collection.path, expectedDrafts[collection.name]);
+    const contentType = collection.fields.find((field) => field.name === 'contentType');
+    const workflow = collection.fields.find((field) => field.name === 'workflowStatus');
+    const draft = collection.fields.find((field) => field.name === 'draft');
+    const sourceUrls = collection.fields.find((field) => field.name === 'sourceUrls');
+    assert.deepEqual(
+      { default: contentType.default, hidden: contentType.hidden, required: contentType.required },
+      { default: 'explainer', hidden: true, required: true },
+    );
+    assert.deepEqual(
+      { default: workflow.default, hidden: workflow.hidden, required: workflow.required },
+      { default: 'draft', hidden: true, required: true },
+    );
+    assert.deepEqual(
+      { default: draft.default, hidden: draft.hidden, required: draft.required },
+      { default: true, hidden: true, required: true },
+    );
+    assert.ok(collection.fields.some((field) => field.name === 'nextReviewDate'));
+    assert.ok(collection.fields.find((field) => field.name === 'verificationStatus').options.values.some((option) => option.value === 'partially-confirmed'));
+    assert.equal(sourceUrls.required, true);
+    assert.deepEqual(sourceUrls.list, { min: 1 });
   }
 
-  assert.equal((cms.match(/name: contentType, label: Content type, type: string, default: explainer, hidden: true/g) || []).length, 3);
-  assert.equal((cms.match(/name: workflowStatus, label: Workflow status, type: string, default: draft, hidden: true/g) || []).length, 3);
-  assert.equal((cms.match(/name: draft, label: Draft, type: boolean, default: true, hidden: true/g) || []).length, 3);
-  assert.equal((cms.match(/name: nextReviewDate/g) || []).length, 3);
-  assert.equal((cms.match(/value: partially-confirmed/g) || []).length, 3);
-  assert.equal((cms.match(/name: sourceUrls[^\n]*list: \{ min: 1 \}[^\n]*required: true/g) || []).length, 3);
-  assert.match(cms, /merge: true/);
+  for (const collection of liveGroup.items) {
+    assert.equal(collection.subfolders, false, 'live collections must not include nested private drafts');
+    assert.deepEqual(collection.operations, { create: false, rename: false, delete: false });
+    assert.ok(collection.fields.every((field) => field.readonly === true), 'live CMS fields must remain view-only');
+  }
+
+  assert.equal(config.settings.content.merge, true);
 });
 
 test('draft editor exposes every active citizen portal section', () => {
@@ -62,9 +96,10 @@ test('editorial readiness audit is part of CI and retains evidence', () => {
 
 test('owner workspace cannot be mistaken for a direct publisher', () => {
   assert.match(adminPage, /noindex, nofollow/);
-  assert.match(adminPage, /hidden drafts only/i);
-  assert.match(adminPage, /cannot publish directly/i);
-  assert.match(adminPage, /protected review/i);
+  assert.match(adminPage, /Draft articles — NOT LIVE/i);
+  assert.match(adminPage, /Live articles — PUBLISHED/i);
+  assert.match(adminPage, /Protected publication remains separate/i);
+  assert.match(adminPage, /requires the existing[\s\S]*approval and publication workflow/i);
   assert.match(runbook, /Do not publish directly from Pages CMS/);
   assert.match(runbook, /Never treat a merged pull request as automatically live/);
 });
