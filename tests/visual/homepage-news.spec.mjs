@@ -77,29 +77,32 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   await page.screenshot({ path: testInfo.outputPath('article-homepage-390.png'), fullPage: true });
 });
 
-test('mobile navigation covers the viewport and includes menu search', async ({ page }, testInfo) => {
+test('mobile navigation expands below the header and pushes content down', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
-  const trigger = page.locator('.portal-mobile-menu > summary');
+  const trigger = page.locator('.portal-mobile-trigger');
+  const panel = page.locator('.portal-mobile-panel');
+  const content = page.locator('.top-news');
+  const before = await content.boundingBox();
+
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel).toBeHidden();
   await trigger.click();
 
-  const panel = page.locator('.portal-mobile-panel');
-  const search = page.locator('.portal-mobile-menu-search');
-  const searchInput = search.locator('input[name="q"]');
-  const closeButton = page.locator('.portal-mobile-close');
-
-  await expect(page.locator('.portal-mobile-menu')).toHaveAttribute('open', '');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(panel).toBeVisible();
-  await expect(panel).toHaveAttribute('role', 'dialog');
-  await expect(panel).toHaveAttribute('aria-modal', 'true');
-  await expect(search).toBeVisible();
-  await expect(searchInput).toBeFocused();
-  await expect(closeButton).toBeVisible();
-  await expect(page.locator('.portal-mobile-brand-logo')).toBeVisible();
-  await expect(page.locator('.portal-mobile-home')).toBeVisible();
-  await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
-  await expect(page.locator('body')).toHaveClass(/portal-menu-open/);
+  await expect(panel).toHaveAttribute('aria-hidden', 'false');
+  await expect(panel.locator('nav a').first()).toBeVisible();
+  await expect(page.locator('.portal-mobile-social-link')).toHaveCount(4);
+  await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/portal-menu-open/);
+
+  const after = await content.boundingBox();
+  expect(before).not.toBeNull();
+  expect(after).not.toBeNull();
+  if (before && after) expect(after.top - before.top).toBeGreaterThan(100);
 
   const geometry = await panel.evaluate((element) => {
     const rect = element.getBoundingClientRect();
@@ -107,26 +110,23 @@ test('mobile navigation covers the viewport and includes menu search', async ({ 
       top: rect.top,
       left: rect.left,
       right: rect.right,
-      bottom: rect.bottom,
       width: rect.width,
-      height: rect.height,
       viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight,
+      documentWidth: document.documentElement.scrollWidth,
     };
   });
 
-  expect(Math.abs(geometry.top)).toBeLessThanOrEqual(1);
-  expect(Math.abs(geometry.left)).toBeLessThanOrEqual(1);
-  expect(Math.abs(geometry.right - geometry.viewportWidth)).toBeLessThanOrEqual(1);
-  expect(Math.abs(geometry.bottom - geometry.viewportHeight)).toBeLessThanOrEqual(1);
-  expect(Math.abs(geometry.width - geometry.viewportWidth)).toBeLessThanOrEqual(1);
-  expect(Math.abs(geometry.height - geometry.viewportHeight)).toBeLessThanOrEqual(1);
+  expect(geometry.top).toBeGreaterThan(0);
+  expect(geometry.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.right).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+  expect(geometry.width).toBeLessThanOrEqual(geometry.viewportWidth + 1);
+  expect(geometry.documentWidth).toBeLessThanOrEqual(geometry.viewportWidth);
 
-  await page.screenshot({ path: testInfo.outputPath('mobile-fullscreen-navigation.png'), fullPage: false });
+  await page.screenshot({ path: testInfo.outputPath('mobile-expanding-navigation.png'), fullPage: false });
 
   await page.keyboard.press('Escape');
   await expect(panel).toBeHidden();
-  await expect(page.locator('body')).not.toHaveClass(/portal-menu-open/);
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect(trigger).toBeFocused();
 });
 
