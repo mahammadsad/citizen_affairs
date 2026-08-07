@@ -87,9 +87,9 @@
   };
 
   const ensureSourceUrl = (form: HTMLFormElement): void => {
-    let sourceInput = form.querySelector('input[name="_url"]');
+    let sourceInput = form.querySelector<HTMLInputElement>('input[name="_url"]');
 
-    if (!(sourceInput instanceof HTMLInputElement)) {
+    if (!sourceInput) {
       sourceInput = document.createElement('input');
       sourceInput.type = 'hidden';
       sourceInput.name = '_url';
@@ -102,7 +102,7 @@
   };
 
   const getFirstInvalidControl = (form: HTMLFormElement): HTMLElement | null => {
-    return form.querySelector('input:invalid, select:invalid, textarea:invalid');
+    return form.querySelector<HTMLElement>('input:invalid, select:invalid, textarea:invalid');
   };
 
   const revealFirstInvalidControl = (form: HTMLFormElement): void => {
@@ -125,8 +125,10 @@
   };
 
   const setSubmittingState = (form: HTMLFormElement, submitting: boolean): void => {
-    const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
-    if (!(submitButton instanceof HTMLButtonElement || submitButton instanceof HTMLInputElement)) return;
+    const submitButton = form.querySelector<HTMLButtonElement | HTMLInputElement>(
+      'button[type="submit"], input[type="submit"]'
+    );
+    if (!submitButton) return;
 
     submitButton.disabled = submitting;
     submitButton.setAttribute('aria-busy', String(submitting));
@@ -162,7 +164,9 @@
     ensureSourceUrl(form);
     setSubmittingState(form, false);
 
-    const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+    const submitButton = form.querySelector<HTMLButtonElement | HTMLInputElement>(
+      'button[type="submit"], input[type="submit"]'
+    );
     submitButton?.addEventListener('click', (event) => {
       if (form.checkValidity()) return;
 
@@ -190,9 +194,9 @@
 
       const submissionToken = createSubmissionToken();
       const tokenStored = writeSessionValue(configuration.storageKey, submissionToken);
-      const nextInput = form.querySelector('input[name="_next"]');
+      const nextInput = form.querySelector<HTMLInputElement>('input[name="_next"]');
 
-      if (nextInput instanceof HTMLInputElement && tokenStored) {
+      if (nextInput && tokenStored) {
         const returnUrl = new URL(window.location.href);
         returnUrl.search = '';
         returnUrl.hash = configuration.returnHash;
