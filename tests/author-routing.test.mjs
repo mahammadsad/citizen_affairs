@@ -13,11 +13,11 @@ const teamPage = await readFile('src/components/TeamPage.astro', 'utf8');
 const trustPage = await readFile('src/components/TrustPage.astro', 'utf8');
 
 test('human article bylines remain optional and route to the attributed public profile', () => {
-  assert.match(layout, /const normalizedAuthor=author\.trim\(\)/);
-  assert.match(layout, /normalizedAuthor!==['"]mahammad-sad['"]/);
-  assert.match(layout, /authorProfilePath\(locale,normalizedAuthor\)/);
-  assert.match(layout, /showHumanCredits&&authorName/);
-  assert.doesNotMatch(layout, /trustPagePath\(locale,'author'\)/);
+  assert.match(layout, /const\s+normalizedAuthor\s*=\s*author\.trim\(\)/);
+  assert.match(layout, /normalizedAuthor\s*!==\s*['"]mahammad-sad['"]/);
+  assert.match(layout, /authorProfilePath\(locale,\s*normalizedAuthor\)/);
+  assert.match(layout, /showHumanCredits\s*&&\s*authorName/);
+  assert.doesNotMatch(layout, /trustPagePath\(locale,\s*'author'\)/);
   assert.match(authorPage, /params: \{ slug: author\.id \}/);
 });
 
