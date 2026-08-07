@@ -19,7 +19,7 @@ test('review workflow is the only scheduled repository draft generator', () => {
   assert.doesNotMatch(legacyWorkflow, /schedule:/);
   assert.doesNotMatch(legacyWorkflow, /workflow_dispatch:/);
   assert.doesNotMatch(legacyWorkflow, /git push origin HEAD:main/);
-  assert.doesNotMatch(legacyWorkflow, /generate-drafts/);
+  assert.doesNotMatch(legacyWorkflow, /python -m app\.cli generate-drafts/);
 });
 
 test('production verification allows one visible retry without hiding flakiness', () => {
