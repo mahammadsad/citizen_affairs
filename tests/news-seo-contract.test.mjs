@@ -23,7 +23,8 @@ test('news-like citizen updates emit NewsArticle with rich image metadata', () =
   assert.match(articleSchema, /'@type': 'ImageObject'/);
   assert.match(articleSchema, /width: data\.featuredImageWidth/);
   assert.match(articleSchema, /height: data\.featuredImageHeight/);
-  assert.match(articleSchema, /caption: data\.featuredImageAlt \|\| data\.title/);
+  assert.match(articleSchema, /caption: data\.featuredImageCaption \|\| data\.featuredImageAlt \|\| data\.title/);
+  assert.match(articleSchema, /creditText: data\.featuredImageCredit/);
 });
 
 test('articles expose visible publication metadata with real timestamps and an editorial byline fallback', () => {
