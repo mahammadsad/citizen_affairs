@@ -14,6 +14,45 @@
     const locale = ['bn', 'hi'].includes(document.documentElement.lang)
       ? document.documentElement.lang
       : 'en';
+
+    /* The persistent bottom bar is intentionally hidden on small screens to
+       reclaim reading space. Reuse its localized Search and Saved anchors in
+       the expanding menu so those destinations remain one tap away. */
+    const navigation = panelInner.querySelector('nav');
+    const legacyBottomNavigation = document.querySelector('.portal-mobile-bottom');
+    if (navigation instanceof HTMLElement && legacyBottomNavigation instanceof HTMLElement) {
+      const homeLink = navigation.querySelector('a');
+      const arrowTemplate = homeLink?.querySelector('svg:last-child');
+      const utilityFragment = document.createDocumentFragment();
+      const utilityLinks = [...legacyBottomNavigation.querySelectorAll('a')].filter((link) => {
+        try {
+          const pathname = new URL(link.href, location.href).pathname.replace(/\/+$/, '');
+          return pathname.endsWith('/search') || pathname.endsWith('/saved');
+        } catch (_) {
+          return false;
+        }
+      });
+
+      utilityLinks.forEach((sourceLink) => {
+        const link = sourceLink.cloneNode(true);
+        if (!(link instanceof HTMLAnchorElement)) return;
+        link.classList.add('portal-mobile-utility-link');
+
+        try {
+          const currentPath = location.pathname.replace(/\/+$/, '') || '/';
+          const targetPath = new URL(link.href, location.href).pathname.replace(/\/+$/, '') || '/';
+          if (currentPath === targetPath) link.setAttribute('aria-current', 'page');
+          else link.removeAttribute('aria-current');
+        } catch (_) {}
+
+        if (arrowTemplate) link.append(arrowTemplate.cloneNode(true));
+        utilityFragment.append(link);
+      });
+
+      homeLink?.after(utilityFragment);
+      legacyBottomNavigation.setAttribute('aria-hidden', 'true');
+    }
+
     const followCopy = {
       en: 'Follow Citizen Affairs on',
       bn: 'সিটিজেন অ্যাফেয়ার্সকে অনুসরণ করুন',
