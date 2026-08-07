@@ -25,6 +25,36 @@ jobs:
           ref: cms
           fetch-depth: 0
 
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch protected main
+        run: git fetch origin main
+
+      - name: Optimize oversized CMS images
+        run: node scripts/optimize-cms-images.mjs origin/main
+
+      - name: Commit CMS image optimization
+        id: optimize
+        shell: bash
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "Citizen Affairs CMS"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A src/content/articles public/uploads
+          git commit -m "content: optimize CMS images"
+          git push origin HEAD:cms
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
       - name: Verify editorial GitHub token
         shell: bash
         run: |
@@ -58,12 +88,21 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           printf 'Validated CMS paths:\n%s\n' "${changed[*]}"
 
-      - name: Open or reuse protected CMS pull request
+      - name: Open or refresh protected CMS pull request
         if: steps.scope.outputs.skip != 'true'
         id: pr
         shell: bash
         run: |
           pr_number="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --head cms --state open --json number --jq '.[0].number // empty')"
+
+          # A GITHUB_TOKEN optimization commit does not emit a new pull_request
+          # synchronize event. Reopening through the editorial token guarantees
+          # required checks run against the optimized head.
+          if [[ "${{ steps.optimize.outputs.changed }}" == "true" && -n "$pr_number" ]]; then
+            gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY" --comment "Refreshing the CMS pull request after automatic image optimization."
+            pr_number=""
+          fi
+
           if [[ -z "$pr_number" ]]; then
             pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head cms --title "content: publish Pages CMS updates" --body "Automatic Pages CMS publication. Only article files and uploaded media are allowed. Main remains protected and all required checks must pass before merge.")"
             pr_number="${pr_url##*/}"
