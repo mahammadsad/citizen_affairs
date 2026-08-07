@@ -1,21 +1,49 @@
 name: Generate private editorial drafts
 
 on:
+  pull_request:
+    paths:
+      - "automation/**"
+      - ".github/workflows/generate-drafts.yml"
   schedule:
     # 09:00 and 18:00 Asia/Kolkata. Scheduled runs are gated by AUTOMATION_ENABLED.
     - cron: "30 3,12 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: citizen-affairs-editorial-drafts
+  group: citizen-affairs-editorial-drafts-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout automation change
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: automation/requirements.txt
+
+      - name: Install pinned automation dependencies
+        run: python -m pip install --requirement automation/requirements.txt
+
+      - name: Test private automation contracts
+        working-directory: automation
+        run: python -m pytest -q
+
   generate:
-    if: github.event_name == 'workflow_dispatch' || vars.AUTOMATION_ENABLED == 'true'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && vars.AUTOMATION_ENABLED == 'true')
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
