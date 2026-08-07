@@ -1,25 +1,22 @@
-name: Generate private editorial drafts
+name: Editorial automation tests
 
 on:
   pull_request:
+    branches: [main]
     paths:
       - "automation/**"
       - ".github/workflows/generate-drafts.yml"
-  schedule:
-    # 09:00 and 18:00 Asia/Kolkata. Scheduled runs are gated by AUTOMATION_ENABLED.
-    - cron: "30 3,12 * * *"
-  workflow_dispatch:
+      - ".github/workflows/generate-review-drafts.yml"
 
 permissions:
   contents: read
 
 concurrency:
-  group: citizen-affairs-editorial-drafts-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  group: citizen-affairs-editorial-automation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -39,89 +36,3 @@ jobs:
       - name: Test private automation contracts
         working-directory: automation
         run: python -m pytest -q
-
-  generate:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && vars.AUTOMATION_ENABLED == 'true')
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout main for private draft creation
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: main
-          token: ${{ secrets.EDITORIAL_GITHUB_TOKEN || github.token }}
-          fetch-depth: 1
-
-      - name: Setup Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: automation/requirements.txt
-
-      - name: Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "22"
-          cache: npm
-
-      - name: Install pinned dependencies
-        run: |
-          python -m pip install --requirement automation/requirements.txt
-          npm ci
-
-      - name: Test private automation contracts
-        working-directory: automation
-        run: python -m pytest -q
-
-      - name: Generate official-source SEO drafts
-        working-directory: automation
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_RESEARCH_MODEL: ${{ vars.GEMINI_RESEARCH_MODEL }}
-          GEMINI_WRITING_MODEL: ${{ vars.GEMINI_WRITING_MODEL }}
-          GEMINI_FACTCHECK_MODEL: ${{ vars.GEMINI_FACTCHECK_MODEL }}
-          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
-          OFFICIAL_FEED_URLS: ${{ vars.OFFICIAL_FEED_URLS }}
-          DRAFT_LANGUAGES: ${{ vars.AUTOMATION_DRAFT_LANGUAGES || 'en' }}
-          MAX_DRAFTS_PER_RUN: ${{ vars.MAX_DRAFTS_PER_RUN || '3' }}
-        run: python -m app.cli generate-drafts
-
-      - name: Enforce draft-only file boundary
-        shell: bash
-        run: |
-          changed="$(git status --porcelain --untracked-files=all | awk '{print $2}')"
-          if [ -z "$changed" ]; then
-            echo "No new editorial drafts were generated."
-            exit 0
-          fi
-          invalid="$(printf '%s\n' "$changed" | grep -Ev '^src/content/articles/(en|bn|hi)/[a-z0-9-]+\.md$' || true)"
-          if [ -n "$invalid" ]; then
-            echo "::error::Draft automation attempted to change files outside the private article-draft boundary:"
-            printf '%s\n' "$invalid"
-            exit 1
-          fi
-          if grep -R --include='*.md' -nE '^draft: false$|^workflowStatus: (published|approved|scheduled)$|^verificationStatus: officially-confirmed$' $changed; then
-            echo "::error::Generated content attempted to cross the human publication boundary."
-            exit 1
-          fi
-
-      - name: Validate generated Astro content
-        run: |
-          npm run check
-          npm run validate:content
-
-      - name: Commit private drafts to main
-        shell: bash
-        run: |
-          git add src/content/articles
-          if git diff --cached --quiet; then
-            echo "No new drafts to commit."
-            exit 0
-          fi
-          git config user.name "Citizen Affairs Draft Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git commit -m "content: add automated editorial drafts"
-          git push origin HEAD:main

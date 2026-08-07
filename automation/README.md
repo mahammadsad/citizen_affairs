@@ -16,25 +16,41 @@ The active draft path does **not** require Supabase. `python -m app.cli generate
 8. Save the result under `src/content/articles/<language>/` with `draft: true` and `verificationStatus: under-verification`.
 9. If critical verification is unresolved, keep it private and set `workflowStatus: verification-failed`.
 
-The scheduled GitHub workflow runs at 09:00 and 18:00 Asia/Kolkata when the repository variable `AUTOMATION_ENABLED=true`. Manual workflow runs are allowed even while that variable is disabled. Generated files are validated before they can be committed, and the workflow rejects any attempt to set a generated article to published, approved, scheduled or officially confirmed.
+`Generate review drafts` is the only workflow allowed to generate repository drafts automatically. It runs at 09:00, 15:00 and 21:00 Asia/Kolkata unless `AUTOMATION_ENABLED=false`, and it creates at most one topic per run. A manual run uses the same safety path.
+
+When a new draft is produced, the workflow:
+
+1. rejects every changed path outside the language article directories;
+2. requires `draft: true` and a non-public workflow status;
+3. rejects automatic `officially-confirmed` verification;
+4. runs the automation tests plus Astro content, build and SEO validation;
+5. opens an isolated pull request;
+6. waits for the repository's required pull-request checks;
+7. verifies that the pull request still contains only article-draft files; and
+8. squash-merges the validated draft automatically.
+
+Merging a generated draft does **not** publish it. Public content helpers require both `draft: false` and a public workflow status, so a generated draft remains absent from public article routes, listings and search until the separate human editorial/publication process changes its state.
+
+The older `generate-drafts.yml` workflow is intentionally test-only. It must not contain a schedule, manual generation trigger, or direct push to `main`; this avoids duplicate generators and competing safety models.
 
 ## Required GitHub configuration
 
 Secrets:
 
 - `GEMINI_API_KEY`
+- `EDITORIAL_GITHUB_TOKEN` — required by the canonical workflow so branch pushes, pull-request checks, merges and downstream deployment events are emitted normally
 - Optional `TAVILY_API_KEY`
-- Optional `EDITORIAL_GITHUB_TOKEN` when repository rules do not allow the workflow's normal `GITHUB_TOKEN` to write private drafts to `main`
 
 Variables:
 
 - `GEMINI_RESEARCH_MODEL`
 - `GEMINI_WRITING_MODEL`
 - `GEMINI_FACTCHECK_MODEL`
-- `AUTOMATION_ENABLED=true` to enable scheduled runs
+- `AUTOMATION_ENABLED=false` to pause both scheduled and manual draft generation immediately; any other value leaves the canonical workflow enabled
 - Optional `OFFICIAL_FEED_URLS`
-- Optional `AUTOMATION_DRAFT_LANGUAGES` (`en`, `bn`, `hi`, or a comma-separated combination)
-- Optional `MAX_DRAFTS_PER_RUN` (defaults to `3`)
+- Optional `DRAFT_LANGUAGES` (`en`, `bn`, `hi`, or a comma-separated combination; defaults to `en`)
+
+The canonical workflow deliberately fixes `MAX_DRAFTS_PER_RUN` to `1` so each scheduled run stays selective and reviewable.
 
 No UI, layout, component, Pages CMS field or public route is changed by this automation.
 

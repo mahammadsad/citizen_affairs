@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const noCacheHeaders = { 'Cache-Control': 'no-cache', Pragma: 'no-cache' };
+const transientNavigationStatuses = new Set([502, 503, 504]);
 
 const waitForExpectedBuild = async (request, expectedCommit) => {
   if (!expectedCommit) return;
@@ -23,6 +24,19 @@ const waitForExpectedBuild = async (request, expectedCommit) => {
   throw new Error(`Production did not reach commit ${expectedCommit}; last marker was ${lastSeen}`);
 };
 
+const gotoWithTransientServerRetry = async (page, target) => {
+  let response;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const separator = target.includes('?') ? '&' : '?';
+    response = await page.goto(`${target}${separator}smokeAttempt=${attempt}`, { waitUntil: 'domcontentloaded' });
+    const status = response?.status();
+    if (!transientNavigationStatuses.has(status) || attempt === 2) return response;
+    console.warn(`Transient HTTP ${status} for ${target}; retrying the navigation once.`);
+    await page.waitForTimeout(1_000);
+  }
+  return response;
+};
+
 test('live search presents one primary taxonomy and progressive secondary filters', async ({ page, request }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'One browser is sufficient for the multilingual search contract.');
 
@@ -36,9 +50,9 @@ test('live search presents one primary taxonomy and progressive secondary filter
   ];
 
   for (const item of cases) {
-    const response = await page.goto(
+    const response = await gotoWithTransientServerRetry(
+      page,
       `${item.path}?build=${encodeURIComponent(expectedCommit || 'current')}&nonce=${Date.now()}`,
-      { waitUntil: 'networkidle' },
     );
     expect(response?.status(), `${item.path} should resolve`).toBe(200);
 
@@ -61,7 +75,8 @@ test('live search presents one primary taxonomy and progressive secondary filter
     await expect(page.locator('#resultCount')).not.toContainText(/Loading|লোড|लोड/);
   }
 
-  await page.goto(`/search/?category=jobs&nonce=${Date.now()}`, { waitUntil: 'networkidle' });
+  const legacyResponse = await gotoWithTransientServerRetry(page, `/search/?category=jobs&nonce=${Date.now()}`);
+  expect(legacyResponse?.status()).toBe(200);
   await expect(page.locator('select[name="type"]')).toHaveValue('job');
   await expect.poll(() => page.url()).not.toContain('category=');
   await expect.poll(() => page.url()).toContain('type=job');
@@ -73,7 +88,7 @@ test('English search results use canonical article links that resolve', async ({
   const expectedCommit = process.env.EXPECTED_BUILD_COMMIT || '';
   await waitForExpectedBuild(request, expectedCommit);
 
-  const response = await page.goto(`/search/?q=myscheme&nonce=${Date.now()}`, { waitUntil: 'networkidle' });
+  const response = await gotoWithTransientServerRetry(page, `/search/?q=myscheme&nonce=${Date.now()}`);
   expect(response?.status()).toBe(200);
 
   const result = page.locator('a.search-result-link[href="/articles/find-government-schemes-with-myscheme/"]');

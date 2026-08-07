@@ -29,13 +29,25 @@ jobs:
       OFFICIAL_FEED_URLS: ${{ vars.OFFICIAL_FEED_URLS }}
       DRAFT_LANGUAGES: ${{ vars.DRAFT_LANGUAGES || 'en' }}
       MAX_DRAFTS_PER_RUN: "1"
-      GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN || github.token }}
+      GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
 
     steps:
+      - name: Verify editorial GitHub token
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$GH_TOKEN" ]]; then
+            echo "::error::EDITORIAL_GITHUB_TOKEN is required so draft PR checks and downstream deployments are triggered normally."
+            exit 1
+          fi
+          gh api user --jq '.login' >/dev/null
+
       - name: Checkout main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          token: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
+          fetch-depth: 1
 
       - name: Setup Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -110,8 +122,9 @@ jobs:
           npm run build
           npm run validate:seo
 
-      - name: Open protected draft review pull request
+      - name: Open validated draft pull request
         if: steps.drafts.outputs.has_drafts == 'true'
+        id: draft-pr
         shell: bash
         run: |
           set -euo pipefail
@@ -121,8 +134,81 @@ jobs:
           git switch -c "$branch"
           git commit -m "content: add automated review draft(s)"
           git push --set-upstream origin "$branch"
-          gh pr create \
+          pr_url="$(gh pr create \
             --base main \
             --head "$branch" \
             --title "content: automated article draft for review" \
-            --body "Automated official-source research + SEO draft. This PR contains review-only content: every generated article is forced to draft:true, cannot be officially confirmed automatically, and remains unpublished until a human edits/approves the content through the normal protected workflow."
+            --body "Automated official-source research + SEO draft. This PR contains review-only content: every generated article is forced to draft:true, cannot be officially confirmed automatically, and remains unpublished until a human edits/approves the content through the normal protected workflow.")"
+          pr_number="${pr_url##*/}"
+          if [[ ! "$pr_number" =~ ^[1-9][0-9]*$ ]]; then
+            echo "::error::GitHub did not return a valid draft pull request number."
+            exit 1
+          fi
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "Draft pull request: #$pr_number ($pr_url)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Wait for required draft pull-request checks
+        if: steps.drafts.outputs.has_drafts == 'true'
+        env:
+          PR_NUMBER: ${{ steps.draft-pr.outputs.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_count=0
+          for attempt in $(seq 1 24); do
+            checks="$(gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --json name,state 2>/dev/null || true)"
+            if [[ -n "$checks" ]]; then
+              check_count="$(jq 'length' <<< "$checks" 2>/dev/null || echo 0)"
+            fi
+            if [[ "$check_count" =~ ^[0-9]+$ ]] && (( check_count > 0 )); then
+              echo "Required checks registered: $check_count"
+              break
+            fi
+            sleep 5
+          done
+
+          if [[ "$check_count" =~ ^[0-9]+$ ]] && (( check_count > 0 )); then
+            gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --watch --fail-fast --interval 10
+          else
+            echo "No required checks were registered; continuing only because this job already completed the draft boundary, content, build and SEO validations."
+          fi
+
+      - name: Verify and merge private draft
+        if: steps.drafts.outputs.has_drafts == 'true'
+        env:
+          PR_NUMBER: ${{ steps.draft-pr.outputs.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_state="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
+          if [[ "$pr_state" != "OPEN" ]]; then
+            echo "::error::Draft pull request is no longer open; refusing an ambiguous merge."
+            exit 1
+          fi
+
+          head_sha="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
+          mapfile -t changed < <(gh pr diff "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --name-only)
+          if (( ${#changed[@]} == 0 )); then
+            echo "::error::Draft pull request contains no changed files."
+            exit 1
+          fi
+          for file in "${changed[@]}"; do
+            case "$file" in
+              src/content/articles/en/*.md|src/content/articles/bn/*.md|src/content/articles/hi/*.md) ;;
+              *) echo "::error::Draft pull request changed an unexpected path: $file"; exit 1 ;;
+            esac
+          done
+
+          gh pr merge "$PR_NUMBER" \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --delete-branch \
+            --match-head-commit "$head_sha"
+
+          final_state="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
+          if [[ "$final_state" != "MERGED" ]]; then
+            echo "::error::Validated private draft pull request did not merge."
+            exit 1
+          fi
+          echo "Private draft PR #$PR_NUMBER merged after validation. The article remains unpublished because draft:true and its non-public workflow status are unchanged." >> "$GITHUB_STEP_SUMMARY"
