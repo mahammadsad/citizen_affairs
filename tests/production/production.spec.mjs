@@ -113,7 +113,7 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     const after = await content.boundingBox();
     expect(before).not.toBeNull();
     expect(after).not.toBeNull();
-    if (before && after) expect(after.top - before.top).toBeGreaterThan(100);
+    if (before && after) expect(after.y - before.y).toBeGreaterThan(100);
 
     await page.keyboard.press('Escape');
     await expect(menuTrigger).toHaveAttribute('aria-expanded', 'false');
