@@ -127,7 +127,7 @@ async def discover_from_official_feeds(feed_urls: list[str], limit: int = 20) ->
             if not is_official_url(final_url):
                 continue
 
-            feed = feedparser.loads(response.content)
+            feed = feedparser.parse(response.content)
             feed_entries = list(feed.entries)
             if feed_entries:
                 authority = " ".join(str(feed.feed.get("title", "")).split()) or urlparse(final_url).hostname or "Official source"
