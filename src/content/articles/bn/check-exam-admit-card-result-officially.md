@@ -103,7 +103,6 @@ faqs:
     answer: DigiLocker-এর Issued Documents বিভাগে issuer থেকে সরাসরি পাওয়া document
       authentic digital document হিসেবে থাকে। নির্দিষ্ট admission বা recruitment
       authority কোন format গ্রহণ করবে, তার নিয়ম আলাদাভাবে যাচাই করুন।
-deadline: 2026-08-07
 featuredImage: /uploads/file00000000e36c821199edb06344b4ec99.webp
 featuredImageAlt: পরীক্ষার official portal যাচাই করে admit card, answer key ও
   result download এবং fake phishing link এড়ানোর সচেতনতামূলক illustration
