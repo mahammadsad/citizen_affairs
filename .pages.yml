@@ -10,7 +10,7 @@ content:
     type: group
     items:
       - name: english-drafts
-        label: "English drafts — rich editor"
+        label: "English drafts — writing editor"
         type: collection
         path: src/content/articles/en/drafts
         format: yaml-frontmatter
@@ -102,7 +102,7 @@ content:
           - { name: body, label: Article draft, type: rich-text, required: true }
 
       - name: bengali-drafts
-        label: "বাংলা খসড়া — রিচ এডিটর"
+        label: "বাংলা খসড়া — লেখার এডিটর"
         type: collection
         path: src/content/articles/bn/drafts
         format: yaml-frontmatter
@@ -185,7 +185,7 @@ content:
           - { name: body, label: পুরো খসড়া, type: rich-text, required: true }
 
       - name: hindi-drafts
-        label: "हिन्दी ड्राफ्ट — रिच एडिटर"
+        label: "हिन्दी ड्राफ्ट — लेखन एडिटर"
         type: collection
         path: src/content/articles/hi/drafts
         format: yaml-frontmatter
@@ -254,6 +254,348 @@ content:
               - { name: question, label: प्रश्न, type: string, required: true }
               - { name: answer, label: उत्तर, type: text, required: true }
           - { name: body, label: पूरा ड्राफ्ट, type: rich-text, required: true }
+
+  - name: seo-newsroom-review
+    label: "🔎 SEO & Newsroom review — BEFORE PUBLISH"
+    type: group
+    items:
+      - name: english-seo-review
+        label: "English — SEO & Newsroom"
+        type: collection
+        path: src/content/articles/en/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [verificationStatus, title, contentType, category, date]
+          sort: [date, title]
+          search: [title, urlSlug, category, verificationStatus, tags]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true, description: "This SEO workspace never publishes the article. Publishing remains protected." }
+          - { name: title, label: "Headline (H1)", type: string, readonly: true, description: "Review the writing editor if the main headline itself needs changing." }
+          - { name: urlSlug, label: "URL slug", type: string, readonly: true, description: "Keep URLs short and descriptive. Change the slug only from the writing workflow so filename and URL stay aligned." }
+          - name: contentType
+            label: "Article type / search intent"
+            type: select
+            required: true
+            description: "Choose the real user intent. This affects structured data and how the article is treated by the site."
+            options:
+              values:
+                - { value: job, label: "Government job / recruitment" }
+                - { value: scheme, label: "Government scheme / benefit" }
+                - { value: admission, label: "Admission / exam admission" }
+                - { value: scholarship, label: "Scholarship / education benefit" }
+                - { value: service, label: "Citizen service / how-to" }
+                - { value: alert, label: "Urgent notice / rule or deadline update" }
+                - { value: explainer, label: "Explainer / result / general update" }
+          - name: category
+            label: "Portal section"
+            type: select
+            required: true
+            description: "Choose the section a reader would naturally browse. Jobs, exams, citizen services and notices can qualify for news-style discovery when fresh."
+            options:
+              values:
+                - { value: jobs, label: "Government Jobs" }
+                - { value: exams, label: "Admissions, Exams & Results" }
+                - { value: materials, label: "Education & Scholarships" }
+                - { value: projects, label: "Welfare Schemes & Benefits" }
+                - { value: affairs, label: "Citizen Services" }
+                - { value: notices, label: "Citizen Alerts & Notices" }
+                - { value: guides, label: "Citizen Guides" }
+          - name: verificationStatus
+            label: "Verification status"
+            type: select
+            required: true
+            description: "Do not mark Officially Confirmed unless the key claims match an official source. This does not publish the article."
+            options:
+              values:
+                - { value: under-verification, label: "Under Verification" }
+                - { value: partially-confirmed, label: "Partially Confirmed" }
+                - { value: officially-confirmed, label: "Officially Confirmed" }
+                - { value: corrected, label: "Corrected" }
+                - { value: closed, label: "Closed" }
+                - { value: withdrawn, label: "Withdrawn" }
+          - { name: seoTitle, label: "Search title", type: string, required: false, description: "Optional. Write a clear, specific search title. Prefer the important entity/topic early; avoid clickbait and repetitive keywords." }
+          - { name: seoDescription, label: "Meta description", type: text, required: false, description: "Optional. Summarise what changed, who is affected and the useful action. Write naturally for people, not keyword density." }
+          - { name: tags, label: "Topics / search terms", type: string, list: true, required: false, description: "Use a small set of real entities and topics readers search for: organisation, exam, scheme, service, year and state where relevant." }
+          - { name: quickSummary, label: "Key takeaways", type: string, list: true, required: false, description: "Aim for 2–5 concrete points that answer the reader quickly. These are shown prominently on the article." }
+          - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false, description: "Use a relevant, sharp landscape image. The site allows large image previews for Search/Discover." }
+          - { name: featuredImageAlt, label: "Image alt text", type: string, required: false, description: "Describe what the image contains and why it is relevant. Do not stuff keywords or start with 'image of'." }
+          - { name: sourceUrls, label: "Official source URLs", type: string, list: { min: 1 }, required: true, description: "Every factual government/news update must retain at least one authoritative source URL." }
+          - name: sources
+            label: "Structured source cards"
+            type: object
+            required: false
+            description: "Review the authority, source type and access date. These source cards are shown to readers and strengthen transparency."
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{fields.title}"
+            fields:
+              - { name: title, label: "Source title", type: string, required: true }
+              - { name: url, label: "Source URL", type: string, required: true }
+              - { name: publishingAuthority, label: "Publishing authority", type: string, required: true }
+              - name: sourceType
+                label: "Source type"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: official-notification, label: "Official notification" }
+                    - { value: official-portal, label: "Official portal" }
+                    - { value: official-order, label: "Official order" }
+                    - { value: press-release, label: "Press release" }
+                    - { value: government-dataset, label: "Government dataset" }
+                    - { value: secondary, label: "Secondary source" }
+              - name: designation
+                label: "Source priority"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: primary, label: "Primary" }
+                    - { value: secondary, label: "Secondary" }
+              - { name: documentNumber, label: "Document / notice number", type: string, required: false }
+              - { name: publicationDate, label: "Source publication date", type: date, required: false }
+              - { name: accessedDate, label: "Date checked", type: date, required: true }
+              - { name: archivedUrl, label: "Archived URL", type: string, required: false }
+              - { name: notes, label: "Source note", type: text, required: false }
+          - { name: officialNoticeUrl, label: "Primary official notice", type: string, required: false, description: "Link the exact notice/result/order when available, not only the organisation homepage." }
+          - { name: applicationUrl, label: "Official action URL", type: string, required: false, description: "Use the direct official apply/download/status/service link when readers need to act." }
+          - { name: lastVerified, label: "Last official-source check", type: date, required: false, description: "Set this to the date you most recently checked the official information." }
+          - name: faqs
+            label: "Useful FAQs"
+            type: object
+            list: true
+            required: false
+            description: "Add only questions the article genuinely answers. FAQ content should help readers; it is not a keyword-stuffing area."
+            fields:
+              - { name: question, label: Question, type: string, required: true }
+              - { name: answer, label: Answer, type: text, required: true }
+
+      - name: bengali-seo-review
+        label: "বাংলা — SEO ও নিউজরুম"
+        type: collection
+        path: src/content/articles/bn/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [verificationStatus, title, contentType, category, date]
+          sort: [date, title]
+          search: [title, urlSlug, category, verificationStatus, tags]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true, description: "এই SEO review screen থেকে আর্টিকেল publish হয় না।" }
+          - { name: title, label: "মূল শিরোনাম (H1)", type: string, readonly: true, description: "শিরোনাম বদলাতে writing editor ব্যবহার করুন।" }
+          - { name: urlSlug, label: "URL slug", type: string, readonly: true, description: "সংক্ষিপ্ত ও বর্ণনামূলক URL রাখুন।" }
+          - name: contentType
+            label: "আর্টিকেলের ধরন / search intent"
+            type: select
+            required: true
+            description: "পাঠক আসলে কী জানতে চাইছেন তার সঙ্গে সবচেয়ে কাছের ধরনটি বেছে নিন।"
+            options:
+              values:
+                - { value: job, label: "সরকারি চাকরি / নিয়োগ" }
+                - { value: scheme, label: "সরকারি প্রকল্প / সুবিধা" }
+                - { value: admission, label: "ভর্তি / পরীক্ষা" }
+                - { value: scholarship, label: "স্কলারশিপ / শিক্ষা সুবিধা" }
+                - { value: service, label: "নাগরিক পরিষেবা / কীভাবে করবেন" }
+                - { value: alert, label: "জরুরি নোটিশ / নিয়ম বা শেষ তারিখের পরিবর্তন" }
+                - { value: explainer, label: "ব্যাখ্যা / ফলাফল / সাধারণ আপডেট" }
+          - name: category
+            label: "পোর্টালের বিভাগ"
+            type: select
+            required: true
+            options:
+              values:
+                - { value: jobs, label: "সরকারি চাকরি" }
+                - { value: exams, label: "ভর্তি, পরীক্ষা ও ফলাফল" }
+                - { value: materials, label: "শিক্ষা ও স্কলারশিপ" }
+                - { value: projects, label: "জনকল্যাণ প্রকল্প ও সুবিধা" }
+                - { value: affairs, label: "নাগরিক পরিষেবা" }
+                - { value: notices, label: "নাগরিক সতর্কতা ও নোটিশ" }
+                - { value: guides, label: "নাগরিক গাইড" }
+          - name: verificationStatus
+            label: "তথ্য যাচাইয়ের অবস্থা"
+            type: select
+            required: true
+            description: "মূল তথ্য অফিসিয়াল উৎসের সঙ্গে মিলিয়ে না দেখা পর্যন্ত Officially Confirmed বেছে নেবেন না।"
+            options:
+              values:
+                - { value: under-verification, label: "যাচাই চলছে" }
+                - { value: partially-confirmed, label: "আংশিকভাবে যাচাই হয়েছে" }
+                - { value: officially-confirmed, label: "অফিসিয়ালভাবে নিশ্চিত" }
+                - { value: corrected, label: "সংশোধিত" }
+                - { value: closed, label: "বন্ধ" }
+                - { value: withdrawn, label: "প্রত্যাহার" }
+          - { name: seoTitle, label: "Search title", type: string, required: false, description: "পরিষ্কার ও নির্দিষ্ট রাখুন; clickbait বা একই keyword বারবার ব্যবহার করবেন না।" }
+          - { name: seoDescription, label: "Meta description", type: text, required: false, description: "কী বদলেছে, কার জন্য এবং কী করতে হবে—স্বাভাবিক ভাষায় সংক্ষেপে লিখুন।" }
+          - { name: tags, label: "বিষয় / search terms", type: string, list: true, required: false, description: "প্রাসঙ্গিক সংস্থা, পরীক্ষা, প্রকল্প, পরিষেবা, বছর ও রাজ্যের নাম ব্যবহার করুন।" }
+          - { name: quickSummary, label: "মূল পয়েন্ট", type: string, list: true, required: false, description: "২–৫টি স্পষ্ট ও ব্যবহারযোগ্য তথ্য রাখুন।" }
+          - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false, description: "প্রাসঙ্গিক ও পরিষ্কার landscape ছবি ব্যবহার করুন।" }
+          - { name: featuredImageAlt, label: "ছবির alt text", type: string, required: false, description: "ছবিতে কী আছে তা স্বাভাবিক ভাষায় বর্ণনা করুন; keyword stuffing করবেন না।" }
+          - { name: sourceUrls, label: "অফিসিয়াল উৎসের URL", type: string, list: { min: 1 }, required: true, description: "প্রতিটি গুরুত্বপূর্ণ সরকারি আপডেটে অন্তত একটি নির্ভরযোগ্য অফিসিয়াল উৎস রাখুন।" }
+          - name: sources
+            label: "Structured source cards"
+            type: object
+            required: false
+            description: "উৎসের কর্তৃপক্ষ, ধরন ও যাচাইয়ের তারিখ দেখে নিন।"
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{fields.title}"
+            fields:
+              - { name: title, label: "উৎসের শিরোনাম", type: string, required: true }
+              - { name: url, label: "Source URL", type: string, required: true }
+              - { name: publishingAuthority, label: "প্রকাশকারী কর্তৃপক্ষ", type: string, required: true }
+              - name: sourceType
+                label: "উৎসের ধরন"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: official-notification, label: "অফিসিয়াল নোটিফিকেশন" }
+                    - { value: official-portal, label: "অফিসিয়াল পোর্টাল" }
+                    - { value: official-order, label: "অফিসিয়াল আদেশ" }
+                    - { value: press-release, label: "প্রেস রিলিজ" }
+                    - { value: government-dataset, label: "সরকারি ডেটাসেট" }
+                    - { value: secondary, label: "সহায়ক উৎস" }
+              - name: designation
+                label: "উৎসের অগ্রাধিকার"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: primary, label: "Primary" }
+                    - { value: secondary, label: "Secondary" }
+              - { name: documentNumber, label: "নথি / নোটিশ নম্বর", type: string, required: false }
+              - { name: publicationDate, label: "উৎস প্রকাশের তারিখ", type: date, required: false }
+              - { name: accessedDate, label: "যাচাইয়ের তারিখ", type: date, required: true }
+              - { name: archivedUrl, label: "Archived URL", type: string, required: false }
+              - { name: notes, label: "উৎস নোট", type: text, required: false }
+          - { name: officialNoticeUrl, label: "মূল অফিসিয়াল নোটিশ", type: string, required: false, description: "সম্ভব হলে homepage নয়, সরাসরি notice/result/order-এর link দিন।" }
+          - { name: applicationUrl, label: "অফিসিয়াল action URL", type: string, required: false, description: "Apply/download/status/service-এর সরাসরি অফিসিয়াল link দিন।" }
+          - { name: lastVerified, label: "সর্বশেষ অফিসিয়াল উৎস যাচাই", type: date, required: false }
+          - name: faqs
+            label: "প্রয়োজনীয় FAQ"
+            type: object
+            list: true
+            required: false
+            description: "আর্টিকেল সত্যিই যে প্রশ্নগুলোর উত্তর দেয় শুধু সেগুলো যোগ করুন।"
+            fields:
+              - { name: question, label: প্রশ্ন, type: string, required: true }
+              - { name: answer, label: উত্তর, type: text, required: true }
+
+      - name: hindi-seo-review
+        label: "हिन्दी — SEO और न्यूज़रूम"
+        type: collection
+        path: src/content/articles/hi/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [verificationStatus, title, contentType, category, date]
+          sort: [date, title]
+          search: [title, urlSlug, category, verificationStatus, tags]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true, description: "यह SEO review स्क्रीन लेख को publish नहीं करती।" }
+          - { name: title, label: "मुख्य शीर्षक (H1)", type: string, readonly: true, description: "मुख्य शीर्षक बदलने के लिए writing editor का उपयोग करें।" }
+          - { name: urlSlug, label: "URL slug", type: string, readonly: true, description: "URL छोटा और वर्णनात्मक रखें।" }
+          - name: contentType
+            label: "लेख का प्रकार / search intent"
+            type: select
+            required: true
+            description: "पाठक की वास्तविक जरूरत के सबसे करीब वाला प्रकार चुनें।"
+            options:
+              values:
+                - { value: job, label: "सरकारी नौकरी / भर्ती" }
+                - { value: scheme, label: "सरकारी योजना / लाभ" }
+                - { value: admission, label: "प्रवेश / परीक्षा" }
+                - { value: scholarship, label: "छात्रवृत्ति / शिक्षा लाभ" }
+                - { value: service, label: "नागरिक सेवा / how-to" }
+                - { value: alert, label: "तत्काल सूचना / नियम या अंतिम तिथि बदलाव" }
+                - { value: explainer, label: "व्याख्या / परिणाम / सामान्य अपडेट" }
+          - { name: category, label: "Portal section", type: string, required: true }
+          - name: verificationStatus
+            label: "सत्यापन स्थिति"
+            type: select
+            required: true
+            description: "मुख्य दावों को आधिकारिक स्रोत से मिलाए बिना Officially Confirmed न चुनें।"
+            options:
+              values:
+                - { value: under-verification, label: "सत्यापन जारी" }
+                - { value: partially-confirmed, label: "आंशिक पुष्टि" }
+                - { value: officially-confirmed, label: "आधिकारिक पुष्टि" }
+                - { value: corrected, label: "सुधारा गया" }
+                - { value: closed, label: "बंद" }
+                - { value: withdrawn, label: "वापस लिया गया" }
+          - { name: seoTitle, label: "Search title", type: string, required: false, description: "स्पष्ट और विशिष्ट रखें; clickbait और दोहराए गए keywords से बचें।" }
+          - { name: seoDescription, label: "Meta description", type: text, required: false, description: "क्या बदला, किसके लिए है और क्या कार्रवाई जरूरी है—इसे स्वाभाविक भाषा में संक्षेप में लिखें।" }
+          - { name: tags, label: "Topics / search terms", type: string, list: true, required: false }
+          - { name: quickSummary, label: "मुख्य बिंदु", type: string, list: true, required: false, description: "2–5 उपयोगी और ठोस बिंदु रखें।" }
+          - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false }
+          - { name: featuredImageAlt, label: "Image alt text", type: string, required: false, description: "चित्र का स्वाभाविक वर्णन करें; keyword stuffing न करें।" }
+          - { name: sourceUrls, label: "आधिकारिक स्रोत URL", type: string, list: { min: 1 }, required: true }
+          - name: sources
+            label: "Structured source cards"
+            type: object
+            required: false
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{fields.title}"
+            fields:
+              - { name: title, label: "Source title", type: string, required: true }
+              - { name: url, label: "Source URL", type: string, required: true }
+              - { name: publishingAuthority, label: "Publishing authority", type: string, required: true }
+              - name: sourceType
+                label: "Source type"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: official-notification, label: "Official notification" }
+                    - { value: official-portal, label: "Official portal" }
+                    - { value: official-order, label: "Official order" }
+                    - { value: press-release, label: "Press release" }
+                    - { value: government-dataset, label: "Government dataset" }
+                    - { value: secondary, label: "Secondary source" }
+              - name: designation
+                label: "Source priority"
+                type: select
+                required: true
+                options:
+                  values:
+                    - { value: primary, label: "Primary" }
+                    - { value: secondary, label: "Secondary" }
+              - { name: documentNumber, label: "Document / notice number", type: string, required: false }
+              - { name: publicationDate, label: "Source publication date", type: date, required: false }
+              - { name: accessedDate, label: "Date checked", type: date, required: true }
+              - { name: archivedUrl, label: "Archived URL", type: string, required: false }
+              - { name: notes, label: "Source note", type: text, required: false }
+          - { name: officialNoticeUrl, label: "Primary official notice", type: string, required: false }
+          - { name: applicationUrl, label: "Official action URL", type: string, required: false }
+          - { name: lastVerified, label: "Last official-source check", type: date, required: false }
+          - name: faqs
+            label: "Useful FAQs"
+            type: object
+            list: true
+            required: false
+            fields:
+              - { name: question, label: प्रश्न, type: string, required: true }
+              - { name: answer, label: उत्तर, type: text, required: true }
 
   - name: mobile-draft-editor
     label: "📱 Mobile draft editor — KEYBOARD FRIENDLY"
