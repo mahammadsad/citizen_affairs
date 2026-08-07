@@ -102,7 +102,7 @@ test('mobile navigation expands below the header and pushes content down', async
   const after = await content.boundingBox();
   expect(before).not.toBeNull();
   expect(after).not.toBeNull();
-  if (before && after) expect(after.top - before.top).toBeGreaterThan(100);
+  if (before && after) expect(after.y - before.y).toBeGreaterThan(100);
 
   const geometry = await panel.evaluate((element) => {
     const rect = element.getBoundingClientRect();
