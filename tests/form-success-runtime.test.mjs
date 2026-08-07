@@ -40,6 +40,25 @@ test('form redirect tokens replace the legacy persistent sent flag', async () =>
   assert.match(runtime, /\[\.\.\.queryKeys, 'sent'\]/);
 });
 
+test('invalid forms reveal the first invalid field instead of appearing unresponsive', async () => {
+  const runtime = await read('src/components/FormSubmissionRuntime.astro');
+
+  assert.match(runtime, /form\.checkValidity\(\)/);
+  assert.match(runtime, /revealFirstInvalidControl\(form\)/);
+  assert.match(runtime, /scrollIntoView/);
+  assert.match(runtime, /reportValidity\(\)/);
+  assert.match(runtime, /submission-attempted/);
+});
+
+test('submissions include their exact source URL and expose a submitting state', async () => {
+  const runtime = await read('src/components/FormSubmissionRuntime.astro');
+
+  assert.match(runtime, /input\[name="_url"\]/);
+  assert.match(runtime, /sourceInput\.name = '_url'/);
+  assert.match(runtime, /setSubmittingState\(form, true\)/);
+  assert.match(runtime, /aria-busy/);
+});
+
 test('stale back-forward cache pages cannot keep an old success banner visible', async () => {
   const runtime = await read('src/components/FormSubmissionRuntime.astro');
 

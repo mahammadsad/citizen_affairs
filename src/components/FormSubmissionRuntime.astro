@@ -86,6 +86,54 @@
     }
   };
 
+  const ensureSourceUrl = (form: HTMLFormElement): void => {
+    let sourceInput = form.querySelector<HTMLInputElement>('input[name="_url"]');
+
+    if (!sourceInput) {
+      sourceInput = document.createElement('input');
+      sourceInput.type = 'hidden';
+      sourceInput.name = '_url';
+      form.append(sourceInput);
+    }
+
+    const sourceUrl = new URL(window.location.href);
+    sourceUrl.search = '';
+    sourceInput.value = sourceUrl.toString();
+  };
+
+  const getFirstInvalidControl = (form: HTMLFormElement): HTMLElement | null => {
+    return form.querySelector<HTMLElement>('input:invalid, select:invalid, textarea:invalid');
+  };
+
+  const revealFirstInvalidControl = (form: HTMLFormElement): void => {
+    form.classList.add('submission-attempted');
+    const invalidControl = getFirstInvalidControl(form);
+
+    if (!invalidControl) return;
+
+    invalidControl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    window.setTimeout(() => {
+      invalidControl.focus({ preventScroll: true });
+      if (
+        invalidControl instanceof HTMLInputElement ||
+        invalidControl instanceof HTMLSelectElement ||
+        invalidControl instanceof HTMLTextAreaElement
+      ) {
+        invalidControl.reportValidity();
+      }
+    }, 220);
+  };
+
+  const setSubmittingState = (form: HTMLFormElement, submitting: boolean): void => {
+    const submitButton = form.querySelector<HTMLButtonElement | HTMLInputElement>(
+      'button[type="submit"], input[type="submit"]'
+    );
+    if (!submitButton) return;
+
+    submitButton.disabled = submitting;
+    submitButton.setAttribute('aria-busy', String(submitting));
+  };
+
   const initialiseSubmissionForm = (configuration: SubmissionFormConfiguration): void => {
     const form = document.querySelector(configuration.formSelector);
     const banner = document.getElementById(configuration.bannerId);
@@ -113,12 +161,42 @@
 
     if (!(form instanceof HTMLFormElement)) return;
 
+    ensureSourceUrl(form);
+    setSubmittingState(form, false);
+
+    const submitButton = form.querySelector<HTMLButtonElement | HTMLInputElement>(
+      'button[type="submit"], input[type="submit"]'
+    );
+    submitButton?.addEventListener('click', (event) => {
+      if (form.checkValidity()) return;
+
+      event.preventDefault();
+      revealFirstInvalidControl(form);
+    });
+
+    form.addEventListener('invalid', () => {
+      form.classList.add('submission-attempted');
+    }, true);
+
+    form.addEventListener('input', () => {
+      if (form.checkValidity()) form.classList.remove('submission-attempted');
+    });
+
+    form.addEventListener('change', () => {
+      if (form.checkValidity()) form.classList.remove('submission-attempted');
+    });
+
     form.addEventListener('submit', () => {
+      if (!form.checkValidity()) {
+        revealFirstInvalidControl(form);
+        return;
+      }
+
       const submissionToken = createSubmissionToken();
       const tokenStored = writeSessionValue(configuration.storageKey, submissionToken);
-      const nextInput = form.querySelector('input[name="_next"]');
+      const nextInput = form.querySelector<HTMLInputElement>('input[name="_next"]');
 
-      if (nextInput instanceof HTMLInputElement && tokenStored) {
+      if (nextInput && tokenStored) {
         const returnUrl = new URL(window.location.href);
         returnUrl.search = '';
         returnUrl.hash = configuration.returnHash;
@@ -126,6 +204,8 @@
         nextInput.value = returnUrl.toString();
       }
 
+      ensureSourceUrl(form);
+      setSubmittingState(form, true);
       setBannerVisibility(banner, false);
     });
   };
@@ -145,9 +225,10 @@
   }
 
   window.addEventListener('pageshow', (event: PageTransitionEvent) => {
-    if (!event.persisted) return;
-    submissionForms.forEach(({ bannerId }) => {
-      setBannerVisibility(document.getElementById(bannerId), false);
+    submissionForms.forEach(({ formSelector, bannerId }) => {
+      const form = document.querySelector(formSelector);
+      if (form instanceof HTMLFormElement) setSubmittingState(form, false);
+      if (event.persisted) setBannerVisibility(document.getElementById(bannerId), false);
     });
   });
 </script>
@@ -156,5 +237,34 @@
   #applicationSuccess[hidden],
   #contactSuccess[hidden] {
     display: none !important;
+  }
+
+  [data-career-form] :is(input, select, textarea),
+  [data-contact-form] :is(input, select, textarea) {
+    scroll-margin-block: 120px;
+  }
+
+  [data-career-form].submission-attempted :is(input, select, textarea):invalid,
+  [data-contact-form].submission-attempted :is(input, select, textarea):invalid {
+    border-color: #b42318 !important;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, .12) !important;
+  }
+
+  [data-career-form] button[type="submit"][aria-busy="true"],
+  [data-contact-form] button[type="submit"][aria-busy="true"] {
+    cursor: wait;
+    opacity: .72;
+  }
+
+  @media (max-width: 680px) {
+    [data-career-form],
+    [data-contact-form] {
+      padding-bottom: 1rem;
+    }
+
+    [data-career-form] button[type="submit"],
+    [data-contact-form] button[type="submit"] {
+      scroll-margin-bottom: 120px;
+    }
   }
 </style>
