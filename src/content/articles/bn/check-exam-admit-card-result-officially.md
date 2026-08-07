@@ -4,8 +4,10 @@ contentType: explainer
 workflowStatus: published
 translationKey: check-exam-admit-card-result-officially
 urlSlug: check-exam-admit-card-result-officially
-title: "Admit card, answer key ও result অফিসিয়ালভাবে যাচাই করার গাইড"
-description: "NTA বা অন্য পরীক্ষাকারী সংস্থার city intimation, admit card, answer key, response sheet, score card ও result কোথায় এবং কীভাবে নিরাপদে যাচাই করবেন—ধাপে ধাপে বাংলা গাইড।"
+title: Admit card, answer key ও result অফিসিয়ালভাবে যাচাই করার গাইড
+description: NTA বা অন্য পরীক্ষাকারী সংস্থার city intimation, admit card, answer
+  key, response sheet, score card ও result কোথায় এবং কীভাবে নিরাপদে যাচাই
+  করবেন—ধাপে ধাপে বাংলা গাইড।
 date: 2026-08-05
 updated: 2026-08-06
 lastVerified: 2026-08-06
@@ -52,19 +54,22 @@ sources:
     accessedDate: 2026-08-06
   - title: About DigiLocker
     url: https://www.digilocker.gov.in/web/about/about-digilocker
-    publishingAuthority: National e-Governance Division, Ministry of Electronics and Information Technology, Government of India
+    publishingAuthority: National e-Governance Division, Ministry of Electronics and
+      Information Technology, Government of India
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-06
   - title: DigiLocker frequently asked questions
     url: https://www.digilocker.gov.in/web/about/faq
-    publishingAuthority: National e-Governance Division, Ministry of Electronics and Information Technology, Government of India
+    publishingAuthority: National e-Governance Division, Ministry of Electronics and
+      Information Technology, Government of India
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-06
   - title: Verify DigiLocker Document
     url: https://verify.digilocker.gov.in/
-    publishingAuthority: National e-Governance Division, Ministry of Electronics and Information Technology, Government of India
+    publishingAuthority: National e-Governance Division, Ministry of Electronics and
+      Information Technology, Government of India
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-06
@@ -77,18 +82,35 @@ featured: false
 draft: false
 governmentLevel: central
 quickSummary:
-  - পরীক্ষাকারী সংস্থার মূল website ও Notice Board থেকে document বা login link খুলুন।
-  - city intimation slip, admit card, provisional answer key, response sheet এবং score card এক জিনিস নয়।
-  - social-media link বা search advertisement থেকে login না করে notice-এ দেওয়া official domain যাচাই করুন।
+  - পরীক্ষাকারী সংস্থার মূল website ও Notice Board থেকে document বা login link
+    খুলুন।
+  - city intimation slip, admit card, provisional answer key, response sheet এবং
+    score card এক জিনিস নয়।
+  - social-media link বা search advertisement থেকে login না করে notice-এ দেওয়া
+    official domain যাচাই করুন।
 updateHistory:
-  - "2026-08-06: NTA Notice Board, city-intimation notice, answer-key challenge notice এবং DigiLocker guidance যাচাই করে প্রকাশ করা হয়েছে।"
+  - "2026-08-06: NTA Notice Board, city-intimation notice, answer-key challenge
+    notice এবং DigiLocker guidance যাচাই করে প্রকাশ করা হয়েছে।"
 faqs:
   - question: City intimation slip কি admit card?
-    answer: সাধারণত নয়। NTA-এর official notice-এ city slip-কে examination city-এর advance information বলা হয়েছে এবং admit card পরে প্রকাশের কথা বলা হয়েছে। নিজের পরীক্ষার latest notice অবশ্যই পড়ুন।
+    answer: সাধারণত নয়। NTA-এর official notice-এ city slip-কে examination city-এর
+      advance information বলা হয়েছে এবং admit card পরে প্রকাশের কথা বলা হয়েছে।
+      নিজের পরীক্ষার latest notice অবশ্যই পড়ুন।
   - question: Provisional answer key কি final result?
-    answer: না। Provisional key-এর বিরুদ্ধে notice অনুযায়ী challenge নেওয়া হতে পারে। Expert review-এর পরে final key এবং result প্রকাশ করা হয়।
+    answer: না। Provisional key-এর বিরুদ্ধে notice অনুযায়ী challenge নেওয়া হতে পারে।
+      Expert review-এর পরে final key এবং result প্রকাশ করা হয়।
   - question: DigiLocker-এর marksheet কি ব্যবহার করা যায়?
-    answer: DigiLocker-এর Issued Documents বিভাগে issuer থেকে সরাসরি পাওয়া document authentic digital document হিসেবে থাকে। নির্দিষ্ট admission বা recruitment authority কোন format গ্রহণ করবে, তার নিয়ম আলাদাভাবে যাচাই করুন।
+    answer: DigiLocker-এর Issued Documents বিভাগে issuer থেকে সরাসরি পাওয়া document
+      authentic digital document হিসেবে থাকে। নির্দিষ্ট admission বা recruitment
+      authority কোন format গ্রহণ করবে, তার নিয়ম আলাদাভাবে যাচাই করুন।
+deadline: 2026-08-07
+featuredImage: /uploads/file00000000e36c821199edb06344b4ec99.png
+featuredImageAlt: পরীক্ষার official portal যাচাই করে admit card, answer key ও
+  result download এবং fake phishing link এড়ানোর সচেতনতামূলক illustration
+seoTitle: "Admit Card, Answer Key ও Result: Official Link চিনবেন কীভাবে?"
+seoDescription: Admit card, city intimation, answer key, response sheet, score
+  card ও result-এর official link কীভাবে চিনবেন জানুন। Phishing ও fake exam link
+  থেকে নিরাপদ থাকার সহজ গাইড।
 ---
 পরীক্ষার সময় ভুয়া admit-card link, result page, correction window এবং answer-key challenge-এর নামে phishing ছড়াতে পারে। একই সঙ্গে পরীক্ষাকারী সংস্থাগুলো city intimation, admit card, provisional answer key, recorded response, score card ও result আলাদা notice-এ প্রকাশ করে। তাই document-এর ধরন বুঝে official notice অনুসরণ করুন।
 
