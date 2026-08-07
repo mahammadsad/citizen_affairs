@@ -11,9 +11,14 @@ const route = (value = '') => {
   return locale === 'en' ? path.replace('/en/', '/') : path;
 };
 const normalizePath = (value: string) => value.replace(/\/+$/, '') || '/';
-const currentPath = normalizePath(pathname);
+const normalizeComparablePath = (value: string) => {
+  const normalized = normalizePath(value);
+  if (locale !== 'en') return normalized;
+  return normalizePath(normalized.replace(/^\/en(?=\/|$)/, '') || '/');
+};
+const currentPath = normalizeComparablePath(pathname);
 const isCurrent = (href: string, exact = false) => {
-  const target = normalizePath(href);
+  const target = normalizeComparablePath(href);
   if (exact || target === '/') return currentPath === target;
   return currentPath === target || currentPath.startsWith(`${target}/`);
 };
