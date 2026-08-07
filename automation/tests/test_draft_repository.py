@@ -153,3 +153,28 @@ def test_internal_link_context_excludes_private_drafts(tmp_path: Path):
         "title": "Public guide",
         "url": "https://citizenaffairs.in/en/public-guide/",
     }]
+
+
+def test_render_demotes_generated_h1_but_keeps_fenced_code_unchanged(tmp_path: Path):
+    repo = DraftRepository(tmp_path)
+    topic = candidate()
+    draft = generated_draft()
+    draft.body_markdown = (
+        "# Duplicate article title\n\n"
+        "Intro paragraph.\n\n"
+        "## Existing section\n\n"
+        "```text\n# this is code, not a heading\n```"
+    )
+
+    content = repo.render(
+        language="en",
+        candidate=topic,
+        dossier=dossier(topic),
+        seo=seo(),
+        draft=draft,
+        factcheck=factcheck(True),
+    )
+
+    assert "\n# Duplicate article title\n" not in content
+    assert "\n## Duplicate article title\n" in content
+    assert "```text\n# this is code, not a heading\n```" in content

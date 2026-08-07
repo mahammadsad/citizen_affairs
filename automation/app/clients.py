@@ -13,6 +13,12 @@ class ProviderError(RuntimeError):
     pass
 
 
+def _provider_error(schema: type[BaseModel], message: str) -> ProviderError:
+    """Emit a safe provider diagnostic without logging prompts, keys, or source content."""
+    print(f"Gemini {schema.__name__} provider error: {message}", flush=True)
+    return ProviderError(message)
+
+
 class GeminiClient:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -55,14 +61,14 @@ class GeminiClient:
         async with self._semaphore, httpx.AsyncClient(timeout=self.settings.request_timeout_seconds) as client:
             response = await client.post(endpoint, headers=headers, json=payload)
         if response.status_code == 429 or response.status_code >= 500:
-            raise ProviderError(f"Gemini temporarily unavailable ({response.status_code})")
+            raise _provider_error(schema, f"temporarily unavailable ({response.status_code})")
         if response.is_error:
-            raise ProviderError(f"Gemini rejected the structured request ({response.status_code})")
+            raise _provider_error(schema, f"structured request rejected ({response.status_code})")
         try:
             text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
             return schema.model_validate(json.loads(text))
         except (KeyError, IndexError, TypeError, ValueError) as error:
-            raise ProviderError("Gemini returned invalid structured output") from error
+            raise _provider_error(schema, "invalid structured output") from error
 
 
 class TavilyClient:
