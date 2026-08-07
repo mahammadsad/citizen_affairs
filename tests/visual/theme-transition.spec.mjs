@@ -12,15 +12,21 @@ const pixelLuminance = (data, width, channels, x, y) => {
 const pauseThemeWipeHalfway = async (page) => {
   await page.waitForFunction(() =>
     document.documentElement.getAnimations({ subtree: true }).some(
-      (animation) => animation.effect?.pseudoElement === '::view-transition-new(root)'
+      (animation) =>
+        animation.effect?.pseudoElement === '::view-transition-new(root)' &&
+        animation.playState !== 'finished' &&
+        animation.playState !== 'idle'
     )
   );
 
   return page.evaluate(() => {
     const animation = document.documentElement.getAnimations({ subtree: true }).find(
-      (candidate) => candidate.effect?.pseudoElement === '::view-transition-new(root)'
+      (candidate) =>
+        candidate.effect?.pseudoElement === '::view-transition-new(root)' &&
+        candidate.playState !== 'finished' &&
+        candidate.playState !== 'idle'
     );
-    if (!animation) throw new Error('Theme wipe animation was not found');
+    if (!animation) throw new Error('Active theme wipe animation was not found');
     const timing = animation.effect.getTiming();
     animation.pause();
     animation.currentTime = 150;
@@ -32,7 +38,11 @@ const finishThemeWipe = async (page) => {
   await page.evaluate(() => {
     document.documentElement
       .getAnimations({ subtree: true })
-      .filter((animation) => animation.effect?.pseudoElement?.startsWith('::view-transition-'))
+      .filter((animation) =>
+        animation.effect?.pseudoElement?.startsWith('::view-transition-') &&
+        animation.playState !== 'finished' &&
+        animation.playState !== 'idle'
+      )
       .forEach((animation) => animation.finish());
   });
 
