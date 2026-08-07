@@ -135,33 +135,26 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   expect(seriousViolations(axe)).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('article-dark-home-390.png'), fullPage: true });
 
-  await page.locator('.portal-mobile-menu > summary').click();
+  const trigger = page.locator('.portal-mobile-trigger');
+  await trigger.click();
   const panel = page.locator('.portal-mobile-panel');
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(panel).toBeVisible();
-  await expect(page.locator('.portal-mobile-brand-logo')).toHaveAttribute(
-    'src',
-    /citizen-affairs-horizontal-dark\.svg$/,
-  );
+  await expect(panel).toHaveAttribute('aria-hidden', 'false');
 
   const panelColours = await page.evaluate(() => {
     const panel = document.querySelector('.portal-mobile-panel');
     const link = document.querySelector('.portal-mobile-panel nav a');
-    const close = document.querySelector('.portal-mobile-close');
-    const searchInput = document.querySelector('.portal-mobile-menu-search input');
-    if (!panel || !link || !close || !searchInput) {
-      throw new Error('Full-screen mobile menu selectors are missing');
+    if (!panel || !link) {
+      throw new Error('Expanding mobile menu selectors are missing');
     }
     return {
       panelBackground: getComputedStyle(panel).backgroundColor,
       linkText: getComputedStyle(link).color,
-      closeText: getComputedStyle(close).color,
-      searchText: getComputedStyle(searchInput).color,
     };
   });
 
   expect(contrast(panelColours.linkText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
-  expect(contrast(panelColours.closeText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
-  expect(contrast(panelColours.searchText, panelColours.panelBackground)).toBeGreaterThanOrEqual(4.5);
 
   axe = await new AxeBuilder({ page }).include('.portal-mobile-panel').analyze();
   expect(seriousViolations(axe)).toEqual([]);
