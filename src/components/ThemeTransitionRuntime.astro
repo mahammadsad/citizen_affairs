@@ -1,0 +1,141 @@
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const wipeDuration = 300;
+    const wipeEasing = 'cubic-bezier(.4, 0, .2, 1)';
+    let transitionInFlight = false;
+
+    const themeColorMeta = () => document.querySelector('meta[name="theme-color"]');
+
+    const syncBrowserTheme = (theme) => {
+      const themeColor = themeColorMeta();
+      if (themeColor) themeColor.setAttribute('content', theme === 'dark' ? '#081321' : '#ffffff');
+    };
+
+    const commitTheme = (theme) => {
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
+      syncBrowserTheme(theme);
+      try {
+        localStorage.setItem('theme', theme);
+      } catch (_) {}
+    };
+
+    const runFallbackFade = (theme) => {
+      root.classList.add('theme-fallback-fade');
+      requestAnimationFrame(() => {
+        commitTheme(theme);
+        window.setTimeout(() => root.classList.remove('theme-fallback-fade'), 240);
+      });
+    };
+
+    const runThemeTransition = async (button) => {
+      if (transitionInFlight) return;
+
+      const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      const startViewTransition = document.startViewTransition?.bind(document);
+
+      // The reference changes the browser chrome first, then reveals the page
+      // from top to bottom. Updating only the meta tag here reproduces that
+      // staging without mutating the page before the old snapshot is captured.
+      syncBrowserTheme(nextTheme);
+
+      if (reducedMotion.matches) {
+        commitTheme(nextTheme);
+        return;
+      }
+
+      if (!startViewTransition) {
+        runFallbackFade(nextTheme);
+        return;
+      }
+
+      transitionInFlight = true;
+      button.dataset.themeTransition = 'running';
+      root.classList.add('reference-theme-transition');
+
+      try {
+        const transition = startViewTransition(() => commitTheme(nextTheme));
+        await transition.ready;
+
+        const wipe = root.animate(
+          [
+            { clipPath: 'inset(0 0 100% 0)' },
+            { clipPath: 'inset(0 0 0 0)' }
+          ],
+          {
+            duration: wipeDuration,
+            easing: wipeEasing,
+            fill: 'both',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
+
+        await Promise.allSettled([wipe.finished, transition.finished]);
+      } catch (_) {
+        commitTheme(nextTheme);
+      } finally {
+        root.classList.remove('reference-theme-transition');
+        delete button.dataset.themeTransition;
+        transitionInFlight = false;
+      }
+    };
+
+    // Capture the theme click before PortalHeader's legacy bubble listener. This
+    // lets the reference-matched runtime own the interaction without changing
+    // the otherwise stable header/menu implementation.
+    document.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const button = target.closest('.portal-theme-toggle');
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        void runThemeTransition(button);
+      },
+      true
+    );
+  })();
+</script>
+
+<style is:global>
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+    mix-blend-mode: normal !important;
+  }
+
+  ::view-transition-old(root) {
+    z-index: 1;
+  }
+
+  ::view-transition-new(root) {
+    z-index: 2;
+    will-change: clip-path;
+  }
+
+  html.reference-theme-transition {
+    overflow-x: clip;
+  }
+
+  html.theme-fallback-fade body,
+  html.theme-fallback-fade .portal-header,
+  html.theme-fallback-fade main,
+  html.theme-fallback-fade footer,
+  html.theme-fallback-fade a,
+  html.theme-fallback-fade button,
+  html.theme-fallback-fade input,
+  html.theme-fallback-fade textarea,
+  html.theme-fallback-fade select {
+    transition:
+      background-color 220ms cubic-bezier(.4, 0, .2, 1),
+      border-color 220ms cubic-bezier(.4, 0, .2, 1),
+      color 220ms cubic-bezier(.4, 0, .2, 1),
+      box-shadow 220ms cubic-bezier(.4, 0, .2, 1) !important;
+  }
+</style>
