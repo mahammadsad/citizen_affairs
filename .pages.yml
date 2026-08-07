@@ -325,6 +325,9 @@ content:
           - { name: quickSummary, label: "Key takeaways", type: string, list: true, required: false, description: "Aim for 2–5 concrete points that answer the reader quickly. These are shown prominently on the article." }
           - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false, description: "Use a relevant, sharp landscape image. The site allows large image previews for Search/Discover." }
           - { name: featuredImageAlt, label: "Image alt text", type: string, required: false, description: "Describe what the image contains and why it is relevant. Do not stuff keywords or start with 'image of'." }
+          - { name: featuredImageCaption, label: "Image caption", type: text, required: false, description: "Optional reader-facing/newsroom context for the featured image. Keep it factual and distinct from alt text." }
+          - { name: featuredImageCredit, label: "Image credit", type: string, required: false, description: "Name the photographer, government department, organisation or other legitimate image source." }
+          - { name: featuredImageCreditUrl, label: "Image credit/source URL", type: string, required: false, description: "Optional direct URL for the image source, credit or licence record." }
           - { name: sourceUrls, label: "Official source URLs", type: string, list: { min: 1 }, required: true, description: "Every factual government/news update must retain at least one authoritative source URL." }
           - name: sources
             label: "Structured source cards"
@@ -367,6 +370,18 @@ content:
           - { name: officialNoticeUrl, label: "Primary official notice", type: string, required: false, description: "Link the exact notice/result/order when available, not only the organisation homepage." }
           - { name: applicationUrl, label: "Official action URL", type: string, required: false, description: "Use the direct official apply/download/status/service link when readers need to act." }
           - { name: lastVerified, label: "Last official-source check", type: date, required: false, description: "Set this to the date you most recently checked the official information." }
+          - name: newsroomChecklist
+            label: "Pre-publication checklist — editor aid"
+            type: object
+            required: false
+            description: "Tick these after reviewing. This checklist does not publish the article or replace the protected publication approval."
+            fields:
+              - { name: headlineReviewed, label: "Headline is clear, accurate and non-clickbait", type: boolean, default: false }
+              - { name: metaReviewed, label: "Search title and meta description reviewed", type: boolean, default: false }
+              - { name: imageReviewed, label: "Image, alt text, caption and credit reviewed", type: boolean, default: false }
+              - { name: sourcesReviewed, label: "Official sources, notice links and dates checked", type: boolean, default: false }
+              - { name: internalLinksReviewed, label: "Useful internal Citizen Affairs links reviewed", type: boolean, default: false, description: "Add contextual internal links in the article body only where they genuinely help the reader." }
+              - { name: factualClaimsReviewed, label: "Critical factual claims cross-checked", type: boolean, default: false }
           - name: faqs
             label: "Useful FAQs"
             type: object
@@ -442,6 +457,9 @@ content:
           - { name: quickSummary, label: "মূল পয়েন্ট", type: string, list: true, required: false, description: "২–৫টি স্পষ্ট ও ব্যবহারযোগ্য তথ্য রাখুন।" }
           - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false, description: "প্রাসঙ্গিক ও পরিষ্কার landscape ছবি ব্যবহার করুন।" }
           - { name: featuredImageAlt, label: "ছবির alt text", type: string, required: false, description: "ছবিতে কী আছে তা স্বাভাবিক ভাষায় বর্ণনা করুন; keyword stuffing করবেন না।" }
+          - { name: featuredImageCaption, label: "ছবির caption", type: text, required: false, description: "ছবির প্রয়োজনীয় সম্পাদকীয় context লিখুন; alt text-এর অনুলিপি করবেন না।" }
+          - { name: featuredImageCredit, label: "ছবির credit", type: string, required: false, description: "ফটোগ্রাফার, সরকারি দপ্তর, সংস্থা বা বৈধ image source-এর নাম লিখুন।" }
+          - { name: featuredImageCreditUrl, label: "Image credit/source URL", type: string, required: false, description: "ঐচ্ছিক direct source, credit বা licence URL।" }
           - { name: sourceUrls, label: "অফিসিয়াল উৎসের URL", type: string, list: { min: 1 }, required: true, description: "প্রতিটি গুরুত্বপূর্ণ সরকারি আপডেটে অন্তত একটি নির্ভরযোগ্য অফিসিয়াল উৎস রাখুন।" }
           - name: sources
             label: "Structured source cards"
@@ -484,6 +502,18 @@ content:
           - { name: officialNoticeUrl, label: "মূল অফিসিয়াল নোটিশ", type: string, required: false, description: "সম্ভব হলে homepage নয়, সরাসরি notice/result/order-এর link দিন।" }
           - { name: applicationUrl, label: "অফিসিয়াল action URL", type: string, required: false, description: "Apply/download/status/service-এর সরাসরি অফিসিয়াল link দিন।" }
           - { name: lastVerified, label: "সর্বশেষ অফিসিয়াল উৎস যাচাই", type: date, required: false }
+          - name: newsroomChecklist
+            label: "প্রকাশের আগে checklist — editor aid"
+            type: object
+            required: false
+            description: "Review শেষ হলে tick করুন। এই checklist থেকে আর্টিকেল publish হয় না।"
+            fields:
+              - { name: headlineReviewed, label: "শিরোনাম পরিষ্কার, সঠিক ও non-clickbait", type: boolean, default: false }
+              - { name: metaReviewed, label: "Search title ও meta description review হয়েছে", type: boolean, default: false }
+              - { name: imageReviewed, label: "Image, alt text, caption ও credit review হয়েছে", type: boolean, default: false }
+              - { name: sourcesReviewed, label: "অফিসিয়াল উৎস, notice link ও date যাচাই হয়েছে", type: boolean, default: false }
+              - { name: internalLinksReviewed, label: "প্রয়োজনীয় Citizen Affairs internal link review হয়েছে", type: boolean, default: false, description: "শুধু পাঠকের কাজে লাগলে article body-তে contextual internal link যোগ করুন।" }
+              - { name: factualClaimsReviewed, label: "গুরুত্বপূর্ণ factual claim cross-check হয়েছে", type: boolean, default: false }
           - name: faqs
             label: "প্রয়োজনীয় FAQ"
             type: object
@@ -547,6 +577,9 @@ content:
           - { name: quickSummary, label: "मुख्य बिंदु", type: string, list: true, required: false, description: "2–5 उपयोगी और ठोस बिंदु रखें।" }
           - { name: featuredImage, label: "Featured image — Search/Discover/social", type: image, required: false }
           - { name: featuredImageAlt, label: "Image alt text", type: string, required: false, description: "चित्र का स्वाभाविक वर्णन करें; keyword stuffing न करें।" }
+          - { name: featuredImageCaption, label: "Image caption", type: text, required: false, description: "चित्र के लिए उपयोगी editorial context लिखें; alt text की नकल न करें।" }
+          - { name: featuredImageCredit, label: "Image credit", type: string, required: false, description: "Photographer, department, organisation या legitimate image source का नाम दें।" }
+          - { name: featuredImageCreditUrl, label: "Image credit/source URL", type: string, required: false, description: "Optional direct source, credit या licence URL।" }
           - { name: sourceUrls, label: "आधिकारिक स्रोत URL", type: string, list: { min: 1 }, required: true }
           - name: sources
             label: "Structured source cards"
@@ -588,6 +621,18 @@ content:
           - { name: officialNoticeUrl, label: "Primary official notice", type: string, required: false }
           - { name: applicationUrl, label: "Official action URL", type: string, required: false }
           - { name: lastVerified, label: "Last official-source check", type: date, required: false }
+          - name: newsroomChecklist
+            label: "Pre-publication checklist — editor aid"
+            type: object
+            required: false
+            description: "Review पूरा होने पर tick करें। यह checklist लेख को publish नहीं करती।"
+            fields:
+              - { name: headlineReviewed, label: "Headline clear, accurate और non-clickbait है", type: boolean, default: false }
+              - { name: metaReviewed, label: "Search title और meta description reviewed", type: boolean, default: false }
+              - { name: imageReviewed, label: "Image, alt text, caption और credit reviewed", type: boolean, default: false }
+              - { name: sourcesReviewed, label: "Official sources, notice links और dates checked", type: boolean, default: false }
+              - { name: internalLinksReviewed, label: "Useful Citizen Affairs internal links reviewed", type: boolean, default: false, description: "केवल उपयोगी होने पर article body में contextual internal links जोड़ें।" }
+              - { name: factualClaimsReviewed, label: "Critical factual claims cross-checked", type: boolean, default: false }
           - name: faqs
             label: "Useful FAQs"
             type: object
