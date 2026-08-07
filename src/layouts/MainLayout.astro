@@ -164,7 +164,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-brand) {
       --portal-logo-width: clamp(168px, calc(100vw - 176px), 204px);
       flex: 0 1 var(--portal-logo-width) !important;
-      min-width: 168px !important;
+      min-width: 184px !important;
       max-width: 204px !important;
     }
 
@@ -186,6 +186,12 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.news-home .section-title-row) {
       margin-bottom: .65rem !important;
       padding-bottom: .45rem !important;
+    }
+  }
+
+  @media (max-width: 380px) {
+    :global(.portal-theme-toggle) {
+      display: none !important;
     }
   }
 
