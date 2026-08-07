@@ -98,37 +98,27 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   if (testInfo.project.name === 'mobile') {
     await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
 
-    const menuTrigger = page.getByRole('button', { name: /menu|মেনু|मेनू/i });
-    await menuTrigger.click();
-
+    const menuTrigger = page.locator('.portal-mobile-trigger');
     const panel = page.locator('.portal-mobile-panel');
-    const menuSearch = panel.locator('.portal-mobile-menu-search input[name="q"]');
-    await expect(panel).toBeVisible();
-    await expect(panel).toHaveAttribute('role', 'dialog');
-    await expect(panel).toHaveAttribute('aria-modal', 'true');
-    await expect(panel.locator('.portal-mobile-brand-logo')).toHaveCount(1);
-    await expect(menuSearch).toBeVisible();
-    await expect(menuSearch).toBeFocused();
-    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+    const content = page.locator('.top-news');
+    const before = await content.boundingBox();
 
-    const geometry = await panel.evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      return {
-        top: rect.top,
-        left: rect.left,
-        right: rect.right,
-        bottom: rect.bottom,
-        viewportWidth: window.innerWidth,
-        viewportHeight: window.innerHeight,
-      };
-    });
-    expect(Math.abs(geometry.top)).toBeLessThanOrEqual(1);
-    expect(Math.abs(geometry.left)).toBeLessThanOrEqual(1);
-    expect(Math.abs(geometry.right - geometry.viewportWidth)).toBeLessThanOrEqual(1);
-    expect(Math.abs(geometry.bottom - geometry.viewportHeight)).toBeLessThanOrEqual(1);
+    await menuTrigger.click();
+    await expect(menuTrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(panel).toBeVisible();
+    await expect(panel).toHaveAttribute('aria-hidden', 'false');
+    await expect(panel.locator('nav a').first()).toBeVisible();
+    await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
+
+    const after = await content.boundingBox();
+    expect(before).not.toBeNull();
+    expect(after).not.toBeNull();
+    if (before && after) expect(after.top - before.top).toBeGreaterThan(100);
 
     await page.keyboard.press('Escape');
+    await expect(menuTrigger).toHaveAttribute('aria-expanded', 'false');
     await expect(panel).toBeHidden();
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
     await expect(menuTrigger).toBeFocused();
   } else {
     await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
