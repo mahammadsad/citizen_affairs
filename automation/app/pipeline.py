@@ -185,9 +185,10 @@ class AutomationPipeline:
         skipped_duplicates = 0
         failures: list[dict] = []
         processed_topics = 0
+        created_topics = 0
 
         for candidate in candidates:
-            if processed_topics >= self.settings.max_drafts_per_run:
+            if created_topics >= self.settings.max_drafts_per_run:
                 break
             if self.drafts.is_duplicate(candidate):
                 skipped_duplicates += 1
@@ -222,6 +223,8 @@ class AutomationPipeline:
                         })
                 if topic_created == 0:
                     skipped_duplicates += 1
+                else:
+                    created_topics += 1
             except Exception as error:  # isolate one bad government page/provider response from the whole run
                 failures.append({
                     "topic": candidate.normalized_topic,
@@ -232,6 +235,7 @@ class AutomationPipeline:
         return {
             "created": created,
             "created_count": len(created),
+            "created_topics": created_topics,
             "processed_topics": processed_topics,
             "skipped_duplicates": skipped_duplicates,
             "failures": failures,

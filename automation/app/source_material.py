@@ -1,3 +1,4 @@
+import asyncio
 import re
 from dataclasses import dataclass
 from html import unescape
@@ -14,6 +15,7 @@ _RELEVANT_LINK_TERMS = (
     "recruitment", "vacancy", "exam", "result", "admit", "scheme", "guideline",
     "guidelines", "eligibility", "prospectus", "brochure", "details", "download",
 )
+_FETCH_ATTEMPTS = 3
 
 
 class _ReadableHtmlParser(HTMLParser):
@@ -112,20 +114,43 @@ def _is_relevant_related_link(url: str, anchor_text: str) -> bool:
     return url.lower().endswith(".pdf") or any(term in haystack for term in _RELEVANT_LINK_TERMS)
 
 
+def _retryable_status(error: httpx.HTTPStatusError) -> bool:
+    return 500 <= error.response.status_code < 600
+
+
 class OfficialSourceFetcher:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
 
+    async def _request(self, url: str) -> httpx.Response:
+        last_error: Exception | None = None
+        for attempt in range(_FETCH_ATTEMPTS):
+            try:
+                async with httpx.AsyncClient(
+                    timeout=self.settings.request_timeout_seconds,
+                    follow_redirects=True,
+                    headers={"User-Agent": "CitizenAffairsEditorialBot/1.0 (+https://citizenaffairs.in/)"},
+                ) as client:
+                    response = await client.get(url)
+                response.raise_for_status()
+                return response
+            except (httpx.TimeoutException, httpx.NetworkError) as error:
+                last_error = error
+            except httpx.HTTPStatusError as error:
+                if not _retryable_status(error):
+                    raise
+                last_error = error
+
+            if attempt < _FETCH_ATTEMPTS - 1:
+                await asyncio.sleep(1.5 * (attempt + 1))
+
+        assert last_error is not None
+        raise last_error
+
     async def fetch_one(self, url: str) -> SourceMaterial:
         if not is_official_url(url):
             raise ValueError("source URL is not on an approved official domain")
-        async with httpx.AsyncClient(
-            timeout=self.settings.request_timeout_seconds,
-            follow_redirects=True,
-            headers={"User-Agent": "CitizenAffairsEditorialBot/1.0 (+https://citizenaffairs.in/)"},
-        ) as client:
-            response = await client.get(url)
-        response.raise_for_status()
+        response = await self._request(url)
         final_url = str(response.url)
         if not is_official_url(final_url):
             raise ValueError("official source redirected to a non-official domain")
