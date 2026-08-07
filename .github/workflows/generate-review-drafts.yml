@@ -1,0 +1,110 @@
+name: Generate review drafts
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00, 15:00 and 21:00 Asia/Kolkata. One draft per run keeps output selective.
+    - cron: "30 3,9,15 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: citizen-affairs-review-drafts
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    # Set AUTOMATION_ENABLED=false to stop scheduled/manual generation immediately.
+    if: vars.AUTOMATION_ENABLED != 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_RESEARCH_MODEL: ${{ vars.GEMINI_RESEARCH_MODEL }}
+      GEMINI_WRITING_MODEL: ${{ vars.GEMINI_WRITING_MODEL }}
+      GEMINI_FACTCHECK_MODEL: ${{ vars.GEMINI_FACTCHECK_MODEL }}
+      TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+      OFFICIAL_FEED_URLS: ${{ vars.OFFICIAL_FEED_URLS }}
+      DRAFT_LANGUAGES: ${{ vars.DRAFT_LANGUAGES || 'en' }}
+      MAX_DRAFTS_PER_RUN: "1"
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: automation/requirements.txt
+
+      - name: Install automation dependencies
+        run: python -m pip install --requirement automation/requirements.txt
+
+      - name: Validate automation contracts
+        working-directory: automation
+        run: python -m pytest -q
+
+      - name: Generate researched SEO drafts
+        working-directory: automation
+        run: python -m app.cli generate-drafts
+
+      - name: Stage generated drafts only
+        run: git add -- 'src/content/articles/*/*.md'
+
+      - name: Enforce draft-only publication boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(git diff --cached --name-only)"
+          if [ -z "$files" ]; then
+            echo "No new review drafts were generated."
+            exit 0
+          fi
+          while IFS= read -r file; do
+            case "$file" in
+              src/content/articles/en/*.md|src/content/articles/bn/*.md|src/content/articles/hi/*.md) ;;
+              *) echo "::error::Automation attempted to change a non-draft-content path: $file"; exit 1 ;;
+            esac
+            grep -Eq '^draft:[[:space:]]*true[[:space:]]*$' "$file" || {
+              echo "::error::$file is not explicitly draft:true"; exit 1;
+            }
+            grep -Eq '^workflowStatus:[[:space:]]*(draft|verification-failed)[[:space:]]*$' "$file" || {
+              echo "::error::$file has a publish-capable workflow status"; exit 1;
+            }
+            if grep -Eq '^verificationStatus:[[:space:]]*officially-confirmed[[:space:]]*$' "$file"; then
+              echo "::error::$file cannot be automatically marked officially confirmed"; exit 1
+            fi
+          done <<< "$files"
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install site dependencies
+        run: npm ci
+
+      - name: Validate generated content
+        run: |
+          npm run check
+          npm run validate:content
+          npm run validate:seo
+
+      - name: Commit review drafts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git config user.name "Citizen Affairs Draft Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "content: add automated review draft(s)"
+          git push origin HEAD:main
