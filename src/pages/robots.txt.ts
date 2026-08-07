@@ -11,6 +11,7 @@ export function GET() {
     `Disallow: ${SITE.basePath}hi/search/`,
     '',
     `Sitemap: ${SITE.url}/sitemap.xml`,
+    `Sitemap: ${SITE.url}/news-sitemap.xml`,
     '',
   ].join('\n');
 
