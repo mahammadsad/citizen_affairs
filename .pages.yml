@@ -10,7 +10,7 @@ content:
     type: group
     items:
       - name: english-drafts
-        label: "English drafts"
+        label: "English drafts — rich editor"
         type: collection
         path: src/content/articles/en/drafts
         format: yaml-frontmatter
@@ -102,7 +102,7 @@ content:
           - { name: body, label: Article draft, type: rich-text, required: true }
 
       - name: bengali-drafts
-        label: "বাংলা খসড়া"
+        label: "বাংলা খসড়া — রিচ এডিটর"
         type: collection
         path: src/content/articles/bn/drafts
         format: yaml-frontmatter
@@ -185,7 +185,7 @@ content:
           - { name: body, label: পুরো খসড়া, type: rich-text, required: true }
 
       - name: hindi-drafts
-        label: "हिन्दी ड्राफ्ट"
+        label: "हिन्दी ड्राफ्ट — रिच एडिटर"
         type: collection
         path: src/content/articles/hi/drafts
         format: yaml-frontmatter
@@ -254,6 +254,88 @@ content:
               - { name: question, label: प्रश्न, type: string, required: true }
               - { name: answer, label: उत्तर, type: text, required: true }
           - { name: body, label: पूरा ड्राफ्ट, type: rich-text, required: true }
+
+  - name: mobile-draft-editor
+    label: "📱 Mobile draft editor — KEYBOARD FRIENDLY"
+    type: group
+    items:
+      - name: english-drafts-mobile
+        label: "English mobile drafts"
+        type: collection
+        path: src/content/articles/en/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [workflowStatus, title, verificationStatus, date]
+          sort: [date, title]
+          search: [title, verificationStatus]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true }
+          - { name: title, label: Article title, type: string, readonly: true }
+          - { name: verificationStatus, label: Verification status, type: string, readonly: true }
+          - { name: date, label: Draft date, type: date, readonly: true }
+          - name: body
+            label: "Article body — mobile editor"
+            type: text
+            required: true
+            description: "Keyboard-friendly plain Markdown editor. It removes the rich-text formatting bar so Android selection controls and the keyboard do not collide with a CMS toolbar."
+
+      - name: bengali-drafts-mobile
+        label: "বাংলা মোবাইল খসড়া"
+        type: collection
+        path: src/content/articles/bn/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [workflowStatus, title, verificationStatus, date]
+          sort: [date, title]
+          search: [title, verificationStatus]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true }
+          - { name: title, label: আর্টিকেলের শিরোনাম, type: string, readonly: true }
+          - { name: verificationStatus, label: যাচাইয়ের অবস্থা, type: string, readonly: true }
+          - { name: date, label: খসড়ার তারিখ, type: date, readonly: true }
+          - name: body
+            label: "আর্টিকেল — মোবাইল এডিটর"
+            type: text
+            required: true
+            description: "মোবাইলে কিবোর্ড ও Android-এর Copy/Paste মেনুর সঙ্গে CMS formatting bar-এর সংঘর্ষ এড়াতে এই editor-এ rich-text toolbar দেখানো হয় না।"
+
+      - name: hindi-drafts-mobile
+        label: "हिन्दी मोबाइल ड्राफ्ट"
+        type: collection
+        path: src/content/articles/hi/drafts
+        format: yaml-frontmatter
+        subfolders: false
+        operations: { create: false, rename: false, delete: false }
+        view:
+          primary: title
+          fields: [workflowStatus, title, verificationStatus, date]
+          sort: [date, title]
+          search: [title, verificationStatus]
+          default:
+            sort: date
+            order: desc
+        fields:
+          - { name: workflowStatus, label: "Publication status", type: string, readonly: true }
+          - { name: title, label: लेख का शीर्षक, type: string, readonly: true }
+          - { name: verificationStatus, label: सत्यापन स्थिति, type: string, readonly: true }
+          - { name: date, label: ड्राफ्ट तारीख, type: date, readonly: true }
+          - name: body
+            label: "लेख — मोबाइल एडिटर"
+            type: text
+            required: true
+            description: "मोबाइल पर Android Copy/Paste चयन मेनू और CMS formatting bar के टकराव से बचने के लिए इस editor में rich-text toolbar नहीं है।"
 
   - name: live-articles
     label: "🟢 Live articles — PUBLISHED"
