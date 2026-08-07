@@ -43,7 +43,8 @@ const imageObject = imageUrl
       contentUrl: imageUrl,
       width: data.featuredImageWidth,
       height: data.featuredImageHeight,
-      caption: data.featuredImageAlt || data.title,
+      caption: data.featuredImageCaption || data.featuredImageAlt || data.title,
+      creditText: data.featuredImageCredit,
     }
   : undefined;
 const modifiedDates = [data.date, data.updated, data.lastVerified].filter(
