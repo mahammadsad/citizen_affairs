@@ -5,6 +5,7 @@ const roots = ['.github', 'docs', 'scripts', 'src', 'supabase', 'tests'];
 const extensions = new Set(['.astro', '.css', '.html', '.js', '.json', '.md', '.mjs', '.sql', '.toml', '.ts', '.tsx', '.yaml', '.yml']);
 const write = process.argv.includes('--write');
 const files = [];
+// Pages CMS may serialize article Markdown without a terminal newline; preserve that harmless style.
 const articlesRoot = `${path.join('src', 'content', 'articles')}${path.sep}`;
 const walk = async (directory) => {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
