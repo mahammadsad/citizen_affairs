@@ -8,9 +8,11 @@ def test_generated_draft_rejects_active_html():
             title="A safe public information guide",
             url_slug="safe-guide",
             short_description="A sufficiently detailed description for a draft public guide.",
+            seo_title="A safe public information guide",
+            seo_description="A sufficiently detailed search description for a draft public information guide.",
+            portal_category="guides",
             body_markdown="Useful text " * 30 + "<script>alert(1)</script>",
-            image_filename="safe-guide.webp",
-            image_alt_text="A descriptive thumbnail for the safe public guide",
+            quick_summary=["First useful point for the reader.", "Second useful point for the reader."],
             social_caption="Draft",
             sources_used=["https://example.gov.in/notice"],
         )
