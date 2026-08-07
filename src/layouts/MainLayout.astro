@@ -15,6 +15,9 @@ interface Props {
   title?: string;
   description?: string;
   image?: string;
+  imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   canonical?: string;
   ogType?: 'website' | 'article';
   structuredData?: object | object[];
@@ -27,6 +30,9 @@ const {
   title,
   description,
   image,
+  imageAlt,
+  imageWidth,
+  imageHeight,
   canonical,
   ogType,
   structuredData,
@@ -46,6 +52,9 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   {title}
   {description}
   {image}
+  {imageAlt}
+  {imageWidth}
+  {imageHeight}
   {canonical}
   {ogType}
   {structuredData}
