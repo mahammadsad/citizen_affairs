@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
+import ThemeTransitionRuntime from '@components/ThemeTransitionRuntime.astro';
 import MobileNavigationRuntime from '@components/MobileNavigationRuntime.astro';
 import MobileBottomNavigationRuntime from '@components/MobileBottomNavigationRuntime.astro';
 import FormSubmissionRuntime from '@components/FormSubmissionRuntime.astro';
@@ -65,6 +66,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 >
   <PortalHeader {locale} {alternateUrls} />
   <PortalRuntime />
+  <ThemeTransitionRuntime />
   <MobileNavigationRuntime />
   <MobileBottomNavigationRuntime />
   <main id="main-content">
