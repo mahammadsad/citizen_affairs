@@ -52,7 +52,8 @@ const copy = {
     allUpdates: 'All Updates',
     saved: 'Saved',
     sections: 'Sections',
-    officialPolicy: 'Verification policy'
+    officialPolicy: 'Verification policy',
+    closeMenu: 'Close menu'
   },
   bn: {
     independent: 'স্বাধীন নাগরিক তথ্য পরিষেবা',
@@ -69,7 +70,8 @@ const copy = {
     allUpdates: 'সব আপডেট',
     saved: 'সংরক্ষিত',
     sections: 'বিভাগ',
-    officialPolicy: 'যাচাই নীতি'
+    officialPolicy: 'যাচাই নীতি',
+    closeMenu: 'মেনু বন্ধ করুন'
   },
   hi: {
     independent: 'स्वतंत्र नागरिक सूचना सेवा',
@@ -86,7 +88,8 @@ const copy = {
     allUpdates: 'सभी अपडेट',
     saved: 'सहेजे गए',
     sections: 'अनुभाग',
-    officialPolicy: 'सत्यापन नीति'
+    officialPolicy: 'सत्यापन नीति',
+    closeMenu: 'मेनू बंद करें'
   }
 }[locale];
 
@@ -181,25 +184,39 @@ const mobileCategories = categories.map((category) => ({
           </div>
         </details>
         <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme}>
-          <Icon name="theme" />
+          <span class="portal-theme-icons" aria-hidden="true">
+            <Icon name="theme" class="portal-theme-icon portal-theme-moon" />
+            <svg class="portal-theme-icon portal-theme-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.5" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42" />
+            </svg>
+          </span>
         </button>
-        <details class="portal-mobile-menu">
-          <summary aria-label={t.menu}><Icon name="menu" /></summary>
-          <div class="portal-mobile-panel">
-            <div class="portal-mobile-head">
-              <strong>{copy.sections}</strong>
-              <span>{copy.notGovernment}</span>
-            </div>
-            <nav aria-label={t.mobileNav}>
-              {mobileCategories.map((item) => (
-                <a href={item.href}><Icon name={item.icon} size={20} /><span>{item.label}</span><Icon name="arrow" size={17} /></a>
-              ))}
-              <a href={route('deadlines')}><Icon name="clock" size={20} /><span>{copy.deadlines}</span><Icon name="arrow" size={17} /></a>
-              <a href={route('articles')}><Icon name="updates" size={20} /><span>{copy.allUpdates}</span><Icon name="arrow" size={17} /></a>
-            </nav>
-          </div>
-        </details>
+        <button
+          class="portal-icon-action portal-mobile-trigger"
+          type="button"
+          aria-label={t.menu}
+          aria-expanded="false"
+          aria-controls="portalMobilePanel"
+          data-menu-label={t.menu}
+          data-close-label={copy.closeMenu}
+        >
+          <span class="portal-menu-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
       </div>
+    </div>
+  </div>
+
+  <div class="portal-mobile-panel" id="portalMobilePanel" aria-hidden="true" inert>
+    <div class="portal-mobile-panel-inner">
+      <nav class="container" aria-label={t.mobileNav}>
+        <a href={route()} aria-current={pathname === route() ? 'page' : undefined}><Icon name="home" size={20} /><span>{t.home}</span><Icon name="arrow" size={17} /></a>
+        {mobileCategories.map((item) => (
+          <a href={item.href}><Icon name={item.icon} size={20} /><span>{item.label}</span><Icon name="arrow" size={17} /></a>
+        ))}
+        <a href={route('deadlines')}><Icon name="clock" size={20} /><span>{copy.deadlines}</span><Icon name="arrow" size={17} /></a>
+        <a href={route('articles')}><Icon name="updates" size={20} /><span>{copy.allUpdates}</span><Icon name="arrow" size={17} /></a>
+      </nav>
     </div>
   </div>
 
@@ -215,12 +232,50 @@ const mobileCategories = categories.map((category) => ({
 </nav>
 
 <script>
+  const root = document.documentElement;
   const themeButton = document.querySelector<HTMLButtonElement>('.portal-theme-toggle');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const syncThemeChrome = (theme: 'light' | 'dark') => {
+    root.style.colorScheme = theme;
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (themeColor) themeColor.content = theme === 'dark' ? '#081321' : '#ffffff';
+  };
+
+  const applyTheme = (theme: 'light' | 'dark') => {
+    root.dataset.theme = theme;
+    syncThemeChrome(theme);
+    try { localStorage.setItem('theme', theme); } catch (_) {}
+  };
+
+  syncThemeChrome(root.dataset.theme === 'dark' ? 'dark' : 'light');
+
   themeButton?.addEventListener('click', () => {
-    const root = document.documentElement;
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch (_) {}
+    const documentWithTransitions = document as Document & {
+      startViewTransition?: (callback: () => void) => { ready: Promise<void> };
+    };
+
+    if (!documentWithTransitions.startViewTransition || reducedMotion.matches) {
+      applyTheme(next);
+      return;
+    }
+
+    const transition = documentWithTransitions.startViewTransition(() => applyTheme(next));
+    transition.ready.then(() => {
+      root.animate(
+        [
+          { clipPath: 'inset(0 0 100% 0)' },
+          { clipPath: 'inset(0 0 0 0)' }
+        ],
+        {
+          duration: 520,
+          easing: 'cubic-bezier(.76, 0, .24, 1)',
+          fill: 'both',
+          pseudoElement: '::view-transition-new(root)'
+        } as KeyframeAnimationOptions
+      );
+    }).catch(() => {});
   });
 
   document.querySelectorAll<HTMLDetailsElement>('.portal-header details').forEach((details) => {
@@ -236,6 +291,14 @@ const mobileCategories = categories.map((category) => ({
 </script>
 
 <style>
+  :global(::view-transition-old(root)),
+  :global(::view-transition-new(root)) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  :global(::view-transition-old(root)) { z-index: 1; }
+  :global(::view-transition-new(root)) { z-index: 2; }
+
   .portal-header {
     position: sticky;
     top: 0;
@@ -259,38 +322,14 @@ const mobileCategories = categories.map((category) => ({
     gap: .75rem;
     min-height: 30px;
   }
-  .portal-utility span:first-child {
-    display: inline-flex;
-    align-items: center;
-    gap: .35rem;
-  }
+  .portal-utility span:first-child { display: inline-flex; align-items: center; gap: .35rem; }
   .portal-utility span:first-child svg { color: #7ce4d7; }
   .portal-utility a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
-  .portal-navbar { background: var(--color-surface); }
-  .portal-navbar-inner {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    min-height: 68px;
-  }
-  .portal-brand {
-    flex: 0 1 160px;
-    min-width: 106px;
-    overflow: hidden;
-  }
-  :global(.portal-brand-logo) {
-    display: block;
-    width: 158px;
-    max-width: 100%;
-    max-height: 50px;
-    object-fit: contain;
-  }
-  .portal-desktop-nav {
-    display: none;
-    align-items: center;
-    gap: clamp(.65rem, 1.4vw, 1.15rem);
-    margin-left: auto;
-  }
+  .portal-navbar { position: relative; z-index: 2; background: var(--color-surface); }
+  .portal-navbar-inner { display: flex; align-items: center; gap: .75rem; min-height: 68px; }
+  .portal-brand { flex: 0 1 160px; min-width: 106px; overflow: hidden; }
+  :global(.portal-brand-logo) { display: block; width: 158px; max-width: 100%; max-height: 50px; object-fit: contain; }
+  .portal-desktop-nav { display: none; align-items: center; gap: clamp(.65rem, 1.4vw, 1.15rem); margin-left: auto; }
   .portal-desktop-nav > a,
   .portal-more > summary {
     min-height: 42px;
@@ -303,22 +342,13 @@ const mobileCategories = categories.map((category) => ({
     white-space: nowrap;
   }
   .portal-desktop-nav > a:hover,
-  .portal-desktop-nav > a[aria-current="page"] {
-    border-bottom-color: var(--color-primary);
-    color: var(--color-primary);
-  }
+  .portal-desktop-nav > a[aria-current="page"] { border-bottom-color: var(--color-primary); color: var(--color-primary); }
   .portal-more,
-  .portal-language,
-  .portal-mobile-menu { position: relative; }
+  .portal-language { position: relative; }
   .portal-more summary,
-  .portal-language summary,
-  .portal-mobile-menu summary {
-    list-style: none;
-    cursor: pointer;
-  }
+  .portal-language summary { list-style: none; cursor: pointer; }
   .portal-more summary::-webkit-details-marker,
-  .portal-language summary::-webkit-details-marker,
-  .portal-mobile-menu summary::-webkit-details-marker { display: none; }
+  .portal-language summary::-webkit-details-marker { display: none; }
   .portal-more summary { gap: .25rem; }
   .portal-more > div,
   .portal-language > div {
@@ -345,15 +375,9 @@ const mobileCategories = categories.map((category) => ({
   }
   .portal-more > div a:hover,
   .portal-language > div a:hover { background: var(--color-surface-alt); color: var(--color-primary); }
-  .portal-header-actions {
-    display: flex;
-    align-items: center;
-    gap: .2rem;
-    margin-left: auto;
-  }
+  .portal-header-actions { display: flex; align-items: center; gap: .2rem; margin-left: auto; }
   .portal-icon-action,
-  .portal-language > summary,
-  .portal-mobile-menu > summary {
+  .portal-language > summary {
     display: grid;
     place-items: center;
     min-width: 42px;
@@ -363,8 +387,7 @@ const mobileCategories = categories.map((category) => ({
     color: var(--color-text);
   }
   .portal-icon-action:hover,
-  .portal-language > summary:hover,
-  .portal-mobile-menu > summary:hover { background: var(--color-surface-alt); }
+  .portal-language > summary:hover { background: var(--color-surface-alt); }
   .portal-language > summary {
     grid-template-columns: auto auto;
     gap: .25rem;
@@ -375,50 +398,83 @@ const mobileCategories = categories.map((category) => ({
   }
   .portal-language > div { min-width: 170px; }
   .portal-language > div a { display: grid; grid-template-columns: 18px 1fr; }
-  .portal-mobile-menu > summary { display: grid; }
-  .portal-mobile-panel {
-    position: fixed;
-    top: 99px;
-    right: .75rem;
-    width: min(360px, calc(100vw - 1.5rem));
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    background: var(--color-surface);
-    box-shadow: var(--shadow-lg);
+
+  .portal-theme-icons { position: relative; display: block; width: 22px; height: 22px; }
+  :global(.portal-theme-icon) {
+    position: absolute;
+    inset: 0;
+    transition: opacity 220ms ease, transform 380ms cubic-bezier(.22, 1, .36, 1);
   }
-  .portal-mobile-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: .75rem;
-    padding: .85rem;
-    border-bottom: 1px solid var(--color-border);
+  :global(.portal-theme-moon) { opacity: 1; transform: rotate(0deg) scale(1); }
+  .portal-theme-sun { opacity: 0; transform: rotate(-90deg) scale(.65); }
+  [data-theme="dark"] :global(.portal-theme-moon) { opacity: 0; transform: rotate(90deg) scale(.65); }
+  [data-theme="dark"] .portal-theme-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+  .portal-theme-toggle:active { transform: scale(.92); }
+
+  .portal-mobile-trigger { display: grid; }
+  .portal-menu-icon { position: relative; display: block; width: 20px; height: 16px; }
+  .portal-menu-icon > span {
+    position: absolute;
+    left: 0;
+    width: 20px;
+    height: 1.8px;
+    border-radius: 999px;
+    background: currentColor;
+    transform-origin: center;
+    transition: top 240ms cubic-bezier(.22, 1, .36, 1), transform 240ms cubic-bezier(.22, 1, .36, 1), opacity 140ms ease;
   }
-  .portal-mobile-head span { color: var(--color-text-muted); font-size: .68rem; }
-  .portal-mobile-panel nav { padding: .45rem; }
+  .portal-menu-icon > span:nth-child(1) { top: 1px; }
+  .portal-menu-icon > span:nth-child(2) { top: 7px; }
+  .portal-menu-icon > span:nth-child(3) { top: 13px; }
+  .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+  .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(2) { opacity: 0; transform: scaleX(.25); }
+  .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
+
+  .portal-mobile-panel { display: none; background: var(--color-surface); }
+  .portal-mobile-panel-inner { min-height: 0; overflow: hidden; }
+  .portal-mobile-panel nav { padding-block: 0; }
   .portal-mobile-panel nav a {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: .6rem;
-    min-height: 46px;
-    padding: .65rem;
-    border-radius: 8px;
-    font-size: .83rem;
+    gap: .72rem;
+    min-height: 52px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-size: .86rem;
     font-weight: 750;
+    opacity: 0;
+    transform: translateY(-7px);
+    transition: color 160ms ease, background-color 160ms ease, opacity 160ms ease 30ms, transform 240ms cubic-bezier(.22, 1, .36, 1) 30ms;
   }
-  .portal-mobile-panel nav a:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+  .portal-mobile-panel nav a:first-child { border-top: 1px solid var(--color-border); }
+  .portal-mobile-panel nav a:hover,
+  .portal-mobile-panel nav a:focus-visible,
+  .portal-mobile-panel nav a[aria-current="page"] { color: var(--color-primary); background: var(--color-surface-alt); }
+  .portal-mobile-panel.is-open nav a { opacity: 1; transform: translateY(0); }
   .portal-mobile-bottom { display: none; }
 
   @media (min-width: 1100px) {
     .portal-desktop-nav { display: flex; }
-    .portal-mobile-menu { display: none; }
+    .portal-mobile-trigger,
+    .portal-mobile-panel { display: none; }
     .portal-header-actions { margin-left: 0; }
   }
   @media (max-width: 1099px) {
     .portal-saved-action { display: none; }
+    .portal-mobile-panel {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      visibility: hidden;
+      transition: grid-template-rows 260ms cubic-bezier(.22, 1, .36, 1), opacity 150ms ease, visibility 0s linear 260ms;
+    }
+    .portal-mobile-panel.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+      visibility: visible;
+      transition: grid-template-rows 300ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease, visibility 0s linear 0s;
+    }
   }
   @media (max-width: 680px) {
     .portal-utility .container { justify-content: center; }
@@ -428,7 +484,7 @@ const mobileCategories = categories.map((category) => ({
     .portal-brand { flex-basis: 118px; }
     :global(.portal-brand-logo) { width: 118px; max-height: 44px; }
     .portal-search-action { display: none; }
-    .portal-mobile-panel { top: 92px; }
+    .portal-mobile-panel nav a { min-height: 50px; font-size: .84rem; }
     .portal-mobile-bottom {
       position: fixed;
       inset: auto 0 0;
@@ -454,5 +510,11 @@ const mobileCategories = categories.map((category) => ({
     }
     .portal-mobile-bottom a[aria-current="page"] { color: var(--color-primary); }
     :global(body) { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.portal-theme-icon),
+    .portal-menu-icon > span,
+    .portal-mobile-panel,
+    .portal-mobile-panel nav a { transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
   }
 </style>
