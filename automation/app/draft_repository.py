@@ -10,6 +10,7 @@ from .schemas import FactCheckResult, GeneratedDraft, ResearchDossier, SeoAnalys
 _FRONTMATTER_RE = re.compile(r"^---\s*\n([\s\S]*?)\n---(?:\s*\n|$)")
 _FIELD_RE_TEMPLATE = r"(?m)^%s:\s*[\"']?([^\"'\n]+)"
 _URL_RE = re.compile(r"https?://[^\s\"'\]]+")
+_PUBLIC_WORKFLOWS = {"published", "corrected", "closed"}
 
 
 def _canonical_url(value: str) -> str:
@@ -49,6 +50,7 @@ class ExistingArticle:
     title: str
     url_slug: str
     source_urls: set[str]
+    is_public: bool
 
 
 class DraftRepository:
@@ -72,7 +74,10 @@ class DraftRepository:
                 return found.group(1).strip() if found else ""
 
             urls = {_canonical_url(item.rstrip(",")) for item in _URL_RE.findall(frontmatter)}
-            articles.append(ExistingArticle(path, field("title"), field("urlSlug"), urls))
+            draft_value = field("draft").casefold()
+            workflow = field("workflowStatus").casefold()
+            is_public = draft_value == "false" and workflow in _PUBLIC_WORKFLOWS
+            articles.append(ExistingArticle(path, field("title"), field("urlSlug"), urls, is_public))
         return articles
 
     def is_duplicate(self, candidate: TopicCandidate) -> bool:
@@ -81,12 +86,16 @@ class DraftRepository:
 
     def internal_link_context(self, limit: int = 30) -> list[dict]:
         context: list[dict] = []
-        for article in self.existing_articles()[:limit]:
+        for article in self.existing_articles():
+            if not article.is_public or not article.title or not article.url_slug:
+                continue
             language = article.path.parent.name
             context.append({
                 "title": article.title,
                 "url": f"https://citizenaffairs.in/{language}/{article.url_slug}/",
             })
+            if len(context) >= limit:
+                break
         return context
 
     def target_path(self, language: str, slug: str) -> Path:
