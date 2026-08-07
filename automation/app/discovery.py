@@ -20,6 +20,7 @@ TOPIC_KEYWORDS = {
     "notices": ("notice", "notification", "corrigendum", "deadline", "last date", "extended", "alert"),
 }
 URGENCY_TERMS = ("last date", "deadline", "closing", "extended", "corrigendum", "urgent")
+_DISCOVERY_URL_PREFIX = "Official listing URL: "
 
 
 def is_official_url(value: str) -> bool:
@@ -81,10 +82,10 @@ class _ListingLinkParser(HTMLParser):
             self.current_text.append(text)
 
 
-def _candidate(title: str, link: str, authority: str) -> TopicCandidate | None:
+def _candidate(title: str, link: str, authority: str, listing_url: str) -> TopicCandidate | None:
     normalized = " ".join(title.split())
     category, score, reasons = _classify(normalized)
-    if len(normalized) < 8 or not category or not is_official_url(link):
+    if len(normalized) < 8 or not category or not is_official_url(link) or not is_official_url(listing_url):
         return None
     urgency = "high" if any(term in normalized.casefold() for term in URGENCY_TERMS) else "none"
     return TopicCandidate(
@@ -97,7 +98,10 @@ def _candidate(title: str, link: str, authority: str) -> TopicCandidate | None:
         freshness_label="high",
         deadline_urgency=urgency,
         official_source_available=True,
-        discovery_evidence=[f"Discovered on official source: {authority}"],
+        discovery_evidence=[
+            f"Discovered on official source: {authority}",
+            f"{_DISCOVERY_URL_PREFIX}{listing_url}",
+        ],
         priority_score=score,
         selection_reasons=reasons,
     )
@@ -137,7 +141,7 @@ async def discover_from_official_feeds(feed_urls: list[str], limit: int = 20) ->
                     key = (title.casefold(), link)
                     if key in seen:
                         continue
-                    item = _candidate(title, link, authority)
+                    item = _candidate(title, link, authority, final_url)
                     if item:
                         seen.add(key)
                         candidates.append(item)
@@ -154,7 +158,7 @@ async def discover_from_official_feeds(feed_urls: list[str], limit: int = 20) ->
                 key = (title.casefold(), link)
                 if key in seen:
                     continue
-                item = _candidate(title, link, authority)
+                item = _candidate(title, link, authority, final_url)
                 if item:
                     seen.add(key)
                     candidates.append(item)
