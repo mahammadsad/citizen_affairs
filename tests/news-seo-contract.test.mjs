@@ -31,6 +31,7 @@ test('Google News sitemap contains only fresh public news-category articles', ()
   assert.match(newsSitemap, /PUBLIC_WORKFLOWS\.has\(data\.workflowStatus\)/);
   assert.match(newsSitemap, /data\.verificationStatus !== 'withdrawn'/);
   assert.match(newsSitemap, /NEWS_CATEGORIES\.has\(data\.category\)/);
+  assert.match(newsSitemap, /isCurrentListingCandidate\(data\)/);
   assert.match(newsSitemap, /data\.date >= cutoff/);
   assert.match(newsSitemap, /data\.date <= now/);
   assert.match(newsSitemap, /<news:publication_date>/);
