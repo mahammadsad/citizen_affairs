@@ -33,6 +33,18 @@ class FakeFetcher:
         return [object()]
 
 
+class AlwaysFailFetcher:
+    async def fetch_bundle(self, url: str):
+        request = httpx.Request("GET", url)
+        raise httpx.ReadTimeout("candidate failed", request=request)
+
+
+class SlowFetcher:
+    async def fetch_bundle(self, _url: str):
+        await asyncio.sleep(10)
+        return [object()]
+
+
 class FakeDrafts:
     def is_duplicate(self, _candidate):
         return False
@@ -48,6 +60,13 @@ async def fake_discover():
     return [
         candidate("First recruitment notice", "https://ssc.gov.in/first"),
         candidate("Second recruitment notice", "https://ssc.gov.in/second"),
+    ]
+
+
+async def discover_four():
+    return [
+        candidate(f"Recruitment notice {number}", f"https://ssc.gov.in/notice-{number}")
+        for number in range(1, 5)
     ]
 
 
@@ -67,16 +86,25 @@ async def fake_fact_check(_dossier, _draft, _materials):
     return SimpleNamespace(review_ready=True, critical_blockers=[])
 
 
-def test_pipeline_keeps_trying_until_requested_draft_is_created():
+def pipeline_with(settings, fetcher, discover):
     pipeline = AutomationPipeline.__new__(AutomationPipeline)
-    pipeline.settings = SimpleNamespace(max_drafts_per_run=1, languages=["en"])
-    pipeline.fetcher = FakeFetcher()
+    pipeline.settings = settings
+    pipeline.fetcher = fetcher
     pipeline.drafts = FakeDrafts()
-    pipeline.discover_candidates = fake_discover
+    pipeline.discover_candidates = discover
     pipeline.research = fake_research
     pipeline.seo = fake_seo
     pipeline.write = fake_write
     pipeline.fact_check = fake_fact_check
+    return pipeline
+
+
+def test_pipeline_keeps_trying_until_requested_draft_is_created():
+    pipeline = pipeline_with(
+        SimpleNamespace(max_drafts_per_run=1, languages=["en"]),
+        FakeFetcher(),
+        fake_discover,
+    )
 
     result = asyncio.run(pipeline.generate_drafts())
 
@@ -85,3 +113,43 @@ def test_pipeline_keeps_trying_until_requested_draft_is_created():
     assert result["created_count"] == 1
     assert len(result["failures"]) == 1
     assert result["failures"][0]["topic"] == "First recruitment notice"
+
+
+def test_pipeline_stops_after_configured_candidate_attempts():
+    pipeline = pipeline_with(
+        SimpleNamespace(
+            max_drafts_per_run=1,
+            max_candidate_attempts_per_run=3,
+            topic_processing_timeout_seconds=10,
+            languages=["en"],
+        ),
+        AlwaysFailFetcher(),
+        discover_four,
+    )
+
+    result = asyncio.run(pipeline.generate_drafts())
+
+    assert result["candidate_attempts"] == 3
+    assert result["processed_topics"] == 3
+    assert result["created_count"] == 0
+    assert len(result["failures"]) == 3
+
+
+def test_pipeline_times_out_one_slow_topic_without_hanging_the_run():
+    pipeline = pipeline_with(
+        SimpleNamespace(
+            max_drafts_per_run=1,
+            max_candidate_attempts_per_run=1,
+            topic_processing_timeout_seconds=0.01,
+            languages=["en"],
+        ),
+        SlowFetcher(),
+        fake_discover,
+    )
+
+    result = asyncio.run(pipeline.generate_drafts())
+
+    assert result["candidate_attempts"] == 1
+    assert result["created_count"] == 0
+    assert len(result["failures"]) == 1
+    assert result["failures"][0]["error"] == "TimeoutError"
