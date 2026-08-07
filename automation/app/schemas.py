@@ -32,6 +32,8 @@ class TopicCandidate(StrictModel):
     deadline_urgency: str = Field(pattern="^(none|low|medium|high)$")
     official_source_available: bool
     discovery_evidence: list[str] = Field(default_factory=list, max_length=20)
+    priority_score: int = Field(default=50, ge=0, le=100)
+    selection_reasons: list[str] = Field(default_factory=list, max_length=10)
 
 
 class SourceEvidence(StrictModel):
@@ -103,14 +105,28 @@ class SeoAnalysis(StrictModel):
     structured_data_recommendations: list[str] = Field(default_factory=list)
 
 
+class DraftFaq(StrictModel):
+    question: str = Field(min_length=5, max_length=300)
+    answer: str = Field(min_length=15, max_length=1500)
+
+
 class GeneratedDraft(StrictModel):
     title: str = Field(min_length=8, max_length=180)
     url_slug: str = Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
     short_description: str = Field(min_length=40, max_length=320)
+    seo_title: str = Field(min_length=8, max_length=180)
+    seo_description: str = Field(min_length=50, max_length=170)
+    portal_category: str = Field(pattern="^(jobs|exams|materials|projects|affairs|notices|guides)$")
     body_markdown: str = Field(min_length=200)
-    image_filename: str = Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*\.webp$")
-    image_alt_text: str = Field(min_length=10, max_length=250)
-    social_caption: str = Field(max_length=500)
+    quick_summary: list[str] = Field(min_length=2, max_length=5)
+    faqs: list[DraftFaq] = Field(default_factory=list, max_length=8)
+    important_dates: list[str] = Field(default_factory=list, max_length=15)
+    qualification: list[str] = Field(default_factory=list, max_length=15)
+    required_documents: list[str] = Field(default_factory=list, max_length=20)
+    amount_or_vacancies: str | None = Field(default=None, max_length=500)
+    image_filename: str | None = Field(default=None, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*\.webp$")
+    image_alt_text: str | None = Field(default=None, max_length=250)
+    social_caption: str = Field(default="", max_length=500)
     sources_used: list[HttpUrl] = Field(min_length=1)
     ai_generated: bool = True
 
@@ -138,6 +154,10 @@ class FactCheckResult(StrictModel):
             }
             for claim in self.claims
         )
+
+    @property
+    def review_ready(self) -> bool:
+        return not self.approval_blocked and self.checked_for_newer_notification and self.checked_for_corrigenda
 
     @model_validator(mode="after")
     def critical_failures_are_listed(self) -> "FactCheckResult":
