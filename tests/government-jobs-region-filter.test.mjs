@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const jobsRoute = await readFile('src/pages/[lang]/categories/[category].astro', 'utf8');
 const regionFilter = await readFile('src/components/GovernmentJobsRegionFilter.astro', 'utf8');
+const mainLayout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 
 test('jobs route loads the dependent State and Union Territory filter enhancer', () => {
   assert.match(jobsRoute, /GovernmentJobsRegionFilter/);
@@ -56,12 +57,19 @@ test('dynamic State and UT control receives the same branded form classes as the
   assert.match(regionFilter, /var\(--shadow-lg\)/);
 });
 
-test('mobile filter sheet stays above the persistent bottom navigation and within the dynamic viewport', () => {
+test('mobile filter sheet uses the reclaimed bottom area and stays within the dynamic viewport', () => {
   assert.match(
-    regionFilter,
-    /bottom: calc\(60px \+ env\(safe-area-inset-bottom\) \+ 0\.75rem\) !important/
+    mainLayout,
+    /body \.jobs-filter-panel\.jobs-filter-panel-enhanced[\s\S]*bottom: calc\(env\(safe-area-inset-bottom\) \+ \.75rem\) !important/
   );
-  assert.match(regionFilter, /max-height: calc\(100dvh - 60px - env\(safe-area-inset-bottom\) - 1\.5rem\)/);
+  assert.match(
+    mainLayout,
+    /max-height: calc\(100dvh - env\(safe-area-inset-bottom\) - 1\.5rem\) !important/
+  );
+  assert.doesNotMatch(
+    mainLayout,
+    /jobs-filter-panel\.jobs-filter-panel-enhanced[\s\S]{0,300}100dvh - 60px/
+  );
   assert.match(regionFilter, /z-index: 120 !important/);
   assert.match(regionFilter, /overscroll-behavior: contain/);
   assert.match(regionFilter, /scrollbar-gutter: stable/);

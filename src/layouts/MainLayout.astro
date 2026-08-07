@@ -83,6 +83,14 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     display: none !important;
   }
 
+  /* The fixed five-item mobile bar duplicated routes already available in the
+     header/menu and permanently consumed useful reading space. Keep its legacy
+     markup hidden for compatibility while the expanding menu owns mobile nav. */
+  :global(.portal-mobile-bottom),
+  :global(body.article-reading-mode .portal-mobile-bottom) {
+    display: none !important;
+  }
+
   :global(.portal-navbar) {
     z-index: 50 !important;
   }
@@ -161,12 +169,27 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     margin-bottom: .75rem !important;
   }
 
-  :global(body.article-reading-mode .category-nav-shell),
-  :global(body.article-reading-mode .portal-mobile-bottom) {
+  :global(body.article-reading-mode .category-nav-shell) {
     display: none !important;
   }
 
+  @media (max-width: 700px) {
+    /* Job filters used to stop above the fixed bottom navigation. Allow the
+       sheet to occupy that reclaimed area while still respecting safe areas. */
+    :global(body .jobs-filter-panel.jobs-filter-panel-enhanced) {
+      bottom: calc(env(safe-area-inset-bottom) + .75rem) !important;
+      max-height: calc(100vh - env(safe-area-inset-bottom) - 1.5rem) !important;
+      max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.5rem) !important;
+    }
+  }
+
   @media (max-width: 680px) {
+    /* PortalHeader used to reserve 60px for the fixed bottom navigation. With
+       that bar gone, content can extend to the safe area on every mobile page. */
+    :global(body) {
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+
     :global(body.article-reading-mode) {
       padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
     }
@@ -182,7 +205,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-navbar-inner) {
-      min-height: 74px !important;
+      min-height: 66px !important;
       padding-inline: .75rem !important;
       gap: .25rem !important;
     }
@@ -223,12 +246,20 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.news-home .top-news) {
-      padding-top: .7rem !important;
+      padding-top: .55rem !important;
     }
 
     :global(.news-home .section-title-row) {
-      margin-bottom: .65rem !important;
-      padding-bottom: .45rem !important;
+      margin-bottom: .55rem !important;
+      padding-bottom: .4rem !important;
+    }
+  }
+
+  @media (max-width: 430px) {
+    :global(body .jobs-filter-panel.jobs-filter-panel-enhanced) {
+      bottom: calc(env(safe-area-inset-bottom) + .65rem) !important;
+      max-height: calc(100vh - env(safe-area-inset-bottom) - 1.3rem) !important;
+      max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.3rem) !important;
     }
   }
 

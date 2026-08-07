@@ -65,7 +65,7 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('.portal-search')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /language|ভাষা|भाषा/i }).first()).toBeVisible();
   if (testInfo.project.name === 'mobile') {
-    await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
+    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
     await expect(page.getByRole('button', { name: /menu|মেনু|मेनू/i })).toBeVisible();
   } else {
     await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
@@ -96,7 +96,7 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
   if (testInfo.project.name === 'mobile') {
-    await expect(page.locator('.portal-mobile-bottom a[href*="/search"]')).toBeVisible();
+    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
 
     const menuTrigger = page.locator('.portal-mobile-trigger');
     const panel = page.locator('.portal-mobile-panel');
@@ -108,7 +108,9 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     await expect(panel).toBeVisible();
     await expect(panel).toHaveAttribute('aria-hidden', 'false');
     await expect(panel.locator('nav a').first()).toBeVisible();
-    await expect(page.locator('.portal-mobile-bottom')).toBeVisible();
+    await expect(panel.locator('.portal-mobile-utility-link[href*="/search"]')).toBeVisible();
+    await expect(panel.locator('.portal-mobile-utility-link[href*="/saved"]')).toBeVisible();
+    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
 
     const after = await content.boundingBox();
     expect(before).not.toBeNull();
