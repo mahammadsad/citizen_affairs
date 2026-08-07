@@ -4,7 +4,6 @@ import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
 import ThemeTransitionRuntime from '@components/ThemeTransitionRuntime.astro';
 import MobileNavigationRuntime from '@components/MobileNavigationRuntime.astro';
-import MobileBottomNavigationRuntime from '@components/MobileBottomNavigationRuntime.astro';
 import FormSubmissionRuntime from '@components/FormSubmissionRuntime.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
@@ -68,7 +67,6 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
   <PortalRuntime />
   <ThemeTransitionRuntime />
   <MobileNavigationRuntime />
-  <MobileBottomNavigationRuntime />
   <main id="main-content">
     <slot />
   </main>
@@ -161,8 +159,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     margin-bottom: .75rem !important;
   }
 
-  :global(body.article-reading-mode .category-nav-shell),
-  :global(body.article-reading-mode .portal-mobile-bottom) {
+  :global(body.article-reading-mode .category-nav-shell) {
     display: none !important;
   }
 
@@ -182,7 +179,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.portal-navbar-inner) {
-      min-height: 74px !important;
+      min-height: 66px !important;
       padding-inline: .75rem !important;
       gap: .25rem !important;
     }
@@ -197,7 +194,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.portal-brand-logo) {
       width: var(--portal-logo-width) !important;
       max-width: none !important;
-      max-height: 52px !important;
+      max-height: 46px !important;
     }
 
     :global(.portal-header-actions) {
@@ -223,12 +220,12 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     }
 
     :global(.news-home .top-news) {
-      padding-top: .7rem !important;
+      padding-top: .55rem !important;
     }
 
     :global(.news-home .section-title-row) {
-      margin-bottom: .65rem !important;
-      padding-bottom: .45rem !important;
+      margin-bottom: .55rem !important;
+      padding-bottom: .4rem !important;
     }
   }
 
