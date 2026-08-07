@@ -16,6 +16,7 @@ const hasHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== 'maha
 const authorEntry = hasHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = hasHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
 const brandName = getBrandName(locale);
+const teamUrl = locale === 'en' ? '/team/' : localizedPath(locale, 'team');
 const copy = {
   en: { by: 'By', desk: `${brandName} Editorial Desk`, published: 'Published', updated: 'Updated' },
   bn: { by: 'প্রকাশক', desk: `${brandName} সম্পাদকীয় ডেস্ক`, published: 'প্রকাশিত', updated: 'আপডেট' },
@@ -39,7 +40,7 @@ const format = (value: Date) => new Intl.DateTimeFormat(dateLocale(locale), {
     {hasHumanAuthor && authorName ? (
       <a href={authorProfilePath(locale, normalizedAuthor)}>{authorName}</a>
     ) : (
-      <a href={localizedPath(locale, 'team')}>{copy.desk}</a>
+      <a href={teamUrl}>{copy.desk}</a>
     )}
   </span>
   <span>
