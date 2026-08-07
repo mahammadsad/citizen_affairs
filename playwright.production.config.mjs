@@ -17,7 +17,12 @@ export default defineConfig({
     actionTimeout: 20_000,
     navigationTimeout: 45_000,
     trace: 'retain-on-failure',
-    screenshot: 'only-on-failure'
+    screenshot: 'only-on-failure',
+    // Playwright's standalone Chromium headless-shell is crashing with SIGSEGV
+    // on the hosted Ubuntu runner during longer production suites. Use the
+    // installed full Chromium channel (new headless mode) instead; this keeps
+    // the browser engine identical while avoiding the unstable shell binary.
+    channel: 'chromium'
   },
   projects: [
     {
