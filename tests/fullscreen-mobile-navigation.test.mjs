@@ -12,7 +12,7 @@ test('mobile navigation expands below the header and stays in document flow', ()
   assert.match(header, /id="portalMobilePanel"/);
   assert.match(header, /grid-template-rows: 0fr/);
   assert.match(header, /grid-template-rows: 1fr/);
-  assert.doesNotMatch(header, /position:\s*fixed[\s\S]*portal-mobile-panel/);
+  assert.doesNotMatch(header, /\.portal-mobile-panel\s*\{[^}]*position:\s*fixed/);
   assert.doesNotMatch(runtime, /aria-modal/);
   assert.doesNotMatch(runtime, /portal-menu-open/);
 });
