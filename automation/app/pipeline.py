@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import json
 from datetime import datetime, timezone
@@ -186,45 +187,57 @@ class AutomationPipeline:
         failures: list[dict] = []
         processed_topics = 0
         created_topics = 0
+        candidate_attempts = 0
+        max_candidate_attempts = getattr(
+            self.settings,
+            "max_candidate_attempts_per_run",
+            max(3, self.settings.max_drafts_per_run),
+        )
+        topic_timeout_seconds = getattr(self.settings, "topic_processing_timeout_seconds", 360)
 
         for candidate in candidates:
             if created_topics >= self.settings.max_drafts_per_run:
                 break
+            if candidate_attempts >= max_candidate_attempts:
+                break
             if self.drafts.is_duplicate(candidate):
                 skipped_duplicates += 1
                 continue
+
+            candidate_attempts += 1
             processed_topics += 1
             try:
-                materials = await self.fetcher.fetch_bundle(str(candidate.source_url))
-                dossier = await self.research(candidate, materials)
-                seo = await self.seo(dossier)
-                topic_created = 0
-                for language in self.settings.languages:
-                    path = self.drafts.target_path(language, seo.url_slug)
-                    if path.exists():
-                        continue
-                    draft = await self.write(dossier, seo, language)
-                    factcheck = await self.fact_check(dossier, draft, materials)
-                    saved_path = self.drafts.save(
-                        language=language,
-                        candidate=candidate,
-                        dossier=dossier,
-                        seo=seo,
-                        draft=draft,
-                        factcheck=factcheck,
-                    )
-                    if saved_path:
-                        topic_created += 1
-                        created.append({
-                            "path": str(saved_path.relative_to(repository_root())),
-                            "language": language,
-                            "review_ready": factcheck.review_ready,
-                            "critical_blockers": len(factcheck.critical_blockers),
-                        })
-                if topic_created == 0:
-                    skipped_duplicates += 1
-                else:
-                    created_topics += 1
+                async with asyncio.timeout(topic_timeout_seconds):
+                    materials = await self.fetcher.fetch_bundle(str(candidate.source_url))
+                    dossier = await self.research(candidate, materials)
+                    seo = await self.seo(dossier)
+                    topic_created = 0
+                    for language in self.settings.languages:
+                        path = self.drafts.target_path(language, seo.url_slug)
+                        if path.exists():
+                            continue
+                        draft = await self.write(dossier, seo, language)
+                        factcheck = await self.fact_check(dossier, draft, materials)
+                        saved_path = self.drafts.save(
+                            language=language,
+                            candidate=candidate,
+                            dossier=dossier,
+                            seo=seo,
+                            draft=draft,
+                            factcheck=factcheck,
+                        )
+                        if saved_path:
+                            topic_created += 1
+                            created.append({
+                                "path": str(saved_path.relative_to(repository_root())),
+                                "language": language,
+                                "review_ready": factcheck.review_ready,
+                                "critical_blockers": len(factcheck.critical_blockers),
+                            })
+                    if topic_created == 0:
+                        skipped_duplicates += 1
+                    else:
+                        created_topics += 1
             except Exception as error:  # isolate one bad government page/provider response from the whole run
                 failures.append({
                     "topic": candidate.normalized_topic,
@@ -237,6 +250,7 @@ class AutomationPipeline:
             "created_count": len(created),
             "created_topics": created_topics,
             "processed_topics": processed_topics,
+            "candidate_attempts": candidate_attempts,
             "skipped_duplicates": skipped_duplicates,
             "failures": failures,
         }
