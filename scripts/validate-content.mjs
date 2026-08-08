@@ -87,6 +87,16 @@ for (const path of walk(contentRoot, articleExtensions)) {
       const hasPrimary = (data.sources || []).some((source) => source.designation === 'primary') || (data.sourceUrls?.length || 0) > 0;
       if (!hasPrimary) errors.push(`${file}: officially confirmed content needs a primary source`);
     }
+    if (data.contentType !== 'explainer' && data.checkBeforeActing !== true) {
+      errors.push(`${file}: structured citizen-service records must retain checkBeforeActing: true`);
+    }
+    if (data.contentType !== 'explainer' && !data.draft) {
+      if (data.independentReviewStatus !== 'completed' || !data.reviewedBy) {
+        errors.push(`${file}: structured citizen-service records must remain draft until independent review is completed`);
+      }
+      const hasCurrentPrimary = Boolean(data.lastVerified) && (data.sources || []).some((source) => source.designation === 'primary');
+      if (!hasCurrentPrimary) errors.push(`${file}: structured citizen-service records need a current primary official source before publication`);
+    }
 
     if (data.featuredImage) {
       if (!data.featuredImageAlt?.trim()) errors.push(`${file}: featured images require alt text`);
@@ -115,13 +125,25 @@ for (const path of walk(contentRoot, articleExtensions)) {
       rejectExpiredOpenOpportunity(file, data.job?.applicationDeadline, data.job?.recruitmentStatus, 'job');
     } else if (data.contentType === 'scheme') {
       if (data.category !== 'projects') errors.push(`${file}: scheme content must use the projects category`);
-      required(data.scheme, ['schemeName', 'ministry', 'schemeLevel', 'targetBeneficiaries', 'benefitType', 'eligibilityCriteria', 'applicationProcess', 'applicationMode', 'officialPortal', 'schemeStatus'], 'scheme', file);
+      required(data.scheme, ['schemeName', 'ministry', 'officialNoticeUrl', 'schemeLevel', 'relevantDates', 'applicableGeography', 'targetBeneficiaries', 'benefitType', 'eligibilitySummary', 'eligibilityCriteria', 'applicationProcess', 'applicationMode', 'officialPortal', 'schemeStatus'], 'scheme', file);
     } else if (data.contentType === 'admission') {
       required(data.admission, ['institution', 'programme', 'admissionLevel', 'eligibilityCriteria', 'applicationDeadline', 'applicationMode', 'officialProspectusUrl', 'officialApplicationUrl', 'admissionStatus'], 'admission', file);
       rejectExpiredOpenOpportunity(file, data.admission?.applicationDeadline, data.admission?.admissionStatus, 'admission');
+    } else if (data.contentType === 'exam') {
+      if (data.category !== 'exams') errors.push(`${file}: exam content must use the exams category`);
+      required(data.exam, ['examName', 'conductingAuthority', 'noticeDate', 'examStage', 'relevantDates', 'applicableGeography', 'officialNoticeUrl', 'examStatus'], 'exam', file);
     } else if (data.contentType === 'scholarship') {
       required(data.scholarship, ['scholarshipName', 'provider', 'academicLevel', 'targetStudents', 'benefitAmount', 'eligibilityCriteria', 'applicationDeadline', 'applicationMode', 'officialPortal', 'scholarshipStatus'], 'scholarship', file);
       rejectExpiredOpenOpportunity(file, data.scholarship?.applicationDeadline, data.scholarship?.scholarshipStatus, 'scholarship');
+    } else if (data.contentType === 'notice') {
+      if (data.category !== 'notices') errors.push(`${file}: notice content must use the notices category`);
+      required(data.notice, ['noticeTitle', 'issuingAuthority', 'noticeDate', 'applicableGeography', 'affectedPeople', 'officialNoticeUrl', 'noticeStatus'], 'notice', file);
+    } else if (data.contentType === 'service') {
+      if (data.category !== 'affairs') errors.push(`${file}: service content must use the affairs category`);
+      required(data.service, ['serviceName', 'department', 'applicableGeography', 'serviceActions', 'applicationMode', 'officialPortal', 'serviceStatus'], 'service', file);
+    } else if (data.contentType === 'alert') {
+      if (data.category !== 'notices') errors.push(`${file}: alert content must use the notices category`);
+      required(data.alert, ['alertType', 'affectedPeople', 'affectedGeography', 'issuingAuthority', 'officialOrderUrl', 'alertStatus', 'urgency'], 'alert', file);
     }
   } catch (error) {
     errors.push(`${file}: ${error.message}`);

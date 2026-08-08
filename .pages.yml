@@ -287,9 +287,11 @@ content:
               values:
                 - { value: job, label: "Government job / recruitment" }
                 - { value: scheme, label: "Government scheme / benefit" }
+                - { value: exam, label: "Exam notice / admit card / result" }
                 - { value: admission, label: "Admission / exam admission" }
                 - { value: scholarship, label: "Scholarship / education benefit" }
                 - { value: service, label: "Citizen service / how-to" }
+                - { value: notice, label: "Public notice / corrigendum" }
                 - { value: alert, label: "Urgent notice / rule or deadline update" }
                 - { value: explainer, label: "Explainer / result / general update" }
           - name: category
@@ -420,9 +422,11 @@ content:
               values:
                 - { value: job, label: "সরকারি চাকরি / নিয়োগ" }
                 - { value: scheme, label: "সরকারি প্রকল্প / সুবিধা" }
+                - { value: exam, label: "পরীক্ষার নোটিশ / admit card / result" }
                 - { value: admission, label: "ভর্তি / পরীক্ষা" }
                 - { value: scholarship, label: "স্কলারশিপ / শিক্ষা সুবিধা" }
                 - { value: service, label: "নাগরিক পরিষেবা / কীভাবে করবেন" }
+                - { value: notice, label: "জনসাধারণের নোটিশ / corrigendum" }
                 - { value: alert, label: "জরুরি নোটিশ / নিয়ম বা শেষ তারিখের পরিবর্তন" }
                 - { value: explainer, label: "ব্যাখ্যা / ফলাফল / সাধারণ আপডেট" }
           - name: category
@@ -552,9 +556,11 @@ content:
               values:
                 - { value: job, label: "सरकारी नौकरी / भर्ती" }
                 - { value: scheme, label: "सरकारी योजना / लाभ" }
+                - { value: exam, label: "परीक्षा सूचना / admit card / result" }
                 - { value: admission, label: "प्रवेश / परीक्षा" }
                 - { value: scholarship, label: "छात्रवृत्ति / शिक्षा लाभ" }
                 - { value: service, label: "नागरिक सेवा / how-to" }
+                - { value: notice, label: "सार्वजनिक सूचना / corrigendum" }
                 - { value: alert, label: "तत्काल सूचना / नियम या अंतिम तिथि बदलाव" }
                 - { value: explainer, label: "व्याख्या / परिणाम / सामान्य अपडेट" }
           - { name: category, label: "Portal section", type: string, required: true }

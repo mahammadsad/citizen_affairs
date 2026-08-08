@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Exam update visual template</title>
+  <desc id="desc">Abstract exam paper, pencil and check shapes without scores, dates or embedded text.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10204f"/><stop offset="1" stop-color="#234c8d"/></linearGradient></defs>
+  <rect width="1200" height="675" rx="38" fill="url(#bg)"/><circle cx="190" cy="130" r="210" fill="#8b5cf6" opacity=".18"/>
+  <g transform="translate(310 90) rotate(-3 290 250)"><rect width="580" height="500" rx="38" fill="#fff"/><rect x="78" y="84" width="250" height="26" rx="13" fill="#d7e6f2"/><rect x="78" y="148" width="400" height="19" rx="10" fill="#e8eef5"/><rect x="78" y="204" width="360" height="19" rx="10" fill="#e8eef5"/><circle cx="106" cy="300" r="34" fill="#e8eef5"/><path d="m89 300 13 14 26-34" fill="none" stroke="#0ea59a" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><circle cx="106" cy="390" r="34" fill="#e8eef5"/><rect x="166" y="286" width="280" height="22" rx="11" fill="#d7e6f2"/><rect x="166" y="378" width="230" height="22" rx="11" fill="#d7e6f2"/></g>
+  <path d="m850 480 140-250 55 32-139 250-78 47z" fill="#f5a623"/><path d="m828 559 78-47-55-32z" fill="#fff"/>
+</svg>

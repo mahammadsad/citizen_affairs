@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Public notice visual template</title>
+  <desc id="desc">Abstract notice sheet and bulletin pin without dates, logos or embedded words.</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#3d2509"/><stop offset="1" stop-color="#8c5511"/></linearGradient></defs>
+  <rect width="1200" height="675" rx="38" fill="url(#bg)"/><path d="M0 540 360 180l840 495H0z" fill="#f5a623" opacity=".12"/>
+  <rect x="300" y="90" width="600" height="510" rx="42" fill="#fff"/>
+  <circle cx="600" cy="120" r="58" fill="#0ea59a"/><circle cx="600" cy="120" r="22" fill="#07172e"/>
+  <rect x="390" y="230" width="420" height="28" rx="14" fill="#0b1d3a"/><rect x="390" y="305" width="350" height="20" rx="10" fill="#c7d6e3"/><rect x="390" y="360" width="410" height="20" rx="10" fill="#c7d6e3"/><rect x="390" y="415" width="280" height="20" rx="10" fill="#c7d6e3"/>
+  <path d="m713 508 34 34 77-90" fill="none" stroke="#0ea59a" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

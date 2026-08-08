@@ -109,7 +109,7 @@ const jobDetails = z.object({
   examinationDate: optionalDate,
   resultDate: optionalDate,
   selectionProcess: z.array(z.string()).min(1),
-  jobLocation: z.array(z.string()).default([]),
+  jobLocation: z.array(z.string()).min(1),
   applicationMode: z.enum(['online', 'offline', 'both']),
   officialNotificationUrl: z.url(),
   officialApplicationUrl: z.url(),
@@ -131,8 +131,11 @@ const schemeDetails = z.object({
   alternativeNames: z.array(z.string()).default([]),
   ministry: z.string(),
   department: z.string().optional(),
+  officialNoticeUrl: z.url(),
   schemeLevel: z.enum(['central', 'state']),
   launchDate: optionalDate,
+  relevantDates: z.array(z.string()).min(1),
+  applicableGeography: z.array(z.string()).min(1),
   targetBeneficiaries: z.array(z.string()).min(1),
   benefitType: z.array(z.string()).min(1),
   benefitAmount: z.string().optional(),
@@ -142,6 +145,8 @@ const schemeDetails = z.object({
   incomeLimit: z.string().optional(),
   residenceRequirement: z.string().optional(),
   occupationRequirement: z.string().optional(),
+  eligibilitySummary: z.array(z.string()).min(1),
+  feeSummary: z.array(z.string()).default([]),
   eligibilityCriteria: z.array(z.string()).min(1),
   exclusionConditions: z.array(z.string()).default([]),
   requiredDocuments: z.array(z.string()).default([]),
@@ -190,6 +195,29 @@ const admissionDetails = z.object({
   ]),
 });
 
+const examDetails = z.object({
+  examName: z.string(),
+  conductingAuthority: z.string(),
+  noticeNumber: z.string().optional(),
+  noticeDate: z.coerce.date(),
+  examStage: z.enum([
+    'notification',
+    'application',
+    'admit-card',
+    'examination',
+    'answer-key',
+    'result',
+    'counselling',
+  ]),
+  relevantDates: z.array(z.string()).min(1),
+  applicableGeography: z.array(z.string()).min(1),
+  eligibilitySummary: z.array(z.string()).default([]),
+  feeSummary: z.array(z.string()).default([]),
+  officialNoticeUrl: z.url(),
+  officialActionUrl: z.url().optional(),
+  examStatus: z.enum(['upcoming', 'open', 'closed', 'released', 'cancelled', 'withdrawn']),
+});
+
 const scholarshipDetails = z.object({
   scholarshipName: z.string(),
   provider: z.string(),
@@ -218,6 +246,10 @@ const scholarshipDetails = z.object({
 const serviceDetails = z.object({
   serviceName: z.string(),
   department: z.string(),
+  officialNoticeUrl: z.url().optional(),
+  effectiveDate: optionalDate,
+  applicableGeography: z.array(z.string()).min(1),
+  eligibilitySummary: z.array(z.string()).default([]),
   serviceActions: z.array(z.enum(['apply', 'update', 'download', 'check-status', 'complaint', 'appointment'])).min(1),
   eligibilityCriteria: z.array(z.string()).default([]),
   requiredDocuments: z.array(z.string()).default([]),
@@ -227,6 +259,21 @@ const serviceDetails = z.object({
   officialPortal: z.url(),
   helplineInformation: z.array(z.string()).default([]),
   serviceStatus: z.enum(['available', 'limited', 'temporarily-unavailable', 'changed', 'withdrawn']),
+});
+
+const noticeDetails = z.object({
+  noticeTitle: z.string(),
+  issuingAuthority: z.string(),
+  noticeNumber: z.string().optional(),
+  noticeDate: z.coerce.date(),
+  effectiveDate: optionalDate,
+  expiryDate: optionalDate,
+  applicableGeography: z.array(z.string()).min(1),
+  affectedPeople: z.array(z.string()).min(1),
+  eligibilitySummary: z.array(z.string()).default([]),
+  feeSummary: z.array(z.string()).default([]),
+  officialNoticeUrl: z.url(),
+  noticeStatus: z.enum(['current', 'superseded', 'cancelled', 'expired', 'withdrawn']),
 });
 
 const alertDetails = z.object({
@@ -242,11 +289,15 @@ const alertDetails = z.object({
     'correction',
   ]),
   affectedPeople: z.array(z.string()).min(1),
+  affectedGeography: z.array(z.string()).min(1),
+  eligibilitySummary: z.array(z.string()).default([]),
+  feeSummary: z.array(z.string()).default([]),
   actionRequired: z.array(z.string()).default([]),
   issuingAuthority: z.string(),
   effectiveDate: optionalDate,
   expiryDate: optionalDate,
   officialOrderUrl: z.url(),
+  alertStatus: z.enum(['current', 'resolved', 'expired', 'withdrawn']),
   urgency: z.enum(['information', 'important', 'urgent']),
 });
 
@@ -260,7 +311,7 @@ const newsroomChecklist = z.object({
 });
 
 const articleSchema = z.object({
-    contentType: z.enum(['job', 'scheme', 'admission', 'scholarship', 'service', 'alert', 'explainer']).default('explainer'),
+    contentType: z.enum(['job', 'scheme', 'exam', 'admission', 'scholarship', 'notice', 'service', 'alert', 'explainer']).default('explainer'),
     sourceRecordId: z.uuid().optional(),
     publicationEventId: z.uuid().optional(),
     language: z.enum(['en', 'bn', 'hi']),
@@ -350,11 +401,14 @@ const articleSchema = z.object({
     amountOrVacancies: z.string().optional(),
     faqs: z.array(z.object({ question: z.string(), answer: z.string() })).default([]),
     correctionHistory: z.array(correctionRecord).default([]),
+    checkBeforeActing: z.boolean().default(true),
     job: jobDetails.optional(),
     scheme: schemeDetails.optional(),
     admission: admissionDetails.optional(),
+    exam: examDetails.optional(),
     scholarship: scholarshipDetails.optional(),
     service: serviceDetails.optional(),
+    notice: noticeDetails.optional(),
     alert: alertDetails.optional(),
 }).superRefine((article, context) => {
     const approvalRoles = [
@@ -386,6 +440,22 @@ const articleSchema = z.object({
         path: ['independentReviewStatus'],
         message: 'A named reviewer must have completed independent review status.',
       });
+    }
+    if (article.contentType !== 'explainer' && !article.draft) {
+      if (article.independentReviewStatus !== 'completed' || !article.reviewedBy) {
+        context.addIssue({
+          code: 'custom',
+          path: ['draft'],
+          message: 'A structured citizen-service record must remain draft until independent review is completed.',
+        });
+      }
+      if (!article.lastVerified || !article.sources.some((source) => source.designation === 'primary')) {
+        context.addIssue({
+          code: 'custom',
+          path: ['sources'],
+          message: 'A structured citizen-service record must retain a current primary official source before publication.',
+        });
+      }
     }
   });
 
