@@ -34,4 +34,4 @@ This source/metadata gate is not OCR. Reliable pixel OCR remains a later capabil
 
 The human reviewer records their real name and review date in the asset registry, sets both viewport checks to `true`, and changes `reviewStatus` to `approved-by-owner`. Until then, the pull-request checklist must remain incomplete and the asset is not approved for remote publication.
 
-P0 approval recorded: Mahammad Sad approved `welfare-programmes-guide-v1` and `exam-document-safety-v1` at 390 px and 1440 px on 8 August 2026.
+P0 approval recorded: Publication owner approved `welfare-programmes-guide-v1` and `exam-document-safety-v1` at 390 px and 1440 px on 8 August 2026.

@@ -1,6 +1,6 @@
 # Owned visual template guide
 
-Status: source-controlled templates approved by Mahammad Sad at 390 px and 1440 px on 2026-08-08. None is assigned to an article; every real assignment still requires contextual alt text, caption and evidence review.
+Status: source-controlled templates approved by Publication owner at 390 px and 1440 px on 2026-08-08. None is assigned to an article; every real assignment still requires contextual alt text, caption and evidence review.
 
 | Registry ID | Beat | Visual cue | Crop guidance |
 |---|---|---|---|

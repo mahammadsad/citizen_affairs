@@ -4,7 +4,7 @@ import ArticleCard from '@components/ArticleCard.astro';
 import Icon from '@components/Icon.astro';
 import { generateBreadcrumbs, toAbsoluteUrl } from '@lib/seo';
 import { getCategoryData, getAuthorData, categoryName } from '@lib/content';
-import { BRAND, getBrandName, resolveAssetPath, SITE } from '@utils/constants';
+import { getBrandName, resolveAssetPath, SITE } from '@utils/constants';
 import type { CollectionEntry } from 'astro:content';
 import type { Locale } from '../i18n';
 import { authorProfilePath, dateLocale, localizedPath, trustPagePath, ui, verificationLabels } from '../i18n';
@@ -124,7 +124,8 @@ const t = ui(locale);
 const categoryEntry = await getCategoryData(category);
 const categoryLabel = categoryEntry ? categoryName(categoryEntry, locale) : category;
 const normalizedAuthor = author.trim();
-const showHumanCredits = normalizedAuthor.length > 0;
+const organizationAuthorId = 'citizen-affairs-editorial-desk';
+const showHumanCredits = normalizedAuthor.length > 0 && normalizedAuthor !== organizationAuthorId;
 const authorEntry = showHumanCredits ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = showHumanCredits ? (authorEntry?.data.name ?? normalizedAuthor) : undefined;
 const resolveStaffName = async (slug?: string) => (slug ? (await getAuthorData(slug))?.data.name ?? slug : undefined);
@@ -210,30 +211,18 @@ const articleCopy = {
 const reportCopy = {
   en: {
     title: 'Report outdated or incorrect information',
-    intro: 'Tell the editorial team exactly what needs review. An official supporting source helps us respond faster.',
-    issue: 'Reported issue',
-    source: 'Supporting official source',
-    contact: 'Your email (optional)',
-    consent: 'I consent to this information being used to review my report.',
-    send: 'Prepare email report',
+    intro: 'Direct correction intake is temporarily unavailable while a brand-only contact address is prepared.',
+    policy: 'Read the corrections policy',
   },
   bn: {
     title: 'পুরোনো বা ভুল তথ্য জানান',
-    intro: 'কোন তথ্যটি পর্যালোচনা করা দরকার তা স্পষ্টভাবে লিখুন। অফিসিয়াল সমর্থনকারী সূত্র দিলে দ্রুত যাচাই করা যায়।',
-    issue: 'সমস্যার বিবরণ',
-    source: 'সমর্থনকারী অফিসিয়াল সূত্র',
-    contact: 'আপনার ইমেইল (ঐচ্ছিক)',
-    consent: 'আমার প্রতিবেদন যাচাইয়ের জন্য এই তথ্য ব্যবহারে আমি সম্মত।',
-    send: 'ইমেইল প্রতিবেদন তৈরি করুন',
+    intro: 'ব্র্যান্ডের নিজস্ব যোগাযোগের ঠিকানা প্রস্তুত না হওয়া পর্যন্ত সরাসরি সংশোধন প্রতিবেদন সাময়িকভাবে বন্ধ রয়েছে।',
+    policy: 'সংশোধন নীতি পড়ুন',
   },
   hi: {
     title: 'पुरानी या गलत जानकारी की सूचना दें',
-    intro: 'संपादकीय टीम को स्पष्ट बताएँ कि किस जानकारी की समीक्षा चाहिए। आधिकारिक समर्थक स्रोत से जाँच तेज होती है।',
-    issue: 'समस्या का विवरण',
-    source: 'समर्थक आधिकारिक स्रोत',
-    contact: 'आपका ईमेल (वैकल्पिक)',
-    consent: 'मैं अपनी रिपोर्ट की समीक्षा के लिए इस जानकारी के उपयोग पर सहमत हूँ।',
-    send: 'ईमेल रिपोर्ट तैयार करें',
+    intro: 'ब्रांड का अपना संपर्क पता तैयार होने तक सीधे सुधार रिपोर्ट अस्थायी रूप से उपलब्ध नहीं हैं।',
+    policy: 'सुधार नीति पढ़ें',
   },
 }[locale];
 
@@ -534,13 +523,7 @@ const schemas = faqSchema ? [breadcrumbSchema, faqSchema] : [breadcrumbSchema];
       <details class="correction-report">
         <summary>{reportCopy.title}</summary>
         <p>{reportCopy.intro}</p>
-        <form id="correctionReport" data-email={BRAND.contactEmail} data-article-title={title} data-article-url={pageUrl}>
-          <label><span>{reportCopy.issue}</span><textarea name="issue" rows="5" required maxlength="3000"></textarea></label>
-          <label><span>{reportCopy.source}</span><input name="source" type="url" inputmode="url" placeholder="https://" required /></label>
-          <label><span>{reportCopy.contact}</span><input name="contact" type="email" autocomplete="email" /></label>
-          <label class="report-consent"><input name="consent" type="checkbox" required /><span>{reportCopy.consent}</span></label>
-          <button class="btn btn-primary" type="submit">{reportCopy.send}</button>
-        </form>
+        <a class="btn btn-secondary" href={trustPagePath(locale, 'corrections')}>{reportCopy.policy}</a>
       </details>
 
       <p class="article-disclaimer">
@@ -666,22 +649,6 @@ const schemas = faqSchema ? [breadcrumbSchema, faqSchema] : [breadcrumbSchema];
     addEventListener('resize', updateProgress, { passive: true });
   }
 
-  const report = document.getElementById('correctionReport') as HTMLFormElement | null;
-  report?.addEventListener('submit', (event) => {
-    event.preventDefault();
-    if (!report.reportValidity()) return;
-    const data = new FormData(report);
-    const body = [
-      `Article: ${report.dataset.articleTitle || ''}`,
-      `URL: ${report.dataset.articleUrl || location.href}`,
-      `Reported issue: ${data.get('issue') || ''}`,
-      `Supporting official source: ${data.get('source') || ''}`,
-      `Optional contact: ${data.get('contact') || ''}`,
-      'Privacy consent: yes',
-    ].join('\n\n');
-    const subject = `Correction report — ${report.dataset.articleTitle || 'Citizen Affairs'}`;
-    location.href = `mailto:${report.dataset.email || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
 </script>
 
 <style is:global>

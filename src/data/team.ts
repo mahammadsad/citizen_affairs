@@ -15,19 +15,19 @@ export interface TeamMember {
  */
 export const teamMembers: TeamMember[] = [
   {
-    id: 'mahammad-sad',
-    name: 'Mahammad Sad',
-    initials: 'MS',
+    id: 'citizen-affairs-editorial-desk',
+    name: 'Citizen Affairs Editorial Desk',
+    initials: 'CA',
     order: 1,
     role: {
-      en: 'Founder',
-      bn: 'প্রতিষ্ঠাতা',
-      hi: 'संस्थापक',
+      en: 'Publication desk',
+      bn: 'প্রকাশনা ডেস্ক',
+      hi: 'प्रकाशन डेस्क',
     },
     bio: {
-      en: 'Founder of Citizen Affairs. He created the platform and leads its product direction, publishing systems and long-term development.',
-      bn: 'Citizen Affairs-এর প্রতিষ্ঠাতা। তিনি প্ল্যাটফর্মটি তৈরি করেছেন এবং এর পণ্য-দিশা, প্রকাশনা ব্যবস্থা ও দীর্ঘমেয়াদি উন্নয়নের নেতৃত্ব দেন।',
-      hi: 'Citizen Affairs के संस्थापक। उन्होंने इस प्लेटफ़ॉर्म की स्थापना की और इसकी उत्पाद दिशा, प्रकाशन प्रणाली तथा दीर्घकालिक विकास का नेतृत्व करते हैं।',
+      en: 'Responsible for source checks, clear-language publishing, update tracking and maintaining the corrections process.',
+      bn: 'সূত্র যাচাই, সহজ ভাষায় প্রকাশনা, আপডেট অনুসরণ এবং সংশোধন প্রক্রিয়া রক্ষণাবেক্ষণের দায়িত্বে।',
+      hi: 'स्रोत जाँच, सरल भाषा में प्रकाशन, अपडेट ट्रैकिंग और सुधार प्रक्रिया बनाए रखने के लिए जिम्मेदार।',
     },
   },
 ];

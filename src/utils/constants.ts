@@ -50,11 +50,10 @@ export const SITE = {
   logo: withBasePath(BRAND.logo),
   ogImage: withBasePath(BRAND.logoSocialCard),
   author: {
-    name: 'Mahammad Sad',
-    role: 'Programmer and Mathematician',
-    bio: 'Interested in AI automation, technology, business, startups, investing and computer science.',
-    email: BRAND.contactEmail,
-    github: 'https://github.com/mahammadsad'
+    name: 'Citizen Affairs Editorial Desk',
+    role: 'Publication desk',
+    bio: 'Source-linked public-information publishing in English, Bengali and Hindi.',
+    email: BRAND.contactEmail
   }
 } as const;
 

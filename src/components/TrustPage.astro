@@ -1,39 +1,27 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
-import ArticleCard from './ArticleCard.astro';
+import { getCollection } from 'astro:content';
 import Icon from './Icon.astro';
 import MainLayout from '@layouts/MainLayout.astro';
 import { generateBreadcrumbs } from '@lib/seo';
-import { getArticlesByAuthorSlug } from '@lib/content';
-import { BRAND, getBrandName, resolveAssetPath, SITE, SOCIALS } from '@utils/constants';
+import { getBrandName, SITE } from '@utils/constants';
 import { getTrustCopy } from '../i18n/trust';
-import { locales, localizedPath, trustPagePath, type Locale, type TrustPageId, ui } from '../i18n';
+import { locales, localizedPath, trustPagePath, type Locale, ui } from '../i18n';
 
-interface Props { locale: Locale; page: TrustPageId; }
+interface Props { locale: Locale; page: 'about' | 'corrections'; }
 const { locale, page } = Astro.props;
 const copy = getTrustCopy(locale);
 const t = ui(locale);
 const brandName = getBrandName(locale);
 const pageCopy = copy[page];
-const introText = page === 'author' ? copy.author.bio : page === 'about' ? copy.about.intro : page === 'contact' ? copy.contact.intro : copy.corrections.intro;
-const segment = page === 'author' ? 'authors/mahammad-sad' : page;
+const introText = copy[page].intro;
+const segment = page;
 const absoluteRoute = (lang: Locale) => `${SITE.url}/${lang === 'en' ? '' : `${lang}/`}${segment}/`;
 const canonical = absoluteRoute(locale);
 const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, absoluteRoute(lang)])) as Record<Locale, string>;
 const homeUrl = locale === 'en' ? `${SITE.url}/` : `${SITE.url}/${locale}/`;
 const breadcrumbSchema = generateBreadcrumbs([{ name: copy.home, url: homeUrl }, { name: pageCopy.title }]);
-const pageType = page === 'about' ? 'AboutPage' : page === 'contact' ? 'ContactPage' : 'WebPage';
-const pageSchema = page === 'author' ? {
-  '@context': 'https://schema.org',
-  '@type': 'Person',
-  name: SITE.author.name,
-  url: canonical,
-  email: BRAND.contactEmail,
-  sameAs: [SITE.author.github],
-  jobTitle: copy.author.role,
-  description: copy.author.bio,
-  worksFor: { '@type': 'Organization', name: brandName, url: SITE.url }
-} : {
+const pageType = page === 'about' ? 'AboutPage' : 'WebPage';
+const pageSchema = {
   '@context': 'https://schema.org',
   '@type': pageType,
   name: pageCopy.title,
@@ -42,13 +30,6 @@ const pageSchema = page === 'author' ? {
   inLanguage: locale,
   isPartOf: { '@type': 'WebSite', name: brandName, url: SITE.url }
 };
-const authorEntry = page === 'author' ? await getEntry('authors', 'mahammad-sad') : undefined;
-const authorArticles = page === 'author'
-  ? (await getArticlesByAuthorSlug('mahammad-sad')).filter((article) => article.data.language === locale && article.data.verificationStatus !== 'withdrawn')
-  : [];
-const correctionsEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.reportTitle} — ${brandName}`)}`;
-const updateEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.suggestTitle} — ${brandName}`)}`;
-const generalEmail = `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(`${copy.contact.generalTitle} — ${brandName}`)}`;
 const teamLabel = { en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' }[locale];
 const localizedTeamPath = localizedPath(locale, 'team');
 const teamHref = locale === 'en' ? localizedTeamPath.replace('/en/', '/') : localizedTeamPath;
@@ -65,9 +46,9 @@ const correctionRecords = page === 'corrections'
       .sort((a, b) => b.data.resolvedAt!.getTime() - a.data.resolvedAt!.getTime())
   : [];
 const correctionListCopy = {
-  en: { title: 'Material corrections ledger', empty: 'No material corrections have been published yet.', wrong: 'Before', right: 'After', reason: 'Explanation', source: 'Supporting source', editor: 'Accountable editor' },
-  bn: { title: 'গুরুত্বপূর্ণ সংশোধনের খতিয়ান', empty: 'এখনও কোনো গুরুত্বপূর্ণ সংশোধন প্রকাশিত হয়নি।', wrong: 'আগে', right: 'পরে', reason: 'ব্যাখ্যা', source: 'সমর্থনকারী সূত্র', editor: 'দায়িত্বপ্রাপ্ত সম্পাদক' },
-  hi: { title: 'महत्वपूर्ण सुधार का लेखा', empty: 'अभी तक कोई महत्वपूर्ण सुधार प्रकाशित नहीं हुआ है।', wrong: 'पहले', right: 'बाद में', reason: 'व्याख्या', source: 'समर्थक स्रोत', editor: 'जवाबदेह संपादक' },
+  en: { title: 'Material corrections ledger', empty: 'No material corrections have been published yet.', wrong: 'Before', right: 'After', reason: 'Explanation', source: 'Supporting source', editor: 'Accountable editor', intake: 'Direct correction intake is temporarily unavailable while a brand-only contact address is prepared.' },
+  bn: { title: 'গুরুত্বপূর্ণ সংশোধনের খতিয়ান', empty: 'এখনও কোনো গুরুত্বপূর্ণ সংশোধন প্রকাশিত হয়নি।', wrong: 'আগে', right: 'পরে', reason: 'ব্যাখ্যা', source: 'সমর্থনকারী সূত্র', editor: 'দায়িত্বপ্রাপ্ত সম্পাদক', intake: 'ব্র্যান্ডের নিজস্ব যোগাযোগের ঠিকানা প্রস্তুত না হওয়া পর্যন্ত সরাসরি সংশোধন প্রতিবেদন সাময়িকভাবে বন্ধ রয়েছে।' },
+  hi: { title: 'महत्वपूर्ण सुधार का लेखा', empty: 'अभी तक कोई महत्वपूर्ण सुधार प्रकाशित नहीं हुआ है।', wrong: 'पहले', right: 'बाद में', reason: 'व्याख्या', source: 'समर्थक स्रोत', editor: 'जवाबदेह संपादक', intake: 'ब्रांड का अपना संपर्क पता तैयार होने तक सीधे सुधार रिपोर्ट अस्थायी रूप से उपलब्ध नहीं हैं।' },
 }[locale];
 ---
 <MainLayout title={pageCopy.title} description={pageCopy.description} {locale} {canonical} {alternateUrls} structuredData={[pageSchema, breadcrumbSchema]}>
@@ -77,9 +58,7 @@ const correctionListCopy = {
     </nav>
     <header class="trust-header">
       <span class="eyebrow">{brandName}</span>
-      {page === 'author' && authorEntry?.data.image && <img class="author-image" src={resolveAssetPath(authorEntry.data.image)} alt="" width="96" height="96" />}
       <h1>{pageCopy.title}</h1>
-      {page === 'author' && <p class="trust-role">{copy.author.role}</p>}
       <p class="trust-intro">{introText}</p>
       <p class="trust-updated">{copy.updated}</p>
     </header>
@@ -89,33 +68,13 @@ const correctionListCopy = {
       <section class="trust-links" aria-labelledby="trustLinksTitle"><h2 id="trustLinksTitle">{copy.about.linksTitle}</h2><div>{trustLinks.map((link) => <a href={link.href}>{link.label}<Icon name="arrow" /></a>)}</div></section>
     </>}
 
-    {page === 'contact' && <>
-      <section class="contact-primary"><h2>{copy.contact.emailLabel}</h2><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></section>
-      <div class="trust-sections contact-sections">
-        <section><h2>{copy.contact.reportTitle}</h2><p>{copy.contact.reportBody}</p><a class="btn btn-primary" href={correctionsEmail}>{copy.contact.reportAction}</a></section>
-        <section><h2>{copy.contact.suggestTitle}</h2><p>{copy.contact.suggestBody}</p><a class="btn btn-secondary" href={updateEmail}>{copy.contact.suggestAction}</a></section>
-        <section><h2>{copy.contact.generalTitle}</h2><p>{copy.contact.generalBody}</p><a class="btn btn-secondary" href={generalEmail}>{copy.contact.generalAction}</a></section>
-      </div>
-      <section class="trust-links" aria-labelledby="communityTitle"><h2 id="communityTitle">{copy.contact.communityTitle}</h2><div><a href={SOCIALS.telegram} target="_blank" rel="noopener noreferrer">Telegram <Icon name="external" /></a><a href={SOCIALS.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp <Icon name="external" /></a></div></section>
-    </>}
-
-    {page === 'author' && <>
-      <div class="trust-sections">
-        <section><h2>{copy.author.interestsTitle}</h2><ul>{copy.author.interests.map((item) => <li>{item}</li>)}</ul></section>
-        <section><h2>{copy.author.responsibilityTitle}</h2><p>{copy.author.responsibility}</p></section>
-        <section><h2>{copy.author.verificationTitle}</h2><p>{copy.author.verification}</p></section>
-        <section><h2>{copy.author.contactTitle}</h2><p><a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a></p><p><a href={SITE.author.github} target="_blank" rel="noopener noreferrer">GitHub — mahammadsad <Icon name="external" /></a></p><p><a href={localizedPath(locale, 'editorial-policy')}>{t.editorial}</a> · <a href={trustPagePath(locale, 'corrections')}>{t.corrections}</a></p></section>
-      </div>
-      <section class="author-articles"><h2>{copy.author.articlesTitle}</h2>{authorArticles.length ? <div>{authorArticles.map((article) => <ArticleCard {article} {locale} />)}</div> : <p>{copy.author.noArticles}</p>}</section>
-    </>}
-
     {page === 'corrections' && <>
       <div class="trust-sections">{copy.corrections.sections.map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}</div>
       <section class="correction-log" aria-labelledby="correctionLogTitle">
         <h2 id="correctionLogTitle">{correctionListCopy.title}</h2>
         {correctionRecords.length ? <ol>{correctionRecords.map((record) => <li><div class="correction-title"><a href={record.data.articleUrl}>{record.data.articleTitle}</a><time datetime={record.data.resolvedAt!.toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(record.data.resolvedAt!)}</time><span>{record.data.ticketId} · {record.data.severity}</span></div><dl><div><dt>{correctionListCopy.wrong}</dt><dd>{record.data.before}</dd></div><div><dt>{correctionListCopy.right}</dt><dd>{record.data.after}</dd></div><div><dt>{correctionListCopy.reason}</dt><dd>{record.data.explanation}</dd></div><div><dt>{correctionListCopy.editor}</dt><dd>{record.data.accountableEditor}</dd></div></dl><a class="correction-source" href={record.data.supportingSource} target="_blank" rel="noopener noreferrer">{correctionListCopy.source} <Icon name="external" /></a></li>)}</ol> : <p>{correctionListCopy.empty}</p>}
       </section>
-      <aside class="correction-cta"><h2>{copy.corrections.action}</h2><p>{copy.contact.reportBody}</p><div><a class="btn btn-primary" href={correctionsEmail}>{copy.corrections.action}</a><a class="btn btn-secondary" href={trustPagePath(locale, 'contact')}>{t.contact}</a></div></aside>
+      <aside class="correction-cta"><h2>{copy.corrections.action}</h2><p>{correctionListCopy.intake}</p><div><a class="btn btn-secondary" href={trustPagePath(locale, 'contact')}>{t.contact}</a></div></aside>
     </>}
   </article>
 </MainLayout>

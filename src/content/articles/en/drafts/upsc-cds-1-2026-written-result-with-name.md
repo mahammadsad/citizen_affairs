@@ -10,7 +10,7 @@ date: 2026-08-07
 updated: 2026-08-07
 lastVerified: 2026-08-07
 nextReviewDate: 2026-09-06
-author: mahammad-sad
+author: citizen-affairs-editorial-desk
 category: exams
 verificationStatus: under-verification
 sourceUrls:

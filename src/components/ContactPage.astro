@@ -1,7 +1,7 @@
 ---
 import MainLayout from '@layouts/MainLayout.astro';
 import Icon from './Icon.astro';
-import { BRAND, getBrandName, SITE, SOCIALS } from '@utils/constants';
+import { getBrandName, SITE, SOCIALS } from '@utils/constants';
 import { locales, localizedPath, type Locale } from '../i18n';
 import { CONTACT_COPY } from '../i18n/contact';
 
@@ -18,7 +18,6 @@ const alternateUrls = Object.fromEntries(
 ) as Record<Locale, string>;
 const careersUrl = route(locale, 'careers');
 const copy = CONTACT_COPY[locale];
-const emailHref = (subject: string) => `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(subject)}`;
 
 const pageSchema = {
   '@context': 'https://schema.org',
@@ -31,9 +30,7 @@ const pageSchema = {
   mainEntity: {
     '@type': 'Organization',
     name: brandName,
-    url: SITE.url,
-    email: BRAND.contactEmail,
-    contactPoint: { '@type': 'ContactPoint', contactType: 'editorial enquiries', email: BRAND.contactEmail, availableLanguage: ['English', 'Bengali', 'Hindi'] }
+    url: SITE.url
   }
 };
 ---
@@ -49,11 +46,9 @@ const pageSchema = {
           <small><Icon name="check" size={16} />{copy.response}</small>
         </div>
         <aside class="email-card">
-          <span>{copy.emailLabel}</span>
-          <a href={emailHref(copy.generalSubject)}>{BRAND.contactEmail}</a>
-          <button type="button" data-copy-email data-email={BRAND.contactEmail} data-copy={copy.copyEmail} data-copied={copy.copied}>
-            <Icon name="copy" size={18} /><span>{copy.copyEmail}</span>
-          </button>
+          <span>{copy.unavailableLabel}</span>
+          <strong>{copy.unavailableTitle}</strong>
+          <p>{copy.unavailableBody}</p>
         </aside>
       </div>
     </header>
@@ -65,12 +60,11 @@ const pageSchema = {
       </div>
       <div class="reason-grid">
         {copy.reasons.map(([, title, body, icon]) => (
-          <a href={emailHref(`${copy.subjectPrefix}: ${title}`)}>
+          <article>
             <span class="reason-icon"><Icon name={icon} /></span>
             <h3>{title}</h3>
             <p>{body}</p>
-            <Icon name="arrow" size={18} />
-          </a>
+          </article>
         ))}
       </div>
     </section>
@@ -78,10 +72,9 @@ const pageSchema = {
     <section class="email-guidance" aria-labelledby="email-guidance-title">
       <div class="container email-guidance-grid">
         <div>
-          <span class="contact-eyebrow"><Icon name="mail" size={18} />{copy.emailOnlyLabel}</span>
-          <h2 id="email-guidance-title">{copy.emailOnlyTitle}</h2>
-          <p>{copy.emailOnlyIntro}</p>
-          <a class="btn btn-primary" href={emailHref(copy.generalSubject)}>{copy.emailAction}<Icon name="arrow" size={18} /></a>
+          <span class="contact-eyebrow"><Icon name="mail" size={18} />{copy.unavailableLabel}</span>
+          <h2 id="email-guidance-title">{copy.unavailableTitle}</h2>
+          <p>{copy.unavailableBody}</p>
         </div>
         <aside>
           <div class="safety-card"><Icon name="check" /><div><strong>{copy.safetyTitle}</strong><p>{copy.safetyText}</p></div></div>
@@ -106,21 +99,8 @@ const pageSchema = {
   </article>
 </MainLayout>
 
-<script>
-  const copyButton = document.querySelector('[data-copy-email]');
-  copyButton?.addEventListener('click', async () => {
-    if (!(copyButton instanceof HTMLButtonElement)) return;
-    try {
-      await navigator.clipboard.writeText(copyButton.dataset.email || '');
-      const label = copyButton.querySelector('span');
-      if (label) label.textContent = copyButton.dataset.copied || 'Copied';
-      setTimeout(() => { if (label) label.textContent = copyButton.dataset.copy || 'Copy email'; }, 1600);
-    } catch (_) {}
-  });
-</script>
-
 <style>
-  .contact-page{overflow:hidden;background:var(--color-background)}.contact-hero{padding:clamp(3.4rem,7vw,6.5rem) 0;background:radial-gradient(circle at 88% 18%,rgba(24,182,160,.2),transparent 30%),linear-gradient(135deg,#071e34,#0c365c 70%,#0a5aa6 130%);color:#fff}.contact-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);align-items:center;gap:clamp(2rem,7vw,6rem)}.contact-eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:#7ce4d7;font-size:.76rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.contact-hero h1{max-width:760px;margin:.85rem 0 1rem;color:#fff;font-size:clamp(2.5rem,6.2vw,5rem);line-height:1;letter-spacing:-.045em}.contact-hero p{max-width:66ch;color:#d6e7f4;font-size:clamp(1rem,2vw,1.18rem);line-height:1.8}.contact-hero small{display:flex;align-items:flex-start;gap:.45rem;max-width:68ch;margin-top:1.2rem;color:#a9c7da}.email-card{display:grid;gap:.65rem;min-width:0;padding:1.4rem;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:rgba(255,255,255,.08);box-shadow:0 28px 70px rgba(0,0,0,.2);backdrop-filter:blur(14px)}.email-card>span{color:#7ce4d7;font-size:.72rem;font-weight:850;text-transform:uppercase}.email-card>a{overflow-wrap:anywhere;color:#fff;font-size:clamp(1.02rem,2.5vw,1.35rem);font-weight:800}.email-card>button{display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;margin-top:.4rem;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:rgba(255,255,255,.08);color:#fff;font-weight:800}.email-card>button:hover,.email-card>button:focus-visible{background:rgba(255,255,255,.15)}.contact-section{padding-block:clamp(3.8rem,7vw,6rem)}.section-heading{max-width:760px;margin-bottom:2rem}.section-heading>span{color:var(--color-primary);font-size:.74rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.section-heading h2{margin-top:.45rem;font-size:clamp(2rem,4vw,3.4rem);line-height:1.08;letter-spacing:-.035em}.reason-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.reason-grid>a{display:flex;flex-direction:column;min-width:0;padding:1.2rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface);box-shadow:var(--shadow-sm);transition:transform .2s,border-color .2s,box-shadow .2s}.reason-grid>a:hover{transform:translateY(-4px);border-color:rgba(11,143,120,.45);box-shadow:var(--shadow-lg)}.reason-icon,.secondary-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(11,143,120,.1);color:var(--color-primary)}.reason-grid h3{margin:.9rem 0 .45rem;font-size:1.08rem}.reason-grid p{color:var(--color-text-muted);font-size:.84rem;line-height:1.7}.reason-grid>a>svg{margin-top:auto;padding-top:1rem;box-sizing:content-box;color:var(--color-primary)}.email-guidance{padding-block:clamp(4rem,8vw,7rem);background:radial-gradient(circle at 10% 15%,rgba(24,182,160,.13),transparent 30%),var(--color-navy);color:#fff}.email-guidance-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);align-items:start;gap:clamp(2rem,7vw,6rem)}.email-guidance h2{margin:.8rem 0 1rem;color:#fff;font-size:clamp(2rem,4vw,3.5rem);line-height:1.08}.email-guidance p{max-width:64ch;color:#c7d9e8;line-height:1.8}.email-guidance .btn{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem}.safety-card{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.14);border-radius:15px;background:rgba(255,255,255,.06)}.safety-card>svg{flex:none;color:#f2b544}.safety-card strong{color:#fff}.safety-card p{margin-top:.25rem;color:#aec6d8;font-size:.82rem;line-height:1.6}.review-list{margin-top:1.2rem}.review-list>strong{color:#fff}.review-list ul{display:grid;gap:.5rem;margin-top:.7rem}.review-list li{display:flex;align-items:flex-start;gap:.45rem;color:#bfd2e2;font-size:.82rem}.review-list li svg{flex:none;margin-top:.12rem;color:#7ce4d7}.contact-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.contact-secondary article{display:grid;grid-template-columns:52px minmax(0,1fr);gap:1rem;padding:1.3rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.contact-secondary h2{font-size:1.25rem}.contact-secondary p{margin:.45rem 0 .9rem;color:var(--color-text-muted);line-height:1.7}.secondary-actions{display:flex;flex-wrap:wrap;gap:.55rem}.secondary-actions a,.careers-link{display:inline-flex;align-items:center;gap:.4rem;min-height:42px;padding:.55rem .7rem;border-radius:10px;background:var(--color-surface-alt);color:var(--color-primary);font-weight:800}.secondary-actions a:hover,.careers-link:hover{background:rgba(11,143,120,.1)}
+  .contact-page{overflow:hidden;background:var(--color-background)}.contact-hero{padding:clamp(3.4rem,7vw,6.5rem) 0;background:radial-gradient(circle at 88% 18%,rgba(24,182,160,.2),transparent 30%),linear-gradient(135deg,#071e34,#0c365c 70%,#0a5aa6 130%);color:#fff}.contact-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);align-items:center;gap:clamp(2rem,7vw,6rem)}.contact-eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:#7ce4d7;font-size:.76rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.contact-hero h1{max-width:760px;margin:.85rem 0 1rem;color:#fff;font-size:clamp(2.5rem,6.2vw,5rem);line-height:1;letter-spacing:-.045em}.contact-hero p{max-width:66ch;color:#d6e7f4;font-size:clamp(1rem,2vw,1.18rem);line-height:1.8}.contact-hero small{display:flex;align-items:flex-start;gap:.45rem;max-width:68ch;margin-top:1.2rem;color:#a9c7da}.email-card{display:grid;gap:.65rem;min-width:0;padding:1.4rem;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:rgba(255,255,255,.08);box-shadow:0 28px 70px rgba(0,0,0,.2);backdrop-filter:blur(14px)}.email-card>span{color:#7ce4d7;font-size:.72rem;font-weight:850;text-transform:uppercase}.email-card>strong{color:#fff;font-size:clamp(1.02rem,2.5vw,1.35rem)}.email-card>p{margin:0;color:#d6e7f4;font-size:.9rem}.contact-section{padding-block:clamp(3.8rem,7vw,6rem)}.section-heading{max-width:760px;margin-bottom:2rem}.section-heading>span{color:var(--color-primary);font-size:.74rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.section-heading h2{margin-top:.45rem;font-size:clamp(2rem,4vw,3.4rem);line-height:1.08;letter-spacing:-.035em}.reason-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.reason-grid>article{display:flex;flex-direction:column;min-width:0;padding:1.2rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface);box-shadow:var(--shadow-sm)}.reason-icon,.secondary-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(11,143,120,.1);color:var(--color-primary)}.reason-grid h3{margin:.9rem 0 .45rem;font-size:1.08rem}.reason-grid p{color:var(--color-text-muted);font-size:.84rem;line-height:1.7}.email-guidance{padding-block:clamp(4rem,8vw,7rem);background:radial-gradient(circle at 10% 15%,rgba(24,182,160,.13),transparent 30%),var(--color-navy);color:#fff}.email-guidance-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);align-items:start;gap:clamp(2rem,7vw,6rem)}.email-guidance h2{margin:.8rem 0 1rem;color:#fff;font-size:clamp(2rem,4vw,3.5rem);line-height:1.08}.email-guidance p{max-width:64ch;color:#c7d9e8;line-height:1.8}.safety-card{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.14);border-radius:15px;background:rgba(255,255,255,.06)}.safety-card>svg{flex:none;color:#f2b544}.safety-card strong{color:#fff}.safety-card p{margin-top:.25rem;color:#aec6d8;font-size:.82rem;line-height:1.6}.review-list{margin-top:1.2rem}.review-list>strong{color:#fff}.review-list ul{display:grid;gap:.5rem;margin-top:.7rem}.review-list li{display:flex;align-items:flex-start;gap:.45rem;color:#bfd2e2;font-size:.82rem}.review-list li svg{flex:none;margin-top:.12rem;color:#7ce4d7}.contact-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.contact-secondary article{display:grid;grid-template-columns:52px minmax(0,1fr);gap:1rem;padding:1.3rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.contact-secondary h2{font-size:1.25rem}.contact-secondary p{margin:.45rem 0 .9rem;color:var(--color-text-muted);line-height:1.7}.secondary-actions{display:flex;flex-wrap:wrap;gap:.55rem}.secondary-actions a,.careers-link{display:inline-flex;align-items:center;gap:.4rem;min-height:42px;padding:.55rem .7rem;border-radius:10px;background:var(--color-surface-alt);color:var(--color-primary);font-weight:800}.secondary-actions a:hover,.careers-link:hover{background:rgba(11,143,120,.1)}
   @media(max-width:980px){.contact-hero-grid,.email-guidance-grid{grid-template-columns:1fr}.email-card{max-width:620px}.reason-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
   @media(max-width:680px){.contact-hero{padding-top:3rem}.contact-hero h1{font-size:clamp(2.45rem,14vw,4rem)}.reason-grid,.contact-secondary{grid-template-columns:1fr}.contact-section{padding-block:3.6rem}.email-guidance{padding-block:3.7rem}.contact-secondary article{grid-template-columns:46px minmax(0,1fr)}}
   @media(max-width:390px){.secondary-actions a,.careers-link{width:100%;justify-content:center}.email-card{padding:1.1rem}}

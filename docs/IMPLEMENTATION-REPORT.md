@@ -21,7 +21,7 @@
 - The public GitHub Pages build serves the custom domain `https://citizenaffairs.in` without a live Supabase connection. The previous Supabase project was deleted.
 - All seven versioned migrations and both Edge Functions remain reviewed source for a future replacement. They are not currently deployed production state and must be applied only to a deliberately selected new project.
 - No production secret is stored in the repository. Required secret names and non-secret variables are documented separately.
-- Pages CMS remains temporary, owner-only and draft-only. It uses the real `mahammad-sad` author record, hides `draft: true` for new entries and preserves protected fields outside its editing schema.
+- Pages CMS remains temporary, owner-only and draft-only. It uses the organization-level attribution, hides `draft: true` for new entries and preserves protected fields outside its editing schema.
 - Database-backed staff access, automation, protected publication and deployment callbacks are inactive and fail closed. The workflow design still requires human approval and records Published only after merge, deployment and production smoke validation when a replacement is enabled.
 
 ## Operations verified on 1 August 2026
