@@ -1,5 +1,7 @@
 # Repository and production audit
 
+> Historical snapshot. Do not use this file as current operational status. See `docs/OPERATIONAL_STATUS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
+
 Audit date: 17 July 2026.
 
 ## Retained

@@ -27,7 +27,7 @@ jobs:
       GEMINI_FACTCHECK_MODEL: ${{ vars.GEMINI_FACTCHECK_MODEL }}
       TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
       OFFICIAL_FEED_URLS: ${{ vars.OFFICIAL_FEED_URLS }}
-      DRAFT_LANGUAGES: ${{ vars.DRAFT_LANGUAGES || 'en' }}
+      DRAFT_LANGUAGES: ${{ vars.DRAFT_LANGUAGES || 'bn' }}
       MAX_DRAFTS_PER_RUN: "1"
       GH_TOKEN: ${{ secrets.EDITORIAL_GITHUB_TOKEN }}
 
@@ -64,8 +64,15 @@ jobs:
         run: python -m pytest -q
 
       - name: Generate researched SEO drafts
+        id: automation
         working-directory: automation
-        run: python -m app.cli generate-drafts
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(python -m app.cli generate-drafts)"
+          echo "$result"
+          echo "outcomes=$(jq -c '.outcome_counts' <<< "$result")" >> "$GITHUB_OUTPUT"
+          echo "Automation outcomes: $(jq -c '.outcome_counts' <<< "$result")" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Stage generated drafts only
         id: drafts
@@ -75,7 +82,7 @@ jobs:
           git add -- 'src/content/articles/*/drafts/*.md'
           if git diff --cached --quiet; then
             echo "has_drafts=false" >> "$GITHUB_OUTPUT"
-            echo "No new review drafts were generated."
+            echo "No new review drafts were generated. Outcome: ${{ steps.automation.outputs.outcomes }}"
           else
             echo "has_drafts=true" >> "$GITHUB_OUTPUT"
             git diff --cached --name-only
@@ -135,6 +142,7 @@ jobs:
           git commit -m "content: add automated review draft(s)"
           git push --set-upstream origin "$branch"
           pr_url="$(gh pr create \
+            --draft \
             --base main \
             --head "$branch" \
             --title "content: automated article draft for review" \
@@ -148,67 +156,8 @@ jobs:
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "Draft pull request: #$pr_number ($pr_url)" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Wait for required draft pull-request checks
+      - name: Record human-review boundary
         if: steps.drafts.outputs.has_drafts == 'true'
         env:
-          PR_NUMBER: ${{ steps.draft-pr.outputs.number }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          check_count=0
-          for attempt in $(seq 1 24); do
-            checks="$(gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --json name,state 2>/dev/null || true)"
-            if [[ -n "$checks" ]]; then
-              check_count="$(jq 'length' <<< "$checks" 2>/dev/null || echo 0)"
-            fi
-            if [[ "$check_count" =~ ^[0-9]+$ ]] && (( check_count > 0 )); then
-              echo "Required checks registered: $check_count"
-              break
-            fi
-            sleep 5
-          done
-
-          if [[ "$check_count" =~ ^[0-9]+$ ]] && (( check_count > 0 )); then
-            gh pr checks "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --required --watch --fail-fast --interval 10
-          else
-            echo "No required checks were registered; continuing only because this job already completed the draft boundary, content, build and SEO validations."
-          fi
-
-      - name: Verify and merge private draft
-        if: steps.drafts.outputs.has_drafts == 'true'
-        env:
-          PR_NUMBER: ${{ steps.draft-pr.outputs.number }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          pr_state="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
-          if [[ "$pr_state" != "OPEN" ]]; then
-            echo "::error::Draft pull request is no longer open; refusing an ambiguous merge."
-            exit 1
-          fi
-
-          head_sha="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefOid --jq '.headRefOid')"
-          mapfile -t changed < <(gh pr diff "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --name-only)
-          if (( ${#changed[@]} == 0 )); then
-            echo "::error::Draft pull request contains no changed files."
-            exit 1
-          fi
-          for file in "${changed[@]}"; do
-            case "$file" in
-              src/content/articles/en/drafts/*.md|src/content/articles/bn/drafts/*.md|src/content/articles/hi/drafts/*.md) ;;
-              *) echo "::error::Draft pull request changed an unexpected path: $file"; exit 1 ;;
-            esac
-          done
-
-          gh pr merge "$PR_NUMBER" \
-            --repo "$GITHUB_REPOSITORY" \
-            --squash \
-            --delete-branch \
-            --match-head-commit "$head_sha"
-
-          final_state="$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json state --jq '.state')"
-          if [[ "$final_state" != "MERGED" ]]; then
-            echo "::error::Validated private draft pull request did not merge."
-            exit 1
-          fi
-          echo "Private draft PR #$PR_NUMBER merged after validation. The article remains unpublished because draft:true and its non-public workflow status are unchanged." >> "$GITHUB_STEP_SUMMARY"
+          PR_URL: ${{ steps.draft-pr.outputs.url }}
+        run: echo "Draft PR remains open for an accountable human reviewer. No auto-merge is permitted. $PR_URL" >> "$GITHUB_STEP_SUMMARY"

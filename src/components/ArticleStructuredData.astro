@@ -23,7 +23,7 @@ const pageUrl = normalizeCanonicalUrl(canonical, SITE.url);
 const articleId = `${pageUrl}#article`;
 const webpageId = `${pageUrl}#webpage`;
 const normalizedAuthor = data.author.trim();
-const showHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const showHumanAuthor = normalizedAuthor.length > 0;
 const authorEntry = showHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = showHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
 const articleAuthor = showHumanAuthor && authorName

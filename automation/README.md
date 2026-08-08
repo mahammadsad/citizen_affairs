@@ -24,12 +24,10 @@ When a new draft is produced, the workflow:
 2. requires `draft: true` and a non-public workflow status;
 3. rejects automatic `officially-confirmed` verification;
 4. runs the automation tests plus Astro content, build and SEO validation;
-5. opens an isolated pull request;
-6. waits for the repository's required pull-request checks;
-7. verifies that the pull request still contains only article-draft files; and
-8. squash-merges the validated draft automatically.
+5. opens an isolated **draft** pull request; and
+6. leaves it open for an accountable human reviewer. The automation does not merge its own work.
 
-Merging a generated draft does **not** publish it. Public content helpers require both `draft: false` and a public workflow status, so a generated draft remains absent from public article routes, listings and search until the separate human editorial/publication process changes its state.
+Even after a human merges a generated draft, it is **not** published. Public content helpers require both `draft: false` and a public workflow status, so a generated draft remains absent from public article routes, listings and search until the separate human editorial/publication process changes its state.
 
 The older `generate-drafts.yml` workflow is intentionally test-only. It must not contain a schedule, manual generation trigger, or direct push to `main`; this avoids duplicate generators and competing safety models.
 
@@ -48,7 +46,9 @@ Variables:
 - `GEMINI_FACTCHECK_MODEL`
 - `AUTOMATION_ENABLED=false` to pause both scheduled and manual draft generation immediately; any other value leaves the canonical workflow enabled
 - Optional `OFFICIAL_FEED_URLS`
-- Optional `DRAFT_LANGUAGES` (`en`, `bn`, `hi`, or a comma-separated combination; defaults to `en`)
+- Optional `DRAFT_LANGUAGES` (`en`, `bn`, `hi`, or a comma-separated combination; defaults to `bn`)
+
+Every run reports one or more machine-readable outcomes: `candidate_published_as_draft`, `no_eligible_candidate`, `source_unreachable`, `fact_check_failed`, or `workflow_failed`. “Published as draft” means written only to the private draft path; it never means public publication.
 
 The canonical workflow deliberately fixes `MAX_DRAFTS_PER_RUN` to `1` so each scheduled run stays selective and reviewable.
 

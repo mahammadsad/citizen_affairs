@@ -145,6 +145,7 @@ def test_pipeline_stops_after_configured_candidate_attempts():
     assert result["processed_topics"] == 3
     assert result["created_count"] == 0
     assert len(result["failures"]) == 3
+    assert result["outcome_counts"]["source_unreachable"] == 3
 
 
 def test_pipeline_times_out_one_slow_topic_without_hanging_the_run():
@@ -165,6 +166,7 @@ def test_pipeline_times_out_one_slow_topic_without_hanging_the_run():
     assert result["created_count"] == 0
     assert len(result["failures"]) == 1
     assert result["failures"][0]["error"] == "TimeoutError"
+    assert result["failures"][0]["outcome"] == "source_unreachable"
 
 
 def test_pipeline_uses_official_listing_when_detail_page_times_out():

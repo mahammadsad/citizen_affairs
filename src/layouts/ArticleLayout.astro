@@ -20,6 +20,9 @@ export interface Props {
   factCheckedBy?: string;
   reviewedBy?: string;
   publishedBy?: string;
+  editorialReviewDate?: Date;
+  accountabilityNote?: string;
+  independentReviewStatus?: 'not-assigned' | 'assigned' | 'completed' | 'not-required';
   date: Date;
   updated?: Date;
   lastVerified?: Date;
@@ -73,6 +76,9 @@ const {
   factCheckedBy,
   reviewedBy,
   publishedBy,
+  editorialReviewDate,
+  accountabilityNote,
+  independentReviewStatus = 'not-assigned',
   date,
   updated,
   lastVerified,
@@ -118,14 +124,14 @@ const t = ui(locale);
 const categoryEntry = await getCategoryData(category);
 const categoryLabel = categoryEntry ? categoryName(categoryEntry, locale) : category;
 const normalizedAuthor = author.trim();
-const showHumanCredits = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const showHumanCredits = normalizedAuthor.length > 0;
 const authorEntry = showHumanCredits ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = showHumanCredits ? (authorEntry?.data.name ?? normalizedAuthor) : undefined;
 const resolveStaffName = async (slug?: string) => (slug ? (await getAuthorData(slug))?.data.name ?? slug : undefined);
-const editorName = showHumanCredits ? await resolveStaffName(assignedEditor) : undefined;
-const factCheckerName = showHumanCredits ? await resolveStaffName(factCheckedBy) : undefined;
-const reviewerName = showHumanCredits ? await resolveStaffName(reviewedBy) : undefined;
-const publisherName = showHumanCredits ? await resolveStaffName(publishedBy) : undefined;
+const editorName = await resolveStaffName(assignedEditor);
+const factCheckerName = await resolveStaffName(factCheckedBy);
+const reviewerName = await resolveStaffName(reviewedBy);
+const publisherName = await resolveStaffName(publishedBy);
 const pageUrl = canonical || Astro.url.href;
 const formatter = new Intl.DateTimeFormat(dateLocale(locale), { year: 'numeric', month: 'long', day: 'numeric' });
 const resolvedFeaturedImage = featuredImage ? resolveAssetPath(featuredImage) : undefined;
@@ -152,6 +158,10 @@ const articleCopy = {
     sourcesIntro: 'Use the original authority or document to verify important details before you act.',
     transparency: 'Transparency & updates',
     related: 'Continue reading',
+    accountability: 'Editorial accountability',
+    reviewNotRecorded: 'Independent review not recorded',
+    reviewAssigned: 'Independent review assigned; completion not recorded',
+    reviewNotRequired: 'Independent review marked not required',
   },
   bn: {
     minutesRead: 'মিনিট পড়া',
@@ -169,6 +179,10 @@ const articleCopy = {
     sourcesIntro: 'কোনও পদক্ষেপ নেওয়ার আগে গুরুত্বপূর্ণ তথ্য মূল কর্তৃপক্ষ বা নথি থেকে যাচাই করুন।',
     transparency: 'স্বচ্ছতা ও আপডেট',
     related: 'আরও পড়ুন',
+    accountability: 'সম্পাদকীয় জবাবদিহি',
+    reviewNotRecorded: 'স্বাধীন পর্যালোচনা নথিভুক্ত হয়নি',
+    reviewAssigned: 'স্বাধীন পর্যালোচনা দেওয়া হয়েছে; সমাপ্তি নথিভুক্ত নয়',
+    reviewNotRequired: 'স্বাধীন পর্যালোচনা প্রয়োজন নয় বলে নথিভুক্ত',
   },
   hi: {
     minutesRead: 'मिनट पढ़ने का समय',
@@ -186,6 +200,10 @@ const articleCopy = {
     sourcesIntro: 'कोई कदम उठाने से पहले महत्वपूर्ण जानकारी मूल प्राधिकरण या दस्तावेज़ से जाँचें।',
     transparency: 'पारदर्शिता और अपडेट',
     related: 'आगे पढ़ें',
+    accountability: 'संपादकीय जवाबदेही',
+    reviewNotRecorded: 'स्वतंत्र समीक्षा दर्ज नहीं है',
+    reviewAssigned: 'स्वतंत्र समीक्षा सौंपी गई; पूर्णता दर्ज नहीं है',
+    reviewNotRequired: 'स्वतंत्र समीक्षा आवश्यक नहीं दर्ज की गई',
   },
 }[locale];
 
@@ -294,17 +312,20 @@ const schemas = faqSchema ? [breadcrumbSchema, faqSchema] : [breadcrumbSchema];
             {updated && <span>{t.updated}: {formatter.format(updated)}</span>}
             <span class="reading-time"><Icon name="clock" size={16} /><span id="readingTime">— {articleCopy.minutesRead}</span></span>
           </div>
-          {(editorName || factCheckerName || reviewerName || publisherName) && (
-            <details class="editorial-credits">
-              <summary>{articleCopy.transparency}</summary>
+          <details class="editorial-credits">
+              <summary>{articleCopy.accountability}</summary>
               <div>
                 {editorName && <span>{t.editedBy}: {editorName}</span>}
                 {factCheckerName && <span>{t.factCheckedBy}: {factCheckerName}</span>}
                 {reviewerName && <span>{t.reviewedBy}: {reviewerName}</span>}
                 {publisherName && <span>{t.publishedBy}: {publisherName}</span>}
+                {!reviewerName && independentReviewStatus === 'not-assigned' && <span>{articleCopy.reviewNotRecorded}</span>}
+                {!reviewerName && independentReviewStatus === 'assigned' && <span>{articleCopy.reviewAssigned}</span>}
+                {!reviewerName && independentReviewStatus === 'not-required' && <span>{articleCopy.reviewNotRequired}</span>}
+                {editorialReviewDate && <span>{t.updated}: {formatter.format(editorialReviewDate)}</span>}
+                {accountabilityNote && <span>{accountabilityNote}</span>}
               </div>
             </details>
-          )}
         </div>
       </header>
 

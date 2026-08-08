@@ -8,6 +8,9 @@ interface CorrectionRecord {
   correctedInformation: string;
   reason: string;
   sourceUrl: string;
+  ticketId?: string;
+  severity?: 'minor' | 'material' | 'critical';
+  accountableEditor?: string;
 }
 
 interface Props {
@@ -28,6 +31,7 @@ const copy = {
     corrected: 'Corrected information',
     reason: 'Why it changed',
     source: 'Supporting official source'
+    , ticket: 'Correction ticket', accountable: 'Accountable editor'
   },
   bn: {
     eyebrow: 'স্বচ্ছতার রেকর্ড',
@@ -39,6 +43,7 @@ const copy = {
     corrected: 'সংশোধিত তথ্য',
     reason: 'কেন পরিবর্তন হয়েছে',
     source: 'সমর্থনকারী অফিসিয়াল সূত্র'
+    , ticket: 'সংশোধন টিকিট', accountable: 'দায়িত্বপ্রাপ্ত সম্পাদক'
   },
   hi: {
     eyebrow: 'पारदर्शिता रिकॉर्ड',
@@ -50,6 +55,7 @@ const copy = {
     corrected: 'सुधारी गई जानकारी',
     reason: 'बदलाव का कारण',
     source: 'समर्थक आधिकारिक स्रोत'
+    , ticket: 'सुधार टिकट', accountable: 'जवाबदेह संपादक'
   }
 }[locale];
 const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
@@ -80,11 +86,13 @@ const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
         {correctionHistory.map((record) => (
           <article>
             <time datetime={record.date.toISOString()}>{formatter.format(record.date)}</time>
+            {record.ticketId && <p class="correction-ticket"><strong>{copy.ticket}:</strong> {record.ticketId} · {record.severity}</p>}
             <dl>
               <div><dt>{copy.wrong}</dt><dd>{record.incorrectInformation}</dd></div>
               <div><dt>{copy.corrected}</dt><dd>{record.correctedInformation}</dd></div>
               <div><dt>{copy.reason}</dt><dd>{record.reason}</dd></div>
             </dl>
+            {record.accountableEditor && <p class="correction-accountable"><strong>{copy.accountable}:</strong> {record.accountableEditor}</p>}
             <a href={record.sourceUrl} target="_blank" rel="noopener noreferrer">
               {copy.source}<Icon name="external" size={16} />
             </a>
@@ -109,6 +117,7 @@ const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
   .correction-log article { padding: 1rem 0; border-top: 1px solid var(--color-border); }
   .correction-log article:first-of-type { border-top: 0; padding-top: 0; }
   .correction-log time { display: inline-block; margin-bottom: .65rem; color: var(--color-primary); font-size: .72rem; font-weight: 850; }
+  .correction-ticket, .correction-accountable { margin: 0 0 .65rem; color: var(--color-text-muted); font-size: .76rem; }
   .correction-log dl { display: grid; gap: .6rem; margin: 0; }
   .correction-log dl div { padding: .7rem; border-radius: 9px; background: var(--color-bg); }
   .correction-log dt { color: var(--color-text-muted); font-size: .67rem; font-weight: 750; }

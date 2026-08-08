@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible site or repository defect. Do not report vulnerabilities here.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Security issues must be emailed privately using SECURITY.md. Factual corrections should use the public email correction route."
+  - type: input
+    id: url
+    attributes:
+      label: Affected URL or file
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps and environment
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: This report contains no secrets, personal data, or unpatched vulnerability details.
+          required: true

@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     related_source_limit: int = 4
     max_source_bytes: int = 8_000_000
     max_source_text_chars: int = 45_000
-    draft_languages: str = "en"
+    draft_languages: str = "bn"
     seo_search_results: int = 5
 
     @field_validator("supabase_url", "supabase_secret_key", "automation_webhook_secret", "tavily_api_key", mode="before")
@@ -93,7 +93,7 @@ class Settings(BaseSettings):
             language = item.strip().lower()
             if language and language in allowed and language not in languages:
                 languages.append(language)
-        return languages or ["en"]
+        return languages or ["bn"]
 
     @property
     def has_supabase(self) -> bool:
