@@ -85,7 +85,7 @@ const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
 });
 ---
 
-<aside class:list={['article-freshness', `freshness-${freshness.state}`]} data-article-freshness={freshness.state} role="status">
+<div class:list={['article-freshness', `freshness-${freshness.state}`]} data-article-freshness={freshness.state} role="status">
   <Icon name={freshness.state === 'expired' ? 'notices' : freshness.state === 'current' ? 'check' : 'clock'} size={21} />
   <div>
     <strong>{title}</strong>
@@ -96,7 +96,7 @@ const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
       {deadline && <div><dt>{copy.deadline}</dt><dd>{formatter.format(deadline)}</dd></div>}
     </dl>
   </div>
-</aside>
+</div>
 
 <style>
   .article-freshness {

@@ -223,7 +223,7 @@ const mobileCategories = categories.map((category) => ({
   <LatestTicker {locale} />
 </header>
 
-<nav class="portal-mobile-bottom" aria-label={t.mobileNav}>
+<nav class="portal-mobile-bottom" aria-label={t.mobileNav} aria-hidden="true" inert hidden>
   <a href={route()} aria-current={pathname === route() ? 'page' : undefined}><Icon name="home" size={20} /><span>{t.home}</span></a>
   <a href={route('search')}><Icon name="search" size={20} /><span>{t.search}</span></a>
   <a href={route('deadlines')} aria-current={pathname.includes('/deadlines') ? 'page' : undefined}><Icon name="clock" size={20} /><span>{copy.deadlines}</span></a>

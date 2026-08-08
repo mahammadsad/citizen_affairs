@@ -5,7 +5,7 @@ workflowStatus: published
 translationKey: india-major-welfare-schemes-official-guide
 urlSlug: india-major-welfare-schemes-official-guide
 title: "14 Major Central Government Welfare Programmes in India: Current Status and Official Links"
-description: "A verified English guide to the purpose, current approval boundary and official portals for 14 major central programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA."
+description: "An official-source English guide to the purpose, current approval boundary and official portals for 14 major central programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA."
 date: 2026-08-06
 updated: 2026-08-06
 lastVerified: 2026-08-06
@@ -95,13 +95,15 @@ tags:
   - MGNREGA
   - Jal Jeevan Mission
 featured: false
-featuredImage: /uploads/india-major-welfare-schemes-1200.webp
-featuredImageAvif: /uploads/india-major-welfare-schemes-1200.avif
-featuredImageSrcSet: /uploads/india-major-welfare-schemes-480.webp 480w, /uploads/india-major-welfare-schemes-768.webp 768w, /uploads/india-major-welfare-schemes-1200.webp 1200w
-featuredImageAvifSrcSet: /uploads/india-major-welfare-schemes-480.avif 480w, /uploads/india-major-welfare-schemes-768.avif 768w, /uploads/india-major-welfare-schemes-1200.avif 1200w
+featuredImage: /uploads/articles/shared/welfare-programmes-guide-1200.webp
+featuredImageAvif: /uploads/articles/shared/welfare-programmes-guide-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.webp 480w, /uploads/articles/shared/welfare-programmes-guide-768.webp 768w, /uploads/articles/shared/welfare-programmes-guide-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.avif 480w, /uploads/articles/shared/welfare-programmes-guide-768.avif 768w, /uploads/articles/shared/welfare-programmes-guide-1200.avif 1200w
 featuredImageWidth: 1200
 featuredImageHeight: 675
-featuredImageAlt: Editorial graphic for a verified guide to central health, farming, food, housing, water and education programmes
+featuredImageAlt: Abstract editorial illustration representing central health, farming, food, housing, water and education programmes
+featuredImageCaption: Illustrative visual; it does not represent an official portal, logo or eligibility decision.
+featuredImageCredit: Citizen Affairs source-controlled illustration
 draft: false
 seoTitle: "14 Major Government Schemes in India: Current Official Guide"
 seoDescription: "Check the current status and official portals for 14 central programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA."

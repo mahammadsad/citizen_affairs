@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Public welfare programmes illustration</title>
+  <desc id="desc">Abstract cards representing health, food, housing, farming, water and education around a central document shield.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#071d36"/><stop offset=".58" stop-color="#0b4f78"/><stop offset="1" stop-color="#0b8f78"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffffff"/><stop offset="1" stop-color="#e8f6f4"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#021122" flood-opacity=".28"/></filter>
+    <pattern id="dots" width="34" height="34" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="3" fill="#ffffff" opacity=".12"/></pattern>
+  </defs>
+  <rect width="1200" height="675" rx="38" fill="url(#background)"/>
+  <rect width="1200" height="675" rx="38" fill="url(#dots)"/>
+  <circle cx="1060" cy="96" r="190" fill="#22c8ad" opacity=".12"/>
+  <circle cx="116" cy="596" r="230" fill="#2777c8" opacity=".18"/>
+  <g filter="url(#shadow)">
+    <rect x="386" y="93" width="428" height="490" rx="34" fill="url(#paper)"/>
+    <path d="M653 93h108c29 0 53 24 53 53v88z" fill="#cdeee9"/>
+    <path d="M653 93v141h161" fill="none" stroke="#87cfc5" stroke-width="10" stroke-linejoin="round"/>
+    <rect x="461" y="298" width="278" height="22" rx="11" fill="#9bb9c9"/>
+    <rect x="461" y="347" width="222" height="18" rx="9" fill="#c3d8df"/>
+    <rect x="461" y="389" width="250" height="18" rx="9" fill="#c3d8df"/>
+    <path d="M600 151c57 35 104 25 104 25v82c0 67-45 103-104 128-59-25-104-61-104-128v-82s47 10 104-25z" fill="#0b8f78"/>
+    <path d="m550 252 34 34 68-76" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g filter="url(#shadow)" fill="#fff">
+    <rect x="74" y="112" width="226" height="174" rx="26"/><rect x="900" y="112" width="226" height="174" rx="26"/>
+    <rect x="60" y="395" width="242" height="176" rx="26"/><rect x="898" y="395" width="242" height="176" rx="26"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M126 198c0-32 41-48 64-20 23-28 64-12 64 20 0 45-64 76-64 76s-64-31-64-76z" fill="#f16069" stroke="#d74752" stroke-width="7"/>
+    <path d="M169 210h42m-21-21v42" stroke="#fff" stroke-width="10"/>
+    <path d="M949 237h128M966 237v-51l47-36 47 36v51M994 237v-53h38v53" stroke="#176b9f" stroke-width="11"/>
+    <path d="M113 520c23-62 62-91 116-91-1 57-30 98-87 121" fill="#87c95b" stroke="#539a3d" stroke-width="7"/>
+    <path d="M132 541c32-50 65-75 96-98" stroke="#347d4a" stroke-width="8"/>
+    <path d="M975 526h84M978 448h78l20 33H958zM985 481v45m23-45v45m24-45v45m-62 0h99" stroke="#6757b8" stroke-width="10"/>
+    <path d="M1081 437c0 28-27 51-27 51s-27-23-27-51a27 27 0 1 1 54 0z" fill="#22a8c8" stroke="#1483a2" stroke-width="5"/>
+  </g>
+  <g stroke="#9fe2da" stroke-width="5" stroke-dasharray="8 12" opacity=".8"><path d="M300 199h86"/><path d="M814 199h86"/><path d="M302 486h84"/><path d="M814 486h84"/></g>
+  <g fill="#dff8f4"><circle cx="355" cy="72" r="8"/><circle cx="847" cy="620" r="8"/><circle cx="1127" cy="332" r="7"/><circle cx="76" cy="340" r="7"/></g>
+</svg>

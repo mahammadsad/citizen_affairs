@@ -11,7 +11,8 @@ test('production brand and custom domain are canonical', () => {
   assert.equal(brand.brandShortName, 'Citizen Affairs');
   assert.equal(brand.domain, 'https://citizenaffairs.in');
   assert.equal(read('public/CNAME').trim(), 'citizenaffairs.in');
-  assert.match(brand.transitionNoticeEn, /formerly Sarkari Tathya Kendra/);
+  assert.equal(Object.keys(brand).some((key) => key.startsWith('transitionNotice')), false);
+  assert.doesNotMatch(JSON.stringify(brand), /Sarkari Tathya Kendra|সরকারি তথ্যকেন্দ্র|सरकारी तथ्य केंद्र/i);
 });
 
 test('active production integrations use the Citizen Affairs repository', () => {

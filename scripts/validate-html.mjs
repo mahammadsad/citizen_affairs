@@ -40,6 +40,13 @@ for (const path of walk(dist, '.html')) {
   }
   const h1Count = (html.match(/<h1(?:\s|>)/gi) || []).length;
   if (h1Count !== 1) errors.push(`${file}: expected one h1, found ${h1Count}`);
+  const mainCount = (html.match(/<main(?:\s|>)/gi) || []).length;
+  if (mainCount !== 1) errors.push(`${file}: expected one main landmark, found ${mainCount}`);
+  if (/https:\/\/formsubmit\.co/i.test(html)) errors.push(`${file}: unapproved FormSubmit action is present`);
+  if (/[?&]sent=1(?:[&#"']|$)/i.test(html)) errors.push(`${file}: legacy success query state is present`);
+  for (const form of html.matchAll(/<form\b[^>]*\baction="([^"]+)"[^>]*>/gi)) {
+    if (/^https?:\/\//i.test(form[1])) errors.push(`${file}: public form has a cross-origin action: ${form[1]}`);
+  }
 
   for (const image of html.matchAll(/<img\b[^>]*>/gi)) {
     if (!/\balt="[^"]*"/i.test(image[0])) errors.push(`${file}: image is missing alt text`);

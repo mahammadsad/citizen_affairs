@@ -10,7 +10,7 @@ export const trustCopy = {
       description: 'Learn what this public-information platform publishes, how information is verified, and why readers should confirm every important detail at its original official source.',
       intro: 'This is an independent public-information platform that explains government jobs, welfare schemes, education, examinations, notices, and public services in clear language.',
       sections: [
-        ['What we publish', 'We publish practical guides and verified summaries in English, Bengali, and Hindi. We focus on information that helps readers locate the correct official notice, understand a public service, and take the next step safely.'],
+        ['What we publish', 'We publish practical guides and source-linked summaries in English, Bengali, and Hindi. Each item shows its own verification status and helps readers find the original official notice before acting.'],
         ['Independent, not governmental', 'We are not affiliated with, endorsed by, or part of any government department. We do not issue approvals, cards, certificates, jobs, or benefits.'],
         ['How information is verified', 'Writers begin with an official government portal, notification, order, or document. Important facts and links are checked against those primary sources, and each article shows a verification status and last-verified date.'],
         ['How updates are handled', 'When an official source changes, the article is reviewed and updated. Material changes and corrections are recorded in the article update history where appropriate.'],
@@ -74,7 +74,7 @@ export const trustCopy = {
       description: 'এই জনতথ্য প্ল্যাটফর্ম কী প্রকাশ করে, কীভাবে তথ্য যাচাই করে এবং গুরুত্বপূর্ণ কাজের আগে কেন মূল অফিসিয়াল সূত্র দেখা জরুরি তা জানুন।',
       intro: 'এটি একটি স্বাধীন জনতথ্য প্ল্যাটফর্ম। এখানে সরকারি চাকরি, জনকল্যাণ প্রকল্প, শিক্ষা, পরীক্ষা, নোটিশ ও জনপরিষেবার তথ্য সহজ ভাষায় ব্যাখ্যা করা হয়।',
       sections: [
-        ['আমরা কী প্রকাশ করি', 'ইংরেজি, বাংলা ও হিন্দিতে ব্যবহারিক নির্দেশিকা এবং যাচাইকৃত সারাংশ প্রকাশ করি। পাঠককে সঠিক অফিসিয়াল বিজ্ঞপ্তি খুঁজে পেতে, পরিষেবা বুঝতে এবং নিরাপদে পরবর্তী পদক্ষেপ নিতে সাহায্য করাই লক্ষ্য।'],
+        ['আমরা কী প্রকাশ করি', 'ইংরেজি, বাংলা ও হিন্দিতে ব্যবহারিক নির্দেশিকা ও সূত্র-সংযুক্ত সারাংশ প্রকাশ করি। প্রতিটি প্রকাশনায় তার নিজস্ব যাচাইয়ের অবস্থা দেখানো হয় এবং কাজের আগে মূল অফিসিয়াল নোটিশ খুঁজতে সাহায্য করা হয়।'],
         ['স্বাধীন, সরকারি নয়', 'আমরা কোনো সরকারি দপ্তরের অংশ নই এবং কোনো সরকারি প্রতিষ্ঠানের অনুমোদিত বা সমর্থিত প্ল্যাটফর্ম নই। আমরা অনুমোদন, কার্ড, শংসাপত্র, চাকরি বা সুবিধা প্রদান করি না।'],
         ['তথ্য যেভাবে যাচাই করি', 'লেখার শুরুতে অফিসিয়াল সরকারি পোর্টাল, বিজ্ঞপ্তি, আদেশ বা নথি দেখা হয়। গুরুত্বপূর্ণ তথ্য ও লিঙ্ক প্রাথমিক সূত্রের সঙ্গে মিলিয়ে প্রতিটি নিবন্ধে যাচাইয়ের অবস্থা ও সর্বশেষ যাচাইয়ের তারিখ দেখানো হয়।'],
         ['আপডেট যেভাবে করি', 'অফিসিয়াল সূত্র বদলালে নিবন্ধ আবার পর্যালোচনা করা হয়। প্রয়োজন অনুযায়ী গুরুত্বপূর্ণ পরিবর্তন ও সংশোধন নিবন্ধের আপডেট ইতিহাসে লেখা হয়।'],
@@ -138,7 +138,7 @@ export const trustCopy = {
       description: 'जानें कि यह जन-सूचना मंच क्या प्रकाशित करता है, जानकारी कैसे जाँची जाती है और महत्वपूर्ण कदम से पहले मूल आधिकारिक स्रोत देखना क्यों जरूरी है।',
       intro: 'यह एक स्वतंत्र जन-सूचना मंच है। यहाँ सरकारी नौकरियों, कल्याण योजनाओं, शिक्षा, परीक्षाओं, सूचनाओं और जनसेवाओं को स्पष्ट भाषा में समझाया जाता है।',
       sections: [
-        ['हम क्या प्रकाशित करते हैं', 'हम English, Bengali और Hindi में practical guides और verified summaries प्रकाशित करते हैं। उद्देश्य सही official notice ढूँढने, public service समझने और सुरक्षित अगला कदम लेने में मदद करना है।'],
+        ['हम क्या प्रकाशित करते हैं', 'हम English, Bengali और Hindi में practical guides और source-linked summaries प्रकाशित करते हैं। हर publication अपनी verification status दिखाती है और कदम उठाने से पहले original official notice खोजने में मदद करती है।'],
         ['स्वतंत्र, सरकारी नहीं', 'हम किसी सरकारी विभाग का हिस्सा नहीं हैं और किसी सरकारी संस्था से संबद्ध या समर्थित नहीं हैं। हम approval, card, certificate, नौकरी या लाभ जारी नहीं करते।'],
         ['जानकारी कैसे जाँची जाती है', 'लेखक आधिकारिक सरकारी portal, notification, order या document से शुरुआत करते हैं। महत्वपूर्ण तथ्य और links primary sources से मिलाए जाते हैं, और हर article verification status तथा last-verified date दिखाता है।'],
         ['लेख कैसे update होते हैं', 'Official source बदलने पर article की फिर review की जाती है। महत्वपूर्ण change और correction जरूरत के अनुसार article update history में दर्ज होते हैं।'],

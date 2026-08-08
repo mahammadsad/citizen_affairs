@@ -388,7 +388,7 @@ const schemas = faqSchema ? [breadcrumbSchema, faqSchema] : [breadcrumbSchema];
         </div>
 
         <aside class="article-rail" aria-label={articleCopy.onThisPage}>
-          <nav class="toc-card" id="articleToc" hidden>
+          <nav class="toc-card" id="articleToc" aria-label={articleCopy.onThisPage} hidden>
             <strong>{articleCopy.onThisPage}</strong>
             <ol id="articleTocList"></ol>
           </nav>

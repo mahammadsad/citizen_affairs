@@ -5,7 +5,7 @@ workflowStatus: published
 translationKey: india-major-welfare-schemes-official-guide
 urlSlug: india-major-welfare-schemes-official-guide
 title: "भारत की 14 प्रमुख केंद्रीय सरकारी योजनाएँ: वर्तमान स्थिति और आधिकारिक लिंक"
-description: "आयुष्मान भारत, PM-KISAN, PMAY-G, NFSA और MGNREGA सहित 14 प्रमुख केंद्रीय कार्यक्रमों के उद्देश्य, मौजूदा अनुमोदन-सीमा और आधिकारिक पोर्टल की सत्यापित हिंदी गाइड।"
+description: "आयुष्मान भारत, PM-KISAN, PMAY-G, NFSA और MGNREGA सहित 14 प्रमुख केंद्रीय कार्यक्रमों के उद्देश्य, मौजूदा अनुमोदन-सीमा और आधिकारिक पोर्टल की स्रोत-आधारित हिंदी गाइड।"
 date: 2026-08-06
 updated: 2026-08-06
 lastVerified: 2026-08-06
@@ -95,13 +95,15 @@ tags:
   - मनरेगा
   - जल जीवन मिशन
 featured: false
-featuredImage: /uploads/india-major-welfare-schemes-1200.webp
-featuredImageAvif: /uploads/india-major-welfare-schemes-1200.avif
-featuredImageSrcSet: /uploads/india-major-welfare-schemes-480.webp 480w, /uploads/india-major-welfare-schemes-768.webp 768w, /uploads/india-major-welfare-schemes-1200.webp 1200w
-featuredImageAvifSrcSet: /uploads/india-major-welfare-schemes-480.avif 480w, /uploads/india-major-welfare-schemes-768.avif 768w, /uploads/india-major-welfare-schemes-1200.avif 1200w
+featuredImage: /uploads/articles/shared/welfare-programmes-guide-1200.webp
+featuredImageAvif: /uploads/articles/shared/welfare-programmes-guide-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.webp 480w, /uploads/articles/shared/welfare-programmes-guide-768.webp 768w, /uploads/articles/shared/welfare-programmes-guide-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.avif 480w, /uploads/articles/shared/welfare-programmes-guide-768.avif 768w, /uploads/articles/shared/welfare-programmes-guide-1200.avif 1200w
 featuredImageWidth: 1200
 featuredImageHeight: 675
-featuredImageAlt: स्वास्थ्य, खेती, खाद्य, आवास, पेयजल और शिक्षा से जुड़ी केंद्रीय योजनाओं की सत्यापित गाइड का संपादकीय ग्राफिक
+featuredImageAlt: स्वास्थ्य, खेती, खाद्य, आवास, पेयजल और शिक्षा से जुड़ी केंद्रीय योजनाओं को दर्शाती अमूर्त संपादकीय illustration
+featuredImageCaption: यह एक illustration है; इसमें कोई official portal, logo या eligibility decision नहीं दिखाया गया है।
+featuredImageCredit: Citizen Affairs source-controlled illustration
 draft: false
 seoTitle: "भारत की 14 प्रमुख सरकारी योजनाएँ: वर्तमान आधिकारिक गाइड"
 seoDescription: "आयुष्मान भारत, PM-KISAN, PMAY-G, NFSA और MGNREGA सहित 14 केंद्रीय योजनाओं की वर्तमान स्थिति और आधिकारिक पोर्टल देखें।"

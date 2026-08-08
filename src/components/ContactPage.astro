@@ -16,10 +16,9 @@ const canonical = `${SITE.url}${route(locale, 'contact')}`;
 const alternateUrls = Object.fromEntries(
   locales.map((lang) => [lang, `${SITE.url}${route(lang, 'contact')}`])
 ) as Record<Locale, string>;
-const successUrl = `${SITE.url}${route(locale, 'contact')}?sent=1#contact-form`;
 const careersUrl = route(locale, 'careers');
-
 const copy = CONTACT_COPY[locale];
+const emailHref = (subject: string) => `mailto:${BRAND.contactEmail}?subject=${encodeURIComponent(subject)}`;
 
 const pageSchema = {
   '@context': 'https://schema.org',
@@ -34,7 +33,7 @@ const pageSchema = {
     name: brandName,
     url: SITE.url,
     email: BRAND.contactEmail,
-    contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: BRAND.contactEmail, availableLanguage: ['English', 'Bengali', 'Hindi'] }
+    contactPoint: { '@type': 'ContactPoint', contactType: 'editorial enquiries', email: BRAND.contactEmail, availableLanguage: ['English', 'Bengali', 'Hindi'] }
   }
 };
 ---
@@ -51,7 +50,7 @@ const pageSchema = {
         </div>
         <aside class="email-card">
           <span>{copy.emailLabel}</span>
-          <a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a>
+          <a href={emailHref(copy.generalSubject)}>{BRAND.contactEmail}</a>
           <button type="button" data-copy-email data-email={BRAND.contactEmail} data-copy={copy.copyEmail} data-copied={copy.copied}>
             <Icon name="copy" size={18} /><span>{copy.copyEmail}</span>
           </button>
@@ -65,8 +64,8 @@ const pageSchema = {
         <h2 id="contact-routes-title">{copy.reasonsTitle}</h2>
       </div>
       <div class="reason-grid">
-        {copy.reasons.map(([id, title, body, icon]) => (
-          <a href="#contact-form" data-reason={id}>
+        {copy.reasons.map(([, title, body, icon]) => (
+          <a href={emailHref(`${copy.subjectPrefix}: ${title}`)}>
             <span class="reason-icon"><Icon name={icon} /></span>
             <h3>{title}</h3>
             <p>{body}</p>
@@ -76,42 +75,21 @@ const pageSchema = {
       </div>
     </section>
 
-    <section class="contact-form-wrap" id="contact-form">
-      <div class="container contact-form-grid">
+    <section class="email-guidance" aria-labelledby="email-guidance-title">
+      <div class="container email-guidance-grid">
+        <div>
+          <span class="contact-eyebrow"><Icon name="mail" size={18} />{copy.emailOnlyLabel}</span>
+          <h2 id="email-guidance-title">{copy.emailOnlyTitle}</h2>
+          <p>{copy.emailOnlyIntro}</p>
+          <a class="btn btn-primary" href={emailHref(copy.generalSubject)}>{copy.emailAction}<Icon name="arrow" size={18} /></a>
+        </div>
         <aside>
-          <span class="contact-eyebrow"><Icon name="mail" size={18} />{copy.formTitle}</span>
-          <h2>{copy.formTitle}</h2>
-          <p>{copy.formIntro}</p>
           <div class="safety-card"><Icon name="check" /><div><strong>{copy.safetyTitle}</strong><p>{copy.safetyText}</p></div></div>
           <div class="review-list">
             <strong>{copy.expectationsTitle}</strong>
             <ul>{copy.expectations.map((item) => <li><Icon name="check" size={16} />{item}</li>)}</ul>
           </div>
         </aside>
-
-        <div class="form-card">
-          <div class="success-message" id="contactSuccess" role="status" hidden><Icon name="check" />{copy.success}</div>
-          <form action={`https://formsubmit.co/${BRAND.contactEmail}`} method="POST" enctype="multipart/form-data" data-contact-form>
-            <input type="hidden" name="_subject" value={`${copy.subjectPrefix} (${locale.toUpperCase()})`} />
-            <input type="hidden" name="_next" value={successUrl} />
-            <input type="hidden" name="_template" value="table" />
-            <input type="hidden" name="_autoresponse" value={copy.success} />
-            <div class="honey" aria-hidden="true"><label>Website<input type="text" name="_honey" tabindex="-1" autocomplete="off" /></label></div>
-
-            <div class="form-grid">
-              <label><span>{copy.labels.name} *</span><input type="text" name="Full name" autocomplete="name" required maxlength="100" /></label>
-              <label><span>{copy.labels.email} *</span><input type="email" name="email" autocomplete="email" required maxlength="160" /></label>
-              <label><span>{copy.labels.phone}</span><input type="tel" name="Phone" autocomplete="tel" maxlength="30" /></label>
-              <label><span>{copy.labels.reason} *</span><select name="Reason" required data-reason-select><option value="">{copy.labels.choose}</option>{copy.reasons.map(([id, title]) => <option value={title} data-reason-id={id}>{title}</option>)}</select></label>
-              <label class="span-two"><span>{copy.labels.subject} *</span><input type="text" name="Subject" required maxlength="160" /></label>
-              <label class="span-two"><span>{copy.labels.url}</span><input type="url" name="Related URL" inputmode="url" placeholder="https://" maxlength="400" /></label>
-              <label class="span-two"><span>{copy.labels.message} *</span><textarea name="Message" rows="7" required minlength="30" maxlength="4000"></textarea></label>
-              <label class="span-two file-field"><span>{copy.labels.attachment}</span><input type="file" name="Attachment" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,application/pdf,image/jpeg,image/png,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-attachment /><small>{copy.labels.attachmentHelp}</small><strong data-file-error role="alert"></strong></label>
-            </div>
-            <label class="consent"><input type="checkbox" name="Consent confirmed" value="Yes" required /><span>{copy.labels.consent} *</span></label>
-            <button class="btn btn-primary submit-message" type="submit">{copy.labels.submit}<Icon name="arrow" size={18} /></button>
-          </form>
-        </div>
       </div>
     </section>
 
@@ -128,13 +106,7 @@ const pageSchema = {
   </article>
 </MainLayout>
 
-<script define:vars={{ fileTooLarge: copy.labels.fileTooLarge }}>
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('sent') === '1') {
-    const banner = document.getElementById('contactSuccess');
-    if (banner) banner.hidden = false;
-  }
-
+<script>
   const copyButton = document.querySelector('[data-copy-email]');
   copyButton?.addEventListener('click', async () => {
     if (!(copyButton instanceof HTMLButtonElement)) return;
@@ -145,34 +117,11 @@ const pageSchema = {
       setTimeout(() => { if (label) label.textContent = copyButton.dataset.copy || 'Copy email'; }, 1600);
     } catch (_) {}
   });
-
-  const reasonSelect = document.querySelector('[data-reason-select]');
-  document.querySelectorAll('[data-reason]').forEach((link) => {
-    link.addEventListener('click', () => {
-      const reasonId = link.getAttribute('data-reason');
-      const option = reasonSelect?.querySelector(`option[data-reason-id="${reasonId}"]`);
-      if (reasonSelect instanceof HTMLSelectElement && option instanceof HTMLOptionElement) reasonSelect.value = option.value;
-    });
-  });
-
-  const attachment = document.querySelector('[data-attachment]');
-  const error = document.querySelector('[data-file-error]');
-  attachment?.addEventListener('change', () => {
-    const input = attachment instanceof HTMLInputElement ? attachment : null;
-    const file = input?.files?.[0];
-    if (error) error.textContent = '';
-    input?.setCustomValidity('');
-    if (file && file.size > 10 * 1024 * 1024) {
-      input?.setCustomValidity(fileTooLarge);
-      if (error) error.textContent = fileTooLarge;
-      input?.reportValidity();
-    }
-  });
 </script>
 
 <style>
-  .contact-page{overflow:hidden;background:var(--color-background)}.contact-hero{padding:clamp(3.4rem,7vw,6.5rem) 0;background:radial-gradient(circle at 88% 18%,rgba(24,182,160,.2),transparent 30%),linear-gradient(135deg,#071e34,#0c365c 70%,#0a5aa6 130%);color:#fff}.contact-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);align-items:center;gap:clamp(2rem,7vw,6rem)}.contact-eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:#7ce4d7;font-size:.76rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.contact-hero h1{max-width:760px;margin:.85rem 0 1rem;color:#fff;font-size:clamp(2.5rem,6.2vw,5rem);line-height:1;letter-spacing:-.045em}.contact-hero p{max-width:66ch;color:#d6e7f4;font-size:clamp(1rem,2vw,1.18rem);line-height:1.8}.contact-hero small{display:flex;align-items:flex-start;gap:.45rem;max-width:68ch;margin-top:1.2rem;color:#a9c7da}.email-card{display:grid;gap:.65rem;min-width:0;padding:1.4rem;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:rgba(255,255,255,.08);box-shadow:0 28px 70px rgba(0,0,0,.2);backdrop-filter:blur(14px)}.email-card>span{color:#7ce4d7;font-size:.72rem;font-weight:850;text-transform:uppercase}.email-card>a{overflow-wrap:anywhere;color:#fff;font-size:clamp(1.02rem,2.5vw,1.35rem);font-weight:800}.email-card>button{display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;margin-top:.4rem;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:rgba(255,255,255,.08);color:#fff;font-weight:800}.email-card>button:hover,.email-card>button:focus-visible{background:rgba(255,255,255,.15)}.contact-section{padding-block:clamp(3.8rem,7vw,6rem)}.section-heading{max-width:760px;margin-bottom:2rem}.section-heading>span{color:var(--color-primary);font-size:.74rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.section-heading h2{margin-top:.45rem;font-size:clamp(2rem,4vw,3.4rem);line-height:1.08;letter-spacing:-.035em}.reason-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.reason-grid>a{display:flex;flex-direction:column;min-width:0;padding:1.2rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface);box-shadow:var(--shadow-sm);transition:transform .2s,border-color .2s,box-shadow .2s}.reason-grid>a:hover{transform:translateY(-4px);border-color:rgba(11,143,120,.45);box-shadow:var(--shadow-lg)}.reason-icon,.secondary-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(11,143,120,.1);color:var(--color-primary)}.reason-grid h3{margin:.9rem 0 .45rem;font-size:1.08rem}.reason-grid p{color:var(--color-text-muted);font-size:.84rem;line-height:1.7}.reason-grid>a>svg{margin-top:auto;padding-top:1rem;box-sizing:content-box;color:var(--color-primary)}.contact-form-wrap{padding-block:clamp(4rem,8vw,7rem);background:radial-gradient(circle at 10% 15%,rgba(24,182,160,.13),transparent 30%),var(--color-navy);color:#fff}.contact-form-grid{display:grid;grid-template-columns:minmax(260px,.72fr) minmax(0,1.28fr);align-items:start;gap:clamp(2rem,6vw,5rem)}.contact-form-grid>aside{position:sticky;top:108px}.contact-form-grid>aside h2{margin:.8rem 0 1rem;color:#fff;font-size:clamp(2rem,4vw,3.5rem);line-height:1.08}.contact-form-grid>aside>p{color:#c7d9e8;line-height:1.8}.safety-card{display:flex;align-items:flex-start;gap:.75rem;margin-top:1.4rem;padding:1rem;border:1px solid rgba(255,255,255,.14);border-radius:15px;background:rgba(255,255,255,.06)}.safety-card>svg{flex:none;color:#f2b544}.safety-card strong{color:#fff}.safety-card p{margin-top:.25rem;color:#aec6d8;font-size:.82rem;line-height:1.6}.review-list{margin-top:1.2rem}.review-list>strong{color:#fff}.review-list ul{display:grid;gap:.5rem;margin-top:.7rem}.review-list li{display:flex;align-items:flex-start;gap:.45rem;color:#bfd2e2;font-size:.82rem}.review-list li svg{flex:none;margin-top:.12rem;color:#7ce4d7}.form-card{padding:clamp(1rem,3vw,1.6rem);border:1px solid rgba(255,255,255,.14);border-radius:24px;background:var(--color-surface);color:var(--color-text);box-shadow:0 35px 90px rgba(0,0,0,.28)}.success-message{display:flex;align-items:center;gap:.6rem;margin-bottom:1rem;padding:.9rem;border:1px solid rgba(11,143,120,.3);border-radius:13px;background:rgba(11,143,120,.1);color:var(--color-primary);font-weight:800}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.form-grid label{display:grid;align-content:start;gap:.4rem;min-width:0}.form-grid label>span{font-size:.78rem;font-weight:820}.form-grid input,.form-grid select,.form-grid textarea{width:100%;min-height:48px;padding:.72rem .8rem;border:1px solid var(--color-border);border-radius:11px;background:var(--color-background);color:var(--color-text);font:inherit}.form-grid textarea{resize:vertical}.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{outline:3px solid rgba(11,143,120,.16);border-color:var(--color-primary)}.span-two{grid-column:1/-1}.file-field small{color:var(--color-text-muted);font-size:.72rem}.file-field strong{min-height:1em;color:#b42318;font-size:.72rem}.consent{display:flex;align-items:flex-start;gap:.6rem;margin:1.1rem 0}.consent input{flex:none;width:18px;height:18px;margin-top:.2rem}.consent span{color:var(--color-text-muted);font-size:.78rem;line-height:1.55}.submit-message{display:flex;align-items:center;justify-content:center;gap:.55rem;width:100%;min-height:52px}.honey{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}.contact-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.contact-secondary article{display:grid;grid-template-columns:52px minmax(0,1fr);gap:1rem;padding:1.3rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.contact-secondary h2{font-size:1.25rem}.contact-secondary p{margin:.45rem 0 .9rem;color:var(--color-text-muted);line-height:1.7}.secondary-actions{display:flex;flex-wrap:wrap;gap:.55rem}.secondary-actions a,.careers-link{display:inline-flex;align-items:center;gap:.4rem;min-height:42px;padding:.55rem .7rem;border-radius:10px;background:var(--color-surface-alt);color:var(--color-primary);font-weight:800}.secondary-actions a:hover,.careers-link:hover{background:rgba(11,143,120,.1)}
-  @media(max-width:980px){.contact-hero-grid,.contact-form-grid{grid-template-columns:1fr}.email-card{max-width:620px}.contact-form-grid>aside{position:static}.reason-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-  @media(max-width:680px){.contact-hero{padding-top:3rem}.contact-hero h1{font-size:clamp(2.45rem,14vw,4rem)}.reason-grid,.form-grid,.contact-secondary{grid-template-columns:1fr}.span-two{grid-column:auto}.contact-section{padding-block:3.6rem}.contact-form-wrap{padding-block:3.7rem}.form-card{border-radius:18px}.contact-secondary article{grid-template-columns:46px minmax(0,1fr)}}
+  .contact-page{overflow:hidden;background:var(--color-background)}.contact-hero{padding:clamp(3.4rem,7vw,6.5rem) 0;background:radial-gradient(circle at 88% 18%,rgba(24,182,160,.2),transparent 30%),linear-gradient(135deg,#071e34,#0c365c 70%,#0a5aa6 130%);color:#fff}.contact-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);align-items:center;gap:clamp(2rem,7vw,6rem)}.contact-eyebrow{display:inline-flex;align-items:center;gap:.5rem;color:#7ce4d7;font-size:.76rem;font-weight:850;letter-spacing:.06em;text-transform:uppercase}.contact-hero h1{max-width:760px;margin:.85rem 0 1rem;color:#fff;font-size:clamp(2.5rem,6.2vw,5rem);line-height:1;letter-spacing:-.045em}.contact-hero p{max-width:66ch;color:#d6e7f4;font-size:clamp(1rem,2vw,1.18rem);line-height:1.8}.contact-hero small{display:flex;align-items:flex-start;gap:.45rem;max-width:68ch;margin-top:1.2rem;color:#a9c7da}.email-card{display:grid;gap:.65rem;min-width:0;padding:1.4rem;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:rgba(255,255,255,.08);box-shadow:0 28px 70px rgba(0,0,0,.2);backdrop-filter:blur(14px)}.email-card>span{color:#7ce4d7;font-size:.72rem;font-weight:850;text-transform:uppercase}.email-card>a{overflow-wrap:anywhere;color:#fff;font-size:clamp(1.02rem,2.5vw,1.35rem);font-weight:800}.email-card>button{display:flex;align-items:center;justify-content:center;gap:.5rem;min-height:46px;margin-top:.4rem;border:1px solid rgba(255,255,255,.18);border-radius:11px;background:rgba(255,255,255,.08);color:#fff;font-weight:800}.email-card>button:hover,.email-card>button:focus-visible{background:rgba(255,255,255,.15)}.contact-section{padding-block:clamp(3.8rem,7vw,6rem)}.section-heading{max-width:760px;margin-bottom:2rem}.section-heading>span{color:var(--color-primary);font-size:.74rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.section-heading h2{margin-top:.45rem;font-size:clamp(2rem,4vw,3.4rem);line-height:1.08;letter-spacing:-.035em}.reason-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1rem}.reason-grid>a{display:flex;flex-direction:column;min-width:0;padding:1.2rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface);box-shadow:var(--shadow-sm);transition:transform .2s,border-color .2s,box-shadow .2s}.reason-grid>a:hover{transform:translateY(-4px);border-color:rgba(11,143,120,.45);box-shadow:var(--shadow-lg)}.reason-icon,.secondary-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(11,143,120,.1);color:var(--color-primary)}.reason-grid h3{margin:.9rem 0 .45rem;font-size:1.08rem}.reason-grid p{color:var(--color-text-muted);font-size:.84rem;line-height:1.7}.reason-grid>a>svg{margin-top:auto;padding-top:1rem;box-sizing:content-box;color:var(--color-primary)}.email-guidance{padding-block:clamp(4rem,8vw,7rem);background:radial-gradient(circle at 10% 15%,rgba(24,182,160,.13),transparent 30%),var(--color-navy);color:#fff}.email-guidance-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.8fr);align-items:start;gap:clamp(2rem,7vw,6rem)}.email-guidance h2{margin:.8rem 0 1rem;color:#fff;font-size:clamp(2rem,4vw,3.5rem);line-height:1.08}.email-guidance p{max-width:64ch;color:#c7d9e8;line-height:1.8}.email-guidance .btn{display:inline-flex;align-items:center;gap:.55rem;margin-top:1.2rem}.safety-card{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;border:1px solid rgba(255,255,255,.14);border-radius:15px;background:rgba(255,255,255,.06)}.safety-card>svg{flex:none;color:#f2b544}.safety-card strong{color:#fff}.safety-card p{margin-top:.25rem;color:#aec6d8;font-size:.82rem;line-height:1.6}.review-list{margin-top:1.2rem}.review-list>strong{color:#fff}.review-list ul{display:grid;gap:.5rem;margin-top:.7rem}.review-list li{display:flex;align-items:flex-start;gap:.45rem;color:#bfd2e2;font-size:.82rem}.review-list li svg{flex:none;margin-top:.12rem;color:#7ce4d7}.contact-secondary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.contact-secondary article{display:grid;grid-template-columns:52px minmax(0,1fr);gap:1rem;padding:1.3rem;border:1px solid var(--color-border);border-radius:18px;background:var(--color-surface)}.contact-secondary h2{font-size:1.25rem}.contact-secondary p{margin:.45rem 0 .9rem;color:var(--color-text-muted);line-height:1.7}.secondary-actions{display:flex;flex-wrap:wrap;gap:.55rem}.secondary-actions a,.careers-link{display:inline-flex;align-items:center;gap:.4rem;min-height:42px;padding:.55rem .7rem;border-radius:10px;background:var(--color-surface-alt);color:var(--color-primary);font-weight:800}.secondary-actions a:hover,.careers-link:hover{background:rgba(11,143,120,.1)}
+  @media(max-width:980px){.contact-hero-grid,.email-guidance-grid{grid-template-columns:1fr}.email-card{max-width:620px}.reason-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:680px){.contact-hero{padding-top:3rem}.contact-hero h1{font-size:clamp(2.45rem,14vw,4rem)}.reason-grid,.contact-secondary{grid-template-columns:1fr}.contact-section{padding-block:3.6rem}.email-guidance{padding-block:3.7rem}.contact-secondary article{grid-template-columns:46px minmax(0,1fr)}}
   @media(max-width:390px){.secondary-actions a,.careers-link{width:100%;justify-content:center}.email-card{padding:1.1rem}}
 </style>

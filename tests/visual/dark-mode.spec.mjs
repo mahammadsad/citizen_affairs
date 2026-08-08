@@ -32,7 +32,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await expect(page.locator('.portal-utility')).toBeHidden();
   await expect(page.locator('[data-portal-continuity]')).toHaveCount(0);
-  await expect(page.locator('main > .top-news')).toBeVisible();
+  await expect(page.locator('main .top-news')).toBeVisible();
   await expect(page.locator('.lead-story')).toBeVisible();
   await expect(page.locator('.latest-rail')).toBeVisible();
   expect(await page.locator('.news-section-block').count()).toBeGreaterThan(0);
