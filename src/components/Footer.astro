@@ -89,7 +89,7 @@ const communityLinks = [
     <div class="footer-desktop-columns">
       <section>
         <h3>{t.exploreFooter}</h3>
-        <nav class="footer-links">
+        <nav class="footer-links" aria-label={t.exploreFooter}>
           {footerLinks.map((link) => (
             <a href={link.href}><Icon name={link.icon} /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
           ))}
@@ -97,7 +97,7 @@ const communityLinks = [
       </section>
       <section>
         <h3>{t.trustPolicies}</h3>
-        <nav class="footer-links">
+        <nav class="footer-links" aria-label={t.trustPolicies}>
           {policies.map((link) => (
             <a href={link.href}><Icon name="check" /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
           ))}
@@ -120,22 +120,22 @@ const communityLinks = [
     <div class="footer-mobile-groups">
       <details>
         <summary>{t.exploreFooter}<Icon name="arrow" size={18} /></summary>
-        <nav>{footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
+        <nav aria-label={t.exploreFooter}>{footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
       </details>
       <details>
         <summary>{t.trustPolicies}<Icon name="arrow" size={18} /></summary>
-        <nav>{policies.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
+        <nav aria-label={t.trustPolicies}>{policies.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
       </details>
       <details>
         <summary>{t.community}<Icon name="arrow" size={18} /></summary>
-        <nav>{communityLinks.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<Icon name="external" size={16} /></a>)}</nav>
+        <nav aria-label={t.community}>{communityLinks.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<Icon name="external" size={16} /></a>)}</nav>
       </details>
     </div>
   </div>
 
   <div class="container footer-bottom">
     <div><strong>© 2026 {brandName}</strong><span>{t.independentService} · {t.notGovernmentWebsite}</span></div>
-    <nav>
+    <nav aria-label={`${t.trustPolicies} · ${t.language}`}>
       <a href={route('privacy')}>{t.privacy}</a>
       <a href={route('terms')}>{t.terms}</a>
       <a href="#languageTrigger" data-footer-language>{t.language}</a>

@@ -1,7 +1,7 @@
 /* Citizen Affairs visual system — loaded after legacy styles so new work stays consistent. */
 :root {
-  --color-primary: #0a817a;
-  --color-primary-rgb: 10, 129, 122;
+  --color-primary: #07726c;
+  --color-primary-rgb: 7, 114, 108;
   --color-navy: #0b1d3a;
   --color-green: #0ea59a;
   --color-green-rgb: 14, 165, 154;

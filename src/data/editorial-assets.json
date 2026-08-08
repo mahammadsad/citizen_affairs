@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "welfare-programmes-guide-v1",
+      "sourcePath": "src/assets/editorial/welfare-programmes-guide.svg",
+      "derivatives": [
+        "/uploads/articles/shared/welfare-programmes-guide-480.webp",
+        "/uploads/articles/shared/welfare-programmes-guide-480.avif",
+        "/uploads/articles/shared/welfare-programmes-guide-768.webp",
+        "/uploads/articles/shared/welfare-programmes-guide-768.avif",
+        "/uploads/articles/shared/welfare-programmes-guide-1200.webp",
+        "/uploads/articles/shared/welfare-programmes-guide-1200.avif"
+      ],
+      "creatorSource": "OpenAI Codex-assisted source-controlled vector created for Citizen Affairs",
+      "licence": "Project-controlled publication asset; external reuse terms are not yet chosen",
+      "aiAssisted": true,
+      "documentaryImage": false,
+      "createdAt": "2026-08-08",
+      "associatedArticles": [
+        "src/content/articles/en/india-major-welfare-schemes-official-guide.md",
+        "src/content/articles/bn/india-major-welfare-schemes-official-guide.md",
+        "src/content/articles/hi/india-major-welfare-schemes-official-guide.md"
+      ],
+      "editorialOwner": "mahammad-sad",
+      "lastVisualReview": "2026-08-08",
+      "reviewStatus": "approved-by-owner",
+      "reviewer": "Mahammad Sad (owner)",
+      "mobile390Reviewed": true,
+      "desktop1440Reviewed": true,
+      "humanOwnerApprovalRequiredBeforePublish": true
+    },
+    {
+      "id": "exam-document-safety-v1",
+      "sourcePath": "src/assets/editorial/exam-document-safety.svg",
+      "derivatives": [
+        "/uploads/articles/shared/exam-document-safety-480.webp",
+        "/uploads/articles/shared/exam-document-safety-480.avif",
+        "/uploads/articles/shared/exam-document-safety-768.webp",
+        "/uploads/articles/shared/exam-document-safety-768.avif",
+        "/uploads/articles/shared/exam-document-safety-1200.webp",
+        "/uploads/articles/shared/exam-document-safety-1200.avif"
+      ],
+      "creatorSource": "OpenAI Codex-assisted source-controlled vector created for Citizen Affairs",
+      "licence": "Project-controlled publication asset; external reuse terms are not yet chosen",
+      "aiAssisted": true,
+      "documentaryImage": false,
+      "createdAt": "2026-08-08",
+      "associatedArticles": ["src/content/articles/bn/check-exam-admit-card-result-officially.md"],
+      "editorialOwner": "mahammad-sad",
+      "lastVisualReview": "2026-08-08",
+      "reviewStatus": "approved-by-owner",
+      "reviewer": "Mahammad Sad (owner)",
+      "mobile390Reviewed": true,
+      "desktop1440Reviewed": true,
+      "humanOwnerApprovalRequiredBeforePublish": true
+    }
+  ]
+}

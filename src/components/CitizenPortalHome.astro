@@ -50,10 +50,10 @@ const sectionNews = categoryEntries
 
 const copy = {
   en: {
-    metaTitle: 'Latest citizen news and verified government updates',
+    metaTitle: 'Citizen-service guides and government-source updates',
     description:
-      'Latest government jobs, admissions, scholarships, welfare schemes and citizen-service news verified against official sources.',
-    pageTitle: 'Latest news',
+      'Public-service explainers and updates about government jobs, admissions, scholarships, welfare schemes and citizen services, with source and verification status shown.',
+    pageTitle: 'Recent publications',
     leadLabel: 'Top story',
     latest: 'Latest',
     allNews: 'All news',
@@ -61,13 +61,13 @@ const copy = {
     viewSection: 'View all',
     readStory: 'Read story',
     emptyTitle: 'No published stories yet',
-    emptyBody: 'New verified reports will appear here after editorial review.',
+    emptyBody: 'New public-service reports will appear here after editorial review.',
   },
   bn: {
-    metaTitle: 'সর্বশেষ নাগরিক সংবাদ ও যাচাইকৃত সরকারি আপডেট',
+    metaTitle: 'নাগরিক পরিষেবার গাইড ও সরকারি সূত্রভিত্তিক আপডেট',
     description:
-      'সরকারি চাকরি, ভর্তি, স্কলারশিপ, কল্যাণ প্রকল্প ও নাগরিক পরিষেবার সর্বশেষ যাচাইকৃত খবর।',
-    pageTitle: 'সর্বশেষ খবর',
+      'সরকারি চাকরি, ভর্তি, স্কলারশিপ, কল্যাণ প্রকল্প ও নাগরিক পরিষেবা নিয়ে সূত্র ও যাচাইয়ের অবস্থা-সহ জনসেবামূলক গাইড ও আপডেট।',
+    pageTitle: 'সাম্প্রতিক প্রকাশনা',
     leadLabel: 'প্রধান খবর',
     latest: 'সর্বশেষ',
     allNews: 'সব খবর',
@@ -78,10 +78,10 @@ const copy = {
     emptyBody: 'সম্পাদকীয় যাচাইয়ের পর নতুন খবর এখানে প্রকাশিত হবে।',
   },
   hi: {
-    metaTitle: 'नवीनतम नागरिक समाचार और सत्यापित सरकारी अपडेट',
+    metaTitle: 'नागरिक-सेवा गाइड और सरकारी स्रोतों पर आधारित अपडेट',
     description:
-      'सरकारी नौकरियों, प्रवेश, छात्रवृत्ति, कल्याण योजनाओं और नागरिक सेवाओं की नवीनतम सत्यापित खबरें।',
-    pageTitle: 'ताज़ा खबरें',
+      'सरकारी नौकरियों, प्रवेश, छात्रवृत्ति, कल्याण योजनाओं और नागरिक सेवाओं पर स्रोत और सत्यापन स्थिति सहित जनसेवा गाइड और अपडेट।',
+    pageTitle: 'हाल की प्रकाशित सामग्री',
     leadLabel: 'मुख्य खबर',
     latest: 'नवीनतम',
     allNews: 'सभी खबरें',
@@ -89,13 +89,13 @@ const copy = {
     viewSection: 'सभी देखें',
     readStory: 'पूरी खबर पढ़ें',
     emptyTitle: 'अभी कोई खबर प्रकाशित नहीं हुई',
-    emptyBody: 'संपादकीय समीक्षा के बाद नई सत्यापित खबरें यहाँ दिखाई देंगी।',
+    emptyBody: 'संपादकीय समीक्षा के बाद नई जनसेवा रिपोर्ट यहाँ दिखाई देंगी।',
   },
 }[locale];
 ---
 
 <MainLayout title={copy.metaTitle} description={copy.description} {locale} {canonical} {alternateUrls}>
-  <main class="news-home">
+  <div class="news-home">
     <h1 class="visually-hidden">{copy.pageTitle}</h1>
 
     <section class="top-news" aria-labelledby="latest-news-heading">
@@ -195,7 +195,7 @@ const copy = {
         </div>
       </section>
     )}
-  </main>
+  </div>
 </MainLayout>
 
 <style>

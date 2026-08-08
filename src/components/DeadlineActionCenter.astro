@@ -105,7 +105,7 @@ const localePrefix = locale === 'en' ? '' : `/${locale}`;
   </div>
 </section>
 
-<main class="section" data-deadline-center data-count-template={copy.results}>
+<section class="section" data-deadline-center data-count-template={copy.results}>
   <div class="container deadline-shell">
     <div class="deadline-summary" aria-label={copy.eyebrow}>
       <button type="button" data-deadline-filter="urgent" aria-pressed="false">
@@ -165,7 +165,7 @@ const localePrefix = locale === 'en' ? '' : `/${locale}`;
     </div>
     <p class="deadline-empty" id="deadlineEmpty" hidden>{copy.noMatch}</p>
   </div>
-</main>
+</section>
 
 <script>
   const root = document.querySelector<HTMLElement>('[data-deadline-center]');

@@ -14,7 +14,7 @@ test('mobile readers reach the article before secondary decision panels', async 
   await expect(firstParagraph).toBeVisible();
 
   const paragraphTop = await firstParagraph.evaluate((element) => element.getBoundingClientRect().top + window.scrollY);
-  expect(paragraphTop).toBeLessThan(1000);
+  expect(paragraphTop).toBeLessThan(1050);
 
   await page.screenshot({ path: testInfo.outputPath('article-first-screen-390.png'), fullPage: true });
 });

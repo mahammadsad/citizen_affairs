@@ -132,7 +132,7 @@ const localePrefix = locale === 'en' ? '' : `/${locale}`;
   </div>
 </section>
 
-<main
+<section
   class="section"
   data-saved-center
   data-index-url={indexUrl}
@@ -191,7 +191,7 @@ const localePrefix = locale === 'en' ? '' : `/${locale}`;
     <div class="saved-action-list" id="actionList" role="tabpanel" aria-labelledby="savedTab" aria-live="polite" aria-busy="true"></div>
     <p class="saved-empty" id="savedEmpty" hidden></p>
   </div>
-</main>
+</section>
 
 <script>
   type StoredItem = { id?: string; url?: string; title?: string; description?: string; savedAt?: string; viewedAt?: string };

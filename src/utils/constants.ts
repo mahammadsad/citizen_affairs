@@ -19,12 +19,6 @@ export function getBrandTagline(locale: BrandLocale = 'en') {
   return BRAND.brandTaglineEn;
 }
 
-export function getTransitionNotice(locale: BrandLocale = 'en') {
-  if (locale === 'bn') return BRAND.transitionNoticeBn;
-  if (locale === 'hi') return BRAND.transitionNoticeHi;
-  return BRAND.transitionNoticeEn;
-}
-
 export const ACTIVE_CATEGORY_IDS = BRAND.activeCategoryIds as readonly string[];
 export const isActiveCategory = (categoryId: string) => ACTIVE_CATEGORY_IDS.includes(categoryId);
 

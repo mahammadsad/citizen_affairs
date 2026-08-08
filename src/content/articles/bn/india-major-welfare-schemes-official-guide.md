@@ -97,13 +97,15 @@ tags:
   - Jal Jeevan Mission
   - সরকারি প্রকল্পের অফিসিয়াল লিংক
 featured: true
-featuredImage: /uploads/india-major-welfare-schemes-1200.webp
-featuredImageAvif: /uploads/india-major-welfare-schemes-1200.avif
-featuredImageSrcSet: /uploads/india-major-welfare-schemes-480.webp 480w, /uploads/india-major-welfare-schemes-768.webp 768w, /uploads/india-major-welfare-schemes-1200.webp 1200w
-featuredImageAvifSrcSet: /uploads/india-major-welfare-schemes-480.avif 480w, /uploads/india-major-welfare-schemes-768.avif 768w, /uploads/india-major-welfare-schemes-1200.avif 1200w
+featuredImage: /uploads/articles/shared/welfare-programmes-guide-1200.webp
+featuredImageAvif: /uploads/articles/shared/welfare-programmes-guide-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.webp 480w, /uploads/articles/shared/welfare-programmes-guide-768.webp 768w, /uploads/articles/shared/welfare-programmes-guide-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.avif 480w, /uploads/articles/shared/welfare-programmes-guide-768.avif 768w, /uploads/articles/shared/welfare-programmes-guide-1200.avif 1200w
 featuredImageWidth: 1200
 featuredImageHeight: 675
-featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত কেন্দ্রীয় প্রকল্পের যাচাইকৃত গাইডের সম্পাদকীয় গ্রাফিক
+featuredImageAlt: স্বাস্থ্য, কৃষি, খাদ্য, বাসস্থান, পানীয় জল ও শিক্ষাসংক্রান্ত কেন্দ্রীয় প্রকল্প বোঝাতে বিমূর্ত সম্পাদকীয় illustration
+featuredImageCaption: এটি একটি illustration; কোনো অফিসিয়াল portal, logo বা যোগ্যতার সিদ্ধান্ত দেখানো হয়নি।
+featuredImageCredit: Citizen Affairs source-controlled illustration
 draft: false
 seoTitle: "ভারতের ১৪টি প্রধান সরকারি প্রকল্প: বর্তমান অফিসিয়াল গাইড"
 seoDescription: আয়ুষ্মান ভারত, PM-KISAN, PMAY-G, NFSA ও MGNREGA-সহ ১৪টি কেন্দ্রীয় প্রকল্পের বর্তমান অবস্থা ও অফিসিয়াল পোর্টাল দেখুন।

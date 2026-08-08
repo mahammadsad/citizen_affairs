@@ -1,6 +1,6 @@
 # Citizen Affairs
 
-Citizen Affairs is a fast, static, multilingual and independent public-information site built with Astro 7.1.6 and TypeScript. It covers verified opportunities, public benefits, deadlines and citizen services. It is not a government department, an official government website or affiliated with a political party.
+Citizen Affairs is a fast, static, multilingual and independent public-information site built with Astro 7.1.6 and TypeScript. It covers official-source guides, opportunities, public benefits, deadlines and citizen services, with the verification status shown on each publication. It is not a government department, an official government website or affiliated with a political party.
 
 The public site uses portable Markdown snapshots. Private drafts, staff roles, approvals, sources and audit records are designed for Supabase. When that optional editorial backend is enabled, publishing exports only an approved version into a protected GitHub pull request; a successful GitHub Pages deployment then confirms publication back to Supabase.
 

@@ -26,7 +26,7 @@ test('only sections containing published stories are rendered', () => {
 
 test('the lead image and familiar news labels remain prominent', () => {
   assert.match(homepage, /<StoryImage article=\{lead\} variant="lead" priority \/>/);
-  assert.match(homepage, /pageTitle: 'সর্বশেষ খবর'/);
+  assert.match(homepage, /pageTitle: 'সাম্প্রতিক প্রকাশনা'/);
   assert.match(homepage, /leadLabel: 'প্রধান খবর'/);
   assert.match(homepage, /allNews: 'সব খবর'/);
 });

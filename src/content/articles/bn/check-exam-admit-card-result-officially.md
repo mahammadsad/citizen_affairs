@@ -103,9 +103,15 @@ faqs:
     answer: DigiLocker-এর Issued Documents বিভাগে issuer থেকে সরাসরি পাওয়া document
       authentic digital document হিসেবে থাকে। নির্দিষ্ট admission বা recruitment
       authority কোন format গ্রহণ করবে, তার নিয়ম আলাদাভাবে যাচাই করুন।
-featuredImage: /uploads/file00000000e36c821199edb06344b4ec99.webp
-featuredImageAlt: পরীক্ষার official portal যাচাই করে admit card, answer key ও
-  result download এবং fake phishing link এড়ানোর সচেতনতামূলক illustration
+featuredImage: /uploads/articles/shared/exam-document-safety-1200.webp
+featuredImageAvif: /uploads/articles/shared/exam-document-safety-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/exam-document-safety-480.webp 480w, /uploads/articles/shared/exam-document-safety-768.webp 768w, /uploads/articles/shared/exam-document-safety-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/exam-document-safety-480.avif 480w, /uploads/articles/shared/exam-document-safety-768.avif 768w, /uploads/articles/shared/exam-document-safety-1200.avif 1200w
+featuredImageWidth: 1200
+featuredImageHeight: 675
+featuredImageAlt: পরীক্ষার document যাচাই, নিরাপদ link ও phishing সতর্কতা বোঝাতে abstract editorial illustration
+featuredImageCaption: এটি একটি illustration; কোনো বাস্তব portal, URL, logo বা পরীক্ষার্থীর ছবি নয়।
+featuredImageCredit: Citizen Affairs source-controlled illustration
 seoTitle: "Admit Card, Answer Key ও Result: Official Link চিনবেন কীভাবে?"
 seoDescription: Admit card, city intimation, answer key, response sheet, score
   card ও result-এর official link কীভাবে চিনবেন জানুন। Phishing ও fake exam link

@@ -16,6 +16,8 @@
     "type-check": "astro sync && tsc --noEmit",
     "test": "node --test tests/*.test.mjs",
     "validate:content": "node scripts/validate-content.mjs && node scripts/audit-article-quality.mjs",
+    "validate:assets": "node scripts/validate-editorial-assets.mjs",
+    "generate:assets": "node scripts/generate-owned-editorial-assets.mjs",
     "audit:quality": "node scripts/audit-article-quality.mjs",
     "audit:freshness": "node scripts/audit-freshness.mjs",
     "audit:editorial": "node scripts/audit-editorial-readiness.mjs",
@@ -29,7 +31,7 @@
     "test:production": "playwright test --config playwright.production.config.mjs",
     "summarize:production": "node scripts/summarize-production-health.mjs",
     "audit:secrets": "node scripts/scan-secrets.mjs",
-    "validate": "npm run format:check && npm run validate:workflows && npm test && npm run check && npm run validate:content && npm run audit:freshness && npm run audit:editorial && npm run build && npm run validate:html && npm run validate:seo && npm run validate:performance && npm run validate:links",
+    "validate": "npm run format:check && npm run validate:workflows && npm test && npm run check && npm run validate:content && npm run validate:assets && npm run audit:freshness && npm run audit:editorial && npm run build && npm run validate:html && npm run validate:seo && npm run validate:performance && npm run validate:links",
     "format": "node scripts/format-check.mjs --write",
     "format:check": "node scripts/format-check.mjs",
     "postinstall": "node scripts/patch-js-yaml-compat.mjs"
