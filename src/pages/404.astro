@@ -9,9 +9,9 @@ import { SITE } from '@utils/constants';
   canonical={`${SITE.url}/404.html`}
   robots="noindex, follow"
 >
-  <main class="not-found" id="main-content">
+  <section class="not-found" aria-labelledby="not-found-title">
     <p class="eyebrow">404</p>
-    <h1>Page not found</h1>
+    <h1 id="not-found-title">Page not found</h1>
     <p>The page may have moved or the link may be incorrect.</p>
     <nav aria-label="Page not found actions">
       <a class="btn btn-primary" href="/">Homepage</a>
@@ -21,7 +21,7 @@ import { SITE } from '@utils/constants';
     </nav>
     <p class="languages"><a href="/">English</a> · <a href="/bn/">বাংলা</a> · <a href="/hi/">हिन्दी</a></p>
     <a href="mailto:contact.mahammadsad@gmail.com?subject=Broken%20Citizen%20Affairs%20link">Report a broken link</a>
-  </main>
+  </section>
 </MainLayout>
 <style>
   .not-found{min-height:65vh;display:grid;place-content:center;justify-items:start;gap:1rem;width:min(720px,calc(100% - 2rem));margin:auto;padding:4rem 0}.not-found h1{font-size:clamp(2.4rem,8vw,5rem)}.not-found>p{color:var(--color-text-muted)}.not-found nav{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}.not-found nav a{min-height:44px;display:inline-flex;align-items:center}.languages a,.not-found>a{color:var(--color-primary);text-decoration:underline}

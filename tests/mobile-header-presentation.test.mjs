@@ -74,5 +74,5 @@ test('desktop brand preserves the approved lockup proportions', () => {
 
 test('the shared layout does not inject a pre-hero homepage panel', () => {
   assert.doesNotMatch(layout, /isPortalHome|PortalContinuity|portal-continuity-wrap/);
-  assert.match(layout, /<main id="main-content">\s*<slot \/>/);
+  assert.match(layout, /<main id="main-content"[^>]*>\s*<slot \/>/);
 });

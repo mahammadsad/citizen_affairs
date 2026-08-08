@@ -183,8 +183,7 @@ const t = ui(locale);
     {extraSchemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />)}
   </head>
   <body id="top" class={bodyClass}>
-    <a href="#page-content" class="skip-link">{t.skipToContent}</a>
-    <span id="page-content" class="sr-only" tabindex="-1"></span>
+    <a href="#main-content" class="skip-link">{t.skipToContent}</a>
     <slot />
     <ServiceWorkerRegistration {locale} />
   </body>

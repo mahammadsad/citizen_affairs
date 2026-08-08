@@ -6,6 +6,7 @@ const read = (path) => readFile(path, 'utf8');
 const health = await read('src/pages/health.json.ts');
 const statusPage = await read('src/pages/status.astro');
 const baseLayout = await read('src/layouts/BaseLayout.astro');
+const mainLayout = await read('src/layouts/MainLayout.astro');
 const searchAlias = await read('src/pages/en/search/index.astro');
 const footer = await read('src/components/Footer.astro');
 const serviceWorker = await read('src/pages/sw.js.ts');
@@ -43,14 +44,14 @@ test('generated internal link audit covers routes, assets, srcsets and fragments
   assert.match(packageJson, /"validate:links": "node scripts\/validate-links\.mjs"/);
 });
 
-test('generated-link fixes preserve English search and one global skip target', () => {
+test('generated-link fixes preserve English search and a focusable main skip target', () => {
   assert.match(searchAlias, /robots" content="noindex, follow"/);
   assert.match(searchAlias, /canonical/);
   assert.match(searchAlias, /location\.replace/);
   assert.match(searchAlias, /SITE\.basePath}search\//);
-  assert.match(baseLayout, /href="#page-content"/);
-  assert.match(baseLayout, /id="page-content"/);
-  assert.match(baseLayout, /tabindex="-1"/);
+  assert.match(baseLayout, /href="#main-content"/);
+  assert.doesNotMatch(baseLayout, /id="page-content"/);
+  assert.match(mainLayout, /<main id="main-content" tabindex="-1">/);
   assert.doesNotMatch(baseLayout, /document\.querySelector\('main'\)/);
 });
 

@@ -60,6 +60,12 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     page.locator('.portal-navbar .portal-brand > img[alt*="Citizen Affairs"]'),
   ).toHaveCount(1);
   await expect(page.locator('.top-news')).toBeVisible();
+  await expect(page.locator('main')).toHaveCount(1);
+  const skipLink = page.getByRole('link', { name: 'Skip to main content' });
+  await page.keyboard.press('Tab');
+  await expect(skipLink).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#main-content')).toBeFocused();
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
