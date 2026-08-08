@@ -7,6 +7,7 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 test('shared pages have one main landmark owner and nested components do not add another', async () => {
   const layout = await read('src/layouts/MainLayout.astro');
   assert.equal((layout.match(/<main\b/g) || []).length, 1);
+  assert.match(layout, /<main id="main-content" tabindex="-1">/);
   for (const path of [
     'src/components/CitizenPortalHome.astro',
     'src/components/TeamPage.astro',
@@ -17,6 +18,14 @@ test('shared pages have one main landmark owner and nested components do not add
     'src/components/CareersPage.astro',
   ]) {
     assert.doesNotMatch(await read(path), /<main\b/, `${path} must not nest a main landmark`);
+  }
+
+  const notFoundPage = await read('src/pages/404.astro');
+  assert.doesNotMatch(notFoundPage, /<main\b/, '404 content must use the shared main landmark');
+
+  for (const path of ['src/pages/staff/index.astro', 'src/pages/status.astro']) {
+    const page = await read(path);
+    assert.match(page, /<main id="main-content"[^>]*tabindex="-1"/, `${path} must provide the BaseLayout skip target`);
   }
 });
 

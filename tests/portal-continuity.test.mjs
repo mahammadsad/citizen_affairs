@@ -9,7 +9,7 @@ const runtime = await readFile('src/components/PortalRuntime.astro', 'utf8');
 test('homepage opens with primary portal content instead of a personal continuity panel', () => {
   assert.doesNotMatch(layout, /PortalContinuity/);
   assert.doesNotMatch(layout, /portal-continuity-wrap/);
-  assert.match(layout, /<main id="main-content">\s*<slot \/>/);
+  assert.match(layout, /<main id="main-content"[^>]*>\s*<slot \/>/);
 });
 
 test('task continuity remains private to browser storage when used in dedicated action views', () => {
