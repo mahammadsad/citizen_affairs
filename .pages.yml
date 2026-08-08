@@ -29,7 +29,7 @@ content:
           - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
           - { name: workflowStatus, label: "Publication status", type: string, default: draft, hidden: true, required: true }
           - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
-          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: citizen-affairs-editorial-desk, hidden: true, required: true }
           - { name: translationKey, label: Translation pair ID, type: string, required: true }
           - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
           - { name: title, label: Article title, type: string, required: true }
@@ -121,7 +121,7 @@ content:
           - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
           - { name: workflowStatus, label: "Publication status", type: string, default: draft, hidden: true, required: true }
           - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
-          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: citizen-affairs-editorial-desk, hidden: true, required: true }
           - { name: translationKey, label: Translation pair ID, type: string, required: true }
           - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
           - { name: title, label: আর্টিকেলের শিরোনাম, type: string, required: true }
@@ -204,7 +204,7 @@ content:
           - { name: contentType, label: Content type, type: string, default: explainer, hidden: true, required: true }
           - { name: workflowStatus, label: "Publication status", type: string, default: draft, hidden: true, required: true }
           - { name: draft, label: Draft, type: boolean, default: true, hidden: true, required: true }
-          - { name: author, label: Author, type: string, default: mahammad-sad, hidden: true, required: true }
+          - { name: author, label: Author, type: string, default: citizen-affairs-editorial-desk, hidden: true, required: true }
           - { name: translationKey, label: Translation pair ID, type: string, required: true }
           - { name: urlSlug, label: URL slug, type: string, required: true, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }
           - { name: title, label: लेख का शीर्षक, type: string, required: true }
