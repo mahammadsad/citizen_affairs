@@ -13,7 +13,7 @@ Last verified: 2026-08-08. This is the current status source; older audit and im
 | Supabase | Blueprint/future integration, not required by public runtime | Unassigned until trigger | Must remain fail-closed until two real editorial users and approval exist |
 | Search Console | External follow-up not performed by repository work | Owner action | `docs/SEARCH-CONSOLE-RECRAWL.md` |
 | Corrections | Ticket schema and public material ledger ready; no completed real drill | Correction owner unappointed | `docs/CORRECTIONS.md`; operational proof blocked |
-| Security | Static attack surface and private email reporting; one indirect `nanoid` advisory tracked | Mahammad Sad | Root `SECURITY.md`; no bounty claim |
+| Security | Static attack surface and private email reporting; current dependency audits report zero vulnerabilities | Mahammad Sad | `nanoid` 3.3.18 lockfile patch, root `SECURITY.md`; no bounty claim |
 | Recovery | Repository/build recovery documented; real domain/GitHub restore drill outstanding | Owner + emergency admin unappointed | `docs/BACKUP-RECOVERY.md`, owner register |
 
 ## Incident and restore state
@@ -22,4 +22,4 @@ No incident is declared in this checkpoint. A repository rollback can use the la
 
 ## Known blockers
 
-Independent reviewer, correction SLA owner/drill, legal publisher/ownership/funding declarations, privacy/legal review, emergency administrator, Search Console recrawl, real KPI/field-performance evidence, repository licence choice, and the indirect dependency advisory remain open in `docs/OWNER_ACTIONS_WORLD_CLASS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
+Independent reviewer, correction SLA owner/drill, legal publisher/ownership/funding declarations, privacy/legal review, emergency administrator, Search Console recrawl, real KPI/field-performance evidence, and repository licence choice remain open in `docs/OWNER_ACTIONS_WORLD_CLASS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
