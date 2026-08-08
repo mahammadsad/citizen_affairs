@@ -130,13 +130,13 @@ export function localizedPath(locale: Locale, path = '') {
 export type TrustPageId = 'about' | 'contact' | 'author' | 'corrections';
 
 export function trustPagePath(locale: Locale, page: TrustPageId) {
-  const segment = page === 'author' ? 'authors/mahammad-sad' : page;
+  const segment = page === 'author' ? 'team' : page;
   const prefix = locale === 'en' ? '' : `${locale}/`;
   return `${BASE_PATH}${prefix}${segment}/`;
 }
 
 export function authorProfilePath(locale: Locale, slug: string) {
-  const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : 'mahammad-sad';
+  const safeSlug = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : 'editorial-desk';
   const prefix = locale === 'en' ? '' : `${locale}/`;
   return `${BASE_PATH}${prefix}authors/${safeSlug}/`;
 }

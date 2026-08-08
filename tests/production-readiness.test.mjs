@@ -89,7 +89,7 @@ test('deleted Supabase production integration remains disconnected and fail-clos
   assert.match(read('src/pages/staff/index.astro'), /Editorial workspace temporarily unavailable/);
 });
 
-test('Pages CMS creates protected drafts with a real author and exposes live content read-only', () => {
+test('Pages CMS creates protected organization-attributed drafts and exposes live content read-only', () => {
   const cms = parse(read('.pages.yml'));
   const draftGroup = cms.content.find((entry) => entry.name === 'draft-articles');
   const liveGroup = cms.content.find((entry) => entry.name === 'live-articles');
@@ -103,7 +103,7 @@ test('Pages CMS creates protected drafts with a real author and exposes live con
     const draft = collection.fields.find((field) => field.name === 'draft');
     assert.deepEqual(
       { default: author.default, hidden: author.hidden, required: author.required },
-      { default: 'mahammad-sad', hidden: true, required: true },
+      { default: 'citizen-affairs-editorial-desk', hidden: true, required: true },
     );
     assert.deepEqual(
       { default: draft.default, hidden: draft.hidden, required: draft.required },
@@ -119,9 +119,37 @@ test('Pages CMS creates protected drafts with a real author and exposes live con
   }
 
   assert.equal(cms.settings.content.merge, true, 'Pages CMS must preserve controlled fields outside its draft schema');
-  const author = JSON.parse(read('src/content/authors/mahammad-sad.json'));
-  assert.equal(author.name, 'Mahammad Sad');
-  assert.ok(author.publicRole);
+  const authors = readdirSync(new URL('../src/content/authors/', import.meta.url));
+  assert.deepEqual(authors, ['citizen-affairs-editorial-desk.json']);
+  assert.equal(JSON.parse(read('src/content/authors/citizen-affairs-editorial-desk.json')).name, 'Citizen Affairs Editorial Desk');
+  assert.equal(JSON.parse(read('brand.config.json')).contactEmail, '');
+});
+
+test('public source contains no personal identity, personal contact address or personal author route', () => {
+  const privateMarkers = [
+    ['Mahammad', 'Sad'].join(' '),
+    ['contact', '.', 'mahammadsad', '@gmail.com'].join(''),
+    ['mahammad', '-', 'sad'].join(''),
+  ];
+  const publicFiles = [
+    'brand.config.json',
+    'src/utils/constants.ts',
+    'src/data/team.ts',
+    'src/components/ContactPage.astro',
+    'src/components/TeamPage.astro',
+    'src/components/TransparencyPage.astro',
+    'src/components/TrustPage.astro',
+    'src/i18n/contact.ts',
+    'src/i18n/trust.ts',
+    'src/layouts/ArticleLayout.astro',
+    'src/layouts/BaseLayout.astro',
+    'src/pages/404.astro',
+  ];
+  for (const file of publicFiles) {
+    for (const marker of privateMarkers) {
+      assert.doesNotMatch(read(file), new RegExp(marker, 'i'), `${file} exposes a private marker`);
+    }
+  }
 });
 
 test('all workflow actions are pinned to immutable commit SHAs', () => {

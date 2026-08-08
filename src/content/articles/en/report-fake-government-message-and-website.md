@@ -10,7 +10,7 @@ date: 2026-08-05
 updated: 2026-08-05
 lastVerified: 2026-08-05
 nextReviewDate: 2026-09-05
-author: mahammad-sad
+author: citizen-affairs-editorial-desk
 category: notices
 verificationStatus: partially-confirmed
 sourceUrls:

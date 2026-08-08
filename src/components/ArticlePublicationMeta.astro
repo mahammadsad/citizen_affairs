@@ -12,7 +12,8 @@ interface Props {
 
 const { locale, author, date, updated } = Astro.props;
 const normalizedAuthor = author.trim();
-const hasHumanAuthor = normalizedAuthor.length > 0;
+const organizationAuthorId = 'citizen-affairs-editorial-desk';
+const hasHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== organizationAuthorId;
 const authorEntry = hasHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = hasHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
 const brandName = getBrandName(locale);

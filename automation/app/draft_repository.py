@@ -179,7 +179,7 @@ class DraftRepository:
             f"updated: {today.isoformat()}",
             f"lastVerified: {today.isoformat()}",
             f"nextReviewDate: {next_review.isoformat()}",
-            "author: mahammad-sad",
+            "author: citizen-affairs-editorial-desk",
             f"category: {draft.portal_category}",
             "verificationStatus: under-verification",
         ]

@@ -24,12 +24,11 @@ test('an open careers requisition fails closed without approved hiring and priva
   assert.ok(errors.some((error) => error.includes('approved must be true')));
 });
 
-test('contact page is email-only and cannot fake a form success state', async () => {
+test('contact page fails closed without exposing personal contact details or collecting data', async () => {
   const contact = await read('src/components/ContactPage.astro');
   const contactCopy = await read('src/i18n/contact.ts');
-  assert.match(contactCopy, /email only|ইমেইলের মাধ্যমে|केवल ईमेल/);
-  assert.match(contact, /mailto:/);
-  assert.match(contact, /data-copy-email/);
+  assert.match(contactCopy, /Direct contact temporarily unavailable/);
+  assert.doesNotMatch(contact, /mailto:|data-copy-email/);
   assert.doesNotMatch(contact, /<form\b|formsubmit\.co|sent=1|type="file"|URLSearchParams/);
   assert.match(contactCopy, /Do not send sensitive information or attachments/);
 });

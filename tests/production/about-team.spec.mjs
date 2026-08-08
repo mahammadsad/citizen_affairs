@@ -46,7 +46,7 @@ test('live About pages label and route the founder destination as Team', async (
     const teamLink = trustLinks.getByRole('link', { name: item.label, exact: true });
 
     await expect(teamLink).toHaveAttribute('href', item.href);
-    await expect(trustLinks.locator('a[href*="/authors/mahammad-sad"]')).toHaveCount(0);
+    await expect(trustLinks.locator('a[href*="/authors/"]')).toHaveCount(0);
 
     await teamLink.click();
     await expect(page).toHaveURL(new RegExp(`${item.href.replaceAll('/', '\\/')}(?:[?#].*)?$`));

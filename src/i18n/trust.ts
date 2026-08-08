@@ -34,27 +34,12 @@ export const trustCopy = {
       suggestAction: 'Email an update suggestion',
       generalAction: 'Send a general enquiry'
     },
-    author: {
-      title: 'Mahammad Sad',
-      description: 'Author profile for Mahammad Sad, the platform founder and editor.',
-      role: 'Founder and editor',
-      bio: 'Mahammad Sad builds educational and public-information tools, with interests in technology, AI automation, mathematics, and accessible digital publishing.',
-      interestsTitle: 'Areas of interest',
-      interests: ['Public-information accessibility', 'Education and competitive-exam resources', 'Technology and responsible automation', 'Clear multilingual communication'],
-      responsibilityTitle: 'Editorial responsibility',
-      responsibility: 'He is responsible for the site’s editorial workflow, source selection, clear presentation, update tracking, and correction review. This role does not represent government authority or professional certification.',
-      verificationTitle: 'Verification approach',
-      verification: 'Articles are checked against primary government portals and documents. Claims that can change are dated, linked to their source, and reviewed when a credible correction or update is received.',
-      articlesTitle: 'Articles by Mahammad Sad',
-      noArticles: 'No published articles are available in this language yet.',
-      contactTitle: 'Contact and profiles'
-    },
     corrections: {
       title: 'Corrections policy',
       description: 'Read how reports are reviewed, factual errors are corrected, significant changes are recorded, and unreliable articles are withdrawn.',
-      intro: 'Accuracy and transparency are central to our publishing process. Readers are encouraged to report errors with an official supporting source.',
+      intro: 'Accuracy and transparency are central to our publishing process. Direct correction intake is temporarily unavailable while a brand-only contact address is prepared.',
       sections: [
-        ['How to report an error', 'Use the contact page or correction email link. Include the article URL, the disputed statement, the proposed correction, and an official source supporting it.'],
+        ['How to report an error', 'Direct reporting is temporarily unavailable. The contact page will show when a brand-only correction route becomes available.'],
         ['How reports are reviewed', 'We compare the report with the primary official source, check whether the source is current and relevant, and review related statements that may also be affected.'],
         ['Applying factual corrections', 'Confirmed factual errors are corrected promptly. The last-updated or last-verified date is changed, and a meaningful correction is recorded in the article update history.'],
         ['Corrected status', 'An article may be marked corrected when a material factual error could have affected a reader’s understanding or action. The correction note should explain what changed without hiding the earlier problem.'],
@@ -62,7 +47,7 @@ export const trustCopy = {
         ['Deadlines and official changes', 'When an authority changes a deadline or process, we update the article after verifying the new official notice and record the change in update history. We do not invent or estimate deadlines.'],
         ['Minor edits', 'Spelling, grammar, formatting, and clarity-only changes may be made without a public correction note when they do not alter the meaning. Significant corrections remain transparent.']
       ],
-      action: 'Report an error'
+      action: 'Correction contact status'
     }
   },
   bn: {
@@ -98,27 +83,12 @@ export const trustCopy = {
       suggestAction: 'আপডেটের পরামর্শ ইমেইল করুন',
       generalAction: 'সাধারণ প্রশ্ন পাঠান'
     },
-    author: {
-      title: 'Mahammad Sad',
-      description: 'প্ল্যাটফর্মের প্রতিষ্ঠাতা ও সম্পাদক Mahammad Sad-এর লেখক পরিচিতি।',
-      role: 'প্রতিষ্ঠাতা ও সম্পাদক',
-      bio: 'Mahammad Sad শিক্ষা ও জনতথ্যের digital tool তৈরি করেন। technology, AI automation, mathematics এবং accessible digital publishing-এ তাঁর আগ্রহ রয়েছে।',
-      interestsTitle: 'আগ্রহের ক্ষেত্র',
-      interests: ['জনতথ্যের সহজলভ্যতা', 'শিক্ষা ও প্রতিযোগিতামূলক পরীক্ষার উপকরণ', 'technology ও দায়িত্বশীল automation', 'সহজ বহুভাষিক যোগাযোগ'],
-      responsibilityTitle: 'সম্পাদকীয় দায়িত্ব',
-      responsibility: 'ওয়েবসাইটের editorial workflow, source নির্বাচন, সহজ উপস্থাপন, update tracking ও correction review-এর দায়িত্ব তিনি পালন করেন। এই ভূমিকা কোনো সরকারি কর্তৃত্ব বা পেশাগত সনদের দাবি নয়।',
-      verificationTitle: 'যাচাইয়ের পদ্ধতি',
-      verification: 'প্রাথমিক সরকারি portal ও document-এর সঙ্গে নিবন্ধ মিলিয়ে দেখা হয়। পরিবর্তনশীল দাবিতে তারিখ ও source দেওয়া হয় এবং নির্ভরযোগ্য correction বা update এলে review করা হয়।',
-      articlesTitle: 'Mahammad Sad-এর লেখা',
-      noArticles: 'এই ভাষায় এখনও কোনো প্রকাশিত নিবন্ধ নেই।',
-      contactTitle: 'যোগাযোগ ও প্রোফাইল'
-    },
     corrections: {
       title: 'সংশোধন নীতি',
       description: 'ভুলের প্রতিবেদন কীভাবে যাচাই, তথ্যগত সংশোধন, গুরুত্বপূর্ণ পরিবর্তন নথিবদ্ধ এবং অনির্ভরযোগ্য নিবন্ধ প্রত্যাহার করা হয় তা পড়ুন।',
-      intro: 'নির্ভুলতা ও স্বচ্ছতা আমাদের প্রকাশ প্রক্রিয়ার মূল অংশ। অফিসিয়াল সমর্থনকারী সূত্রসহ ভুল জানাতে পাঠকদের উৎসাহিত করা হয়।',
+      intro: 'নির্ভুলতা ও স্বচ্ছতা আমাদের প্রকাশ প্রক্রিয়ার মূল অংশ। ব্র্যান্ডের নিজস্ব যোগাযোগের ঠিকানা প্রস্তুত না হওয়া পর্যন্ত সরাসরি সংশোধন প্রতিবেদন সাময়িকভাবে বন্ধ রয়েছে।',
       sections: [
-        ['ভুল যেভাবে জানাবেন', 'Contact page বা correction email link ব্যবহার করুন। নিবন্ধের URL, প্রশ্নবিদ্ধ বক্তব্য, প্রস্তাবিত সংশোধন এবং সমর্থনকারী অফিসিয়াল সূত্র দিন।'],
+        ['ভুল যেভাবে জানাবেন', 'সরাসরি প্রতিবেদন সাময়িকভাবে বন্ধ। ব্র্যান্ডের নিজস্ব সংশোধন যোগাযোগ চালু হলে contact page-এ দেখানো হবে।'],
         ['প্রতিবেদন যেভাবে যাচাই হয়', 'প্রতিবেদনটি প্রাথমিক অফিসিয়াল সূত্রের সঙ্গে মিলিয়ে দেখা হয়, সূত্রটি বর্তমান ও প্রাসঙ্গিক কি না যাচাই করা হয় এবং প্রভাবিত হতে পারে এমন সম্পর্কিত বক্তব্যও দেখা হয়।'],
         ['তথ্যগত সংশোধন', 'নিশ্চিত factual error দ্রুত ঠিক করা হয়। last-updated বা last-verified date বদলানো হয় এবং গুরুত্বপূর্ণ সংশোধন article update history-তে লেখা হয়।'],
         ['Corrected status', 'গুরুত্বপূর্ণ ভুল পাঠকের বোঝা বা পদক্ষেপে প্রভাব ফেলতে পারলে নিবন্ধ corrected হিসেবে চিহ্নিত হতে পারে। correction note-এ আগের সমস্যা লুকিয়ে না রেখে কী বদলেছে তা বলা হয়।'],
@@ -126,7 +96,7 @@ export const trustCopy = {
         ['Deadline ও অফিসিয়াল পরিবর্তন', 'কর্তৃপক্ষ deadline বা process বদলালে নতুন official notice যাচাই করে নিবন্ধ update এবং change history-তে তা লেখা হয়। কোনো deadline অনুমান বা বানানো হয় না।'],
         ['ছোটখাটো সম্পাদনা', 'অর্থ না বদলালে spelling, grammar, formatting ও clarity-only change public correction note ছাড়াই করা হতে পারে। গুরুত্বপূর্ণ correction স্বচ্ছভাবে রাখা হয়।']
       ],
-      action: 'ভুল জানান'
+      action: 'সংশোধন যোগাযোগের অবস্থা'
     }
   },
   hi: {
@@ -162,27 +132,12 @@ export const trustCopy = {
       suggestAction: 'Update suggestion भेजें',
       generalAction: 'सामान्य सवाल भेजें'
     },
-    author: {
-      title: 'Mahammad Sad',
-      description: 'मंच के संस्थापक और संपादक Mahammad Sad का लेखक परिचय।',
-      role: 'Founder और editor',
-      bio: 'Mahammad Sad education और public information के digital tools बनाते हैं। उनकी रुचि technology, AI automation, mathematics और accessible digital publishing में है।',
-      interestsTitle: 'रुचि के क्षेत्र',
-      interests: ['Public information accessibility', 'शिक्षा और competitive-exam resources', 'Technology और responsible automation', 'स्पष्ट multilingual communication'],
-      responsibilityTitle: 'संपादकीय जिम्मेदारी',
-      responsibility: 'वे site के editorial workflow, source selection, clear presentation, update tracking और correction review के लिए जिम्मेदार हैं। यह भूमिका सरकारी authority या professional qualification का दावा नहीं है।',
-      verificationTitle: 'सत्यापन का तरीका',
-      verification: 'Articles को primary government portals और documents से जाँचा जाता है। बदल सकने वाले claims पर date और source दिए जाते हैं और credible correction या update मिलने पर review होती है।',
-      articlesTitle: 'Mahammad Sad के लेख',
-      noArticles: 'इस भाषा में अभी कोई प्रकाशित लेख उपलब्ध नहीं है।',
-      contactTitle: 'संपर्क और profiles'
-    },
     corrections: {
       title: 'सुधार नीति',
       description: 'जानें कि त्रुटि रिपोर्ट की समीक्षा, तथ्यगत सुधार, महत्वपूर्ण बदलावों का रिकॉर्ड और अविश्वसनीय लेखों को वापस लेने की प्रक्रिया क्या है।',
-      intro: 'Accuracy और transparency हमारी publishing process का मुख्य हिस्सा हैं। पाठकों को supporting official source के साथ errors report करने के लिए प्रोत्साहित किया जाता है।',
+      intro: 'Accuracy और transparency हमारी publishing process का मुख्य हिस्सा हैं। ब्रांड का अपना संपर्क पता तैयार होने तक सीधे सुधार रिपोर्ट अस्थायी रूप से उपलब्ध नहीं हैं।',
       sections: [
-        ['त्रुटि कैसे बताएँ', 'Contact page या correction email link इस्तेमाल करें। Article URL, disputed statement, proposed correction और supporting official source शामिल करें।'],
+        ['त्रुटि कैसे बताएँ', 'सीधी reporting अस्थायी रूप से उपलब्ध नहीं है। ब्रांड का correction contact शुरू होने पर contact page पर दिखाया जाएगा।'],
         ['Report की review', 'Report को primary official source से मिलाया जाता है, source की current relevance जाँची जाती है और प्रभावित हो सकने वाले related statements भी देखे जाते हैं।'],
         ['Factual correction', 'Confirmed factual error जल्द ठीक किया जाता है। last-updated या last-verified date बदली जाती है और meaningful correction article update history में दर्ज होता है।'],
         ['Corrected status', 'Material error से reader की understanding या action प्रभावित हो सकता था तो article को corrected mark किया जा सकता है। Correction note पुरानी समस्या छिपाए बिना बदलाव समझाता है।'],
@@ -190,7 +145,7 @@ export const trustCopy = {
         ['Deadline और official changes', 'Authority deadline या process बदले तो new official notice verify करके article update और change history record की जाती है। Deadline का अनुमान या निर्माण नहीं किया जाता।'],
         ['छोटे edits', 'Meaning न बदलने वाले spelling, grammar, formatting और clarity-only edits बिना public correction note किए जा सकते हैं। Significant corrections transparent रहते हैं।']
       ],
-      action: 'त्रुटि बताएँ'
+      action: 'सुधार संपर्क की स्थिति'
     }
   }
 } as const satisfies Record<Locale, unknown>;

@@ -4,10 +4,11 @@ import test from 'node:test';
 
 const teamPage = await readFile('src/components/TeamPage.astro', 'utf8');
 
-test('team page focuses on public team profiles', () => {
+test('team page uses organization-level publication attribution', () => {
   assert.match(teamPage, /class="member-grid"/);
   assert.match(teamPage, /members\.map/);
-  assert.match(teamPage, /people responsible for building and operating it/);
+  assert.match(teamPage, /publication desk rather than individual profiles/);
+  assert.doesNotMatch(teamPage, /'@type': 'Person'|founder:/);
 });
 
 test('internal editorial and future staffing explanations are not shown', () => {

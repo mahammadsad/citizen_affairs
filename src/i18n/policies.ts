@@ -10,7 +10,7 @@ export function policyCopy(locale: Locale, brandName: string, contactEmail: stri
         ['Information we collect', 'This is currently a static website. It does not operate an account system or store visitor profiles. Language, theme, filter and saved-article preferences may be stored on your device.'],
         ['Analytics and advertising', 'Tracking analytics and advertising are disabled by default. This policy will be updated before either is activated.'],
         ['External services', 'Telegram, WhatsApp and linked government portals apply their own privacy policies when you visit them.'],
-        ['Contact', `For a privacy question, contact us at ${contactEmail}.`]
+        ['Contact', contactEmail ? `For a privacy question, contact us at ${contactEmail}.` : 'Direct contact is temporarily unavailable. A brand-only contact route will be published when it is ready.']
       ],
       terms: [
         ['Informational purpose', 'Content is provided to make public information easier to understand. It is not legal, financial or official government advice.'],
@@ -28,7 +28,7 @@ export function policyCopy(locale: Locale, brandName: string, contactEmail: stri
         ['আমরা যে তথ্য সংরক্ষণ করি', 'এটি বর্তমানে একটি স্থির ওয়েবসাইট। এখানে কোনো অ্যাকাউন্ট ব্যবস্থা নেই এবং দর্শনার্থীর প্রোফাইল সংরক্ষণ করা হয় না। ভাষা, থিম, ফিল্টার ও সংরক্ষিত নিবন্ধের পছন্দ আপনার ডিভাইসে রাখা হতে পারে।'],
         ['বিশ্লেষণ ও বিজ্ঞাপন', 'দর্শনার্থী বিশ্লেষণ ও বিজ্ঞাপন সাধারণভাবে বন্ধ রয়েছে। এগুলো চালু করার আগে এই নীতি সংশোধন করা হবে।'],
         ['বাহ্যিক পরিষেবা', 'Telegram, WhatsApp ও সংযুক্ত সরকারি পোর্টালে গেলে সংশ্লিষ্ট পরিষেবার নিজস্ব গোপনীয়তা নীতি প্রযোজ্য হবে।'],
-        ['যোগাযোগ', `গোপনীয়তা সংক্রান্ত প্রশ্নে ${contactEmail}-এ যোগাযোগ করুন।`]
+        ['যোগাযোগ', contactEmail ? `গোপনীয়তা সংক্রান্ত প্রশ্নে ${contactEmail}-এ যোগাযোগ করুন।` : 'সরাসরি যোগাযোগ সাময়িকভাবে বন্ধ। ব্র্যান্ডের নিজস্ব যোগাযোগের ব্যবস্থা প্রস্তুত হলে প্রকাশ করা হবে।']
       ],
       terms: [
         ['তথ্য প্রদানের উদ্দেশ্য', 'জনসাধারণের তথ্য সহজে বোঝানোর জন্য বিষয়বস্তু প্রকাশ করা হয়। এটি আইনি, আর্থিক বা সরকারি পরামর্শ নয়।'],
@@ -46,7 +46,7 @@ export function policyCopy(locale: Locale, brandName: string, contactEmail: stri
         ['हम कौन-सी जानकारी रखते हैं', 'यह वर्तमान में एक स्थिर वेबसाइट है। इसमें कोई खाता प्रणाली नहीं है और आगंतुकों की प्रोफ़ाइल संग्रहीत नहीं की जाती। भाषा, थीम, फ़िल्टर और सहेजे गए लेखों की पसंद आपके डिवाइस पर रखी जा सकती है।'],
         ['विश्लेषण और विज्ञापन', 'आगंतुक विश्लेषण और विज्ञापन सामान्य रूप से बंद हैं। इन्हें चालू करने से पहले इस नीति को अपडेट किया जाएगा।'],
         ['बाहरी सेवाएँ', 'Telegram, WhatsApp और जुड़े सरकारी पोर्टल पर जाने पर उनकी अपनी गोपनीयता नीतियाँ लागू होती हैं।'],
-        ['संपर्क', `गोपनीयता संबंधी प्रश्न के लिए ${contactEmail} पर संपर्क करें।`]
+        ['संपर्क', contactEmail ? `गोपनीयता संबंधी प्रश्न के लिए ${contactEmail} पर संपर्क करें।` : 'सीधा संपर्क अस्थायी रूप से उपलब्ध नहीं है। ब्रांड का संपर्क माध्यम तैयार होने पर प्रकाशित किया जाएगा।']
       ],
       terms: [
         ['सूचनात्मक उद्देश्य', 'सामग्री सार्वजनिक जानकारी को आसान भाषा में समझाने के लिए दी जाती है। यह कानूनी, वित्तीय या आधिकारिक सरकारी सलाह नहीं है।'],

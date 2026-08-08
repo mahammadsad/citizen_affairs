@@ -1,33 +1,31 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import test from 'node:test';
 
 const layout = await readFile('src/layouts/ArticleLayout.astro', 'utf8');
 const authorPage = await readFile('src/pages/authors/[slug].astro', 'utf8');
-const founderRedirect = await readFile('src/pages/authors/mahammad-sad.astro', 'utf8');
-const localizedFounderRedirect = await readFile(
-  'src/pages/[lang]/authors/mahammad-sad.astro',
-  'utf8'
-);
+const aliasRedirect = await readFile('src/pages/authors/citizen-affairs-writer.astro', 'utf8');
+const localizedAliasRedirect = await readFile('src/pages/bn/authors/citizen-affairs-writer.astro', 'utf8');
 const teamPage = await readFile('src/components/TeamPage.astro', 'utf8');
 const trustPage = await readFile('src/components/TrustPage.astro', 'utf8');
 
 test('every named article writer is visible and routes to the attributed public profile', () => {
   assert.match(layout, /const\s+normalizedAuthor\s*=\s*author\.trim\(\)/);
   assert.match(layout, /const\s+showHumanCredits\s*=\s*normalizedAuthor\.length\s*>\s*0/);
-  assert.doesNotMatch(layout, /normalizedAuthor\s*!==\s*['"]mahammad-sad['"]/);
   assert.match(layout, /authorProfilePath\(locale,\s*normalizedAuthor\)/);
   assert.match(layout, /showHumanCredits\s*&&\s*authorName/);
   assert.doesNotMatch(layout, /trustPagePath\(locale,\s*'author'\)/);
   assert.match(authorPage, /params: \{ slug: author\.id \}/);
 });
 
-test('the founder byline destination resolves through the public team page', () => {
-  assert.match(founderRedirect, /target="\/team\/"/);
-  assert.match(localizedFounderRedirect, /target=\{`\/\$\{locale\}\/team\/`\}/);
+test('legacy generic writer aliases resolve through the public team page', async () => {
+  assert.match(aliasRedirect, /Astro\.redirect\('\/team\/'/);
+  assert.match(localizedAliasRedirect, /Astro\.redirect\('\/bn\/team\/'/);
   assert.match(teamPage, /title: 'Our Team'/);
   assert.match(teamPage, /class="member-grid"/);
   assert.match(teamPage, /members\.map/);
+  const privateSlug = ['mahammad', 'sad'].join('-');
+  await assert.rejects(access(`src/pages/authors/${privateSlug}.astro`));
 });
 
 test('the About page always labels and routes the founder destination as Team', () => {

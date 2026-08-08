@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Static multilingual public-information website",
-  "author": "Mahammad Sad",
+  "author": "Citizen Affairs Editorial Desk",
   "engines": {
     "node": ">=22.12.0"
   },

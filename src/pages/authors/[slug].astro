@@ -4,7 +4,7 @@ import AuthorProfile from '@components/AuthorProfile.astro';
 
 export async function getStaticPaths() {
   const authors = await getCollection('authors');
-  return authors.filter((author) => author.id !== 'mahammad-sad').map((author) => ({ params: { slug: author.id }, props: { author } }));
+  return authors.filter((author) => author.id !== 'citizen-affairs-editorial-desk').map((author) => ({ params: { slug: author.id }, props: { author } }));
 }
 const { author } = Astro.props as { author: CollectionEntry<'authors'> };
 ---
