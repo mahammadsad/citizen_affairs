@@ -13,7 +13,7 @@ P0 PR #163, P1 PR #164 and P2 PR #165 are merged and deployed. Their merge commi
 | P2 service enablement | Deployed draft schemas/templates and operational specifications only | Mahammad Sad | PR #165; six beats remain private; no tracking, newsletter, accounts, reminders or backend restored |
 | Owned beat visuals | Six owner-approved, unassigned templates | Mahammad Sad | 390 px and 1440 px approval recorded on 2026-08-08; article context still requires editorial review |
 | Supabase | Blueprint/future integration, not required by public runtime | Unassigned until trigger | Must remain fail-closed until two real editorial users and approval exist |
-| Search Console | External follow-up not performed by repository work | Owner action | `docs/SEARCH-CONSOLE-RECRAWL.md` |
+| Search Console | One-time recrawl and sitemap submission complete; stale-brand clearance and weekly monitoring ongoing | Mahammad Sad | Verified property used 2026-08-08; priority requests accepted; 80-URL sitemap succeeded; `docs/SEARCH-CONSOLE-RECRAWL.md` |
 | Corrections | Ticket schema and public material ledger ready; no completed real drill | Correction owner unappointed | `docs/CORRECTIONS.md`; operational proof blocked |
 | Security | Static attack surface and private email reporting; current dependency audits report zero vulnerabilities | Mahammad Sad | `nanoid` 3.3.18 lockfile patch, root `SECURITY.md`; no bounty claim |
 | Recovery | Repository/build recovery documented; real domain/GitHub restore drill outstanding | Owner + emergency admin unappointed | `docs/BACKUP-RECOVERY.md`, owner register |
@@ -24,4 +24,4 @@ No incident is declared in this checkpoint. A repository rollback can use the la
 
 ## Known blockers
 
-Independent reviewer, correction SLA owner/drill, legal publisher/ownership/funding declarations, privacy/legal review, emergency administrator, Search Console recrawl, real KPI/field-performance evidence, and repository licence choice remain open in `docs/OWNER_ACTIONS_WORLD_CLASS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
+Independent reviewer, correction SLA owner/drill, legal publisher/ownership/funding declarations, privacy/legal review, emergency administrator, Search Console stale-brand clearance and weekly evidence, real KPI/field-performance evidence, and repository licence choice remain open in `docs/OWNER_ACTIONS_WORLD_CLASS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
