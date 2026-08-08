@@ -2,7 +2,9 @@
 
 This file records reader-visible and operational release checkpoints. Dates use ISO 8601. Deployment evidence belongs in the pull request and operational status document.
 
-## Unreleased
+## 2026-08-08 — P0–P2 production release
+
+P0 PR #163, P1 PR #164 and P2 PR #165 were merged sequentially and deployed. The production health marker reported `status: ready` at final merge commit `a10ba75eec231202240c70360767b18c49cde0fd`.
 
 ### P2 system enablement foundations
 
@@ -19,7 +21,7 @@ This file records reader-visible and operational release checkpoints. Dates use 
 - Distinct automation outcomes, Bengali-first private drafts, and no draft auto-merge.
 - Root security, contribution, conduct, issue, accessibility, release, and operational documentation.
 
-## 2026-08-08 — P0 checkpoint
+### P0 trust, privacy, accessibility and visual governance
 
 - Closed public trust, privacy, accessibility, unsupported-careers, and unsafe-visual gaps.
 - Added owner-approved source-controlled editorial illustrations.
