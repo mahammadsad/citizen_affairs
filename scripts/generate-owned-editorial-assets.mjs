@@ -8,6 +8,12 @@ const widths = [480, 768, 1200];
 const assets = [
   ['welfare-programmes-guide', 'src/assets/editorial/welfare-programmes-guide.svg'],
   ['exam-document-safety', 'src/assets/editorial/exam-document-safety.svg'],
+  ['template-job-opportunity', 'src/assets/editorial/templates/job-opportunity.svg'],
+  ['template-exam-update', 'src/assets/editorial/templates/exam-update.svg'],
+  ['template-scheme-benefit', 'src/assets/editorial/templates/scheme-benefit.svg'],
+  ['template-public-notice', 'src/assets/editorial/templates/public-notice.svg'],
+  ['template-citizen-service', 'src/assets/editorial/templates/citizen-service.svg'],
+  ['template-citizen-alert', 'src/assets/editorial/templates/citizen-alert.svg'],
 ];
 
 await mkdir(outputDirectory, { recursive: true });

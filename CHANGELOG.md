@@ -4,6 +4,12 @@ This file records reader-visible and operational release checkpoints. Dates use 
 
 ## Unreleased
 
+### P2 system enablement foundations
+
+- Added fail-closed Bengali draft templates and structured validation for jobs, exams, schemes, notices, citizen services, and alerts.
+- Added six text-light owned beat visuals with provenance, responsive derivatives, crop guidance, and owner approval at 390 px and 1440 px.
+- Added source-monitoring SLAs plus privacy-gated event, Search Console KPI, newsletter, RUM, follows, Supabase, and hosting specifications without enabling data collection or accounts.
+
 ### P1 accountability and operations
 
 - Named writer attribution and Person article schema.

@@ -31,15 +31,17 @@ test('public snapshots have separate citizen-information contracts', () => {
     'jobDetails',
     'schemeDetails',
     'admissionDetails',
+    'examDetails',
     'scholarshipDetails',
     'serviceDetails',
+    'noticeDetails',
     'alertDetails'
   ]) {
     assert.match(contentSchema, new RegExp(`const ${schema} = z\\.object`));
   }
   assert.match(
     contentSchema,
-    /contentType: z\.enum\(\['job', 'scheme', 'admission', 'scholarship', 'service', 'alert', 'explainer'\]\)/
+    /contentType: z\.enum\(\['job', 'scheme', 'exam', 'admission', 'scholarship', 'notice', 'service', 'alert', 'explainer'\]\)/
   );
 });
 

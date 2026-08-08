@@ -6,10 +6,25 @@ const registry = JSON.parse(await readFile('src/data/editorial-assets.json', 'ut
 const validator = await readFile('scripts/validate-editorial-assets.mjs', 'utf8');
 
 test('owned editorial assets record provenance, AI use and human review state', () => {
-  assert.equal(registry.assets.length, 2);
+  assert.equal(registry.assets.length, 8);
   for (const asset of registry.assets) {
     for (const field of ['creatorSource', 'licence', 'aiAssisted', 'createdAt', 'editorialOwner', 'lastVisualReview', 'reviewStatus', 'reviewer']) assert.ok(asset[field] !== undefined, `${asset.id} needs ${field}`);
     assert.equal(asset.humanOwnerApprovalRequiredBeforePublish, true);
+  }
+
+  const articleAssets = registry.assets.filter((asset) => asset.assetKind === 'article');
+  assert.equal(articleAssets.length, 2);
+  for (const asset of articleAssets) {
+    assert.equal(asset.reviewStatus, 'approved-by-owner');
+    assert.equal(asset.mobile390Reviewed, true);
+    assert.equal(asset.desktop1440Reviewed, true);
+  }
+
+  const templates = registry.assets.filter((asset) => asset.assetKind === 'template');
+  assert.equal(templates.length, 6);
+  for (const asset of templates) {
+    assert.deepEqual(asset.associatedArticles, []);
+    assert.equal(asset.reviewStatus, 'approved-by-owner');
     assert.equal(asset.mobile390Reviewed, true);
     assert.equal(asset.desktop1440Reviewed, true);
   }

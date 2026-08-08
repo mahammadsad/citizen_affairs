@@ -7,7 +7,7 @@ const root = path.resolve(import.meta.dirname, '..');
 const registry = JSON.parse(readFileSync(path.join(root, 'src/data/editorial-assets.json'), 'utf8'));
 const errors = [];
 const warnings = [];
-const required = ['id', 'sourcePath', 'derivatives', 'creatorSource', 'licence', 'aiAssisted', 'createdAt', 'associatedArticles', 'editorialOwner', 'lastVisualReview', 'reviewStatus', 'reviewer', 'mobile390Reviewed', 'desktop1440Reviewed'];
+const required = ['id', 'assetKind', 'sourcePath', 'derivatives', 'creatorSource', 'licence', 'aiAssisted', 'createdAt', 'associatedArticles', 'editorialOwner', 'lastVisualReview', 'reviewStatus', 'reviewer', 'mobile390Reviewed', 'desktop1440Reviewed'];
 const derivativeOwner = new Map();
 const prohibited = /Sarkari Tathya Kendra|সরকারি তথ্যকেন্দ্র|सरकारी तथ्य केंद्र|official\s+info\s+verified|\bverified\s+(?:update|guide|information)\b/i;
 const illustratedDomain = /(?:https?:\/\/(?!www\.w3\.org\/2000\/svg)|www\.|\b[a-z0-9-]+\.(?:gov\.in|nic\.in|com|org|net|in)(?:\/|\b))/i;
@@ -15,7 +15,8 @@ const illustratedDomain = /(?:https?:\/\/(?!www\.w3\.org\/2000\/svg)|www\.|\b[a-
 for (const asset of registry.assets || []) {
   for (const field of required) {
     const value = asset[field];
-    if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0)) errors.push(`${asset.id || 'unknown'}: ${field} is required`);
+    const emptyArrayIsAllowed = field === 'associatedArticles' && asset.assetKind === 'template';
+    if (value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0 && !emptyArrayIsAllowed)) errors.push(`${asset.id || 'unknown'}: ${field} is required`);
   }
   const sourceFile = path.join(root, asset.sourcePath || '');
   if (!existsSync(sourceFile)) errors.push(`${asset.id}: source file is missing`);
@@ -26,7 +27,10 @@ for (const asset of registry.assets || []) {
     if (prohibited.test(editorialContent)) errors.push(`${asset.id}: source contains a prohibited trust or retired-brand claim`);
     if (illustratedDomain.test(editorialContent)) errors.push(`${asset.id}: source contains an illustrated website domain`);
   }
-  if (!asset.mobile390Reviewed || !asset.desktop1440Reviewed) errors.push(`${asset.id}: implementation visual review is incomplete`);
+  if (!asset.mobile390Reviewed || !asset.desktop1440Reviewed) {
+    if (asset.assetKind === 'template') warnings.push(`${asset.id}: template viewport review is pending; it cannot be assigned to an article`);
+    else errors.push(`${asset.id}: implementation visual review is incomplete`);
+  }
   if (asset.humanOwnerApprovalRequiredBeforePublish && asset.reviewStatus !== 'approved-by-owner') warnings.push(`${asset.id}: human owner visual approval is still required before remote publication`);
   for (const derivative of asset.derivatives || []) {
     if (derivativeOwner.has(derivative)) errors.push(`${derivative}: registered to more than one asset`);
