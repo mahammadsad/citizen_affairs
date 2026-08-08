@@ -11,7 +11,9 @@ test('article routes use the decision workspace and transparent change history',
   assert.match(articleRoute, /import ArticleDecisionWorkspace from '@components\/ArticleDecisionWorkspace\.astro'/);
   assert.match(articleRoute, /import ArticleChangeHistory from '@components\/ArticleChangeHistory\.astro'/);
   assert.match(articleRoute, /<ArticleDecisionWorkspace/);
-  assert.match(articleRoute, /correctionHistory=\{article\.data\.correctionHistory\}/);
+  assert.match(articleRoute, /correctionHistory=\{\[\.\.\.article\.data\.correctionHistory, \.\.\.ledgerCorrections\]\}/);
+  assert.match(articleRoute, /data\.status === 'resolved'/);
+  assert.match(articleRoute, /\['material', 'critical'\]/);
   assert.match(articleRoute, /updateHistory=\{article\.data\.updateHistory\}/);
 });
 

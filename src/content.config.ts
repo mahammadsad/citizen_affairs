@@ -259,9 +259,7 @@ const newsroomChecklist = z.object({
   factualClaimsReviewed: z.boolean().default(false),
 });
 
-const articlesCollection = defineCollection({
-  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/articles' }),
-  schema: z.object({
+const articleSchema = z.object({
     contentType: z.enum(['job', 'scheme', 'admission', 'scholarship', 'service', 'alert', 'explainer']).default('explainer'),
     sourceRecordId: z.uuid().optional(),
     publicationEventId: z.uuid().optional(),
@@ -278,6 +276,14 @@ const articlesCollection = defineCollection({
     copyReviewedBy: z.string().optional(),
     reviewedBy: z.string().optional(),
     publishedBy: z.string().optional(),
+    editorialReviewDate: optionalDate,
+    accountabilityNote: z.string().optional(),
+    independentReviewStatus: z.enum([
+      'not-assigned',
+      'assigned',
+      'completed',
+      'not-required',
+    ]).default('not-assigned'),
     workflowStatus: z.enum([
       'idea',
       'assigned',
@@ -350,7 +356,42 @@ const articlesCollection = defineCollection({
     scholarship: scholarshipDetails.optional(),
     service: serviceDetails.optional(),
     alert: alertDetails.optional(),
-  }),
+}).superRefine((article, context) => {
+    const approvalRoles = [
+      ['assignedEditor', article.assignedEditor],
+      ['factCheckedBy', article.factCheckedBy],
+      ['copyReviewedBy', article.copyReviewedBy],
+      ['reviewedBy', article.reviewedBy],
+      ['publishedBy', article.publishedBy],
+    ] as const;
+    for (const [field, staff] of approvalRoles) {
+      if (staff && staff === article.author) {
+        context.addIssue({
+          code: 'custom',
+          path: [field],
+          message: 'The writer cannot edit, fact-check, review, approve, or publish their own record.',
+        });
+      }
+    }
+    if (article.independentReviewStatus === 'completed' && !article.reviewedBy) {
+      context.addIssue({
+        code: 'custom',
+        path: ['reviewedBy'],
+        message: 'A completed independent review requires a real reviewer.',
+      });
+    }
+    if (article.reviewedBy && article.independentReviewStatus !== 'completed') {
+      context.addIssue({
+        code: 'custom',
+        path: ['independentReviewStatus'],
+        message: 'A named reviewer must have completed independent review status.',
+      });
+    }
+  });
+
+const articlesCollection = defineCollection({
+  loader: glob({ pattern: '**/[^_]*.{md,mdx}', base: './src/content/articles' }),
+  schema: articleSchema,
 });
 
 const authorsCollection = defineCollection({
@@ -372,14 +413,23 @@ const authorsCollection = defineCollection({
 const correctionsCollection = defineCollection({
   loader: glob({ pattern: '**/[^_]*.{json,yaml,yml,toml}', base: './src/content/corrections' }),
   schema: z.object({
+    ticketId: z.string().regex(/^CA-COR-\d{4}-\d{3,}$/),
     articleTitle: z.string(),
     articleUrl: z.url(),
-    date: z.coerce.date(),
-    incorrectInformation: z.string(),
-    correctedInformation: z.string(),
-    reason: z.string(),
+    severity: z.enum(['minor', 'material', 'critical']),
+    receivedAt: z.coerce.date(),
+    acknowledgedAt: optionalDate,
+    resolvedAt: optionalDate,
+    explanation: z.string(),
+    before: z.string(),
+    after: z.string(),
+    accountableEditor: z.string(),
     supportingSource: z.url(),
-    status: z.enum(['corrected', 'reviewing', 'withdrawn']),
+    status: z.enum(['received', 'acknowledged', 'reviewing', 'resolved', 'withdrawn']),
+  }).superRefine((record, context) => {
+    if (['resolved', 'withdrawn'].includes(record.status) && !record.resolvedAt) {
+      context.addIssue({ code: 'custom', path: ['resolvedAt'], message: 'A closed correction ticket needs a resolution date.' });
+    }
   }),
 });
 

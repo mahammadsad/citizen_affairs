@@ -1,0 +1,74 @@
+---
+import MainLayout from '@layouts/MainLayout.astro';
+import { BRAND, SITE } from '@utils/constants';
+import { locales, localizedPath, trustPagePath, type Locale } from '../i18n';
+
+const { locale } = Astro.props as { locale: Locale };
+const copy = {
+  en: {
+    title: 'Transparency',
+    description: 'What Citizen Affairs can verify about its identity, editorial controls, commercial separation, technology, and disclosures still awaiting owner evidence.',
+    known: 'Published facts', pending: 'Declarations awaiting evidence', controls: 'Current safeguards',
+    facts: [
+      ['Publication', 'Citizen Affairs is an independent public-information website. It is not a government department and does not issue jobs, benefits, certificates, or approvals.'],
+      ['Named accountability', 'Mahammad Sad is the publicly identified founder and current writer. Each article shows its writer and whether an independent review has been recorded.'],
+      ['Contact', `Editorial and correction reports are accepted by email at ${BRAND.contactEmail}. The public site does not collect reports through a web form.`],
+      ['Commercial separation', 'No advertising or sponsored placement is currently enabled in the public site. Any future paid material must be labelled and cannot buy a verification status or alter factual conclusions.'],
+    ],
+    safeguards: [
+      'Automated research and drafting can create private drafts only; a human publication decision is required.',
+      'Material corrections require a ticket, before/after record, source, severity, accountable editor, and public ledger entry.',
+      'AI-assisted images, translations, captions, alt text, thumbnails, and social copy require source records and human review before use.',
+      'Analytics, advertising, accounts, newsletters, upload forms, and applicant-data collection remain disabled until their privacy and operational prerequisites are approved.',
+    ],
+    missing: [
+      'Legal publisher/entity, ownership, jurisdiction, and approved business address.',
+      'Funding sources, conflicts, and an approved long-term advertising or sponsorship declaration.',
+      'An independently appointed editor/fact-checker and a completed corrections-response drill.',
+      'A privacy/legal review for any future personal-data collection or measurement.',
+    ],
+    note: 'These items are intentionally not guessed. They will be published only after the owner supplies evidence and approves the wording.',
+  },
+  bn: {
+    title: 'স্বচ্ছতা', description: 'পরিচয়, সম্পাদকীয় নিয়ন্ত্রণ, বাণিজ্যিক পৃথকীকরণ, প্রযুক্তি এবং এখনও প্রমাণের অপেক্ষায় থাকা ঘোষণার বর্তমান অবস্থা।',
+    known: 'প্রকাশিত তথ্য', pending: 'প্রমাণের অপেক্ষায় থাকা ঘোষণা', controls: 'বর্তমান সুরক্ষা',
+    facts: [
+      ['প্রকাশনা', 'Citizen Affairs একটি স্বাধীন জনতথ্য ওয়েবসাইট। এটি সরকারি দপ্তর নয় এবং চাকরি, সুবিধা, শংসাপত্র বা অনুমোদন দেয় না।'],
+      ['নামসহ জবাবদিহি', 'Mahammad Sad প্রকাশ্যে পরিচিত প্রতিষ্ঠাতা ও বর্তমান লেখক। প্রতিটি নিবন্ধে লেখক এবং স্বাধীন পর্যালোচনা নথিভুক্ত হয়েছে কি না দেখানো হয়।'],
+      ['যোগাযোগ', `সম্পাদকীয় ও সংশোধনের প্রতিবেদন ${BRAND.contactEmail} ঠিকানায় ইমেইলে নেওয়া হয়। পাবলিক সাইট web form-এ প্রতিবেদন সংগ্রহ করে না।`],
+      ['বাণিজ্যিক পৃথকীকরণ', 'পাবলিক সাইটে এখন বিজ্ঞাপন বা sponsored placement চালু নেই। ভবিষ্যৎ paid material স্পষ্ট label ছাড়া প্রকাশ হবে না এবং verification status বা factual conclusion কিনতে পারবে না।'],
+    ],
+    safeguards: ['Automation কেবল private draft তৈরি করতে পারে; প্রকাশে মানুষের সিদ্ধান্ত লাগে।', 'গুরুত্বপূর্ণ correction-এ ticket, before/after record, source, severity, accountable editor ও public ledger দরকার।', 'AI-assisted image, translation, caption, alt text, thumbnail ও social copy ব্যবহারের আগে source record ও human review দরকার।', 'Privacy ও operational prerequisite অনুমোদন না হওয়া পর্যন্ত analytics, ads, account, newsletter, upload form ও applicant-data collection বন্ধ।'],
+    missing: ['Legal publisher/entity, ownership, jurisdiction ও অনুমোদিত business address।', 'Funding source, conflict এবং দীর্ঘমেয়াদি ads/sponsorship declaration।', 'স্বাধীন editor/fact-checker নিয়োগ এবং correction-response drill।', 'ভবিষ্যৎ personal-data collection বা measurement-এর privacy/legal review।'],
+    note: 'এই তথ্য অনুমান করা হয়নি। মালিক প্রমাণ ও ভাষা অনুমোদন করার পরেই প্রকাশ করা হবে।',
+  },
+  hi: {
+    title: 'पारदर्शिता', description: 'पहचान, संपादकीय नियंत्रण, वाणिज्यिक अलगाव, तकनीक और अभी प्रमाण की प्रतीक्षा कर रही घोषणाओं की वर्तमान स्थिति।',
+    known: 'प्रकाशित तथ्य', pending: 'प्रमाण की प्रतीक्षा में घोषणाएँ', controls: 'मौजूदा सुरक्षा',
+    facts: [
+      ['प्रकाशन', 'Citizen Affairs एक स्वतंत्र जन-सूचना वेबसाइट है। यह सरकारी विभाग नहीं है और नौकरी, लाभ, प्रमाणपत्र या मंजूरी जारी नहीं करती।'],
+      ['नामित जवाबदेही', 'Mahammad Sad सार्वजनिक रूप से पहचाने गए संस्थापक और मौजूदा लेखक हैं। हर लेख लेखक और स्वतंत्र समीक्षा दर्ज होने की स्थिति दिखाता है।'],
+      ['संपर्क', `संपादकीय और सुधार रिपोर्ट ${BRAND.contactEmail} पर ईमेल से ली जाती हैं। सार्वजनिक साइट web form से रिपोर्ट नहीं लेती।`],
+      ['वाणिज्यिक अलगाव', 'सार्वजनिक साइट पर अभी विज्ञापन या sponsored placement चालू नहीं है। भविष्य की paid सामग्री स्पष्ट label के बिना प्रकाशित नहीं होगी और verification status या factual conclusion नहीं खरीद सकती।'],
+    ],
+    safeguards: ['Automation केवल private draft बना सकती है; प्रकाशन के लिए मानव निर्णय जरूरी है।', 'महत्वपूर्ण correction के लिए ticket, before/after record, source, severity, accountable editor और public ledger चाहिए।', 'AI-assisted image, translation, caption, alt text, thumbnail और social copy को source record और human review चाहिए।', 'Privacy और operational prerequisites मंजूर होने तक analytics, ads, account, newsletter, upload form और applicant-data collection बंद हैं।'],
+    missing: ['Legal publisher/entity, ownership, jurisdiction और स्वीकृत business address।', 'Funding sources, conflicts और दीर्घकालीन ads/sponsorship declaration।', 'स्वतंत्र editor/fact-checker की नियुक्ति और correction-response drill।', 'भविष्य के personal-data collection या measurement की privacy/legal review।'],
+    note: 'इन तथ्यों का अनुमान नहीं लगाया गया है। मालिक के प्रमाण और भाषा की स्वीकृति के बाद ही इन्हें प्रकाशित किया जाएगा।',
+  },
+}[locale];
+const path = locale === 'en' ? '/transparency/' : `/${locale}/transparency/`;
+const canonical = `${SITE.url}${path}`;
+const alternateUrls = Object.fromEntries(locales.map((lang) => [lang, `${SITE.url}${lang === 'en' ? '' : `/${lang}`}/transparency/`])) as Record<Locale, string>;
+---
+
+<MainLayout title={copy.title} description={copy.description} {locale} {canonical} {alternateUrls}>
+  <article class="transparency container">
+    <header><span class="eyebrow">Citizen Affairs</span><h1>{copy.title}</h1><p>{copy.description}</p></header>
+    <section><h2>{copy.known}</h2><div class="cards">{copy.facts.map(([title, body]) => <article><h3>{title}</h3><p>{body}</p></article>)}</div></section>
+    <section><h2>{copy.controls}</h2><ul>{copy.safeguards.map((item) => <li>{item}</li>)}</ul></section>
+    <section class="pending"><h2>{copy.pending}</h2><p>{copy.note}</p><ul>{copy.missing.map((item) => <li>{item}</li>)}</ul></section>
+    <nav aria-label={copy.title}><a href={localizedPath(locale, 'editorial-policy')}>Editorial policy</a><a href={trustPagePath(locale, 'corrections')}>Corrections</a><a href={trustPagePath(locale, 'contact')}>Contact</a></nav>
+  </article>
+</MainLayout>
+
+<style>.transparency{max-width:960px;padding-block:3rem 5rem}.transparency>header{max-width:760px}.transparency h1{margin:.7rem 0;font-size:clamp(2.4rem,6vw,4.2rem)}.transparency header p,.transparency section p,.transparency li{color:var(--color-text-muted);line-height:1.75}.transparency>section{margin-top:2rem}.transparency h2{margin-bottom:.8rem}.cards{display:grid;gap:1rem}.cards article,.transparency>section:not(:first-of-type),.transparency>nav{padding:1.25rem;border:1px solid var(--color-border);border-radius:16px;background:var(--color-surface)}.cards h3{margin-bottom:.35rem}.transparency ul{display:grid;gap:.55rem;margin-left:1.2rem;list-style:disc}.pending{border-color:var(--color-warning,#c98a12)!important}.transparency>nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}.transparency>nav a{color:var(--color-primary);font-weight:800}@media(min-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>

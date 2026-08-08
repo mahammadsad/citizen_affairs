@@ -12,7 +12,7 @@ interface Props {
 
 const { locale, author, date, updated } = Astro.props;
 const normalizedAuthor = author.trim();
-const hasHumanAuthor = normalizedAuthor.length > 0 && normalizedAuthor !== 'mahammad-sad';
+const hasHumanAuthor = normalizedAuthor.length > 0;
 const authorEntry = hasHumanAuthor ? await getAuthorData(normalizedAuthor) : undefined;
 const authorName = hasHumanAuthor ? (authorEntry?.data.name || normalizedAuthor) : undefined;
 const brandName = getBrandName(locale);

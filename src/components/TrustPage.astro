@@ -59,11 +59,15 @@ const trustLinks = [
   { label: t.contact, href: trustPagePath(locale, 'contact') },
   { label: teamLabel, href: teamHref }
 ];
-const correctionRecords = page === 'corrections' ? (await getCollection('corrections')).sort((a, b) => b.data.date.getTime() - a.data.date.getTime()) : [];
+const correctionRecords = page === 'corrections'
+  ? (await getCollection('corrections'))
+      .filter(({ data }) => data.status === 'resolved' && ['material', 'critical'].includes(data.severity))
+      .sort((a, b) => b.data.resolvedAt!.getTime() - a.data.resolvedAt!.getTime())
+  : [];
 const correctionListCopy = {
-  en: { title: 'Published corrections', empty: 'No material corrections have been published yet.', wrong: 'Incorrect information', right: 'Corrected information', reason: 'Reason', source: 'Supporting source' },
-  bn: { title: 'প্রকাশিত সংশোধন', empty: 'এখনও কোনো গুরুত্বপূর্ণ সংশোধন প্রকাশিত হয়নি।', wrong: 'ভুল তথ্য', right: 'সংশোধিত তথ্য', reason: 'কারণ', source: 'সমর্থনকারী সূত্র' },
-  hi: { title: 'प्रकाशित सुधार', empty: 'अभी तक कोई महत्वपूर्ण सुधार प्रकाशित नहीं हुआ है।', wrong: 'गलत जानकारी', right: 'सुधारी गई जानकारी', reason: 'कारण', source: 'समर्थक स्रोत' },
+  en: { title: 'Material corrections ledger', empty: 'No material corrections have been published yet.', wrong: 'Before', right: 'After', reason: 'Explanation', source: 'Supporting source', editor: 'Accountable editor' },
+  bn: { title: 'গুরুত্বপূর্ণ সংশোধনের খতিয়ান', empty: 'এখনও কোনো গুরুত্বপূর্ণ সংশোধন প্রকাশিত হয়নি।', wrong: 'আগে', right: 'পরে', reason: 'ব্যাখ্যা', source: 'সমর্থনকারী সূত্র', editor: 'দায়িত্বপ্রাপ্ত সম্পাদক' },
+  hi: { title: 'महत्वपूर्ण सुधार का लेखा', empty: 'अभी तक कोई महत्वपूर्ण सुधार प्रकाशित नहीं हुआ है।', wrong: 'पहले', right: 'बाद में', reason: 'व्याख्या', source: 'समर्थक स्रोत', editor: 'जवाबदेह संपादक' },
 }[locale];
 ---
 <MainLayout title={pageCopy.title} description={pageCopy.description} {locale} {canonical} {alternateUrls} structuredData={[pageSchema, breadcrumbSchema]}>
@@ -109,7 +113,7 @@ const correctionListCopy = {
       <div class="trust-sections">{copy.corrections.sections.map(([heading, body]) => <section><h2>{heading}</h2><p>{body}</p></section>)}</div>
       <section class="correction-log" aria-labelledby="correctionLogTitle">
         <h2 id="correctionLogTitle">{correctionListCopy.title}</h2>
-        {correctionRecords.length ? <ol>{correctionRecords.map((record) => <li><div class="correction-title"><a href={record.data.articleUrl}>{record.data.articleTitle}</a><time datetime={record.data.date.toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(record.data.date)}</time><span>{record.data.status}</span></div><dl><div><dt>{correctionListCopy.wrong}</dt><dd>{record.data.incorrectInformation}</dd></div><div><dt>{correctionListCopy.right}</dt><dd>{record.data.correctedInformation}</dd></div><div><dt>{correctionListCopy.reason}</dt><dd>{record.data.reason}</dd></div></dl><a class="correction-source" href={record.data.supportingSource} target="_blank" rel="noopener noreferrer">{correctionListCopy.source} <Icon name="external" /></a></li>)}</ol> : <p>{correctionListCopy.empty}</p>}
+        {correctionRecords.length ? <ol>{correctionRecords.map((record) => <li><div class="correction-title"><a href={record.data.articleUrl}>{record.data.articleTitle}</a><time datetime={record.data.resolvedAt!.toISOString()}>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(record.data.resolvedAt!)}</time><span>{record.data.ticketId} · {record.data.severity}</span></div><dl><div><dt>{correctionListCopy.wrong}</dt><dd>{record.data.before}</dd></div><div><dt>{correctionListCopy.right}</dt><dd>{record.data.after}</dd></div><div><dt>{correctionListCopy.reason}</dt><dd>{record.data.explanation}</dd></div><div><dt>{correctionListCopy.editor}</dt><dd>{record.data.accountableEditor}</dd></div></dl><a class="correction-source" href={record.data.supportingSource} target="_blank" rel="noopener noreferrer">{correctionListCopy.source} <Icon name="external" /></a></li>)}</ol> : <p>{correctionListCopy.empty}</p>}
       </section>
       <aside class="correction-cta"><h2>{copy.corrections.action}</h2><p>{copy.contact.reportBody}</p><div><a class="btn btn-primary" href={correctionsEmail}>{copy.corrections.action}</a><a class="btn btn-secondary" href={trustPagePath(locale, 'contact')}>{t.contact}</a></div></aside>
     </>}

@@ -1,5 +1,7 @@
 # Implementation report
 
+> Historical snapshot. Do not use this file as current operational status. See `docs/OPERATIONAL_STATUS.md` and `docs/WORLD_CLASS_REMEDIATION.md`.
+
 ## Completed in this foundation
 
 - Citizen Affairs India parent branding with Sarkari Tathya Kendra continuity and centralized configuration.

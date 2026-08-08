@@ -15,6 +15,7 @@ const route = (value = '') => {
 };
 const careersLabel = { en: 'Careers', bn: 'ক্যারিয়ার', hi: 'करियर' }[locale];
 const teamLabel = { en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' }[locale];
+const transparencyLabel = { en: 'Transparency', bn: 'স্বচ্ছতা', hi: 'पारदर्शिता' }[locale];
 const contactPrompt = {
   en: 'Questions, corrections or partnerships?',
   bn: 'প্রশ্ন, সংশোধন বা পার্টনারশিপ?',
@@ -40,6 +41,7 @@ const footerLinks = [
 ];
 
 const policies = [
+  { label: transparencyLabel, href: route('transparency') },
   { label: t.editorial, href: route('editorial-policy') },
   { label: t.corrections, href: trustPagePath(locale, 'corrections') },
   { label: t.privacy, href: route('privacy') },

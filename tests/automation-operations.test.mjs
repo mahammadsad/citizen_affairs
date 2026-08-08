@@ -9,9 +9,9 @@ test('review workflow is the only scheduled repository draft generator', () => {
   assert.match(reviewWorkflow, /schedule:/);
   assert.match(reviewWorkflow, /MAX_DRAFTS_PER_RUN:\s*"1"/);
   assert.match(reviewWorkflow, /EDITORIAL_GITHUB_TOKEN/);
-  assert.match(reviewWorkflow, /gh pr checks/);
-  assert.match(reviewWorkflow, /gh pr merge/);
-  assert.match(reviewWorkflow, /--match-head-commit/);
+  assert.match(reviewWorkflow, /gh pr create[\s\S]*--draft/);
+  assert.match(reviewWorkflow, /No auto-merge is permitted/);
+  assert.doesNotMatch(reviewWorkflow, /gh pr merge/);
   assert.match(reviewWorkflow, /draft:\[\[:space:\]\]\*true/);
   assert.match(reviewWorkflow, /src\/content\/articles\/\*\/drafts\/\*\.md/);
   assert.match(reviewWorkflow, /src\/content\/articles\/en\/drafts\/\*\.md/);

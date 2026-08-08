@@ -213,6 +213,7 @@ class AutomationPipeline:
         created: list[dict] = []
         skipped_duplicates = 0
         failures: list[dict] = []
+        outcomes: list[dict] = []
         processed_topics = 0
         created_topics = 0
         candidate_attempts = 0
@@ -234,9 +235,11 @@ class AutomationPipeline:
 
             candidate_attempts += 1
             processed_topics += 1
+            stage = "source"
             try:
                 async with asyncio.timeout(topic_timeout_seconds):
                     materials = await self._fetch_candidate_materials(candidate)
+                    stage = "research"
                     dossier = await self.research(candidate, materials)
                     seo = await self.seo(dossier)
                     topic_created = 0
@@ -245,7 +248,9 @@ class AutomationPipeline:
                         if path.exists():
                             continue
                         draft = await self.write(dossier, seo, language)
+                        stage = "fact-check"
                         factcheck = await self.fact_check(dossier, draft, materials)
+                        stage = "save"
                         saved_path = self.drafts.save(
                             language=language,
                             candidate=candidate,
@@ -262,16 +267,44 @@ class AutomationPipeline:
                                 "review_ready": factcheck.review_ready,
                                 "critical_blockers": len(factcheck.critical_blockers),
                             })
+                            outcomes.append({
+                                "outcome": "candidate_published_as_draft" if factcheck.review_ready else "fact_check_failed",
+                                "topic": candidate.normalized_topic,
+                                "language": language,
+                                "path": str(saved_path.relative_to(repository_root())),
+                            })
                     if topic_created == 0:
                         skipped_duplicates += 1
                     else:
                         created_topics += 1
             except Exception as error:  # isolate one bad government page/provider response from the whole run
+                outcome = "source_unreachable" if stage == "source" else "fact_check_failed" if stage == "fact-check" else "workflow_failed"
                 failures.append({
                     "topic": candidate.normalized_topic,
                     "source_url": str(candidate.source_url),
                     "error": type(error).__name__,
+                    "outcome": outcome,
                 })
+                outcomes.append({
+                    "outcome": outcome,
+                    "topic": candidate.normalized_topic,
+                    "source_url": str(candidate.source_url),
+                    "error": type(error).__name__,
+                })
+
+        if not outcomes:
+            outcomes.append({"outcome": "no_eligible_candidate"})
+
+        outcome_counts = {
+            name: sum(1 for item in outcomes if item["outcome"] == name)
+            for name in (
+                "candidate_published_as_draft",
+                "no_eligible_candidate",
+                "source_unreachable",
+                "fact_check_failed",
+                "workflow_failed",
+            )
+        }
 
         return {
             "created": created,
@@ -281,4 +314,6 @@ class AutomationPipeline:
             "candidate_attempts": candidate_attempts,
             "skipped_duplicates": skipped_duplicates,
             "failures": failures,
+            "outcomes": outcomes,
+            "outcome_counts": outcome_counts,
         }

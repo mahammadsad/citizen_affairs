@@ -46,6 +46,22 @@ const alternateUrls = Object.fromEntries(
     .map(([lang, entry]) => [lang, articleUrl(lang, entry!.data.urlSlug)])
 ) as Partial<Record<Locale, string>>;
 const canonical = article.data.canonical || articleUrl(locale, article.data.urlSlug);
+const ledgerCorrections = (await getCollection('corrections'))
+  .filter(({ data }) =>
+    data.status === 'resolved' &&
+    ['material', 'critical'].includes(data.severity) &&
+    new URL(data.articleUrl).pathname === new URL(canonical).pathname
+  )
+  .map(({ data }) => ({
+    date: data.resolvedAt!,
+    incorrectInformation: data.before,
+    correctedInformation: data.after,
+    reason: data.explanation,
+    sourceUrl: data.supportingSource,
+    ticketId: data.ticketId,
+    severity: data.severity,
+    accountableEditor: data.accountableEditor,
+  }));
 const related = await getRelatedArticles(locale, article.data.category, article.data.urlSlug);
 const layoutContentType =
   article.data.contentType === 'job' || article.data.contentType === 'scheme'
@@ -113,6 +129,9 @@ const sourceCount = new Set(sourceLinks).size;
   factCheckedBy={article.data.factCheckedBy}
   reviewedBy={article.data.reviewedBy}
   publishedBy={article.data.publishedBy}
+  editorialReviewDate={article.data.editorialReviewDate}
+  accountabilityNote={article.data.accountabilityNote}
+  independentReviewStatus={article.data.independentReviewStatus}
   date={article.data.date}
   updated={article.data.updated}
   lastVerified={article.data.lastVerified}
@@ -187,6 +206,6 @@ const sourceCount = new Set(sourceLinks).size;
   <ArticleChangeHistory
     locale={locale}
     updateHistory={article.data.updateHistory}
-    correctionHistory={article.data.correctionHistory}
+    correctionHistory={[...article.data.correctionHistory, ...ledgerCorrections]}
   />
 </ArticleLayout>

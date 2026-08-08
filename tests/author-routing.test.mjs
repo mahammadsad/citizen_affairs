@@ -12,16 +12,17 @@ const localizedFounderRedirect = await readFile(
 const teamPage = await readFile('src/components/TeamPage.astro', 'utf8');
 const trustPage = await readFile('src/components/TrustPage.astro', 'utf8');
 
-test('human article bylines remain optional and route to the attributed public profile', () => {
+test('every named article writer is visible and routes to the attributed public profile', () => {
   assert.match(layout, /const\s+normalizedAuthor\s*=\s*author\.trim\(\)/);
-  assert.match(layout, /normalizedAuthor\s*!==\s*['"]mahammad-sad['"]/);
+  assert.match(layout, /const\s+showHumanCredits\s*=\s*normalizedAuthor\.length\s*>\s*0/);
+  assert.doesNotMatch(layout, /normalizedAuthor\s*!==\s*['"]mahammad-sad['"]/);
   assert.match(layout, /authorProfilePath\(locale,\s*normalizedAuthor\)/);
   assert.match(layout, /showHumanCredits\s*&&\s*authorName/);
   assert.doesNotMatch(layout, /trustPagePath\(locale,\s*'author'\)/);
   assert.match(authorPage, /params: \{ slug: author\.id \}/);
 });
 
-test('the founder is presented through the public team page instead of an author page', () => {
+test('the founder byline destination resolves through the public team page', () => {
   assert.match(founderRedirect, /target="\/team\/"/);
   assert.match(localizedFounderRedirect, /target=\{`\/\$\{locale\}\/team\/`\}/);
   assert.match(teamPage, /title: 'Our Team'/);
