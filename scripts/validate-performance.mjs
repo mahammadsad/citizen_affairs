@@ -24,6 +24,8 @@ const budgets = {
   offlineDocument: 24 * 1024
 };
 
+const allowedThirdPartyScripts = new Set(['https://www.googletagmanager.com/gtag/js']);
+
 function walk(directory) {
   if (!existsSync(directory)) return [];
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -113,7 +115,16 @@ for (const path of htmlFiles) {
   const file = relative(dist, path).replaceAll('\\', '/');
   const html = readFileSync(path, 'utf8');
   for (const match of html.matchAll(/<script\b[^>]+src=["'](https?:\/\/[^"']+)/gi)) {
-    errors.push(`${file} loads a third-party script: ${match[1]}`);
+    const src = match[1];
+    let isAllowed = false;
+    try {
+      const url = new URL(src);
+      const normalized = `${url.origin}${url.pathname}`;
+      isAllowed = allowedThirdPartyScripts.has(normalized) && url.searchParams.get('id') === 'G-7DXKXGBK0P';
+    } catch {
+      isAllowed = false;
+    }
+    if (!isAllowed) errors.push(`${file} loads a third-party script: ${src}`);
   }
   for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
     const tag = match[0];

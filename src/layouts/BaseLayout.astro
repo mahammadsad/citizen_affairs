@@ -126,7 +126,7 @@ const supabaseOrigin = (() => {
     return '';
   }
 })();
-const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''}; form-action 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self'; upgrade-insecure-requests`;
+const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''} https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com; form-action 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self'; upgrade-insecure-requests`;
 const t = ui(locale);
 ---
 <!doctype html>
@@ -142,6 +142,13 @@ const t = ui(locale);
           document.documentElement.dataset.theme = theme;
         } catch (_) {}
       })();
+    </script>
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-7DXKXGBK0P"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7DXKXGBK0P');
     </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
