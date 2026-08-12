@@ -42,7 +42,7 @@ tags:
   - download CDS 1 2026 written result name wise list PDF
   - UPSC CDS 1 2026 written exam result official website check
 featured: false
-draft: true
+draft: false
 seoTitle: "UPSC CDS 1 2026 Written Result With Name Released: Download PDF"
 seoDescription: UPSC has published the CDS 1 2026 Written Result with names.
   Check how to download the official name-wise merit list PDF at upsc.gov.in.
