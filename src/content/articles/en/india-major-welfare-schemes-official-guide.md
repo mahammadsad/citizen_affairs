@@ -4,8 +4,11 @@ contentType: explainer
 workflowStatus: published
 translationKey: india-major-welfare-schemes-official-guide
 urlSlug: india-major-welfare-schemes-official-guide
-title: "14 Major Central Government Welfare Programmes in India: Current Status and Official Links"
-description: "An official-source English guide to the purpose, current approval boundary and official portals for 14 major central programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA."
+title: "14 Major Central Government Welfare Programmes in India: Current Status
+  and Official Links"
+description: An official-source English guide to the purpose, current approval
+  boundary and official portals for 14 major central programmes, including
+  Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA.
 date: 2026-08-06
 updated: 2026-08-06
 lastVerified: 2026-08-06
@@ -75,7 +78,8 @@ sources:
     accessedDate: 2026-08-06
   - title: PM POSHAN Programme Approval Board 2026-27
     url: https://pmposhan.education.gov.in/PAB_PM_POSHAN.html
-    publishingAuthority: Department of School Education and Literacy, Ministry of Education, Government of India
+    publishingAuthority: Department of School Education and Literacy, Ministry of
+      Education, Government of India
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-06
@@ -97,32 +101,49 @@ tags:
 featured: false
 featuredImage: /uploads/articles/shared/welfare-programmes-guide-1200.webp
 featuredImageAvif: /uploads/articles/shared/welfare-programmes-guide-1200.avif
-featuredImageSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.webp 480w, /uploads/articles/shared/welfare-programmes-guide-768.webp 768w, /uploads/articles/shared/welfare-programmes-guide-1200.webp 1200w
-featuredImageAvifSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.avif 480w, /uploads/articles/shared/welfare-programmes-guide-768.avif 768w, /uploads/articles/shared/welfare-programmes-guide-1200.avif 1200w
+featuredImageSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.webp
+  480w, /uploads/articles/shared/welfare-programmes-guide-768.webp 768w,
+  /uploads/articles/shared/welfare-programmes-guide-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/welfare-programmes-guide-480.avif
+  480w, /uploads/articles/shared/welfare-programmes-guide-768.avif 768w,
+  /uploads/articles/shared/welfare-programmes-guide-1200.avif 1200w
 featuredImageWidth: 1200
 featuredImageHeight: 675
-featuredImageAlt: Abstract editorial illustration representing central health, farming, food, housing, water and education programmes
-featuredImageCaption: Illustrative visual; it does not represent an official portal, logo or eligibility decision.
+featuredImageAlt: Abstract editorial illustration representing central health,
+  farming, food, housing, water and education programmes
+featuredImageCaption: Illustrative visual; it does not represent an official
+  portal, logo or eligibility decision.
 featuredImageCredit: Citizen Affairs source-controlled illustration
 draft: false
 seoTitle: "14 Major Government Schemes in India: Current Official Guide"
-seoDescription: "Check the current status and official portals for 14 central programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA."
+seoDescription: Check the current status and official portals for 14 central
+  programmes, including Ayushman Bharat, PM-KISAN, PMAY-G, NFSA and MGNREGA.
 governmentLevel: central
 quickSummary:
-  - Jal Jeevan Mission 2.0 is approved through December 2028, and the current PMAY-G phase runs through financial year 2028-29.
-  - PM POSHAN has a temporary continuation under existing conditions until 30 September 2026 or the date of the next approval, whichever comes first.
-  - Do not claim a new multi-year approval for AMRUT 2.0 or Samagra Shiksha without checking the latest central document.
+  - Jal Jeevan Mission 2.0 is approved through December 2028, and the current
+    PMAY-G phase runs through financial year 2028-29.
+  - PM POSHAN has a temporary continuation under existing conditions until 30
+    September 2026 or the date of the next approval, whichever comes first.
+  - Do not claim a new multi-year approval for AMRUT 2.0 or Samagra Shiksha
+    without checking the latest central document.
 updateHistory:
-  - "2026-08-06: English translation published from the reviewed Bengali guide without adding claims beyond its official-source verification boundary."
+  - "2026-08-06: English translation published from the reviewed Bengali guide
+    without adding claims beyond its official-source verification boundary."
 faqs:
   - question: Are all fourteen programmes available to every Indian citizen?
-    answer: No. Each programme has its own target group and conditions involving income, age, landholding, residence, education or other factors.
+    answer: No. Each programme has its own target group and conditions involving
+      income, age, landholding, residence, education or other factors.
   - question: Can people apply for all schemes through one portal?
-    answer: No. Programmes use separate central portals, state systems or local offices. Start from the official link for the programme concerned.
+    answer: No. Programmes use separate central portals, state systems or local
+      offices. Start from the official link for the programme concerned.
   - question: Is PM-KISAN limited only to small and marginal farmers?
-    answer: Eligible cultivable landholding farmer families may qualify subject to the official exclusion conditions; it is not described only by the small-and-marginal category.
+    answer: Eligible cultivable landholding farmer families may qualify subject to
+      the official exclusion conditions; it is not described only by the
+      small-and-marginal category.
   - question: Can people aged 70 or above enrol for Ayushman health cover?
-    answer: The central expansion allows people aged 70 or above to enrol for the Ayushman Vay Vandana Card irrespective of socio-economic status. Check the current process in the implementing state or Union Territory.
+    answer: The central expansion allows people aged 70 or above to enrol for the
+      Ayushman Vay Vandana Card irrespective of socio-economic status. Check the
+      current process in the implementing state or Union Territory.
 ---
 The Union Government operates programmes covering health, food security, housing, farming, employment, drinking water, nutrition, women and child protection, banking access and school education. Eligibility, benefit delivery and approval periods can change, so use the responsible department's current portal instead of relying on an old video, forwarded message or agent.
 
