@@ -1,2 +1,1 @@
-# Advertising is disabled. Add the authorised seller line only after AdSense approval.
-
+google.com, pub-4140283253043615, DIRECT, f08c47fec0942fa0
