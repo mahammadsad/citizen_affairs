@@ -24,7 +24,10 @@ const budgets = {
   offlineDocument: 24 * 1024
 };
 
-const allowedThirdPartyScripts = new Set(['https://www.googletagmanager.com/gtag/js']);
+const allowedThirdPartyScripts = new Set([
+  'https://www.googletagmanager.com/gtag/js',
+  'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+]);
 
 function walk(directory) {
   if (!existsSync(directory)) return [];
@@ -120,7 +123,11 @@ for (const path of htmlFiles) {
     try {
       const url = new URL(src);
       const normalized = `${url.origin}${url.pathname}`;
-      isAllowed = allowedThirdPartyScripts.has(normalized) && url.searchParams.get('id') === 'G-7DXKXGBK0P';
+      if (normalized === 'https://www.googletagmanager.com/gtag/js') {
+        isAllowed = url.searchParams.get('id') === 'G-7DXKXGBK0P';
+      } else if (normalized === 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js') {
+        isAllowed = url.searchParams.get('client') === 'ca-pub-4140283253043615';
+      }
     } catch {
       isAllowed = false;
     }

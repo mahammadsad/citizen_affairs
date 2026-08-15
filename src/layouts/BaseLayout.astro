@@ -126,7 +126,7 @@ const supabaseOrigin = (() => {
     return '';
   }
 })();
-const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''} https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com; form-action 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self'; upgrade-insecure-requests`;
+const contentSecurityPolicy = `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ''} https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com; form-action 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; media-src 'self'; upgrade-insecure-requests`;
 const t = ui(locale);
 ---
 <!doctype html>
@@ -144,6 +144,7 @@ const t = ui(locale);
       })();
     </script>
     <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-7DXKXGBK0P"></script>
+    <script is:inline async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4140283253043615" crossorigin="anonymous"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){window.dataLayer.push(arguments);}
