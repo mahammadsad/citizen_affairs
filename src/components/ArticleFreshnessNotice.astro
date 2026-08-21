@@ -84,44 +84,45 @@ const formatter = new Intl.DateTimeFormat(dateLocale(locale), {
   month: 'short',
   day: 'numeric',
 });
+const needsAttention = freshness.state !== 'current';
 ---
 
-<div class:list={['article-freshness', `freshness-${freshness.state}`]} data-article-freshness={freshness.state} role="status">
-  <Icon name={freshness.state === 'expired' ? 'notices' : freshness.state === 'current' ? 'check' : 'clock'} size={21} />
-  <div>
-    <strong>{title}</strong>
-    <p>{body}</p>
-    <dl>
-      {lastVerified && <div><dt>{copy.verified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}
-      {nextReviewDate && <div><dt>{copy.review}</dt><dd>{formatter.format(nextReviewDate)}</dd></div>}
-      {deadline && <div><dt>{copy.deadline}</dt><dd>{formatter.format(deadline)}</dd></div>}
-    </dl>
+{needsAttention && (
+  <div class:list={['article-freshness', `freshness-${freshness.state}`]} data-article-freshness={freshness.state} role="status">
+    <Icon name={freshness.state === 'expired' ? 'notices' : 'clock'} size={21} />
+    <div>
+      <strong>{title}</strong>
+      <p>{body}</p>
+      <dl>
+        {lastVerified && <div><dt>{copy.verified}</dt><dd>{formatter.format(lastVerified)}</dd></div>}
+        {nextReviewDate && <div><dt>{copy.review}</dt><dd>{formatter.format(nextReviewDate)}</dd></div>}
+        {deadline && <div><dt>{copy.deadline}</dt><dd>{formatter.format(deadline)}</dd></div>}
+      </dl>
+    </div>
   </div>
-</div>
+)}
 
 <style>
   .article-freshness {
     display: flex;
     gap: .75rem;
     margin: 1.2rem 0;
-    padding: 1rem;
+    padding: .9rem 1rem;
     border: 1px solid var(--color-border);
-    border-left: 4px solid var(--color-green-text);
-    border-radius: 12px;
-    background: rgba(var(--color-green-rgb), .06);
+    border-left: 3px solid var(--color-orange);
+    border-radius: 9px;
+    background: var(--color-surface);
   }
-  .article-freshness > svg { flex: 0 0 auto; color: var(--color-green-text); }
-  .article-freshness strong { font-size: .92rem; }
-  .article-freshness p { margin: .25rem 0 .65rem; color: var(--color-text-muted); font-size: .82rem; line-height: 1.55; }
-  .article-freshness dl { display: flex; flex-wrap: wrap; gap: .45rem 1rem; margin: 0; }
-  .article-freshness dl div { display: flex; gap: .35rem; font-size: .7rem; }
+  .article-freshness > svg { flex: 0 0 auto; color: #9a5600; }
+  .article-freshness strong { font-size: .9rem; }
+  .article-freshness p { margin: .25rem 0 .6rem; color: var(--color-text-muted); font-size: .82rem; line-height: 1.55; }
+  .article-freshness dl { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin: 0; }
+  .article-freshness dl div { display: flex; gap: .35rem; font-size: .72rem; }
   .article-freshness dt { color: var(--color-text-muted); }
-  .article-freshness dd { margin: 0; font-weight: 850; }
-  .freshness-review-soon { border-left-color: var(--color-orange); background: rgba(var(--color-orange-rgb), .07); }
-  .freshness-review-soon > svg { color: #9a5600; }
+  .article-freshness dd { margin: 0; font-weight: 700; }
   .freshness-review-overdue,
   .freshness-stale,
-  .freshness-expired { border-left-color: #b42318; background: rgba(180, 35, 24, .06); }
+  .freshness-expired { border-left-color: #b42318; }
   .freshness-review-overdue > svg,
   .freshness-stale > svg,
   .freshness-expired > svg { color: #b42318; }
