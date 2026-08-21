@@ -31,49 +31,22 @@ const categories = (await getCollection('categories'))
 
 const copy = {
   en: {
-    jobs: 'Jobs',
-    education: 'Education',
-    schemes: 'Schemes',
-    citizenServices: 'Citizen Services',
-    deadlines: 'Deadlines',
-    guides: 'Guides',
-    more: 'More',
-    admissions: 'Admissions, Exams & Results',
-    alerts: 'Citizen Alerts',
-    allUpdates: 'Latest Updates',
-    saved: 'Saved',
-    officialPolicy: 'Verification policy',
-    closeMenu: 'Close menu'
+    jobs: 'Jobs', education: 'Education', schemes: 'Schemes', citizenServices: 'Citizen Services',
+    deadlines: 'Deadlines', guides: 'Guides', more: 'More', admissions: 'Admissions, Exams & Results',
+    alerts: 'Citizen Alerts', allUpdates: 'Latest Updates', saved: 'Saved',
+    officialPolicy: 'Verification policy', closeMenu: 'Close menu'
   },
   bn: {
-    jobs: 'চাকরি',
-    education: 'শিক্ষা',
-    schemes: 'প্রকল্প',
-    citizenServices: 'নাগরিক পরিষেবা',
-    deadlines: 'সময়সীমা',
-    guides: 'গাইড',
-    more: 'আরও',
-    admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
-    alerts: 'নাগরিক সতর্কতা',
-    allUpdates: 'সর্বশেষ আপডেট',
-    saved: 'সংরক্ষিত',
-    officialPolicy: 'যাচাই নীতি',
-    closeMenu: 'মেনু বন্ধ করুন'
+    jobs: 'চাকরি', education: 'শিক্ষা', schemes: 'প্রকল্প', citizenServices: 'নাগরিক পরিষেবা',
+    deadlines: 'সময়সীমা', guides: 'গাইড', more: 'আরও', admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
+    alerts: 'নাগরিক সতর্কতা', allUpdates: 'সর্বশেষ আপডেট', saved: 'সংরক্ষিত',
+    officialPolicy: 'যাচাই নীতি', closeMenu: 'মেনু বন্ধ করুন'
   },
   hi: {
-    jobs: 'नौकरियाँ',
-    education: 'शिक्षा',
-    schemes: 'योजनाएँ',
-    citizenServices: 'नागरिक सेवाएँ',
-    deadlines: 'समय-सीमाएँ',
-    guides: 'मार्गदर्शिकाएँ',
-    more: 'अधिक',
-    admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
-    alerts: 'नागरिक अलर्ट',
-    allUpdates: 'नवीनतम अपडेट',
-    saved: 'सहेजे गए',
-    officialPolicy: 'सत्यापन नीति',
-    closeMenu: 'मेनू बंद करें'
+    jobs: 'नौकरियाँ', education: 'शिक्षा', schemes: 'योजनाएँ', citizenServices: 'नागरिक सेवाएँ',
+    deadlines: 'समय-सीमाएँ', guides: 'मार्गदर्शिकाएँ', more: 'अधिक', admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
+    alerts: 'नागरिक अलर्ट', allUpdates: 'नवीनतम अपडेट', saved: 'सहेजे गए',
+    officialPolicy: 'सत्यापन नीति', closeMenu: 'मेनू बंद करें'
   }
 }[locale];
 
@@ -159,7 +132,7 @@ const mobileCategories = categories.map((category) => ({
             ))}
           </div>
         </details>
-        <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme}>
+        <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme} data-theme-toggle>
           <span class="portal-theme-icons" aria-hidden="true">
             <Icon name="theme" class="portal-theme-icon portal-theme-moon" />
             <svg class="portal-theme-icon portal-theme-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -195,13 +168,18 @@ const mobileCategories = categories.map((category) => ({
         <a href={route('deadlines')}><Icon name="clock" size={20} /><span>{copy.deadlines}</span><Icon name="arrow" size={17} /></a>
         <a href={route('saved')}><Icon name="bookmark" size={20} /><span>{copy.saved}</span><Icon name="arrow" size={17} /></a>
       </nav>
+      <div class="container portal-mobile-settings">
+        <button type="button" class="portal-menu-theme-toggle" data-theme-toggle>
+          <Icon name="theme" size={19} /><span>{t.changeTheme}</span>
+        </button>
+      </div>
     </div>
   </div>
 </header>
 
 <script>
   const root = document.documentElement;
-  const themeButton = document.querySelector<HTMLButtonElement>('.portal-theme-toggle');
+  const themeButtons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
 
   const syncThemeChrome = (theme: 'light' | 'dark') => {
     root.style.colorScheme = theme;
@@ -217,9 +195,9 @@ const mobileCategories = categories.map((category) => ({
 
   syncThemeChrome(root.dataset.theme === 'dark' ? 'dark' : 'light');
 
-  themeButton?.addEventListener('click', () => {
+  themeButtons.forEach((button) => button.addEventListener('click', () => {
     applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
-  });
+  }));
 
   document.querySelectorAll<HTMLDetailsElement>('.portal-header details').forEach((details) => {
     details.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => details.removeAttribute('open')));
@@ -368,6 +346,24 @@ const mobileCategories = categories.map((category) => ({
   .portal-mobile-panel nav a:focus-visible,
   .portal-mobile-panel nav a[aria-current="page"] { color: var(--color-primary); background: var(--color-surface-alt); }
   .portal-mobile-panel.is-open nav a { opacity: 1; transform: translateY(0); }
+  .portal-mobile-settings { padding-block: 0 1rem; }
+  .portal-menu-theme-toggle {
+    display: none;
+    width: 100%;
+    min-height: 46px;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: .7rem;
+    padding: .55rem .7rem;
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: .86rem;
+    font-weight: 650;
+    text-align: left;
+  }
 
   @media (min-width: 1280px) {
     .portal-desktop-nav { display: flex; }
@@ -395,6 +391,8 @@ const mobileCategories = categories.map((category) => ({
     .portal-navbar-inner { min-height: 62px; }
     .portal-brand { flex-basis: 118px; }
     :global(.portal-brand-logo) { width: 118px; max-height: 44px; }
+    .portal-header-actions > .portal-theme-toggle { display: none; }
+    .portal-menu-theme-toggle { display: grid; }
     .portal-mobile-panel nav a { min-height: 48px; font-size: .86rem; }
   }
   @media (max-width: 390px) {
