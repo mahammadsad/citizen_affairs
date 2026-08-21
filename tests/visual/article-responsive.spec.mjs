@@ -22,17 +22,14 @@ for (const viewport of viewports) {
     await expect(page.locator('body')).toHaveClass(/article-reading-mode/);
     await expect(page.locator('.portal-brand img')).toHaveCount(1);
     await expect(page.locator('.portal-language > summary')).toBeVisible();
-    await expect(page.locator('.category-nav-shell')).toBeHidden();
-    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+    await expect(page.locator('.category-nav-shell')).toHaveCount(0);
+    await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
+    await expect(page.locator('.portal-search-action')).toBeVisible();
+    await expect(page.locator('.article-labels > span')).toBeHidden();
+    await expect(page.locator('.reading-time')).toBeHidden();
+    await expect(page.locator('#copyLink')).toBeHidden();
 
-    if (viewport.width <= 680) {
-      await expect(page.locator('.portal-mobile-bottom a[href*="search"]')).toBeHidden();
-      await expect(page.locator('.portal-search-action')).toBeHidden();
-    } else {
-      await expect(page.locator('.portal-search-action')).toBeVisible();
-    }
-
-    if (viewport.width < 1100) {
+    if (viewport.width < 1280) {
       const trigger = page.locator('.portal-mobile-trigger');
       const panel = page.locator('.portal-mobile-panel');
       await expect(trigger).toBeVisible();
