@@ -1,0 +1,35 @@
+/* Article link color hotfix.
+ * Use Citizen Affairs Civic Blue for every article hyperlink state and keep
+ * article-level accent tokens brand-aligned. The unique filename intentionally
+ * busts any stale service-worker/browser cache from the earlier red theme.
+ */
+
+html[data-theme="light"] body main article[data-article] {
+  --color-primary: #0a5aa6 !important;
+  --color-primary-rgb: 10, 90, 166 !important;
+}
+
+html[data-theme="dark"] body main article[data-article] {
+  --color-primary: #79b8f3 !important;
+  --color-primary-rgb: 121, 184, 243 !important;
+}
+
+html[data-theme="light"] body main article[data-article] a:any-link,
+html[data-theme="light"] body main article[data-article] a:visited {
+  color: #0a5aa6 !important;
+}
+
+html[data-theme="light"] body main article[data-article] a:hover,
+html[data-theme="light"] body main article[data-article] a:focus-visible {
+  color: #084d8f !important;
+}
+
+html[data-theme="dark"] body main article[data-article] a:any-link,
+html[data-theme="dark"] body main article[data-article] a:visited {
+  color: #79b8f3 !important;
+}
+
+html[data-theme="dark"] body main article[data-article] a:hover,
+html[data-theme="dark"] body main article[data-article] a:focus-visible {
+  color: #a7d2fa !important;
+}
