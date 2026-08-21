@@ -38,12 +38,14 @@ test('responsive interface uses the approved Citizen Affairs brand master', () =
   assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
 });
 
-test('publication footer remains compact and collapsible on mobile', () => {
+test('publication footer remains compact and avoids a second mobile navigation system', () => {
   const footer = read('src/components/Footer.astro');
-  assert.match(footer, /footer-mobile-groups/);
-  assert.match(footer, /<details>/);
-  assert.match(footer, /<summary>/);
+  assert.match(footer, /class="site-footer"/);
+  assert.match(footer, /class="container footer-main"/);
+  assert.match(footer, /@media\(max-width:620px\)[\s\S]*\.footer-main\{grid-template-columns:1fr/);
   assert.doesNotMatch(footer, /footer-cta-grid/);
+  assert.doesNotMatch(footer, /footer-mobile-groups/);
+  assert.doesNotMatch(footer, /<details>|<summary>/);
 });
 
 test('homepage provides useful empty-content and citizen-task experiences', () => {
