@@ -15,7 +15,7 @@ const cases = [
   },
   {
     locale: 'hi',
-    path: '/hi/articles/find-government-schemes-with-myscheme/',
+    path: '/hi/articles/find-official-government-websites-and-services/',
     channel: 'https://whatsapp.com/channel/0029VbDMfavLikgC8qYfCM2t',
     button: 'हिंदी चैनल फॉलो करें',
   },
