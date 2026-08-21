@@ -5,6 +5,7 @@ import test from 'node:test';
 const layout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 const continuity = await readFile('src/components/PortalContinuity.astro', 'utf8');
 const runtime = await readFile('src/components/PortalRuntime.astro', 'utf8');
+const header = await readFile('src/components/PortalHeader.astro', 'utf8');
 
 test('homepage opens with primary portal content instead of a personal continuity panel', () => {
   assert.doesNotMatch(layout, /PortalContinuity/);
@@ -32,20 +33,11 @@ test('continuity guidance stays localized and points to dedicated action destina
   assert.match(continuity, /data-recent-count/);
 });
 
-test('navigation exposes saved and urgent deadline counts across layouts', () => {
-  assert.match(runtime, /portal-saved-action/);
-  assert.match(runtime, /portal-mobile-bottom a\[href\*="\/saved"\]/);
-  assert.match(runtime, /portal-desktop-nav a\[href\*="\/deadlines"\]/);
-  assert.match(runtime, /portal-mobile-panel a\[href\*="\/deadlines"\]/);
-  assert.match(runtime, /portal-nav-count/);
-  assert.match(runtime, /aria-label/);
-  assert.match(runtime, /data-kind='urgent'/);
-});
-
-test('urgent deadline count is derived from the static locale index', () => {
-  assert.ok(runtime.includes("const indexPath = `/${locale}/search-index.json`;"));
-  assert.match(runtime, /cache: 'no-store'/);
-  assert.match(runtime, /days >= 0 && days <= 3/);
-  assert.match(runtime, /loadUrgentDeadlineCount/);
-  assert.match(runtime, /saved-card-actions button/);
+test('global navigation keeps saved and deadlines available without count-badge chrome', () => {
+  assert.match(header, /portal-saved-action/);
+  assert.match(header, /route\('saved'\)/);
+  assert.match(header, /route\('deadlines'\)/);
+  assert.doesNotMatch(runtime, /portal-nav-count/);
+  assert.doesNotMatch(runtime, /loadUrgentDeadlineCount/);
+  assert.doesNotMatch(runtime, /search-index\.json/);
 });
