@@ -1,10 +1,8 @@
 /*
  * Multilingual editorial typography
  *
- * Citizen Affairs serves English, Bengali and Hindi readers. A single mixed
- * font stack made Latin text inherit a Bengali face and left Hindi headings to
- * browser-dependent fallbacks. These language-scoped tokens keep the interface
- * fast, familiar and readable without requesting third-party font services.
+ * Citizen Affairs serves English, Bengali and Hindi readers. Language-scoped
+ * tokens keep reading rhythm and interface labels appropriate to each script.
  */
 
 :root {
@@ -74,7 +72,44 @@ html[lang="hi"] h4 {
   line-height: 1.24;
 }
 
-/* Headlines should feel decisive, but not compressed or over-black. */
+/* Latin-only typographic devices should not leak into Indic scripts. */
+html[lang="bn"] :is(
+  .eyebrow,
+  .category-kicker,
+  .utility-card-context,
+  .panel-kicker,
+  .story-kicker,
+  .section-story-copy > span,
+  .result-meta,
+  .source-designation,
+  .article-labels,
+  .toc-card > strong,
+  .rail-card > strong,
+  .article-topics > strong,
+  .bottom-share > strong,
+  .category-toolbar > div > span
+),
+html[lang="hi"] :is(
+  .eyebrow,
+  .category-kicker,
+  .utility-card-context,
+  .panel-kicker,
+  .story-kicker,
+  .section-story-copy > span,
+  .result-meta,
+  .source-designation,
+  .article-labels,
+  .toc-card > strong,
+  .rail-card > strong,
+  .article-topics > strong,
+  .bottom-share > strong,
+  .category-toolbar > div > span
+) {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* Headlines should feel decisive without becoming over-black or compressed. */
 html[lang] .article-header h1 {
   max-width: 23ch;
   margin-block: .72rem .8rem;
@@ -88,7 +123,7 @@ html[lang] .article-header h1 {
 html[lang="bn"] .article-header h1,
 html[lang="hi"] .article-header h1 {
   max-width: 26ch;
-  line-height: 1.2;
+  line-height: 1.18;
 }
 
 html[lang] .article-deck {
@@ -162,7 +197,7 @@ html[lang] .article-content small {
   font-family: var(--font-body);
 }
 
-/* Cards need fast scanning rather than newspaper-sized display text. */
+/* Cards need scanability, not a wall of bold metadata. */
 html[lang] .utility-card h3 {
   font-family: var(--font-display);
   font-weight: 700;
@@ -182,14 +217,9 @@ html[lang] .listing-hero p {
   text-wrap: pretty;
 }
 
-/* Avoid fake condensed spacing in scripts whose marks need vertical room. */
-html[lang="bn"] .eyebrow,
-html[lang="bn"] .category-kicker,
-html[lang="bn"] .utility-card-context,
-html[lang="hi"] .eyebrow,
-html[lang="hi"] .category-kicker,
-html[lang="hi"] .utility-card-context {
-  letter-spacing: 0;
+html[lang="bn"] :is(.utility-card-context, .utility-status, .category-kicker, .panel-kicker, .story-kicker),
+html[lang="hi"] :is(.utility-card-context, .utility-status, .category-kicker, .panel-kicker, .story-kicker) {
+  font-weight: 600 !important;
 }
 
 @media (max-width: 680px) {
@@ -199,7 +229,7 @@ html[lang="hi"] .utility-card-context {
 
   html[lang="bn"] .article-header h1,
   html[lang="hi"] .article-header h1 {
-    line-height: 1.22;
+    line-height: 1.2;
   }
 
   html[lang] .article-content {
@@ -213,5 +243,15 @@ html[lang="hi"] .utility-card-context {
 
   html[lang="hi"] .article-content {
     line-height: 1.8;
+  }
+
+  html[lang="bn"] :is(.utility-card-context, .utility-status, .category-kicker, .panel-kicker),
+  html[lang="hi"] :is(.utility-card-context, .utility-status, .category-kicker, .panel-kicker) {
+    font-size: .7rem !important;
+  }
+
+  html[lang="bn"] :is(.utility-card-footer, .category-result-count, .result-meta),
+  html[lang="hi"] :is(.utility-card-footer, .category-result-count, .result-meta) {
+    font-size: .72rem !important;
   }
 }

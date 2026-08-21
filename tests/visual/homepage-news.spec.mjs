@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const headerLogoSelector = '.portal-navbar .portal-brand > .portal-brand-logo';
 
-test('mobile homepage is image-led and the brand does not collide at 390px', async ({ page }, testInfo) => {
+test('mobile homepage is image-led and the compact brand header does not collide at 390px', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
@@ -29,20 +29,21 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
-  await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+  await expect(page.locator('.category-nav-shell')).toHaveCount(0);
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
+  await expect(page.locator('.portal-search-action')).toBeVisible();
+  await expect(page.locator('.portal-header-actions > .portal-theme-toggle')).toBeHidden();
 
   const measurements = await page.evaluate((selector) => {
     const logo = document.querySelector(selector);
     const actions = document.querySelector('.portal-header-actions');
     const navbar = document.querySelector('.portal-navbar-inner');
-    const categoryNav = document.querySelector('.category-nav');
     const image = document.querySelector('.lead-story [data-story-image="lead"] img');
     const heading = document.querySelector('.lead-story h2');
     if (
       !(logo instanceof HTMLElement) ||
       !(actions instanceof HTMLElement) ||
       !(navbar instanceof HTMLElement) ||
-      !(categoryNav instanceof HTMLElement) ||
       !(image instanceof HTMLImageElement) ||
       !(heading instanceof HTMLElement)
     ) {
@@ -58,9 +59,7 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
       logoWidth: logoRect.width,
       actionsLeft: actionsRect.left,
       headerHeight: navbar.getBoundingClientRect().height,
-      categoryHeight: categoryNav.getBoundingClientRect().height,
       bodyPaddingBottom: Number.parseFloat(getComputedStyle(document.body).paddingBottom) || 0,
-      imageTop: imageRect.top,
       imageBottom: imageRect.bottom,
       imageWidth: imageRect.width,
       imageHeight: imageRect.height,
@@ -73,10 +72,9 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   }, headerLogoSelector);
 
   expect(measurements.logoLeft).toBeGreaterThanOrEqual(0);
-  expect(measurements.logoWidth).toBeGreaterThanOrEqual(184);
+  expect(measurements.logoWidth).toBeGreaterThanOrEqual(110);
   expect(measurements.logoRight).toBeLessThanOrEqual(measurements.actionsLeft + 1);
-  expect(measurements.headerHeight).toBeLessThanOrEqual(66);
-  expect(measurements.categoryHeight).toBeLessThanOrEqual(44);
+  expect(measurements.headerHeight).toBeLessThanOrEqual(64);
   expect(measurements.bodyPaddingBottom).toBeLessThan(20);
   expect(measurements.imageComplete).toBe(true);
   expect(measurements.imageNaturalWidth).toBeGreaterThan(0);
@@ -87,7 +85,7 @@ test('mobile homepage is image-led and the brand does not collide at 390px', asy
   await page.screenshot({ path: testInfo.outputPath('article-homepage-390.png'), fullPage: true });
 });
 
-test('mobile navigation expands below the header and pushes content down', async ({ page }, testInfo) => {
+test('mobile navigation expands below the header with native utilities and pushes content down', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
@@ -105,11 +103,11 @@ test('mobile navigation expands below the header and pushes content down', async
   await expect(panel).toBeVisible();
   await expect(panel).toHaveAttribute('aria-hidden', 'false');
   await expect(panel.locator('nav a').first()).toBeVisible();
-  await expect(panel.locator('.portal-mobile-utility-link[href*="/search"]')).toBeVisible();
-  await expect(panel.locator('.portal-mobile-utility-link[href*="/saved"]')).toBeVisible();
-  await expect(page.locator('.portal-mobile-social-link')).toHaveCount(4);
-  await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
-  await expect(page.locator('body')).not.toHaveClass(/portal-menu-open/);
+  await expect(panel.locator('nav a[href*="/search"]')).toBeVisible();
+  await expect(panel.locator('nav a[href*="/saved"]')).toBeVisible();
+  await expect(panel.locator('.portal-menu-theme-toggle')).toBeVisible();
+  await expect(page.locator('.portal-mobile-social-link')).toHaveCount(0);
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
 
   const after = await content.boundingBox();
   expect(before).not.toBeNull();
@@ -146,10 +144,10 @@ test('very narrow homepage stays within the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 800 });
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
-  await expect(page.locator('.portal-theme-toggle')).toBeHidden();
+  await expect(page.locator('.portal-header-actions > .portal-theme-toggle')).toBeHidden();
   await expect(page.locator(headerLogoSelector)).toBeVisible();
   await expect(page.locator('.lead-story [data-story-image="lead"] img')).toBeVisible();
-  await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
 
   const widths = await page.evaluate(() => ({
     documentWidth: document.documentElement.scrollWidth,

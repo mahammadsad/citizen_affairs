@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
-test('jobs page is task-first and State UT filters remain fully usable', async ({ page }) => {
+test('jobs page is editorially identified first and State UT filters remain fully usable', async ({ page }) => {
   await page.goto('/bn/categories/jobs/');
 
   await expect(page.locator('.jobs-hero')).toHaveCount(0);
@@ -32,9 +32,9 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   });
 
   expect(taskOrder).not.toBeNull();
+  expect(taskOrder.titleTop).toBeLessThan(taskOrder.searchTop);
   expect(taskOrder.searchTop).toBeLessThan(taskOrder.stagesTop);
-  expect(taskOrder.stagesTop).toBeLessThan(taskOrder.titleTop);
-  expect(taskOrder.titleFontSize).toBeLessThanOrEqual(16);
+  expect(taskOrder.titleFontSize).toBeGreaterThanOrEqual(24);
 
   const filterDetails = page.locator('[data-job-filter-details]');
   const filterTrigger = filterDetails.locator('[data-job-filter-trigger]');
@@ -63,14 +63,13 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   await filterTrigger.click();
 
   const panel = page.locator('.jobs-filter-panel');
-  const bottomNavigation = page.locator('.portal-mobile-bottom');
   const levelSelect = page.locator('[data-job-filter="level"]');
   const regionField = page.locator('[data-job-region-field]');
   const regionSelect = page.locator('[data-job-region-filter]');
   const applyButton = page.locator('[data-job-apply]');
   const clearButton = panel.locator('[data-job-reset]');
 
-  await expect(bottomNavigation).toBeHidden();
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
   await expect(regionField).toBeHidden();
   await expect(regionSelect).toBeDisabled();
   await expect(applyButton).toBeVisible();
@@ -135,11 +134,7 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
     const filterPanel = document.querySelector('.jobs-filter-panel');
     const fields = document.querySelector('[data-job-filter-fields]');
     const actions = document.querySelector('[data-job-filter-actions]');
-    if (
-      !(filterPanel instanceof HTMLElement) ||
-      !(fields instanceof HTMLElement) ||
-      !(actions instanceof HTMLElement)
-    ) return null;
+    if (!(filterPanel instanceof HTMLElement) || !(fields instanceof HTMLElement) || !(actions instanceof HTMLElement)) return null;
 
     const panelBox = filterPanel.getBoundingClientRect();
     const fieldsBox = fields.getBoundingClientRect();
@@ -168,7 +163,7 @@ test('jobs page is task-first and State UT filters remain fully usable', async (
   expect(geometry.fieldsOverflowY).toBe('auto');
   expect(geometry.actionsInsidePanel).toBe(true);
   expect(geometry.fieldsAboveActions).toBe(true);
-  expect(Number.parseFloat(geometry.borderRadius)).toBeGreaterThanOrEqual(20);
+  expect(Number.parseFloat(geometry.borderRadius)).toBeGreaterThanOrEqual(16);
 
   await regionSelect.selectOption('west-bengal');
   await expect(regionSelect).toHaveValue('west-bengal');

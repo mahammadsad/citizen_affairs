@@ -17,13 +17,14 @@ test('mobile navigation expands below the header and stays in document flow', ()
   assert.doesNotMatch(runtime, /portal-menu-open/);
 });
 
-test('hamburger morph and menu rows use reference-style motion', () => {
+test('hamburger morph and menu rows use restrained editorial motion', () => {
   assert.match(header, /portal-menu-icon/);
   assert.match(header, /rotate\(45deg\)/);
   assert.match(header, /rotate\(-45deg\)/);
-  assert.match(header, /cubic-bezier\(\.22, 1, \.36, 1\)/);
-  assert.match(header, /translateY\(-7px\)/);
+  assert.match(header, /translateY\(-5px\)/);
+  assert.match(header, /transition: color 140ms ease, background-color 140ms ease, opacity 140ms ease, transform 180ms ease/);
   assert.match(header, /border-bottom: 1px solid var\(--color-border\)/);
+  assert.match(header, /prefers-reduced-motion: reduce/);
 });
 
 test('mobile navigation supports accessible toggle, Escape and focus restoration', () => {

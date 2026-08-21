@@ -14,15 +14,17 @@ test('localized category routes use the task-focused category portals', () => {
   assert.doesNotMatch(localizedCategoryRoute, /listing-hero/);
 });
 
-test('generic category portal provides localized guidance and useful summary counts', () => {
-  assert.match(categoryPortal, /Before you take action/);
-  assert.match(categoryPortal, /কোনো পদক্ষেপ নেওয়ার আগে/);
-  assert.match(categoryPortal, /कार्रवाई करने से पहले/);
+test('generic category portal is an editorial section rather than a dashboard', () => {
+  assert.match(categoryPortal, /category-hero/);
+  assert.match(categoryPortal, /category-description/);
   assert.match(categoryPortal, /officialCount/);
   assert.match(categoryPortal, /actionableCount/);
   assert.match(categoryPortal, /centralCount/);
   assert.match(categoryPortal, /stateCount/);
   assert.match(categoryPortal, /<ArticleCard \{article\} \{locale\} \/>/);
+  assert.doesNotMatch(categoryPortal, /category-trust/);
+  assert.doesNotMatch(categoryPortal, /category-summary/);
+  assert.doesNotMatch(categoryPortal, /Before you take action/);
 });
 
 test('generic category filters remain accessible and update result visibility without navigation', () => {

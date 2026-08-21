@@ -4,7 +4,6 @@ import { ACTIVE_CATEGORY_IDS, getBrandName } from '@utils/constants';
 import { categoryName } from '@lib/content';
 import BrandLogo from './BrandLogo.astro';
 import Icon from './Icon.astro';
-import LatestTicker from './LatestTicker.astro';
 import { localeMeta, locales, localizedPath, type Locale, ui } from '../i18n';
 
 interface Props {
@@ -29,67 +28,25 @@ const languageUrls = Object.fromEntries(
 const categories = (await getCollection('categories'))
   .filter((category) => ACTIVE_CATEGORY_IDS.includes(category.id))
   .sort((a, b) => ACTIVE_CATEGORY_IDS.indexOf(a.id) - ACTIVE_CATEGORY_IDS.indexOf(b.id));
-const currentDate = new Intl.DateTimeFormat(localeMeta[locale].intl, {
-  weekday: 'short',
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric'
-}).format(new Date());
 
 const copy = {
   en: {
-    independent: 'Independent citizen-information service',
-    notGovernment: 'Not a government website',
-    jobs: 'Jobs',
-    education: 'Education',
-    schemes: 'Schemes',
-    citizenServices: 'Citizen Services',
-    deadlines: 'Deadlines',
-    guides: 'Guides',
-    more: 'More',
-    admissions: 'Admissions, Exams & Results',
-    alerts: 'Citizen Alerts',
-    allUpdates: 'All Updates',
-    saved: 'Saved',
-    sections: 'Sections',
-    officialPolicy: 'Verification policy',
-    closeMenu: 'Close menu'
+    jobs: 'Jobs', education: 'Education', schemes: 'Schemes', citizenServices: 'Citizen Services',
+    deadlines: 'Deadlines', guides: 'Guides', more: 'More', admissions: 'Admissions, Exams & Results',
+    alerts: 'Citizen Alerts', allUpdates: 'Latest Updates', saved: 'Saved',
+    officialPolicy: 'Verification policy', closeMenu: 'Close menu'
   },
   bn: {
-    independent: 'স্বাধীন নাগরিক তথ্য পরিষেবা',
-    notGovernment: 'সরকারি ওয়েবসাইট নয়',
-    jobs: 'চাকরি',
-    education: 'শিক্ষা',
-    schemes: 'প্রকল্প',
-    citizenServices: 'নাগরিক পরিষেবা',
-    deadlines: 'সময়সীমা',
-    guides: 'গাইড',
-    more: 'আরও',
-    admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
-    alerts: 'নাগরিক সতর্কতা',
-    allUpdates: 'সব আপডেট',
-    saved: 'সংরক্ষিত',
-    sections: 'বিভাগ',
-    officialPolicy: 'যাচাই নীতি',
-    closeMenu: 'মেনু বন্ধ করুন'
+    jobs: 'চাকরি', education: 'শিক্ষা', schemes: 'প্রকল্প', citizenServices: 'নাগরিক পরিষেবা',
+    deadlines: 'সময়সীমা', guides: 'গাইড', more: 'আরও', admissions: 'ভর্তি, পরীক্ষা ও ফলাফল',
+    alerts: 'নাগরিক সতর্কতা', allUpdates: 'সর্বশেষ আপডেট', saved: 'সংরক্ষিত',
+    officialPolicy: 'যাচাই নীতি', closeMenu: 'মেনু বন্ধ করুন'
   },
   hi: {
-    independent: 'स्वतंत्र नागरिक सूचना सेवा',
-    notGovernment: 'सरकारी वेबसाइट नहीं',
-    jobs: 'नौकरियाँ',
-    education: 'शिक्षा',
-    schemes: 'योजनाएँ',
-    citizenServices: 'नागरिक सेवाएँ',
-    deadlines: 'समय-सीमाएँ',
-    guides: 'मार्गदर्शिकाएँ',
-    more: 'अधिक',
-    admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
-    alerts: 'नागरिक अलर्ट',
-    allUpdates: 'सभी अपडेट',
-    saved: 'सहेजे गए',
-    sections: 'अनुभाग',
-    officialPolicy: 'सत्यापन नीति',
-    closeMenu: 'मेनू बंद करें'
+    jobs: 'नौकरियाँ', education: 'शिक्षा', schemes: 'योजनाएँ', citizenServices: 'नागरिक सेवाएँ',
+    deadlines: 'समय-सीमाएँ', guides: 'मार्गदर्शिकाएँ', more: 'अधिक', admissions: 'प्रवेश, परीक्षाएँ और परिणाम',
+    alerts: 'नागरिक अलर्ट', allUpdates: 'नवीनतम अपडेट', saved: 'सहेजे गए',
+    officialPolicy: 'सत्यापन नीति', closeMenu: 'मेनू बंद करें'
   }
 }[locale];
 
@@ -130,14 +87,6 @@ const mobileCategories = categories.map((category) => ({
 ---
 
 <header class="portal-header">
-  <div class="portal-utility">
-    <div class="container">
-      <span><Icon name="check" size={15} />{copy.independent}</span>
-      <span>{currentDate}</span>
-      <a href={route('disclaimer')}>{copy.notGovernment}</a>
-    </div>
-  </div>
-
   <div class="portal-navbar">
     <div class="container portal-navbar-inner">
       <a class="portal-brand" href={route()} aria-label={`${brandName} — ${t.home}`}>
@@ -183,7 +132,7 @@ const mobileCategories = categories.map((category) => ({
             ))}
           </div>
         </details>
-        <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme}>
+        <button class="portal-icon-action portal-theme-toggle" type="button" aria-label={t.changeTheme} data-theme-toggle>
           <span class="portal-theme-icons" aria-hidden="true">
             <Icon name="theme" class="portal-theme-icon portal-theme-moon" />
             <svg class="portal-theme-icon portal-theme-sun" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -211,30 +160,26 @@ const mobileCategories = categories.map((category) => ({
     <div class="portal-mobile-panel-inner">
       <nav class="container" aria-label={t.mobileNav}>
         <a href={route()} aria-current={pathname === route() ? 'page' : undefined}><Icon name="home" size={20} /><span>{t.home}</span><Icon name="arrow" size={17} /></a>
+        <a href={route('search')}><Icon name="search" size={20} /><span>{t.search}</span><Icon name="arrow" size={17} /></a>
+        <a href={route('articles')}><Icon name="updates" size={20} /><span>{copy.allUpdates}</span><Icon name="arrow" size={17} /></a>
         {mobileCategories.map((item) => (
           <a href={item.href}><Icon name={item.icon} size={20} /><span>{item.label}</span><Icon name="arrow" size={17} /></a>
         ))}
         <a href={route('deadlines')}><Icon name="clock" size={20} /><span>{copy.deadlines}</span><Icon name="arrow" size={17} /></a>
-        <a href={route('articles')}><Icon name="updates" size={20} /><span>{copy.allUpdates}</span><Icon name="arrow" size={17} /></a>
+        <a href={route('saved')}><Icon name="bookmark" size={20} /><span>{copy.saved}</span><Icon name="arrow" size={17} /></a>
       </nav>
+      <div class="container portal-mobile-settings">
+        <button type="button" class="portal-menu-theme-toggle" data-theme-toggle>
+          <Icon name="theme" size={19} /><span>{t.changeTheme}</span>
+        </button>
+      </div>
     </div>
   </div>
-
-  <LatestTicker {locale} />
 </header>
-
-<nav class="portal-mobile-bottom" aria-label={t.mobileNav} aria-hidden="true" inert hidden>
-  <a href={route()} aria-current={pathname === route() ? 'page' : undefined}><Icon name="home" size={20} /><span>{t.home}</span></a>
-  <a href={route('search')}><Icon name="search" size={20} /><span>{t.search}</span></a>
-  <a href={route('deadlines')} aria-current={pathname.includes('/deadlines') ? 'page' : undefined}><Icon name="clock" size={20} /><span>{copy.deadlines}</span></a>
-  <a href={route('saved')} aria-current={pathname.includes('/saved') ? 'page' : undefined}><Icon name="bookmark" size={20} /><span>{copy.saved}</span></a>
-  <a href={route('categories')} aria-current={pathname.includes('/categories') ? 'page' : undefined}><Icon name="categories" size={20} /><span>{copy.sections}</span></a>
-</nav>
 
 <script>
   const root = document.documentElement;
-  const themeButton = document.querySelector<HTMLButtonElement>('.portal-theme-toggle');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const themeButtons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
 
   const syncThemeChrome = (theme: 'light' | 'dark') => {
     root.style.colorScheme = theme;
@@ -250,33 +195,9 @@ const mobileCategories = categories.map((category) => ({
 
   syncThemeChrome(root.dataset.theme === 'dark' ? 'dark' : 'light');
 
-  themeButton?.addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    const documentWithTransitions = document as Document & {
-      startViewTransition?: (callback: () => void) => { ready: Promise<void> };
-    };
-
-    if (!documentWithTransitions.startViewTransition || reducedMotion.matches) {
-      applyTheme(next);
-      return;
-    }
-
-    const transition = documentWithTransitions.startViewTransition(() => applyTheme(next));
-    transition.ready.then(() => {
-      root.animate(
-        [
-          { clipPath: 'inset(0 0 100% 0)' },
-          { clipPath: 'inset(0 0 0 0)' }
-        ],
-        {
-          duration: 520,
-          easing: 'cubic-bezier(.76, 0, .24, 1)',
-          fill: 'both',
-          pseudoElement: '::view-transition-new(root)'
-        } as KeyframeAnimationOptions
-      );
-    }).catch(() => {});
-  });
+  themeButtons.forEach((button) => button.addEventListener('click', () => {
+    applyTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+  }));
 
   document.querySelectorAll<HTMLDetailsElement>('.portal-header details').forEach((details) => {
     details.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => details.removeAttribute('open')));
@@ -291,45 +212,20 @@ const mobileCategories = categories.map((category) => ({
 </script>
 
 <style>
-  :global(::view-transition-old(root)),
-  :global(::view-transition-new(root)) {
-    animation: none;
-    mix-blend-mode: normal;
-  }
-  :global(::view-transition-old(root)) { z-index: 1; }
-  :global(::view-transition-new(root)) { z-index: 2; }
-
   .portal-header {
     position: sticky;
     top: 0;
     z-index: 100;
     border-bottom: 1px solid var(--color-border);
-    background: rgba(255, 255, 255, .96);
-    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, .97);
+    backdrop-filter: blur(12px);
   }
-  [data-theme="dark"] .portal-header { background: rgba(8, 19, 33, .96); }
-  .portal-utility {
-    border-bottom: 1px solid var(--color-border);
-    background: var(--color-navy);
-    color: rgba(255, 255, 255, .84);
-    font-size: .68rem;
-    font-weight: 700;
-  }
-  .portal-utility .container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: .75rem;
-    min-height: 30px;
-  }
-  .portal-utility span:first-child { display: inline-flex; align-items: center; gap: .35rem; }
-  .portal-utility span:first-child svg { color: #7ce4d7; }
-  .portal-utility a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
-  .portal-navbar { position: relative; z-index: 2; background: var(--color-surface); }
-  .portal-navbar-inner { display: flex; align-items: center; gap: .75rem; min-height: 68px; }
-  .portal-brand { flex: 0 1 160px; min-width: 106px; overflow: hidden; }
-  :global(.portal-brand-logo) { display: block; width: 158px; max-width: 100%; max-height: 50px; object-fit: contain; }
-  .portal-desktop-nav { display: none; align-items: center; gap: clamp(.65rem, 1.4vw, 1.15rem); margin-left: auto; }
+  [data-theme="dark"] .portal-header { background: rgba(8, 19, 33, .97); }
+  .portal-navbar { position: relative; z-index: 2; background: transparent; }
+  .portal-navbar-inner { display: flex; align-items: center; gap: .7rem; min-height: 70px; }
+  .portal-brand { flex: 0 1 164px; min-width: 108px; overflow: hidden; }
+  :global(.portal-brand-logo) { display: block; width: 164px; max-width: 100%; max-height: 50px; object-fit: contain; }
+  .portal-desktop-nav { display: none; align-items: center; gap: clamp(.55rem, 1vw, .95rem); margin-left: auto; }
   .portal-desktop-nav > a,
   .portal-more > summary {
     min-height: 42px;
@@ -337,8 +233,8 @@ const mobileCategories = categories.map((category) => ({
     align-items: center;
     border-bottom: 2px solid transparent;
     color: var(--color-text);
-    font-size: .79rem;
-    font-weight: 780;
+    font-size: .8rem;
+    font-weight: 650;
     white-space: nowrap;
   }
   .portal-desktop-nav > a:hover,
@@ -354,13 +250,13 @@ const mobileCategories = categories.map((category) => ({
   .portal-language > div {
     position: absolute;
     right: 0;
-    top: calc(100% + .45rem);
-    min-width: 220px;
-    padding: .45rem;
+    top: calc(100% + .4rem);
+    min-width: 210px;
+    padding: .35rem;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
+    border-radius: 8px;
     background: var(--color-surface);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
   }
   .portal-more > div a,
   .portal-language > div a {
@@ -369,32 +265,32 @@ const mobileCategories = categories.map((category) => ({
     gap: .55rem;
     min-height: 42px;
     padding: .55rem .65rem;
-    border-radius: 7px;
+    border-radius: 6px;
     font-size: .8rem;
-    font-weight: 750;
+    font-weight: 650;
   }
   .portal-more > div a:hover,
   .portal-language > div a:hover { background: var(--color-surface-alt); color: var(--color-primary); }
-  .portal-header-actions { display: flex; align-items: center; gap: .2rem; margin-left: auto; }
+  .portal-header-actions { display: flex; align-items: center; gap: .1rem; margin-left: auto; }
   .portal-icon-action,
   .portal-language > summary {
     display: grid;
     place-items: center;
-    min-width: 42px;
-    min-height: 42px;
+    min-width: 40px;
+    min-height: 40px;
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: 7px;
     color: var(--color-text);
   }
   .portal-icon-action:hover,
   .portal-language > summary:hover { background: var(--color-surface-alt); }
   .portal-language > summary {
     grid-template-columns: auto auto;
-    gap: .25rem;
+    gap: .22rem;
     border-color: var(--color-border);
-    padding-inline: .5rem;
+    padding-inline: .45rem;
     font-size: .72rem;
-    font-weight: 850;
+    font-weight: 750;
   }
   .portal-language > div { min-width: 170px; }
   .portal-language > div a { display: grid; grid-template-columns: 18px 1fr; }
@@ -403,13 +299,12 @@ const mobileCategories = categories.map((category) => ({
   :global(.portal-theme-icon) {
     position: absolute;
     inset: 0;
-    transition: opacity 220ms ease, transform 380ms cubic-bezier(.22, 1, .36, 1);
+    transition: opacity 160ms ease, transform 180ms ease;
   }
-  :global(.portal-theme-moon) { opacity: 1; transform: rotate(0deg) scale(1); }
-  .portal-theme-sun { opacity: 0; transform: rotate(-90deg) scale(.65); }
-  [data-theme="dark"] :global(.portal-theme-moon) { opacity: 0; transform: rotate(90deg) scale(.65); }
-  [data-theme="dark"] .portal-theme-sun { opacity: 1; transform: rotate(0deg) scale(1); }
-  .portal-theme-toggle:active { transform: scale(.92); }
+  :global(.portal-theme-moon) { opacity: 1; transform: scale(1); }
+  .portal-theme-sun { opacity: 0; transform: scale(.8); }
+  [data-theme="dark"] :global(.portal-theme-moon) { opacity: 0; transform: scale(.8); }
+  [data-theme="dark"] .portal-theme-sun { opacity: 1; transform: scale(1); }
 
   .portal-mobile-trigger { display: grid; }
   .portal-menu-icon { position: relative; display: block; width: 20px; height: 16px; }
@@ -421,95 +316,88 @@ const mobileCategories = categories.map((category) => ({
     border-radius: 999px;
     background: currentColor;
     transform-origin: center;
-    transition: top 240ms cubic-bezier(.22, 1, .36, 1), transform 240ms cubic-bezier(.22, 1, .36, 1), opacity 140ms ease;
+    transition: top 180ms ease, transform 180ms ease, opacity 120ms ease;
   }
   .portal-menu-icon > span:nth-child(1) { top: 1px; }
   .portal-menu-icon > span:nth-child(2) { top: 7px; }
   .portal-menu-icon > span:nth-child(3) { top: 13px; }
   .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(1) { top: 7px; transform: rotate(45deg); }
-  .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(2) { opacity: 0; transform: scaleX(.25); }
+  .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(2) { opacity: 0; }
   .portal-mobile-trigger[aria-expanded="true"] .portal-menu-icon > span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
 
   .portal-mobile-panel { display: none; background: var(--color-surface); }
   .portal-mobile-panel-inner { min-height: 0; overflow: hidden; }
-  .portal-mobile-panel nav { padding-block: 0; }
+  .portal-mobile-panel nav { padding-block: .25rem .5rem; }
   .portal-mobile-panel nav a {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: .72rem;
-    min-height: 52px;
+    min-height: 48px;
     border-bottom: 1px solid var(--color-border);
     color: var(--color-text);
-    font-size: .86rem;
-    font-weight: 750;
+    font-size: .88rem;
+    font-weight: 650;
     opacity: 0;
-    transform: translateY(-7px);
-    transition: color 160ms ease, background-color 160ms ease, opacity 160ms ease 30ms, transform 240ms cubic-bezier(.22, 1, .36, 1) 30ms;
+    transform: translateY(-5px);
+    transition: color 140ms ease, background-color 140ms ease, opacity 140ms ease, transform 180ms ease;
   }
-  .portal-mobile-panel nav a:first-child { border-top: 1px solid var(--color-border); }
   .portal-mobile-panel nav a:hover,
   .portal-mobile-panel nav a:focus-visible,
   .portal-mobile-panel nav a[aria-current="page"] { color: var(--color-primary); background: var(--color-surface-alt); }
   .portal-mobile-panel.is-open nav a { opacity: 1; transform: translateY(0); }
-  .portal-mobile-bottom { display: none; }
+  .portal-mobile-settings { padding-block: 0 1rem; }
+  .portal-menu-theme-toggle {
+    display: none;
+    width: 100%;
+    min-height: 46px;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: .7rem;
+    padding: .55rem .7rem;
+    border: 1px solid var(--color-border);
+    border-radius: 7px;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: .86rem;
+    font-weight: 650;
+    text-align: left;
+  }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1280px) {
     .portal-desktop-nav { display: flex; }
     .portal-mobile-trigger,
     .portal-mobile-panel { display: none; }
     .portal-header-actions { margin-left: 0; }
   }
-  @media (max-width: 1099px) {
+  @media (max-width: 1279px) {
     .portal-saved-action { display: none; }
     .portal-mobile-panel {
       display: grid;
       grid-template-rows: 0fr;
       opacity: 0;
       visibility: hidden;
-      transition: grid-template-rows 260ms cubic-bezier(.22, 1, .36, 1), opacity 150ms ease, visibility 0s linear 260ms;
+      transition: grid-template-rows 200ms ease, opacity 140ms ease, visibility 0s linear 200ms;
     }
     .portal-mobile-panel.is-open {
       grid-template-rows: 1fr;
       opacity: 1;
       visibility: visible;
-      transition: grid-template-rows 300ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease, visibility 0s linear 0s;
+      transition: grid-template-rows 220ms ease, opacity 160ms ease, visibility 0s linear 0s;
     }
   }
   @media (max-width: 680px) {
-    .portal-utility .container { justify-content: center; }
-    .portal-utility span:nth-child(2),
-    .portal-utility a { display: none; }
     .portal-navbar-inner { min-height: 62px; }
     .portal-brand { flex-basis: 118px; }
     :global(.portal-brand-logo) { width: 118px; max-height: 44px; }
-    .portal-search-action { display: none; }
-    .portal-mobile-panel nav a { min-height: 50px; font-size: .84rem; }
-    .portal-mobile-bottom {
-      position: fixed;
-      inset: auto 0 0;
-      z-index: 110;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      min-height: 60px;
-      padding-bottom: env(safe-area-inset-bottom);
-      border-top: 1px solid var(--color-border);
-      background: rgba(255, 255, 255, .97);
-      backdrop-filter: blur(14px);
-    }
-    [data-theme="dark"] .portal-mobile-bottom { background: rgba(8, 19, 33, .97); }
-    .portal-mobile-bottom a {
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: .15rem;
-      min-width: 0;
-      color: var(--color-text-muted);
-      font-size: .61rem;
-      font-weight: 750;
-    }
-    .portal-mobile-bottom a[aria-current="page"] { color: var(--color-primary); }
-    :global(body) { padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
+    .portal-header-actions > .portal-theme-toggle { display: none; }
+    .portal-menu-theme-toggle { display: grid; }
+    .portal-mobile-panel nav a { min-height: 48px; font-size: .86rem; }
+  }
+  @media (max-width: 390px) {
+    .portal-language > summary span { display: none; }
+    .portal-language > summary { grid-template-columns: auto; padding-inline: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
     :global(.portal-theme-icon),

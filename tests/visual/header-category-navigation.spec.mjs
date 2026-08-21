@@ -3,19 +3,12 @@ import { expect, test } from '@playwright/test';
 test.use({ viewport: { width: 390, height: 844 } });
 
 for (const route of ['/bn/careers/', '/hi/careers/']) {
-  test(`language menu stays above category navigation on ${route}`, async ({ page }) => {
+  test(`language menu stays usable without duplicate category navigation on ${route}`, async ({ page }) => {
     await page.goto(route);
 
-    const categoryNavigation = page.locator('[data-category-navigation]');
-    await expect(categoryNavigation).toBeVisible();
-
-    const categoryLinks = categoryNavigation.locator('a');
-    await expect(categoryLinks).toHaveCount(10);
-
-    const scrollsInternally = await categoryNavigation.locator('nav').evaluate(
-      (element) => element.scrollWidth > element.clientWidth
-    );
-    expect(scrollsInternally).toBe(true);
+    await expect(page.locator('[data-category-navigation]')).toHaveCount(0);
+    await expect(page.locator('.portal-mobile-trigger')).toBeVisible();
+    await expect(page.locator('.portal-search-action')).toBeVisible();
 
     await page.locator('.portal-language > summary').click();
 

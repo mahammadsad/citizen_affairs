@@ -15,16 +15,17 @@ test('production smoke verifies the professional news homepage', () => {
   assert.match(production, /page\.locator\('\.trending-section'\)\)\.toHaveCount\(0\)/);
   assert.match(production, /page\.locator\('\.section-empty'\)\)\.toHaveCount\(0\)/);
   assert.match(production, /page\.locator\('\.portal-search'\)\)\.toHaveCount\(0\)/);
+  assert.match(production, /page\.locator\('\.category-nav-shell'\)\)\.toHaveCount\(0\)/);
   assert.doesNotMatch(production, /page\.locator\('\.news-hero'\)/);
   assert.doesNotMatch(production, /page\.locator\('\.section-news-block'\)\)\.toHaveCount\(7\)/);
-  assert.doesNotMatch(production, /getByRole\('button', \{ name: \/search\|খুঁজুন\|खोजें\/i \}\)/);
 });
 
-test('production smoke keeps search discoverable through viewport-appropriate navigation', () => {
+test('production smoke keeps search discoverable through the compact navigation', () => {
   assert.match(production, /\.portal-search-action\[href\*="\/search"\]/);
-  assert.match(production, /portal-mobile-utility-link\[href\*="\/search"\]/);
-  assert.match(production, /portal-mobile-utility-link\[href\*="\/saved"\]/);
-  assert.match(production, /page\.locator\('\.portal-mobile-bottom'\)\)\.toBeHidden\(\)/);
+  assert.match(production, /panel\.locator\('nav a\[href\*="\/search"\]'\)/);
+  assert.match(production, /panel\.locator\('nav a\[href\*="\/saved"\]'\)/);
+  assert.match(production, /portal-menu-theme-toggle/);
+  assert.match(production, /page\.locator\('\.portal-mobile-bottom'\)\)\.toHaveCount\(0\)/);
   assert.match(production, /testInfo\.project\.name === 'mobile'/);
 });
 

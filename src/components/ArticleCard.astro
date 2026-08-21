@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content';
 import { getCategoryData, categoryName } from '@lib/content';
 import { deadlineLabel, deadlineState } from '@lib/deadline';
-import { officialLinkIdentity } from '@lib/official-links';
 import { normalizeRegionLabel, regionName } from '@lib/regions';
 import Icon from './Icon.astro';
 import { dateLocale, localizedPath, type Locale, ui, verificationLabels } from '../i18n';
@@ -43,58 +42,19 @@ const levelLabel =
 
 const copy = {
   en: {
-    vacancies: 'Vacancies',
-    qualification: 'Qualification',
-    salary: 'Salary',
-    benefit: 'Benefit',
-    forWhom: 'For',
-    institution: 'Institution',
-    programme: 'Programme',
-    provider: 'Provider',
-    service: 'Service',
-    action: 'Action',
-    deadline: 'Last date',
-    status: 'Status',
-    official: 'Official source',
-    updated: 'Updated',
-    application: 'Application',
-    newTab: 'opens in a new tab'
+    vacancies: 'Vacancies', qualification: 'Qualification', salary: 'Salary', benefit: 'Benefit', forWhom: 'For',
+    institution: 'Institution', programme: 'Programme', provider: 'Provider', service: 'Service', action: 'Action',
+    deadline: 'Last date', updated: 'Updated', application: 'Application'
   },
   bn: {
-    vacancies: 'শূন্যপদ',
-    qualification: 'যোগ্যতা',
-    salary: 'বেতন',
-    benefit: 'সুবিধা',
-    forWhom: 'যাদের জন্য',
-    institution: 'প্রতিষ্ঠান',
-    programme: 'কোর্স',
-    provider: 'প্রদানকারী',
-    service: 'পরিষেবা',
-    action: 'করণীয়',
-    deadline: 'শেষ তারিখ',
-    status: 'স্ট্যাটাস',
-    official: 'অফিসিয়াল সূত্র',
-    updated: 'আপডেট',
-    application: 'আবেদন',
-    newTab: 'নতুন ট্যাবে খুলবে'
+    vacancies: 'শূন্যপদ', qualification: 'যোগ্যতা', salary: 'বেতন', benefit: 'সুবিধা', forWhom: 'যাদের জন্য',
+    institution: 'প্রতিষ্ঠান', programme: 'কোর্স', provider: 'প্রদানকারী', service: 'পরিষেবা', action: 'করণীয়',
+    deadline: 'শেষ তারিখ', updated: 'আপডেট', application: 'আবেদন'
   },
   hi: {
-    vacancies: 'रिक्तियाँ',
-    qualification: 'योग्यता',
-    salary: 'वेतन',
-    benefit: 'लाभ',
-    forWhom: 'किसके लिए',
-    institution: 'संस्थान',
-    programme: 'कार्यक्रम',
-    provider: 'प्रदाता',
-    service: 'सेवा',
-    action: 'कार्रवाई',
-    deadline: 'अंतिम तिथि',
-    status: 'स्थिति',
-    official: 'आधिकारिक स्रोत',
-    updated: 'अपडेट',
-    application: 'आवेदन',
-    newTab: 'नए टैब में खुलेगा'
+    vacancies: 'रिक्तियाँ', qualification: 'योग्यता', salary: 'वेतन', benefit: 'लाभ', forWhom: 'किसके लिए',
+    institution: 'संस्थान', programme: 'कार्यक्रम', provider: 'प्रदाता', service: 'सेवा', action: 'कार्रवाई',
+    deadline: 'अंतिम तिथि', updated: 'अपडेट', application: 'आवेदन'
   }
 }[locale];
 
@@ -102,7 +62,6 @@ const facts: Array<{ label: string; value: string }> = [];
 let statusText: string = article.data.deadline
   ? deadlineLabel(state, locale)
   : verificationLabels[locale][article.data.verificationStatus];
-let officialUrl = article.data.officialNoticeUrl || article.data.applicationUrl;
 
 if (article.data.job) {
   facts.push({ label: copy.vacancies, value: article.data.job.totalVacancies.toLocaleString(locale) });
@@ -113,51 +72,38 @@ if (article.data.job) {
     facts.push({ label: copy.salary, value: [minimum, maximum].filter(Boolean).join(' – ') });
   }
   statusText = article.data.job.recruitmentStatus.replaceAll('-', ' ');
-  officialUrl = article.data.job.officialNotificationUrl;
 } else if (article.data.scheme) {
-  facts.push({
-    label: copy.benefit,
-    value: article.data.scheme.benefitAmount || article.data.scheme.benefitType[0]
-  });
+  facts.push({ label: copy.benefit, value: article.data.scheme.benefitAmount || article.data.scheme.benefitType[0] });
   facts.push({ label: copy.forWhom, value: article.data.scheme.targetBeneficiaries[0] });
   facts.push({ label: copy.application, value: article.data.scheme.applicationMode });
   statusText = article.data.scheme.schemeStatus.replaceAll('-', ' ');
-  officialUrl = article.data.scheme.officialPortal;
 } else if (article.data.admission) {
   facts.push({ label: copy.institution, value: article.data.admission.institution });
   facts.push({ label: copy.programme, value: article.data.admission.programme });
   facts.push({ label: copy.qualification, value: article.data.admission.eligibilityCriteria[0] });
   statusText = article.data.admission.admissionStatus.replaceAll('-', ' ');
-  officialUrl = article.data.admission.officialProspectusUrl;
 } else if (article.data.scholarship) {
   facts.push({ label: copy.provider, value: article.data.scholarship.provider });
   facts.push({ label: copy.benefit, value: article.data.scholarship.benefitAmount });
   facts.push({ label: copy.forWhom, value: article.data.scholarship.targetStudents[0] });
   statusText = article.data.scholarship.scholarshipStatus.replaceAll('-', ' ');
-  officialUrl = article.data.scholarship.officialPortal;
 } else if (article.data.service) {
   facts.push({ label: copy.service, value: article.data.service.serviceName });
   facts.push({ label: copy.action, value: article.data.service.serviceActions.join(', ').replaceAll('-', ' ') });
-  if (article.data.service.processingTime) {
-    facts.push({ label: copy.status, value: article.data.service.processingTime });
-  }
   statusText = article.data.service.serviceStatus.replaceAll('-', ' ');
-  officialUrl = article.data.service.officialPortal;
 } else {
   if (article.data.amountOrVacancies) facts.push({ label: t.amount, value: article.data.amountOrVacancies });
   if (article.data.qualification[0]) facts.push({ label: copy.qualification, value: article.data.qualification[0] });
-  if (article.data.quickSummary[0]) facts.push({ label: copy.status, value: article.data.quickSummary[0] });
 }
 
 if (article.data.deadline && !facts.some((fact) => fact.label === copy.deadline)) {
   facts.push({ label: copy.deadline, value: formatter.format(article.data.deadline) });
 }
 
-const visibleFacts = facts.slice(0, compact ? 2 : 4);
+const visibleFacts = facts.filter((fact) => fact.value).slice(0, 2);
 const statusClass = article.data.deadline
   ? `deadline-${state}`
   : `verification-${article.data.verificationStatus}`;
-const officialIdentity = officialLinkIdentity(officialUrl);
 ---
 
 <article class:list={['utility-card', { compact }]}>
@@ -170,9 +116,6 @@ const officialIdentity = officialLinkIdentity(officialUrl);
   </div>
 
   <div class="utility-card-main">
-    <p class="utility-verification">
-      <Icon name="check" size={14} />{verificationLabels[locale][article.data.verificationStatus]}
-    </p>
     <h3><a href={route(`articles/${article.data.urlSlug}`)}>{article.data.title}</a></h3>
     {!compact && <p class="utility-description">{article.data.description}</p>}
 
@@ -189,78 +132,63 @@ const officialIdentity = officialLinkIdentity(officialUrl);
   </div>
 
   <div class="utility-card-footer">
-    <span><Icon name="clock" size={15} />{copy.updated}: {formatter.format(displayDate)}</span>
-    <div>
-      {officialUrl && officialIdentity.valid && (
-        <a
-          class="utility-official"
-          href={officialUrl}
-          target="_blank"
-          rel="noopener noreferrer external"
-          referrerpolicy="no-referrer"
-          aria-label={`${copy.official}: ${officialIdentity.hostname}. ${copy.newTab}`}
-        >
-          <span>{copy.official}<small>{officialIdentity.hostname}</small></span><Icon name="external" size={16} />
-        </a>
-      )}
-      <a class="utility-details" href={route(`articles/${article.data.urlSlug}`)}>
-        {t.readMore}<Icon name="arrow" size={17} />
-      </a>
-    </div>
+    <span><Icon name="clock" size={14} />{copy.updated}: {formatter.format(displayDate)}</span>
+    <a class="utility-details" href={route(`articles/${article.data.urlSlug}`)}>
+      {t.readMore}<Icon name="arrow" size={16} />
+    </a>
   </div>
 </article>
 
 <style>
   .utility-card {
     display: flex;
-    flex-direction: column;
     min-height: 100%;
     overflow: hidden;
+    flex-direction: column;
     border: 1px solid var(--color-border);
-    border-radius: 11px;
+    border-radius: 8px;
     background: var(--color-surface);
   }
-  .utility-card:hover { border-color: rgba(var(--color-primary-rgb), .55); }
+  .utility-card:hover { border-color: rgba(var(--color-primary-rgb), .42); }
   .utility-card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: .75rem;
-    min-height: 42px;
-    padding: .55rem .85rem;
+    gap: .7rem;
+    min-height: 38px;
+    padding: .5rem .85rem;
     border-bottom: 1px solid var(--color-border);
-    background: var(--color-surface-alt);
+    background: transparent;
   }
   .utility-card-context {
     display: flex;
+    min-width: 0;
     flex-wrap: wrap;
-    gap: .35rem .75rem;
+    gap: .25rem .65rem;
     color: var(--color-primary);
-    font-size: .66rem;
-    font-weight: 850;
-    text-transform: uppercase;
-    letter-spacing: .025em;
+    font-size: .7rem;
+    font-weight: 650;
   }
   .utility-card-context span + span { color: var(--color-text-muted); }
   .utility-status {
     flex: 0 0 auto;
-    padding: .22rem .48rem;
+    padding: .2rem .45rem;
     border-radius: 999px;
-    background: rgba(var(--color-primary-rgb), .09);
+    background: rgba(var(--color-primary-rgb), .07);
     color: var(--color-primary);
-    font-size: .64rem;
-    font-weight: 850;
+    font-size: .68rem;
+    font-weight: 650;
     text-transform: capitalize;
   }
   .deadline-open,
   .verification-officially-confirmed {
-    background: rgba(var(--color-green-rgb), .1);
+    background: rgba(var(--color-green-rgb), .09);
     color: var(--color-green-text);
   }
   .deadline-closing-soon,
   .deadline-urgent {
-    background: rgba(var(--color-orange-rgb), .13);
-    color: #9a5600;
+    background: rgba(var(--color-orange-rgb), .12);
+    color: #8a5700;
   }
   .deadline-closed,
   .verification-closed,
@@ -270,71 +198,63 @@ const officialIdentity = officialLinkIdentity(officialUrl);
   }
   .utility-card-main {
     display: flex;
-    flex-direction: column;
     flex: 1;
-    padding: 1rem;
-  }
-  .utility-verification {
-    display: inline-flex;
-    align-items: center;
-    gap: .3rem;
-    margin: 0 0 .45rem;
-    color: var(--color-green-text);
-    font-size: .67rem;
-    font-weight: 800;
+    flex-direction: column;
+    padding: .95rem;
   }
   .utility-card h3 {
     margin: 0;
     color: var(--color-text);
-    font-size: 1.08rem;
-    line-height: 1.35;
+    font-size: 1.1rem;
+    line-height: 1.38;
   }
   .utility-card h3 a:hover { color: var(--color-primary); }
   .utility-description {
     display: -webkit-box;
-    margin: .45rem 0 .85rem;
+    margin: .45rem 0 .8rem;
     overflow: hidden;
     color: var(--color-text-muted);
-    font-size: .86rem;
+    font-size: .88rem;
+    line-height: 1.55;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
   .utility-facts {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: .55rem;
+    gap: .5rem;
     margin-top: auto;
-    padding-top: .85rem;
+    padding-top: .8rem;
     border-top: 1px solid var(--color-border);
   }
   .utility-facts div {
     min-width: 0;
-    padding: .55rem;
-    border-radius: 8px;
-    background: var(--color-surface-alt);
+    padding: .5rem 0;
   }
   .utility-facts dt {
     margin-bottom: .12rem;
     color: var(--color-text-muted);
-    font-size: .62rem;
-    font-weight: 750;
+    font-size: .7rem;
+    font-weight: 600;
   }
   .utility-facts dd {
+    display: -webkit-box;
     overflow: hidden;
-    font-size: .77rem;
-    font-weight: 820;
-    line-height: 1.35;
-    text-overflow: ellipsis;
+    font-size: .8rem;
+    font-weight: 650;
+    line-height: 1.4;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
   .utility-card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: .75rem;
-    padding: .7rem .85rem;
+    padding: .65rem .85rem;
     border-top: 1px solid var(--color-border);
     color: var(--color-text-muted);
-    font-size: .68rem;
+    font-size: .72rem;
   }
   .utility-card-footer > span,
   .utility-card-footer a {
@@ -342,34 +262,18 @@ const officialIdentity = officialLinkIdentity(officialUrl);
     align-items: center;
     gap: .3rem;
   }
-  .utility-card-footer > div {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-  }
   .utility-card-footer a {
+    flex: 0 0 auto;
     color: var(--color-primary);
-    font-weight: 820;
-  }
-  .utility-official > span { display: grid; gap: .05rem; }
-  .utility-official small {
-    max-width: 125px;
-    overflow: hidden;
-    color: var(--color-text-muted);
-    font-size: .58rem;
-    font-weight: 720;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-weight: 650;
   }
   .compact .utility-description { display: none; }
   .compact .utility-card-main { padding: .85rem; }
-  .compact .utility-card-footer > div a:first-child { display: none; }
 
   @media (max-width: 520px) {
-    .utility-facts { grid-template-columns: 1fr; }
-    .utility-card-footer {
-      align-items: flex-start;
-      flex-direction: column;
-    }
+    .utility-card-top { align-items: flex-start; }
+    .utility-card-main { padding: .8rem; }
+    .utility-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .utility-card-footer { padding: .6rem .8rem; }
   }
 </style>

@@ -2,9 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import PortalHeader from '@components/PortalHeader.astro';
 import PortalRuntime from '@components/PortalRuntime.astro';
-import ThemeTransitionRuntime from '@components/ThemeTransitionRuntime.astro';
 import MobileNavigationRuntime from '@components/MobileNavigationRuntime.astro';
-import MobileBottomNavigationRuntime from '@components/MobileBottomNavigationRuntime.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/portal-renovation.css';
 import '../styles/content-first-mobile.css';
@@ -65,9 +63,7 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 >
   <PortalHeader {locale} {alternateUrls} />
   <PortalRuntime />
-  <ThemeTransitionRuntime />
   <MobileNavigationRuntime />
-  <MobileBottomNavigationRuntime />
   <main id="main-content" tabindex="-1">
     <slot />
   </main>
@@ -75,78 +71,12 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 </BaseLayout>
 
 <style>
-  main { min-height: calc(100vh - 420px); }
-
-  :global(.portal-utility) {
-    display: none !important;
-  }
-
-  /* The fixed five-item mobile bar duplicated routes already available in the
-     header/menu and permanently consumed useful reading space. Keep its legacy
-     markup hidden for compatibility while the expanding menu owns mobile nav. */
-  :global(.portal-mobile-bottom),
-  :global(body.article-reading-mode .portal-mobile-bottom) {
-    display: none !important;
-  }
-
-  :global(.portal-navbar) {
-    z-index: 50 !important;
-  }
-
-  :global(.portal-navbar-inner) {
-    min-height: 82px !important;
-    gap: .5rem !important;
-  }
-
-  :global(.portal-brand) {
-    --portal-logo-width: clamp(196px, 20vw, 224px);
-    display: flex !important;
-    align-items: center;
-    justify-content: flex-start;
-    flex: 0 0 var(--portal-logo-width) !important;
-    min-width: 196px !important;
-    max-width: 224px !important;
-    overflow: visible !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    line-height: 0;
-  }
-
-  :global(.portal-brand-logo) {
-    width: var(--portal-logo-width) !important;
-    max-width: none !important;
-    max-height: 56px !important;
-    height: auto !important;
-    object-fit: contain !important;
-    object-position: left center !important;
-    opacity: 1 !important;
-    filter: none !important;
-    mix-blend-mode: normal !important;
-    transform: none !important;
-    background: transparent !important;
-  }
-
-  /* The header uses a dedicated light wordmark in dark mode, so the approved
-     artwork stays clear without a white card or any CSS recolouring. */
-  :global(html[data-theme='dark'] .portal-header .portal-brand) {
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  :global(.portal-header-actions) {
-    position: relative;
-    flex: 0 0 auto !important;
-    min-width: max-content;
-  }
+  main { min-height: calc(100vh - 360px); }
 
   :global(.news-home .top-news) {
     padding: clamp(1rem, 2.6vw, 1.8rem) 0 clamp(1.7rem, 3.5vw, 2.8rem) !important;
   }
 
-  /* The home section heading already provides the navy divider. The lead story
-     should read as a card, not introduce a second teal section bar. */
   :global(.news-home .lead-story) {
     border-top: 0 !important;
   }
@@ -167,23 +97,145 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     margin-bottom: .75rem !important;
   }
 
-  :global(body.article-reading-mode .category-nav-shell) {
+  /* Jobs should identify the page before asking readers to operate controls. */
+  :global(.jobs-listing) {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  :global(.jobs-result-line) {
+    order: -3;
+    padding: 1rem !important;
+    border-top: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(.jobs-controls) { order: -2; }
+  :global(.jobs-stage-tabs) { order: -1; }
+
+  /* Horizontal controls should advertise that more options exist. */
+  :global(.jobs-stage-tabs),
+  :global(.category-filters),
+  :global(.article-actions) {
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-border) transparent !important;
+  }
+
+  :global(.jobs-stage-tabs::-webkit-scrollbar),
+  :global(.category-filters::-webkit-scrollbar),
+  :global(.article-actions::-webkit-scrollbar) {
+    display: block !important;
+    height: 3px !important;
+  }
+
+  :global(.jobs-stage-tabs::-webkit-scrollbar-thumb),
+  :global(.category-filters::-webkit-scrollbar-thumb),
+  :global(.article-actions::-webkit-scrollbar-thumb) {
+    border-radius: 999px;
+    background: var(--color-border);
+  }
+
+  /* Search should feel like search first, filtering second. */
+  :global(.citizen-search.section) {
+    padding-top: 1.5rem !important;
+  }
+
+  :global(.citizen-search .verification-note) {
     display: none !important;
   }
 
+  :global(.citizen-search .control-actions .btn-secondary) {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Articles: establish trust once, then let the story breathe. */
+  :global(body.article-reading-mode .article-labels > span),
+  :global(body.article-reading-mode .reading-time),
+  :global(body.article-reading-mode #copyLink) {
+    display: none !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip) {
+    align-items: center !important;
+    margin-top: .9rem !important;
+    padding: .65rem 0 !important;
+    border: 0 !important;
+    border-top: 1px solid var(--color-border) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(body.article-reading-mode .verification-state) {
+    gap: .5rem !important;
+  }
+
+  :global(body.article-reading-mode .verification-state > svg) {
+    width: 18px !important;
+    height: 18px !important;
+    color: var(--color-green-text);
+  }
+
+  :global(body.article-reading-mode .verification-state small) {
+    display: none !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dl) {
+    gap: 0 !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dl div) {
+    min-width: 0 !important;
+    padding: .15rem .7rem !important;
+    border-left: 1px solid var(--color-border);
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dt) {
+    font-size: .7rem !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dd) {
+    font-size: .78rem !important;
+    font-weight: 650 !important;
+  }
+
   @media (max-width: 700px) {
-    /* Job filters used to stop above the fixed bottom navigation. Allow the
-       sheet to occupy that reclaimed area while still respecting safe areas. */
-    :global(body .jobs-filter-panel.jobs-filter-panel-enhanced) {
+    /* Give the mobile jobs filter panel a real bottom-sheet separation. */
+    :global(.jobs-filter-details[open]::before) {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      background: rgba(7, 30, 52, .42);
+      backdrop-filter: blur(1.5px);
+    }
+
+    :global(body .jobs-filter-panel) {
+      z-index: 40 !important;
       bottom: calc(env(safe-area-inset-bottom) + .75rem) !important;
-      max-height: calc(100vh - env(safe-area-inset-bottom) - 1.5rem) !important;
       max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.5rem) !important;
+      border-radius: 16px !important;
+      border-color: rgba(7, 30, 52, .18) !important;
+      box-shadow: 0 18px 48px rgba(7, 30, 52, .24) !important;
+    }
+
+    :global(body .jobs-filter-panel::before) {
+      content: '';
+      display: block;
+      grid-column: 1 / -1;
+      width: 38px;
+      height: 4px;
+      margin: -.15rem auto .15rem;
+      border-radius: 999px;
+      background: var(--color-border);
     }
   }
 
   @media (max-width: 680px) {
-    /* PortalHeader used to reserve 60px for the fixed bottom navigation. With
-       that bar gone, content can extend to the safe area on every mobile page. */
     :global(body) {
       padding-bottom: env(safe-area-inset-bottom) !important;
     }
@@ -192,55 +244,18 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
       padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
     }
 
-    :global(.portal-header),
-    :global(.portal-navbar),
-    :global(.portal-navbar-inner) {
-      max-width: 100vw;
+    :global(body.article-reading-mode .verification-strip) {
+      gap: .55rem !important;
     }
 
-    :global(.portal-header) {
-      overflow-x: clip;
+    :global(body.article-reading-mode .verification-strip dl) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 
-    :global(.portal-navbar-inner) {
-      min-height: 66px !important;
-      padding-inline: .75rem !important;
-      gap: .25rem !important;
-    }
-
-    :global(.portal-brand) {
-      --portal-logo-width: clamp(168px, calc(100vw - 176px), 204px);
-      flex: 0 1 var(--portal-logo-width) !important;
-      min-width: 184px !important;
-      max-width: 204px !important;
-    }
-
-    :global(.portal-brand-logo) {
-      width: var(--portal-logo-width) !important;
-      max-width: none !important;
-      max-height: 52px !important;
-    }
-
-    :global(.portal-header-actions) {
-      max-width: calc(100vw - 1.5rem);
-    }
-
-    :global(.portal-language) {
-      position: static !important;
-    }
-
-    :global(.portal-language > summary) {
-      min-width: 54px !important;
-      padding-inline: .42rem !important;
-    }
-
-    :global(.portal-language > div) {
-      right: 0 !important;
-      left: auto !important;
-      width: min(170px, calc(100vw - 1.5rem));
-      min-width: 0 !important;
-      max-width: calc(100vw - 1.5rem);
-      overflow-wrap: anywhere;
+    :global(body.article-reading-mode .verification-strip dl div) {
+      padding: .3rem .55rem !important;
+      border-left: 0;
+      border-top: 1px solid var(--color-border);
     }
 
     :global(.news-home .top-news) {
@@ -250,36 +265,6 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     :global(.news-home .section-title-row) {
       margin-bottom: .55rem !important;
       padding-bottom: .4rem !important;
-    }
-  }
-
-  @media (max-width: 430px) {
-    :global(body .jobs-filter-panel.jobs-filter-panel-enhanced) {
-      bottom: calc(env(safe-area-inset-bottom) + .65rem) !important;
-      max-height: calc(100vh - env(safe-area-inset-bottom) - 1.3rem) !important;
-      max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.3rem) !important;
-    }
-  }
-
-  @media (max-width: 380px) {
-    :global(.portal-theme-toggle) {
-      display: none !important;
-    }
-  }
-
-  @media (max-width: 350px) {
-    :global(.portal-theme-toggle) {
-      display: none !important;
-    }
-
-    :global(.portal-brand) {
-      --portal-logo-width: clamp(160px, calc(100vw - 142px), 178px);
-      min-width: 160px !important;
-      max-width: 178px !important;
-    }
-
-    :global(.portal-brand-logo) {
-      width: var(--portal-logo-width) !important;
     }
   }
 </style>
