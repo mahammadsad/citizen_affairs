@@ -6,11 +6,11 @@ const typography = await readFile('src/styles/english-forbes-typography.css', 'u
 const mainLayout = await readFile('src/layouts/MainLayout.astro', 'utf8');
 const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
 
-test('English editorial typography self-hosts Merriweather', () => {
+test('English editorial typography self-hosts lean Latin Merriweather assets', () => {
   assert.equal(packageJson.dependencies['@fontsource/merriweather'], '5.3.0');
-  assert.match(typography, /@fontsource\/merriweather\/400\.css/);
-  assert.match(typography, /@fontsource\/merriweather\/700\.css/);
-  assert.doesNotMatch(typography, /fonts\.googleapis\.com|fonts\.gstatic\.com|@import\s+url\(https?:/);
+  assert.match(typography, /@fontsource\/merriweather\/latin-400\.css/);
+  assert.match(typography, /@fontsource\/merriweather\/latin-700\.css/);
+  assert.doesNotMatch(typography, /400-italic\.css|fonts\.googleapis\.com|fonts\.gstatic\.com|@import\s+url\(https?:/);
 });
 
 test('English uses Merriweather for editorial display and reading but retains sans UI', () => {
