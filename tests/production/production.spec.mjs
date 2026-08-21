@@ -56,9 +56,7 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   });
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/Citizen Affairs/i);
-  await expect(
-    page.locator('.portal-navbar .portal-brand > img[alt*="Citizen Affairs"]'),
-  ).toHaveCount(1);
+  await expect(page.locator('.portal-navbar .portal-brand > img[alt*="Citizen Affairs"]')).toHaveCount(1);
   await expect(page.locator('.top-news')).toBeVisible();
   await expect(page.locator('main')).toHaveCount(1);
   const skipLink = page.getByRole('link', { name: 'Skip to main content' });
@@ -69,17 +67,16 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
+  await expect(page.locator('.category-nav-shell')).toHaveCount(0);
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
+  await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
   await expect(page.getByRole('button', { name: /language|ভাষা|भाषा/i }).first()).toBeVisible();
   if (testInfo.project.name === 'mobile') {
-    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
     await expect(page.getByRole('button', { name: /menu|মেনু|मेनू/i })).toBeVisible();
   } else {
-    await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
+    await expect(page.locator('.portal-desktop-nav')).toBeVisible();
   }
-  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-    'href',
-    /^https:\/\/citizenaffairs\.in\//,
-  );
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /^https:\/\/citizenaffairs\.in\//);
   await expect(page.locator('body')).not.toContainText(oldBrand);
   for (const label of inactiveCategoryLabels) {
     await expect(page.getByText(label)).toHaveCount(0);
@@ -101,9 +98,9 @@ test('production homepage and discoverability are healthy', async ({ page, reque
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
-  if (testInfo.project.name === 'mobile') {
-    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+  await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
 
+  if (testInfo.project.name === 'mobile') {
     const menuTrigger = page.locator('.portal-mobile-trigger');
     const panel = page.locator('.portal-mobile-panel');
     const content = page.locator('.top-news');
@@ -114,9 +111,9 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     await expect(panel).toBeVisible();
     await expect(panel).toHaveAttribute('aria-hidden', 'false');
     await expect(panel.locator('nav a').first()).toBeVisible();
-    await expect(panel.locator('.portal-mobile-utility-link[href*="/search"]')).toBeVisible();
-    await expect(panel.locator('.portal-mobile-utility-link[href*="/saved"]')).toBeVisible();
-    await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+    await expect(panel.locator('nav a[href*="/search"]')).toBeVisible();
+    await expect(panel.locator('nav a[href*="/saved"]')).toBeVisible();
+    await expect(panel.locator('.portal-menu-theme-toggle')).toBeVisible();
 
     const after = await content.boundingBox();
     expect(before).not.toBeNull();
@@ -129,7 +126,7 @@ test('production homepage and discoverability are healthy', async ({ page, reque
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
     await expect(menuTrigger).toBeFocused();
   } else {
-    await expect(page.locator('.portal-search-action[href*="/search"]')).toBeVisible();
+    await expect(page.locator('.portal-desktop-nav')).toBeVisible();
   }
 
   for (const path of ['/sitemap.xml', '/robots.txt']) {
