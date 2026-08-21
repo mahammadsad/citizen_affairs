@@ -17,7 +17,10 @@ test('each language has its own script-appropriate font stack', () => {
   assert.match(typography, /html\[lang="en"\][\s\S]*--font-body: var\(--font-latin-ui\)/);
   assert.match(typography, /html\[lang="bn"\][\s\S]*--font-body: var\(--font-bengali-ui\)/);
   assert.match(typography, /html\[lang="hi"\][\s\S]*--font-body: var\(--font-devanagari-ui\)/);
-  assert.match(typography, /"Hind Siliguri", "Noto Sans Bengali"/);
+  assert.match(
+    typography,
+    /"Noto Sans Bengali Variable", "Noto Sans Bengali", "Hind Siliguri"/
+  );
   assert.match(typography, /"Noto Sans Devanagari", "Nirmala UI", Mangal/);
 });
 
