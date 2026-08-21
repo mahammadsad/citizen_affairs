@@ -26,6 +26,20 @@ for (const entry of cases) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(entry.path, { waitUntil: 'networkidle' });
 
+    if (entry.locale === 'hi') {
+      const hindiFont = await page.evaluate(async () => {
+        await document.fonts.ready;
+        return {
+          bodyFamily: getComputedStyle(document.body).fontFamily,
+          registered: Array.from(document.fonts).some(
+            (face) => face.family.includes('Noto Sans Devanagari Variable') && face.status === 'loaded',
+          ),
+        };
+      });
+      expect(hindiFont.bodyFamily).toContain('Noto Sans Devanagari Variable');
+      expect(hindiFont.registered).toBe(true);
+    }
+
     const cta = page.locator('[data-whatsapp-channel-cta]');
     const link = cta.locator('[data-whatsapp-channel-link]');
 
