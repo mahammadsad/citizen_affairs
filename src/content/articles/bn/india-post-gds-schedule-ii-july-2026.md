@@ -99,7 +99,7 @@ Social media বা third-party job website-এ ঘুরতে থাকা vac
 
 আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়।
 
-![India Post GDS Schedule-II July 2026 নোটিশের পৃষ্ঠা—registration, application ও correction date](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 নোটিশের পৃষ্ঠা—registration, application ও correction date" width="500" height="729" loading="lazy" decoding="async">
 
 [নোটিশের পৃষ্ঠার ছবিটি খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
 
