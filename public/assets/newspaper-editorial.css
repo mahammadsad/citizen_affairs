@@ -340,6 +340,15 @@ main .category-filters button[aria-pressed="true"] {
 }
 
 /* Article: newspaper Bengali rhythm, narrower measure, quiet verification and square imagery. */
+main article[data-article] {
+  --color-primary: #b42318 !important;
+  --color-primary-rgb: 180, 35, 24 !important;
+}
+
+[data-theme="dark"] main article[data-article] {
+  --color-primary: #ff8a80 !important;
+  --color-primary-rgb: 255, 138, 128 !important;
+}
 main .article-header h1 {
   max-width: 22ch !important;
   color: var(--color-text) !important;
@@ -365,8 +374,12 @@ main .key-takeaways {
   border: 0 !important;
   border-left: 3px solid var(--color-primary) !important;
   border-radius: 0 !important;
-  background: var(--color-surface-alt) !important;
+  background: #f7f7f6 !important;
   box-shadow: none !important;
+}
+
+[data-theme="dark"] main .key-takeaways {
+  background: #1d1d1d !important;
 }
 
 main .article-decision-disclosure > summary::after {
