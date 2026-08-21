@@ -13,9 +13,11 @@ test('article detail routes opt into distraction-free reading mode', () => {
   assert.match(mainLayout, /<BaseLayout[\s\S]*\{bodyClass\}/);
 });
 
-test('reading mode removes article navigation chrome and reserved mobile space', () => {
-  assert.match(mainLayout, /body\.article-reading-mode \.category-nav-shell/);
-  assert.match(mainLayout, /body\.article-reading-mode \.portal-mobile-bottom/);
+test('reading mode removes redundant article chrome while preserving safe-area spacing', () => {
+  assert.match(mainLayout, /body\.article-reading-mode \.article-labels > span/);
+  assert.match(mainLayout, /body\.article-reading-mode \.reading-time/);
+  assert.match(mainLayout, /body\.article-reading-mode #copyLink/);
+  assert.match(mainLayout, /body\.article-reading-mode \.verification-strip/);
   assert.match(
     mainLayout,
     /body\.article-reading-mode\)[\s\S]*padding-bottom: max\(18px, env\(safe-area-inset-bottom\)\) !important/
