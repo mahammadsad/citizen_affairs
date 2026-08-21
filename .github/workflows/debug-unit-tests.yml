@@ -3,6 +3,8 @@ name: Debug unit tests
 on:
   push:
     branches: [ui/premium-editorial-redesign]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
