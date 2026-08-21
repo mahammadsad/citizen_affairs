@@ -26,7 +26,7 @@ test('English homepage uses Merriweather for editorial headlines and sans-serif 
   expect(metrics.headlineFont).toContain('Merriweather');
   expect(metrics.navFont).not.toContain('Merriweather');
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
-  await page.screenshot({ path: testInfo.outputPath('english-merriweather-home-1440.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('article-english-merriweather-home-1440.png'), fullPage: true });
 });
 
 test('English article uses Merriweather for headline and long-form reading at mobile width', async ({ page }, testInfo) => {
@@ -67,5 +67,5 @@ test('English article uses Merriweather for headline and long-form reading at mo
   expect(metrics.actionFont).not.toContain('Merriweather');
   expect(metrics.lineHeight / metrics.fontSize).toBeGreaterThan(1.7);
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
-  await page.screenshot({ path: testInfo.outputPath('english-merriweather-article-390.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('article-english-merriweather-article-390.png'), fullPage: true });
 });
