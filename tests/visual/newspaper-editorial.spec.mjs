@@ -75,14 +75,17 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
     const title = document.querySelector('.article-header h1');
     const content = document.querySelector('.article-content');
     const article = document.querySelector('article[data-article]');
-    if (!(title instanceof HTMLElement) || !(content instanceof HTMLElement) || !(article instanceof HTMLElement)) {
-      throw new Error('article typography missing');
+    const visibleArticleLink = document.querySelector('article[data-article] .article-content a[href], article[data-article] .source-line a[href], article[data-article] .article-labels a[href]');
+    const hotfixStylesheet = document.querySelector('link[href*="article-link-brand-blue-v2.css"]');
+    if (!(title instanceof HTMLElement) || !(content instanceof HTMLElement) || !(article instanceof HTMLElement) || !(visibleArticleLink instanceof HTMLElement) || !(hotfixStylesheet instanceof HTMLLinkElement)) {
+      throw new Error('article typography or brand-link stylesheet missing');
     }
     const contentStyle = getComputedStyle(content);
     return {
       titleFont: getComputedStyle(title).fontFamily,
       contentFont: contentStyle.fontFamily,
       articlePrimary: getComputedStyle(article).getPropertyValue('--color-primary').trim(),
+      articleLinkColor: getComputedStyle(visibleArticleLink).color,
       articleBackground: getComputedStyle(article).backgroundColor,
       lineHeight: Number.parseFloat(contentStyle.lineHeight),
       fontSize: Number.parseFloat(contentStyle.fontSize),
@@ -94,6 +97,7 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
   expect(articleMetrics.titleFont).toContain('Noto Sans Bengali Variable');
   expect(articleMetrics.contentFont).toContain('Noto Sans Bengali Variable');
   expect(articleMetrics.articlePrimary).toBe('#0a5aa6');
+  expect(articleMetrics.articleLinkColor).toBe('rgb(10, 90, 166)');
   expect(articleMetrics.articleBackground).toBe('rgb(255, 255, 255)');
   expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
   expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
