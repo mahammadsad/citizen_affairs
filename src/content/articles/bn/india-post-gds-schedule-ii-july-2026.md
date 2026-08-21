@@ -4,7 +4,7 @@ language: bn
 translationKey: india-post-gds-schedule-ii-july-2026
 urlSlug: india-post-gds-schedule-ii-july-2026
 title: "India Post GDS Schedule-II 2026: ৩১ আগস্ট থেকে রেজিস্ট্রেশন, ২ সেপ্টেম্বর থেকে আবেদন"
-description: "ডাক বিভাগের GDS Schedule-II, July-2026 নোটিশের আপলোড করা পৃষ্ঠা থেকে রেজিস্ট্রেশন, আবেদন ও সংশোধনের তারিখের সতর্ক সারাংশ; সঙ্গে নোটিশের পৃষ্ঠাটি সংযুক্ত।"
+description: "ডাক বিভাগের GDS Schedule-II, July-2026 নোটিশের আপলোড করা পৃষ্ঠা থেকে রেজিস্ট্রেশন, আবেদন ও সংশোধনের তারিখের সতর্ক সারাংশ; সঙ্গে source transcription সংযুক্ত।"
 date: 2026-08-22
 author: citizen-affairs-editorial-desk
 workflowStatus: draft
@@ -112,13 +112,11 @@ Social media বা third-party job website-এ ঘুরতে থাকা vac
 
 [India Post-এর অফিসিয়াল GDS portal খুলুন](https://www.indiapost.gov.in/gdsonlineengagement)
 
-## আপলোড করা নোটিশের পৃষ্ঠা
+## Source attachment
 
-নিচের ছবিটি এই আপডেটের জন্য দেওয়া notice page। এটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়।
+আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়। Accessibility ও editorial review-এর জন্য ছবিতে থাকা লেখার একটি transcription এই article-এর সঙ্গে সংযুক্ত করা হয়েছে।
 
-![India Post GDS Schedule-II July 2026 নোটিশের পৃষ্ঠা—registration, application ও correction date](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
-
-[সংযুক্ত নোটিশের পৃষ্ঠাটি পূর্ণ আকারে খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+[আপলোড করা notice page-এর সংযুক্ত transcription খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
 ## আবেদন করার আগে
 
