@@ -49,11 +49,9 @@ test('decision workspace uses trusted handoff components for applications and no
   assert.doesNotMatch(workspace, /<a class="btn btn-primary" href=\{applicationUrl\}/);
 });
 
-test('cards and legacy source panels reveal destinations and harden external navigation', () => {
-  assert.match(card, /officialLinkIdentity/);
-  assert.match(card, /officialIdentity\.hostname/);
-  assert.match(card, /referrerpolicy="no-referrer"/);
-  assert.match(card, /rel="noopener noreferrer external"/);
+test('editorial cards stay internal while legacy source panels harden external navigation', () => {
+  assert.doesNotMatch(card, /target="_blank"/);
+  assert.doesNotMatch(card, /officialLinkIdentity|officialIdentity\.hostname/);
   assert.match(runtime, /hardenExternalLinks/);
   assert.match(runtime, /\.source-panel a\[target="_blank"\]/);
   assert.match(runtime, /link\.referrerPolicy = 'no-referrer'/);
