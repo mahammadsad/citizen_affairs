@@ -356,6 +356,23 @@ main .article-deck {
   color: #4d4d4d !important;
 }
 
+/* Editorial accents use the newspaper red; verification retains trust teal. */
+main :is(.article-labels a, .article-publication-meta a, .editorial-credits summary, .article-content a, .article-topics a, .related a, .panel-kicker) {
+  color: var(--color-primary) !important;
+}
+
+main .key-takeaways {
+  border: 0 !important;
+  border-left: 3px solid var(--color-primary) !important;
+  border-radius: 0 !important;
+  background: var(--color-surface-alt) !important;
+  box-shadow: none !important;
+}
+
+main .article-decision-disclosure > summary::after {
+  color: var(--color-primary) !important;
+}
+
 [data-theme="dark"] main .article-deck {
   color: var(--color-text-muted) !important;
 }
