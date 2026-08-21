@@ -15,7 +15,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
     const sectionNav = document.querySelector('.portal-desktop-nav');
     const header = document.querySelector('.portal-navbar-inner');
     const headline = document.querySelector('.lead-story h2');
-    if (!(masthead instanceof HTMLElement) || !(sectionNav instanceof HTMLElement) || !(header instanceof HTMLElement) || !(headline instanceof HTMLElement)) {
+    const main = document.querySelector('#main-content');
+    if (!(masthead instanceof HTMLElement) || !(sectionNav instanceof HTMLElement) || !(header instanceof HTMLElement) || !(headline instanceof HTMLElement) || !(main instanceof HTMLElement)) {
       throw new Error('newspaper editorial elements missing');
     }
     const mastheadRect = masthead.getBoundingClientRect();
@@ -29,6 +30,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
       mastheadBottom: mastheadRect.bottom,
       headerHeight: headerRect.height,
       headlineFont: headlineStyle.fontFamily,
+      bodyBackground: getComputedStyle(document.body).backgroundColor,
+      mainBackground: getComputedStyle(main).backgroundColor,
       documentWidth: document.documentElement.scrollWidth,
       viewportWidth: document.documentElement.clientWidth,
     };
@@ -38,6 +41,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
   expect(metrics.navTop).toBeGreaterThanOrEqual(metrics.mastheadBottom - 2);
   expect(metrics.headerHeight).toBeGreaterThanOrEqual(112);
   expect(metrics.headlineFont).toContain('Noto Sans Bengali Variable');
+  expect(metrics.bodyBackground).toBe('rgb(255, 255, 255)');
+  expect(metrics.mainBackground).toBe('rgb(255, 255, 255)');
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
 });
 
@@ -46,9 +51,11 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   const homeMetrics = await page.evaluate(() => ({
+    bodyBackground: getComputedStyle(document.body).backgroundColor,
     documentWidth: document.documentElement.scrollWidth,
     viewportWidth: document.documentElement.clientWidth,
   }));
+  expect(homeMetrics.bodyBackground).toBe('rgb(255, 255, 255)');
   expect(homeMetrics.documentWidth).toBeLessThanOrEqual(homeMetrics.viewportWidth);
   await page.screenshot({ path: testInfo.outputPath('article-newspaper-home-bn-390.png'), fullPage: true });
 
@@ -62,13 +69,15 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
   const articleMetrics = await page.evaluate(() => {
     const title = document.querySelector('.article-header h1');
     const content = document.querySelector('.article-content');
-    if (!(title instanceof HTMLElement) || !(content instanceof HTMLElement)) {
+    const article = document.querySelector('article[data-article]');
+    if (!(title instanceof HTMLElement) || !(content instanceof HTMLElement) || !(article instanceof HTMLElement)) {
       throw new Error('article typography missing');
     }
     const contentStyle = getComputedStyle(content);
     return {
       titleFont: getComputedStyle(title).fontFamily,
       contentFont: contentStyle.fontFamily,
+      articleBackground: getComputedStyle(article).backgroundColor,
       lineHeight: Number.parseFloat(contentStyle.lineHeight),
       fontSize: Number.parseFloat(contentStyle.fontSize),
       documentWidth: document.documentElement.scrollWidth,
@@ -78,6 +87,7 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
 
   expect(articleMetrics.titleFont).toContain('Noto Sans Bengali Variable');
   expect(articleMetrics.contentFont).toContain('Noto Sans Bengali Variable');
+  expect(articleMetrics.articleBackground).toBe('rgb(255, 255, 255)');
   expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
   expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
 });

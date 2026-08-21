@@ -1,0 +1,35 @@
+/*
+ * Prothom Alo-inspired light publication canvas.
+ * Keep the reading surface pure white while preserving semantic callouts,
+ * borders, dark mode, and Citizen Affairs brand colors.
+ */
+
+html[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #ffffff;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] #main-content,
+html[data-theme="light"] .news-home,
+html[data-theme="light"] .citizen-search,
+html[data-theme="light"] .jobs-listing,
+html[data-theme="light"] article[data-article] {
+  background: #ffffff !important;
+}
+
+html[data-theme="light"] .portal-header {
+  background: #ffffff !important;
+}
+
+html[data-theme="light"] main :is(
+  .lead-story,
+  .latest-rail,
+  .category-hero,
+  .search-hero,
+  .jobs-result-line
+) {
+  background: #ffffff !important;
+}
