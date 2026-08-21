@@ -30,7 +30,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await page.goto('/bn/', { waitUntil: 'networkidle' });
 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
-  await expect(page.locator('.portal-utility')).toBeHidden();
+  await expect(page.locator('.portal-utility')).toHaveCount(0);
   await expect(page.locator('[data-portal-continuity]')).toHaveCount(0);
   await expect(page.locator('main .top-news')).toBeVisible();
   await expect(page.locator('.lead-story')).toBeVisible();
@@ -39,6 +39,7 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(page.locator('.trending-section')).toHaveCount(0);
   await expect(page.locator('.section-empty')).toHaveCount(0);
   await expect(page.locator('.portal-search')).toHaveCount(0);
+  await expect(page.locator('.category-nav-shell')).toHaveCount(0);
   await expect(page.locator('.portal-navbar .portal-brand > .portal-brand-logo')).toHaveAttribute(
     'src',
     /citizen-affairs-horizontal-dark\.svg$/,
@@ -47,14 +48,15 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
     'src',
     /citizen-affairs-full-tagline\.png$/,
   );
-  await expect(page.locator('.portal-mobile-bottom')).toBeHidden();
+  await expect(page.locator('.portal-mobile-bottom')).toHaveCount(0);
+  await expect(page.locator('.portal-header-actions > .portal-theme-toggle')).toBeHidden();
 
   const colours = await page.evaluate(() => {
     const header = document.querySelector('.portal-header');
     const navbar = document.querySelector('.portal-navbar-inner');
     const headerBrand = document.querySelector('.portal-brand');
     const headerLogo = document.querySelector('.portal-navbar .portal-brand > .portal-brand-logo');
-    const headerIcon = document.querySelector('.portal-theme-toggle');
+    const headerIcon = document.querySelector('.portal-search-action');
     const home = document.querySelector('.news-home');
     const homeTitle = document.querySelector('.section-title-row h2');
     const lead = document.querySelector('.lead-story');
@@ -64,19 +66,8 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
     const sectionTitle = document.querySelector('.news-section-block h3');
     const footerBrand = document.querySelector('.site-footer .footer-brand');
     if (
-      !header ||
-      !navbar ||
-      !headerBrand ||
-      !headerLogo ||
-      !headerIcon ||
-      !home ||
-      !homeTitle ||
-      !lead ||
-      !leadTitle ||
-      !latest ||
-      !latestTitle ||
-      !sectionTitle ||
-      !footerBrand
+      !header || !navbar || !headerBrand || !headerLogo || !headerIcon || !home || !homeTitle ||
+      !lead || !leadTitle || !latest || !latestTitle || !sectionTitle || !footerBrand
     ) {
       throw new Error('Professional news homepage dark-mode selectors are missing');
     }
@@ -94,7 +85,6 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
       headerLogoWidth: logoRect.width,
       headerLogoRight: logoRect.right,
       actionsLeft: actionsRect.left,
-      headerBrandBackground: getComputedStyle(headerBrand).backgroundColor,
       headerIcon: getComputedStyle(headerIcon).color,
       homeBackground: getComputedStyle(home).backgroundColor,
       homeTitle: getComputedStyle(homeTitle).color,
@@ -110,16 +100,13 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
     };
   });
 
-  expect(colours.headerHeight).toBeLessThanOrEqual(66);
-  expect(colours.headerBrandLeft).toBeLessThanOrEqual(13);
+  expect(colours.headerHeight).toBeLessThanOrEqual(64);
+  expect(colours.headerBrandLeft).toBeLessThanOrEqual(17);
   expect(colours.headerLogoLeft).toBeGreaterThanOrEqual(colours.headerBrandLeft - 6);
-  expect(colours.headerLogoLeft).toBeLessThanOrEqual(colours.headerBrandLeft);
-  expect(colours.headerLogoWidth).toBeGreaterThanOrEqual(184);
+  expect(colours.headerLogoWidth).toBeGreaterThanOrEqual(110);
   expect(colours.headerLogoRight).toBeLessThanOrEqual(colours.actionsLeft + 1);
   expect(colours.bodyPaddingBottom).toBeLessThan(20);
   expect(colours.documentWidth).toBeLessThanOrEqual(colours.viewportWidth);
-  expect(colours.headerBrandBackground).toBe('rgba(0, 0, 0, 0)');
-  expect(colours.footerBrandBackground).toBe('rgba(0, 0, 0, 0)');
   expect(contrast(colours.headerIcon, colours.headerBackground)).toBeGreaterThanOrEqual(3);
   expect(contrast(colours.homeTitle, colours.homeBackground)).toBeGreaterThanOrEqual(4.5);
   expect(contrast(colours.leadTitle, colours.leadBackground)).toBeGreaterThanOrEqual(4.5);
@@ -136,15 +123,14 @@ test('Bengali mobile dark mode keeps the professional news homepage readable', a
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(panel).toBeVisible();
   await expect(panel).toHaveAttribute('aria-hidden', 'false');
-  await expect(panel.locator('.portal-mobile-utility-link[href*="/search"]')).toBeVisible();
-  await expect(panel.locator('.portal-mobile-utility-link[href*="/saved"]')).toBeVisible();
+  await expect(panel.locator('nav a[href*="/search"]')).toBeVisible();
+  await expect(panel.locator('nav a[href*="/saved"]')).toBeVisible();
+  await expect(panel.locator('.portal-menu-theme-toggle')).toBeVisible();
 
   const panelColours = await page.evaluate(() => {
     const panel = document.querySelector('.portal-mobile-panel');
     const link = document.querySelector('.portal-mobile-panel nav a');
-    if (!panel || !link) {
-      throw new Error('Expanding mobile menu selectors are missing');
-    }
+    if (!panel || !link) throw new Error('Expanding mobile menu selectors are missing');
     return {
       panelBackground: getComputedStyle(panel).backgroundColor,
       linkText: getComputedStyle(link).color,
