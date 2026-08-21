@@ -26,8 +26,8 @@
 }
 
 html[lang="bn"] {
-  --font-display: "Hind Siliguri", system-ui, sans-serif;
-  --font-body: "Hind Siliguri", system-ui, sans-serif;
+  --font-display: "Noto Sans Bengali Variable", "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif;
+  --font-body: "Noto Sans Bengali Variable", "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif;
 }
 
 html[lang="en"] {
@@ -41,7 +41,7 @@ html[lang="bn"] body {
 }
 
 html[lang="bn"] :is(button, input, textarea, select, summary) {
-  font-family: "Hind Siliguri", system-ui, sans-serif;
+  font-family: "Noto Sans Bengali Variable", "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif;
 }
 
 [data-theme="dark"] {

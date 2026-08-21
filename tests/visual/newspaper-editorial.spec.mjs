@@ -37,7 +37,7 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
   expect(Math.abs(metrics.mastheadCenter - metrics.viewportCenter)).toBeLessThan(14);
   expect(metrics.navTop).toBeGreaterThanOrEqual(metrics.mastheadBottom - 2);
   expect(metrics.headerHeight).toBeGreaterThanOrEqual(112);
-  expect(metrics.headlineFont).toContain('Hind Siliguri');
+  expect(metrics.headlineFont).toContain('Noto Sans Bengali Variable');
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
 });
 
@@ -76,8 +76,8 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
     };
   });
 
-  expect(articleMetrics.titleFont).toContain('Hind Siliguri');
-  expect(articleMetrics.contentFont).toContain('Hind Siliguri');
+  expect(articleMetrics.titleFont).toContain('Noto Sans Bengali Variable');
+  expect(articleMetrics.contentFont).toContain('Noto Sans Bengali Variable');
   expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
   expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
 });
