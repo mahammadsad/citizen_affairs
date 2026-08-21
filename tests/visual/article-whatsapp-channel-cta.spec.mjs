@@ -26,21 +26,6 @@ for (const entry of cases) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(entry.path, { waitUntil: 'networkidle' });
 
-    // CI runners do not ship Devanagari fonts, so verify the self-hosted Hindi face is active.
-    if (entry.locale === 'hi') {
-      const hindiFont = await page.evaluate(async () => {
-        await document.fonts.ready;
-        return {
-          bodyFamily: getComputedStyle(document.body).fontFamily,
-          registered: Array.from(document.fonts).some(
-            (face) => face.family.includes('Noto Sans Devanagari Variable') && face.status === 'loaded',
-          ),
-        };
-      });
-      expect(hindiFont.bodyFamily).toContain('Noto Sans Devanagari Variable');
-      expect(hindiFont.registered).toBe(true);
-    }
-
     const cta = page.locator('[data-whatsapp-channel-cta]');
     const link = cta.locator('[data-whatsapp-channel-link]');
 
@@ -49,6 +34,20 @@ for (const entry of cases) {
     await expect(link).toContainText(entry.button);
     await cta.scrollIntoViewIfNeeded();
     await expect(cta).toBeVisible();
+
+    // CI runners do not ship Devanagari fonts, so verify the self-hosted Hindi face
+    // can be loaded and is the font family selected on the rendered CTA button.
+    if (entry.locale === 'hi') {
+      const hindiFont = await link.evaluate(async (element) => {
+        const loadedFaces = await document.fonts.load('16px "Noto Sans Devanagari Variable"', 'हिंदी चैनल');
+        return {
+          family: getComputedStyle(element).fontFamily,
+          loadedFaceCount: loadedFaces.length,
+        };
+      });
+      expect(hindiFont.family).toContain('Noto Sans Devanagari Variable');
+      expect(hindiFont.loadedFaceCount).toBeGreaterThan(0);
+    }
 
     const metrics = await cta.evaluate((element) => {
       const button = element.querySelector('[data-whatsapp-channel-link]');
