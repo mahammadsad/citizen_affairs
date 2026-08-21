@@ -1,6 +1,10 @@
-/* Global finishing rules for the renovated citizen portal.
-   Loaded from MainLayout after the legacy visual system so portal surfaces keep
-   explicit, accessible foreground colours in both themes. */
+/*
+ * Portal finishing rules
+ *
+ * Components now derive light/dark surfaces from the shared design tokens in
+ * worldclass.css. Keep this file intentionally small: it exists only for a few
+ * cross-component portal surfaces that predate the current editorial system.
+ */
 
 main .portal-action-grid > a,
 main .portal-category-grid > a,
@@ -9,49 +13,37 @@ main .portal-deadline-list > a {
   color: var(--color-text);
 }
 
-/* Small text needs a stronger colour than the decorative primary teal.
-   These selectors intentionally outrank component-scoped homepage rules. */
-html body main section.portal-sections .portal-heading-row > a,
-html body main section.portal-method li > span,
-html body main section.portal-method aside a {
-  color: #075f5b !important;
+main section.portal-sections .portal-heading-row > a,
+main section.portal-method li > span,
+main section.portal-method aside a {
+  color: var(--color-primary);
 }
 
-html body main section.portal-discovery .portal-label {
-  color: #7ce4d7 !important;
+main .portal-search > button[type="submit"] {
+  color: #fff;
+  background: var(--color-primary);
 }
 
-html body main .portal-search > button[type="submit"] {
-  color: #ffffff !important;
-  background: #075f5b !important;
+main .portal-search > button[type="submit"]:hover,
+main .portal-search > button[type="submit"]:focus-visible {
+  filter: brightness(.94);
 }
 
-html body main .portal-search > button[type="submit"]:hover,
-html body main .portal-search > button[type="submit"]:focus-visible {
-  background: #064d4a !important;
-}
-
-:root[data-theme="dark"] body .portal-header {
-  color: #edf2f7;
-  background: rgb(8, 19, 33);
+:root[data-theme="dark"] body .portal-header,
+:root[data-theme="dark"] body .portal-mobile-panel,
+:root[data-theme="dark"] body .portal-language > div,
+:root[data-theme="dark"] body .portal-more > div {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
 }
 
 :root[data-theme="dark"] body .portal-header .portal-icon-action,
 :root[data-theme="dark"] body .portal-header .portal-language > summary,
-:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary,
+:root[data-theme="dark"] body .portal-header .portal-mobile-trigger,
 :root[data-theme="dark"] body .portal-header .portal-more > summary,
 :root[data-theme="dark"] body .portal-header .portal-desktop-nav > a {
-  color: #edf2f7;
-}
-
-:root[data-theme="dark"] body .portal-header .portal-icon-action:hover,
-:root[data-theme="dark"] body .portal-header .portal-icon-action:focus-visible,
-:root[data-theme="dark"] body .portal-header .portal-language > summary:hover,
-:root[data-theme="dark"] body .portal-header .portal-language > summary:focus-visible,
-:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary:hover,
-:root[data-theme="dark"] body .portal-header .portal-mobile-menu > summary:focus-visible {
-  color: #ffffff;
-  background: #172940;
+  color: var(--color-text);
 }
 
 :root[data-theme="dark"] body main .portal-action-grid > a,
@@ -59,137 +51,29 @@ html body main .portal-search > button[type="submit"]:focus-visible {
 :root[data-theme="dark"] body main .portal-change-grid > a,
 :root[data-theme="dark"] body main .portal-deadline-list > a,
 :root[data-theme="dark"] body main .portal-today,
-:root[data-theme="dark"] body main .portal-start {
-  color: #edf2f7;
-  background: #0f1b2e;
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body main .portal-action-grid > a:hover,
-:root[data-theme="dark"] body main .portal-action-grid > a:focus-visible,
-:root[data-theme="dark"] body main .portal-category-grid > a:hover,
-:root[data-theme="dark"] body main .portal-category-grid > a:focus-visible,
-:root[data-theme="dark"] body main .portal-change-grid > a:hover,
-:root[data-theme="dark"] body main .portal-change-grid > a:focus-visible,
-:root[data-theme="dark"] body main .portal-deadline-list > a:hover,
-:root[data-theme="dark"] body main .portal-deadline-list > a:focus-visible {
-  color: #ffffff;
-  background: #172940;
-  border-color: rgba(var(--color-primary-rgb), .55);
-}
-
-:root[data-theme="dark"] body main .portal-action-grid > a p,
-:root[data-theme="dark"] body main .portal-category-grid > a p,
-:root[data-theme="dark"] body main .portal-change-grid > a p,
-:root[data-theme="dark"] body main .portal-start p {
-  color: #b8c4d3;
-}
-
-:root[data-theme="dark"] body main .portal-heading-row > a,
-:root[data-theme="dark"] body main .portal-method li > span,
-:root[data-theme="dark"] body main .portal-method aside a {
-  color: #7ce4d7 !important;
-}
-
-:root[data-theme="dark"] body main .portal-search > button[type="submit"] {
-  color: #ffffff !important;
-  background: #075f5b !important;
-}
-
-/* News-led homepage surfaces need explicit solid colours because the component
-   uses decorative gradients whose computed backgroundColor is transparent. */
-:root[data-theme="dark"] body main .news-hero {
-  color: #edf2f7;
-  background-color: #081321;
-  background-image: linear-gradient(180deg, #0f1b2e, #081321);
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body main .news-masthead h1,
-:root[data-theme="dark"] body main .section-heading h2,
-:root[data-theme="dark"] body main .deadline-heading h2 {
-  color: #edf2f7;
-}
-
-:root[data-theme="dark"] body main .news-masthead > div > p:last-child,
-:root[data-theme="dark"] body main .section-heading p,
-:root[data-theme="dark"] body main .deadline-heading p,
-:root[data-theme="dark"] body main .news-trust p {
-  color: #b8c4d3;
-}
-
-:root[data-theme="dark"] body main .lead-story {
-  color: #ffffff;
-  background-color: #102f52;
-  background-image: linear-gradient(145deg, #0b2440, #17456f);
-}
-
+:root[data-theme="dark"] body main .portal-start,
 :root[data-theme="dark"] body main .supporting-stories,
 :root[data-theme="dark"] body main .section-news-block,
-:root[data-theme="dark"] body main .deadline-list > a,
-:root[data-theme="dark"] body main .news-empty,
 :root[data-theme="dark"] body main .news-trust {
-  color: #edf2f7;
-  background-color: #0f1b2e;
-  border-color: #304560;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border);
 }
 
-:root[data-theme="dark"] body main .supporting-stories h2,
-:root[data-theme="dark"] body main .supporting-stories h3,
-:root[data-theme="dark"] body main .section-news-block h3,
-:root[data-theme="dark"] body main .section-news-block h4,
-:root[data-theme="dark"] body main .deadline-list strong,
-:root[data-theme="dark"] body main .news-trust strong {
-  color: #edf2f7;
+:root[data-theme="dark"] body main .lead-story:not(.has-image) {
+  color: #fff;
+  background: var(--color-navy);
 }
 
-:root[data-theme="dark"] body main .supporting-stories > a,
-:root[data-theme="dark"] body main .section-news-block > header,
-:root[data-theme="dark"] body main .section-story {
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body main .supporting-stories time,
-:root[data-theme="dark"] body main .section-story time,
-:root[data-theme="dark"] body main .section-story p,
-:root[data-theme="dark"] body main .section-empty,
-:root[data-theme="dark"] body main .deadline-list small {
-  color: #b8c4d3;
-}
-
-:root[data-theme="dark"] body main .trending-section {
-  background-color: #071729;
-}
-
-:root[data-theme="dark"] body main .deadline-section {
-  background-color: #0a1626;
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body .portal-mobile-panel,
-:root[data-theme="dark"] body .portal-language > div,
-:root[data-theme="dark"] body .portal-more > div {
-  color: #edf2f7;
-  background: #0f1b2e;
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body .portal-mobile-panel a,
-:root[data-theme="dark"] body .portal-language > div a,
-:root[data-theme="dark"] body .portal-more > div a {
-  color: #edf2f7;
-}
-
-:root[data-theme="dark"] body .portal-mobile-bottom {
-  color: #b8c4d3;
-  background: rgba(8, 19, 33, .98);
-  border-color: #304560;
-}
-
-:root[data-theme="dark"] body .portal-mobile-bottom a {
-  color: #b8c4d3;
-}
-
-:root[data-theme="dark"] body .portal-mobile-bottom a[aria-current="page"] {
-  color: #63d5ca;
+:root[data-theme="dark"] body main :is(
+  .portal-action-grid,
+  .portal-category-grid,
+  .portal-change-grid,
+  .portal-start,
+  .supporting-stories,
+  .section-news-block,
+  .news-trust
+) p,
+:root[data-theme="dark"] body main :is(.supporting-stories, .section-story) time {
+  color: var(--color-text-muted);
 }
