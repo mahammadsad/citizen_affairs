@@ -1,0 +1,46 @@
+name: Apply final newspaper article polish
+
+on:
+  push:
+    branches:
+      - ui/prothom-editorial-system
+    paths:
+      - .github/workflows/apply-newspaper-polish.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/prothom-editorial-system
+          fetch-depth: 0
+
+      - name: Apply final article accent polish
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('public/assets/newspaper-editorial.css')
+          text = p.read_text()
+          anchor = '''main .article-deck {\n  color: #4d4d4d !important;\n}\n'''
+          patch = '''main .article-deck {\n  color: #4d4d4d !important;\n}\n\n/* Editorial accents use the newspaper red; verification retains trust teal. */\nmain :is(.article-labels a, .article-publication-meta a, .editorial-credits summary, .article-content a, .article-topics a, .related a, .panel-kicker) {\n  color: var(--color-primary) !important;\n}\n\nmain .key-takeaways {\n  border: 0 !important;\n  border-left: 3px solid var(--color-primary) !important;\n  border-radius: 0 !important;\n  background: var(--color-surface-alt) !important;\n  box-shadow: none !important;\n}\n\nmain .article-decision-disclosure > summary::after {\n  color: var(--color-primary) !important;\n}\n'''
+          if 'Editorial accents use the newspaper red' not in text:
+              if anchor not in text:
+                  raise SystemExit('article deck anchor not found')
+              text = text.replace(anchor, patch, 1)
+          p.write_text(text)
+          PY
+
+      - name: Commit article polish
+        run: |
+          if git diff --quiet -- public/assets/newspaper-editorial.css; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/assets/newspaper-editorial.css
+          git commit -m "fix: unify newspaper article accents"
+          git push origin HEAD:ui/prothom-editorial-system
