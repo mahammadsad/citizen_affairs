@@ -1,0 +1,85 @@
+import { expect, test } from '@playwright/test';
+
+test('Bengali homepage uses centered newspaper masthead and serif hierarchy on desktop', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/bn/', { waitUntil: 'networkidle' });
+
+  const brand = page.locator('.portal-brand');
+  const nav = page.locator('.portal-desktop-nav');
+  await expect(brand).toBeVisible();
+  await expect(nav).toBeVisible();
+
+  const metrics = await page.evaluate(() => {
+    const masthead = document.querySelector('.portal-brand');
+    const sectionNav = document.querySelector('.portal-desktop-nav');
+    const header = document.querySelector('.portal-navbar-inner');
+    const headline = document.querySelector('.lead-story h2');
+    if (!(masthead instanceof HTMLElement) || !(sectionNav instanceof HTMLElement) || !(header instanceof HTMLElement) || !(headline instanceof HTMLElement)) {
+      throw new Error('newspaper editorial elements missing');
+    }
+    const mastheadRect = masthead.getBoundingClientRect();
+    const navRect = sectionNav.getBoundingClientRect();
+    const headerRect = header.getBoundingClientRect();
+    const headlineStyle = getComputedStyle(headline);
+    return {
+      mastheadCenter: mastheadRect.left + mastheadRect.width / 2,
+      viewportCenter: innerWidth / 2,
+      navTop: navRect.top,
+      mastheadBottom: mastheadRect.bottom,
+      headerHeight: headerRect.height,
+      headlineFont: headlineStyle.fontFamily,
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+
+  expect(Math.abs(metrics.mastheadCenter - metrics.viewportCenter)).toBeLessThan(14);
+  expect(metrics.navTop).toBeGreaterThanOrEqual(metrics.mastheadBottom - 2);
+  expect(metrics.headerHeight).toBeGreaterThanOrEqual(112);
+  expect(metrics.headlineFont).toContain('Noto Serif Bengali');
+  expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
+
+  await page.screenshot({ path: testInfo.outputPath('newspaper-home-bn-1440.png'), fullPage: true });
+});
+
+test('Bengali mobile homepage and article keep readable newspaper rhythm without overflow', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/bn/', { waitUntil: 'networkidle' });
+
+  const homeMetrics = await page.evaluate(() => ({
+    documentWidth: document.documentElement.scrollWidth,
+    viewportWidth: document.documentElement.clientWidth,
+  }));
+  expect(homeMetrics.documentWidth).toBeLessThanOrEqual(homeMetrics.viewportWidth);
+  await page.screenshot({ path: testInfo.outputPath('newspaper-home-bn-390.png'), fullPage: true });
+
+  const articleLink = page.locator('a[href*="/bn/articles/"]').first();
+  await expect(articleLink).toBeVisible();
+  await articleLink.click();
+  await page.waitForLoadState('networkidle');
+  await expect(page.locator('.article-header h1')).toBeVisible();
+
+  const articleMetrics = await page.evaluate(() => {
+    const title = document.querySelector('.article-header h1');
+    const content = document.querySelector('.article-content');
+    if (!(title instanceof HTMLElement) || !(content instanceof HTMLElement)) {
+      throw new Error('article typography missing');
+    }
+    const contentStyle = getComputedStyle(content);
+    return {
+      titleFont: getComputedStyle(title).fontFamily,
+      contentFont: contentStyle.fontFamily,
+      lineHeight: Number.parseFloat(contentStyle.lineHeight),
+      fontSize: Number.parseFloat(contentStyle.fontSize),
+      documentWidth: document.documentElement.scrollWidth,
+      viewportWidth: document.documentElement.clientWidth,
+    };
+  });
+
+  expect(articleMetrics.titleFont).toContain('Noto Serif Bengali');
+  expect(articleMetrics.contentFont).toContain('Noto Serif Bengali');
+  expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
+  expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
+
+  await page.screenshot({ path: testInfo.outputPath('newspaper-article-bn-390.png'), fullPage: true });
+});
