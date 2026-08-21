@@ -1,0 +1,40 @@
+name: Apply Noto Sans Bengali typography
+
+on:
+  push:
+    branches:
+      - ui/prothom-editorial-system
+    paths:
+      - .github/workflows/apply-noto-bengali.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/prothom-editorial-system
+          fetch-depth: 0
+      - name: Update newspaper font tokens and visual contracts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          css = Path('public/assets/newspaper-editorial.css')
+          text = css.read_text()
+          text = text.replace('"Hind Siliguri", system-ui, sans-serif', '"Noto Sans Bengali Variable", "Noto Sans Bengali", "Hind Siliguri", system-ui, sans-serif')
+          css.write_text(text)
+
+          test = Path('tests/visual/newspaper-editorial.spec.mjs')
+          text = test.read_text().replace("Hind Siliguri", "Noto Sans Bengali Variable")
+          test.write_text(text)
+          PY
+      - name: Commit typography switch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/assets/newspaper-editorial.css tests/visual/newspaper-editorial.spec.mjs
+          git commit -m "Switch Bengali newspaper theme to Noto Sans Bengali"
+          git push origin HEAD:ui/prothom-editorial-system
