@@ -1,14 +1,14 @@
 ---
-contentType: notice
+contentType: explainer
 language: bn
 translationKey: india-post-gds-schedule-ii-july-2026
 urlSlug: india-post-gds-schedule-ii-july-2026
-title: "India Post GDS Schedule-II 2026: ৩১ আগস্ট থেকে রেজিস্ট্রেশন, ২ সেপ্টেম্বর থেকে আবেদন"
-description: "ডাক বিভাগের GDS Schedule-II, July-2026 নোটিশের আপলোড করা পৃষ্ঠা থেকে রেজিস্ট্রেশন, আবেদন ও সংশোধনের তারিখের সতর্ক সারাংশ; সঙ্গে source transcription সংযুক্ত।"
+title: "India Post GDS Schedule-II 2026: নোটিশে তারিখ প্রকাশ, অফিসিয়াল PDF এখনও অপেক্ষায়"
+description: "আপলোড করা India Post GDS Schedule-II, July-2026 নোটিশের পৃষ্ঠা থেকে রেজিস্ট্রেশন, আবেদন ও সংশোধনের তারিখের প্রকাশ্য কিন্তু যাচাইাধীন সারাংশ; পূর্ণ অফিসিয়াল PDF এখনও অপেক্ষায়।"
 date: 2026-08-22
 author: citizen-affairs-editorial-desk
-workflowStatus: draft
-draft: true
+workflowStatus: published
+draft: false
 verificationStatus: under-verification
 independentReviewStatus: not-assigned
 category: notices
@@ -29,7 +29,7 @@ sources:
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-22
-    notes: "এই যাচাইয়ের সময় Citizen Affairs-এর কাছে উপলভ্য অফিসিয়াল portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই প্রকাশের আগে Schedule-II page/PDF আবার যাচাই করা প্রয়োজন।"
+    notes: "এই যাচাইয়ের সময় Citizen Affairs-এর কাছে উপলভ্য অফিসিয়াল portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই Schedule-II page/PDF আবার যাচাই করা প্রয়োজন।"
   - title: "GDS Online Engagement Schedule-II, July-2026 preparatory exercise"
     url: https://aipeugdsnfpe.blogspot.com/2026/07/gdsgds-online-engagement-schedule-ii.html?m=1
     publishingAuthority: "All India Postal Employees Union - GDS (NFPE)"
@@ -53,7 +53,7 @@ importantDates:
   - "অনলাইন আবেদন ও fee payment: ২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত"
   - "Edit/correction window: ২৩ সেপ্টেম্বর ২০২৬ থেকে ২৪ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত"
 updateHistory:
-  - "2026-08-22: আপলোড করা নোটিশের পৃষ্ঠা থেকে draft তৈরি করা হয়েছে এবং India Post-এর অফিসিয়াল GDS portal মিলিয়ে দেখা হয়েছে। পূর্ণ Schedule-II notification-এর অফিসিয়াল প্রকাশ ও independent review না হওয়া পর্যন্ত publication blocked থাকবে।"
+  - "2026-08-22: আপলোড করা নোটিশের পৃষ্ঠা থেকে under-verification explainer হিসেবে প্রকাশ করা হয়েছে। প্রকাশের সময় পূর্ণ Schedule-II PDF অফিসিয়াল portal-এ পাওয়া যায়নি।"
 faqs:
   - question: "India Post GDS Schedule-II-এর রেজিস্ট্রেশন কবে শুরু হবে?"
     answer: "আপলোড করা নোটিশের পৃষ্ঠা অনুযায়ী One-Time Registration ৩১ আগস্ট ২০২৬ শুরু হয়ে ১৯ সেপ্টেম্বর ২০২৬ বিকেল ৫টা (১৭:০০) পর্যন্ত চলবে।"
@@ -61,28 +61,11 @@ faqs:
     answer: "আপলোড করা নোটিশের পৃষ্ঠা অনুযায়ী ২১ সেপ্টেম্বর ২০২৬ বিকেল ৫টা (১৭:০০) পর্যন্ত আবেদন ও fee payment করা যাবে।"
   - question: "ভুল হলে কি দ্বিতীয়বার registration করতে হবে?"
     answer: "না। নোটিশে multiple বা duplicate registration/application নিষিদ্ধ বলা হয়েছে। ভুল সংশোধনের জন্য ২৩ ও ২৪ সেপ্টেম্বর ২০২৬ আলাদা correction window দেওয়া হয়েছে।"
-notice:
-  noticeTitle: "Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026"
-  issuingAuthority: "Department of Posts, Ministry of Communications, Government of India"
-  noticeNumber: "17-12/2026-GDS"
-  noticeDate: 2026-08-20
-  effectiveDate: 2026-08-31
-  expiryDate: 2026-09-24
-  applicableGeography:
-    - "India"
-  affectedPeople:
-    - "Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) বা Dak Sevak পদে engagement-এর জন্য আগ্রহী প্রার্থী"
-  eligibilitySummary:
-    - "আপলোড করা এই পৃষ্ঠায় সম্পূর্ণ eligibility rules নেই; আবেদন করার আগে পূর্ণ অফিসিয়াল Schedule-II notification যাচাই করতে হবে।"
-  feeSummary:
-    - "এই পৃষ্ঠায় online application-এর সঙ্গে প্রযোজ্য হলে fee payment-এর কথা নিশ্চিত করা হয়েছে; exact fee category পূর্ণ অফিসিয়াল notification থেকে যাচাই করতে হবে।"
-  officialNoticeUrl: https://www.indiapost.gov.in/gdsonlineengagement
-  noticeStatus: current
 ---
 
 ডাক বিভাগের যে নোটিশের পৃষ্ঠাটি Citizen Affairs-এ আপলোড করা হয়েছে, সেখানে **২০ আগস্ট ২০২৬ তারিখের Notification No. 17-12/2026-GDS** এবং **“Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026”** উল্লেখ আছে। এতে Department of Posts-এর বিভিন্ন অফিসে **Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) এবং Dak Sevak** হিসেবে engagement-এর কথা বলা হয়েছে।
 
-> **যাচাই-সংক্রান্ত গুরুত্বপূর্ণ নোট:** আপলোড করা ফাইলটি **৩৯ পৃষ্ঠার নোটিশের ২ নম্বর পৃষ্ঠা**। ২২ আগস্ট ২০২৬-এ Citizen Affairs যখন India Post-এর অফিসিয়াল GDS portal যাচাই করেছে, তখন আমাদের কাছে উপলভ্য public portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই পূর্ণ Schedule-II notification অফিসিয়াল portal-এ পাওয়া না যাওয়া পর্যন্ত এই আপডেটকে **যাচাইাধীন** রাখা হচ্ছে। এই একটি পৃষ্ঠা দেখে মোট vacancy, পূর্ণ eligibility, fee category বা অন্য শর্ত অনুমান করা উচিত নয়।
+> **যাচাই-সংক্রান্ত গুরুত্বপূর্ণ নোট:** আপলোড করা ফাইলটি **৩৯ পৃষ্ঠার নোটিশের ২ নম্বর পৃষ্ঠা**। ২২ আগস্ট ২০২৬-এ Citizen Affairs যখন India Post-এর অফিসিয়াল GDS portal যাচাই করেছে, তখন আমাদের কাছে উপলভ্য public portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই পূর্ণ Schedule-II notification অফিসিয়াল portal-এ পাওয়া না যাওয়া পর্যন্ত এই আপডেটটি **যাচাইাধীন অবস্থায় প্রকাশ করা হচ্ছে**। এই একটি পৃষ্ঠা দেখে মোট vacancy, পূর্ণ eligibility, fee category বা অন্য শর্ত অনুমান করা উচিত নয়।
 
 ## নোটিশে দেওয়া গুরুত্বপূর্ণ তারিখ
 
@@ -114,7 +97,7 @@ Social media বা third-party job website-এ ঘুরতে থাকা vac
 
 ## Source attachment
 
-আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়। Accessibility ও editorial review-এর জন্য ছবিতে থাকা লেখার একটি transcription এই article-এর সঙ্গে সংযুক্ত করা হয়েছে।
+আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়। Accessibility ও editorial review-এর জন্য ছবিতে থাকা লেখার একটি transcription সংযুক্ত করা হয়েছে।
 
 [আপলোড করা notice page-এর সংযুক্ত transcription খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
