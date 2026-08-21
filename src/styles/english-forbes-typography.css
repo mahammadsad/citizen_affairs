@@ -1,13 +1,12 @@
-@import '@fontsource/merriweather/400.css';
-@import '@fontsource/merriweather/400-italic.css';
-@import '@fontsource/merriweather/700.css';
+@import '@fontsource/merriweather/latin-400.css';
+@import '@fontsource/merriweather/latin-700.css';
 
 /*
  * English editorial typography inspired by the current Forbes web stack.
  * Forbes uses Merriweather alongside proprietary/commercial display and UI
- * families. We self-host the OFL-licensed Merriweather family for English
- * editorial headlines and long-form reading while retaining the existing
- * sans-serif UI stack for navigation, controls, labels and metadata.
+ * families. We self-host only the Latin 400/700 OFL-licensed Merriweather
+ * assets needed for English editorial headlines and long-form reading while
+ * retaining the existing sans-serif UI stack for navigation and controls.
  */
 
 html[lang="en"] {
