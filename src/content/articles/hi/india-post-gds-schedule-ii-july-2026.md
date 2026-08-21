@@ -99,7 +99,7 @@ Final notification और application process के लिए Department of Pos
 
 अपलोड की गई image **39 pages में से page 2** है, पूरा notification नहीं।
 
-![India Post GDS Schedule-II July 2026 notice page जिसमें registration, application और correction dates हैं](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 notice page जिसमें registration, application और correction dates हैं" width="500" height="729" loading="lazy" decoding="async">
 
 [Notice page की image खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
 
