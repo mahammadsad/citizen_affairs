@@ -1,0 +1,72 @@
+name: PR198 Hindi font fix
+
+on:
+  push:
+    branches:
+      - ui/article-whatsapp-channel-cta
+    paths:
+      - .github/workflows/pr198-font-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ui/article-whatsapp-channel-cta
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install self-hosted Devanagari font
+        run: npm install @fontsource-variable/noto-sans-devanagari@5.3.0 --save-exact
+
+      - name: Patch typography and regression coverage
+        shell: python
+        run: |
+          from pathlib import Path
+
+          typography = Path('src/styles/typography.css')
+          text = typography.read_text()
+          bengali_import = "@import '@fontsource-variable/noto-sans-bengali/wght.css';"
+          devanagari_import = "@import '@fontsource-variable/noto-sans-devanagari/wght.css';"
+          if devanagari_import not in text:
+              text = text.replace(bengali_import, bengali_import + "\n" + devanagari_import)
+          text = text.replace(
+              '--font-devanagari-ui: "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif;',
+              '--font-devanagari-ui: "Noto Sans Devanagari Variable", "Noto Sans Devanagari", "Nirmala UI", Mangal, sans-serif;'
+          )
+          typography.write_text(text)
+
+          global_css = Path('src/styles/global.css')
+          text = global_css.read_text()
+          text = text.replace(
+              '--font-body: "Hind Siliguri", "Noto Sans Bengali", "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;',
+              '--font-body: "Hind Siliguri", "Noto Sans Bengali", "Noto Sans Devanagari Variable", "Noto Sans Devanagari", "Nirmala UI", system-ui, sans-serif;'
+          )
+          global_css.write_text(text)
+
+          test_file = Path('tests/visual/article-whatsapp-channel-cta.spec.mjs')
+          text = test_file.read_text()
+          anchor = "    await page.goto(entry.path, { waitUntil: 'networkidle' });\n\n"
+          assertion = """    if (entry.locale === 'hi') {\n      const hindiFont = await page.evaluate(async () => {\n        await document.fonts.ready;\n        return {\n          bodyFamily: getComputedStyle(document.body).fontFamily,\n          registered: Array.from(document.fonts).some(\n            (face) => face.family.includes('Noto Sans Devanagari Variable') && face.status === 'loaded',\n          ),\n        };\n      });\n      expect(hindiFont.bodyFamily).toContain('Noto Sans Devanagari Variable');\n      expect(hindiFont.registered).toBe(true);\n    }\n\n"""
+          if assertion not in text:
+              text = text.replace(anchor, anchor + assertion)
+          test_file.write_text(text)
+
+      - name: Remove temporary workflow and commit fix
+        run: |
+          rm .github/workflows/pr198-font-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json src/styles/typography.css src/styles/global.css tests/visual/article-whatsapp-channel-cta.spec.mjs .github/workflows/pr198-font-fix.yml
+          git commit -m "fix: bundle Devanagari font for Hindi pages"
+          git push origin HEAD:ui/article-whatsapp-channel-cta
