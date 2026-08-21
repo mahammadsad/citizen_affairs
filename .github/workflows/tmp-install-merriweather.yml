@@ -1,0 +1,32 @@
+name: Temporary Merriweather Install
+
+on:
+  push:
+    branches:
+      - ui/forbes-english-typography
+    paths:
+      - .github/workflows/tmp-install-merriweather.yml
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/forbes-english-typography
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Merriweather locally
+        run: npm install @fontsource/merriweather@5.3.0 --save-exact
+      - name: Commit dependency files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- package.json package-lock.json
+          git commit -m "chore: self-host Merriweather for English editorial typography"
+          git push
