@@ -134,6 +134,59 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     box-shadow: none !important;
   }
 
+  /* Articles: establish trust once, then let the story breathe. */
+  :global(body.article-reading-mode .article-labels > span),
+  :global(body.article-reading-mode .reading-time),
+  :global(body.article-reading-mode #copyLink) {
+    display: none !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip) {
+    align-items: center !important;
+    margin-top: .9rem !important;
+    padding: .65rem 0 !important;
+    border: 0 !important;
+    border-top: 1px solid var(--color-border) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(body.article-reading-mode .verification-state) {
+    gap: .5rem !important;
+  }
+
+  :global(body.article-reading-mode .verification-state > svg) {
+    width: 18px !important;
+    height: 18px !important;
+    color: var(--color-green-text);
+  }
+
+  :global(body.article-reading-mode .verification-state small) {
+    display: none !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dl) {
+    gap: 0 !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dl div) {
+    min-width: 0 !important;
+    padding: .15rem .7rem !important;
+    border-left: 1px solid var(--color-border);
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dt) {
+    font-size: .7rem !important;
+  }
+
+  :global(body.article-reading-mode .verification-strip dd) {
+    font-size: .78rem !important;
+    font-weight: 650 !important;
+  }
+
   @media (max-width: 700px) {
     /* Give the mobile jobs filter panel a real bottom-sheet separation. */
     :global(.jobs-filter-details[open]::before) {
@@ -173,6 +226,20 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
 
     :global(body.article-reading-mode) {
       padding-bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    }
+
+    :global(body.article-reading-mode .verification-strip) {
+      gap: .55rem !important;
+    }
+
+    :global(body.article-reading-mode .verification-strip dl) {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    :global(body.article-reading-mode .verification-strip dl div) {
+      padding: .3rem .55rem !important;
+      border-left: 0;
+      border-top: 1px solid var(--color-border);
     }
 
     :global(.news-home .top-news) {
