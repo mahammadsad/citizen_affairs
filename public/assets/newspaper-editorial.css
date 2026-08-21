@@ -1,8 +1,8 @@
 /*
  * Citizen Affairs newspaper editorial theme.
- * Uses an open Bengali typeface and newspaper hierarchy inspired by modern
- * Bengali news design. It intentionally does not copy Prothom Alo assets,
- * proprietary Shurjo font files, logo treatment, or page composition.
+ * Uses the site's self-hosted Bengali family with a newspaper hierarchy inspired
+ * by modern Bengali news design. It intentionally does not copy Prothom Alo
+ * assets, proprietary Shurjo font files, logo treatment, or page composition.
  */
 
 :root {
@@ -26,8 +26,8 @@
 }
 
 html[lang="bn"] {
-  --font-display: "Noto Serif Bengali", "Hind Siliguri", serif;
-  --font-body: "Noto Serif Bengali", "Hind Siliguri", serif;
+  --font-display: "Hind Siliguri", system-ui, sans-serif;
+  --font-body: "Hind Siliguri", system-ui, sans-serif;
 }
 
 html[lang="en"] {
@@ -41,7 +41,7 @@ html[lang="bn"] body {
 }
 
 html[lang="bn"] :is(button, input, textarea, select, summary) {
-  font-family: "Noto Serif Bengali", "Hind Siliguri", serif;
+  font-family: "Hind Siliguri", system-ui, sans-serif;
 }
 
 [data-theme="dark"] {
@@ -66,6 +66,11 @@ h2,
 h3,
 h4 {
   color: var(--color-navy);
+}
+
+html[lang="bn"] :is(h1, h2, h3, h4) {
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 [data-theme="dark"] :is(h1, h2, h3, h4) {
@@ -237,7 +242,7 @@ main .lead-story.has-image h2 {
 
 html[lang="bn"] main .lead-story h2,
 html[lang="bn"] main .lead-story.has-image h2 {
-  line-height: 1.23 !important;
+  line-height: 1.2 !important;
 }
 
 main .latest-rail > h2 {
@@ -334,7 +339,7 @@ main .category-filters button[aria-pressed="true"] {
   background: transparent !important;
 }
 
-/* Article: serif Bengali, narrower measure, quiet verification and square imagery. */
+/* Article: newspaper Bengali rhythm, narrower measure, quiet verification and square imagery. */
 main .article-header h1 {
   max-width: 22ch !important;
   color: var(--color-text) !important;
@@ -344,7 +349,7 @@ main .article-header h1 {
 
 html[lang="bn"] main .article-header h1 {
   font-size: clamp(2.15rem, 4.4vw, 3.55rem) !important;
-  line-height: 1.22 !important;
+  line-height: 1.2 !important;
 }
 
 main .article-deck {
@@ -389,7 +394,7 @@ main .article-content {
 
 html[lang="bn"] main .article-content {
   font-size: 1.16rem !important;
-  line-height: 1.92 !important;
+  line-height: 1.9 !important;
 }
 
 main .article-content :is(h2, h3) {
@@ -421,7 +426,7 @@ main .search-hero h1 {
 @media (max-width: 680px) {
   html[lang="bn"] main .article-content {
     font-size: 1.08rem !important;
-    line-height: 1.88 !important;
+    line-height: 1.86 !important;
   }
 
   main .lead-story-copy {
