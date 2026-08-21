@@ -26,6 +26,7 @@ for (const entry of cases) {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(entry.path, { waitUntil: 'networkidle' });
 
+    // CI runners do not ship Devanagari fonts, so verify the self-hosted Hindi face is active.
     if (entry.locale === 'hi') {
       const hindiFont = await page.evaluate(async () => {
         await document.fonts.ready;
