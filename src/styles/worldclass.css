@@ -309,6 +309,17 @@ main .article-hero-picture {
   box-shadow: none;
 }
 
+/* Keep one visible publication-date row: ArticleLayout already shows published/updated above the hero. */
+main .article-publication-meta {
+  margin: .15rem 0 1.2rem !important;
+  padding: .35rem 0 !important;
+  border-block: 0 !important;
+}
+
+main .article-publication-meta > span:not(.article-publication-byline) {
+  display: none !important;
+}
+
 main .verification-strip {
   border-radius: 8px !important;
   background: var(--color-surface) !important;
@@ -654,6 +665,17 @@ main .jobs-filter-panel {
 
   main .utility-facts dd {
     font-size: .78rem !important;
+  }
+
+  /* Screenshot polish: sparse two-story sections must stack on phone widths. */
+  main .news-section-block:has(.section-story:nth-child(2):last-child) .section-story-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Let the Latest rail read like an editorial list instead of a boxed panel on phones. */
+  main .latest-rail > h2,
+  main .latest-rail-list {
+    border-inline: 0 !important;
   }
 
   .prefooter {
