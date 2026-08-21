@@ -1,0 +1,42 @@
+name: Apply final article red override
+
+on:
+  push:
+    branches:
+      - ui/prothom-editorial-system
+    paths:
+      - .github/workflows/apply-article-red.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ui/prothom-editorial-system
+          fetch-depth: 0
+      - name: Fix article-local primary color
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('public/assets/newspaper-editorial.css')
+          text = p.read_text()
+          anchor = '/* Article: newspaper Bengali rhythm, narrower measure, quiet verification and square imagery. */\n'
+          patch = '''/* Article: newspaper Bengali rhythm, narrower measure, quiet verification and square imagery. */\nmain article[data-article] {\n  --color-primary: #b42318 !important;\n  --color-primary-rgb: 180, 35, 24 !important;\n}\n\n[data-theme="dark"] main article[data-article] {\n  --color-primary: #ff8a80 !important;\n  --color-primary-rgb: 255, 138, 128 !important;\n}\n'''
+          if 'main article[data-article] {' not in text:
+              if anchor not in text:
+                  raise SystemExit('article anchor missing')
+              text = text.replace(anchor, patch, 1)
+          text = text.replace('  background: var(--color-surface-alt) !important;\n  box-shadow: none !important;\n}\n\nmain .article-decision-disclosure > summary::after {', '  background: #f7f7f6 !important;\n  box-shadow: none !important;\n}\n\n[data-theme="dark"] main .key-takeaways {\n  background: #1d1d1d !important;\n}\n\nmain .article-decision-disclosure > summary::after {', 1)
+          p.write_text(text)
+          PY
+      - name: Commit final article color
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- public/assets/newspaper-editorial.css
+          git commit -m "fix: enforce newspaper red on article editorial UI" || exit 0
+          git push origin HEAD:ui/prothom-editorial-system
