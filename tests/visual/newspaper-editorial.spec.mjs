@@ -8,6 +8,7 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
   const nav = page.locator('.portal-desktop-nav');
   await expect(brand).toBeVisible();
   await expect(nav).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('article-newspaper-home-bn-1440.png'), fullPage: true });
 
   const metrics = await page.evaluate(() => {
     const masthead = document.querySelector('.portal-brand');
@@ -38,8 +39,6 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
   expect(metrics.headerHeight).toBeGreaterThanOrEqual(112);
   expect(metrics.headlineFont).toContain('Hind Siliguri');
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
-
-  await page.screenshot({ path: testInfo.outputPath('newspaper-home-bn-1440.png'), fullPage: true });
 });
 
 test('Bengali mobile homepage and article keep readable newspaper rhythm without overflow', async ({ page }, testInfo) => {
@@ -51,13 +50,14 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
     viewportWidth: document.documentElement.clientWidth,
   }));
   expect(homeMetrics.documentWidth).toBeLessThanOrEqual(homeMetrics.viewportWidth);
-  await page.screenshot({ path: testInfo.outputPath('newspaper-home-bn-390.png'), fullPage: true });
+  await page.screenshot({ path: testInfo.outputPath('article-newspaper-home-bn-390.png'), fullPage: true });
 
-  const articleLink = page.locator('a[href*="/bn/articles/"]').first();
+  const articleLink = page.locator('a.lead-story[href*="/bn/articles/"]').first();
   await expect(articleLink).toBeVisible();
   await articleLink.click();
   await page.waitForLoadState('networkidle');
   await expect(page.locator('.article-header h1')).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath('article-newspaper-article-bn-390.png'), fullPage: true });
 
   const articleMetrics = await page.evaluate(() => {
     const title = document.querySelector('.article-header h1');
@@ -80,6 +80,4 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
   expect(articleMetrics.contentFont).toContain('Hind Siliguri');
   expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
   expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
-
-  await page.screenshot({ path: testInfo.outputPath('newspaper-article-bn-390.png'), fullPage: true });
 });
