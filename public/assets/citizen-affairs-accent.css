@@ -1,0 +1,35 @@
+/* Citizen Affairs brand accent layer.
+ * Editorial/navigation links use the established Civic Blue rather than
+ * borrowing a red publication accent. Verification remains teal and
+ * warning/expired states may retain semantic warning colors.
+ */
+
+:root {
+  --color-primary: #0a5aa6;
+  --color-primary-rgb: 10, 90, 166;
+}
+
+[data-theme="dark"] {
+  --color-primary: #79b8f3;
+  --color-primary-rgb: 121, 184, 243;
+}
+
+.news-home {
+  --color-primary: #0a5aa6 !important;
+  --color-primary-rgb: 10, 90, 166 !important;
+}
+
+[data-theme="dark"] .news-home {
+  --color-primary: #79b8f3 !important;
+  --color-primary-rgb: 121, 184, 243 !important;
+}
+
+main article[data-article] {
+  --color-primary: #0a5aa6 !important;
+  --color-primary-rgb: 10, 90, 166 !important;
+}
+
+[data-theme="dark"] main article[data-article] {
+  --color-primary: #79b8f3 !important;
+  --color-primary-rgb: 121, 184, 243 !important;
+}

@@ -16,7 +16,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
     const header = document.querySelector('.portal-navbar-inner');
     const headline = document.querySelector('.lead-story h2');
     const main = document.querySelector('#main-content');
-    if (!(masthead instanceof HTMLElement) || !(sectionNav instanceof HTMLElement) || !(header instanceof HTMLElement) || !(headline instanceof HTMLElement) || !(main instanceof HTMLElement)) {
+    const editorialAccent = document.querySelector('main .section-title-row a, main .news-section-block > header a, main .lead-story .story-kicker strong');
+    if (!(masthead instanceof HTMLElement) || !(sectionNav instanceof HTMLElement) || !(header instanceof HTMLElement) || !(headline instanceof HTMLElement) || !(main instanceof HTMLElement) || !(editorialAccent instanceof HTMLElement)) {
       throw new Error('newspaper editorial elements missing');
     }
     const mastheadRect = masthead.getBoundingClientRect();
@@ -30,6 +31,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
       mastheadBottom: mastheadRect.bottom,
       headerHeight: headerRect.height,
       headlineFont: headlineStyle.fontFamily,
+      accentColor: getComputedStyle(editorialAccent).color,
+      primaryToken: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
       bodyBackground: getComputedStyle(document.body).backgroundColor,
       mainBackground: getComputedStyle(main).backgroundColor,
       documentWidth: document.documentElement.scrollWidth,
@@ -41,6 +44,8 @@ test('Bengali homepage uses centered newspaper masthead and self-hosted editoria
   expect(metrics.navTop).toBeGreaterThanOrEqual(metrics.mastheadBottom - 2);
   expect(metrics.headerHeight).toBeGreaterThanOrEqual(112);
   expect(metrics.headlineFont).toContain('Noto Sans Bengali Variable');
+  expect(metrics.primaryToken).toBe('#0a5aa6');
+  expect(metrics.accentColor).toBe('rgb(10, 90, 166)');
   expect(metrics.bodyBackground).toBe('rgb(255, 255, 255)');
   expect(metrics.mainBackground).toBe('rgb(255, 255, 255)');
   expect(metrics.documentWidth).toBeLessThanOrEqual(metrics.viewportWidth);
@@ -77,6 +82,7 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
     return {
       titleFont: getComputedStyle(title).fontFamily,
       contentFont: contentStyle.fontFamily,
+      articlePrimary: getComputedStyle(article).getPropertyValue('--color-primary').trim(),
       articleBackground: getComputedStyle(article).backgroundColor,
       lineHeight: Number.parseFloat(contentStyle.lineHeight),
       fontSize: Number.parseFloat(contentStyle.fontSize),
@@ -87,6 +93,7 @@ test('Bengali mobile homepage and article keep readable newspaper rhythm without
 
   expect(articleMetrics.titleFont).toContain('Noto Sans Bengali Variable');
   expect(articleMetrics.contentFont).toContain('Noto Sans Bengali Variable');
+  expect(articleMetrics.articlePrimary).toBe('#0a5aa6');
   expect(articleMetrics.articleBackground).toBe('rgb(255, 255, 255)');
   expect(articleMetrics.lineHeight / articleMetrics.fontSize).toBeGreaterThan(1.75);
   expect(articleMetrics.documentWidth).toBeLessThanOrEqual(articleMetrics.viewportWidth);
