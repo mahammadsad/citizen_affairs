@@ -97,10 +97,72 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     margin-bottom: .75rem !important;
   }
 
+  /* Horizontal controls should advertise that more options exist. */
+  :global(.jobs-stage-tabs),
+  :global(.category-filters),
+  :global(.article-actions) {
+    scrollbar-width: thin !important;
+    scrollbar-color: var(--color-border) transparent !important;
+  }
+
+  :global(.jobs-stage-tabs::-webkit-scrollbar),
+  :global(.category-filters::-webkit-scrollbar),
+  :global(.article-actions::-webkit-scrollbar) {
+    display: block !important;
+    height: 3px !important;
+  }
+
+  :global(.jobs-stage-tabs::-webkit-scrollbar-thumb),
+  :global(.category-filters::-webkit-scrollbar-thumb),
+  :global(.article-actions::-webkit-scrollbar-thumb) {
+    border-radius: 999px;
+    background: var(--color-border);
+  }
+
+  /* Search should feel like search first, filtering second. */
+  :global(.citizen-search.section) {
+    padding-top: 1.5rem !important;
+  }
+
+  :global(.citizen-search .verification-note) {
+    display: none !important;
+  }
+
+  :global(.citizen-search .control-actions .btn-secondary) {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
   @media (max-width: 700px) {
-    :global(body .jobs-filter-panel.jobs-filter-panel-enhanced) {
+    /* Give the mobile jobs filter panel a real bottom-sheet separation. */
+    :global(.jobs-filter-details[open]::before) {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      background: rgba(7, 30, 52, .42);
+      backdrop-filter: blur(1.5px);
+    }
+
+    :global(body .jobs-filter-panel) {
+      z-index: 40 !important;
       bottom: calc(env(safe-area-inset-bottom) + .75rem) !important;
       max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.5rem) !important;
+      border-radius: 16px !important;
+      border-color: rgba(7, 30, 52, .18) !important;
+      box-shadow: 0 18px 48px rgba(7, 30, 52, .24) !important;
+    }
+
+    :global(body .jobs-filter-panel::before) {
+      content: '';
+      display: block;
+      grid-column: 1 / -1;
+      width: 38px;
+      height: 4px;
+      margin: -.15rem auto .15rem;
+      border-radius: 999px;
+      background: var(--color-border);
     }
   }
 
