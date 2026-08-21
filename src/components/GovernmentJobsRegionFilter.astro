@@ -376,9 +376,9 @@ const unionTerritories = REGIONS.slice(28).map((region) => ({
   @media (max-width: 700px) {
     .jobs-filter-panel {
       z-index: 120 !important;
-      bottom: calc(60px + env(safe-area-inset-bottom) + 0.75rem) !important;
-      max-height: calc(100vh - 60px - env(safe-area-inset-bottom) - 1.5rem) !important;
-      max-height: calc(100dvh - 60px - env(safe-area-inset-bottom) - 1.5rem) !important;
+      bottom: calc(env(safe-area-inset-bottom) + 0.75rem) !important;
+      max-height: calc(100vh - env(safe-area-inset-bottom) - 1.5rem) !important;
+      max-height: calc(100dvh - env(safe-area-inset-bottom) - 1.5rem) !important;
       padding: 1.15rem 1rem 1rem !important;
       overscroll-behavior: contain;
       scrollbar-gutter: stable;
