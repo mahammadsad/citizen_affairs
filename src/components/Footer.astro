@@ -16,28 +16,17 @@ const route = (value = '') => {
 const careersLabel = { en: 'Careers', bn: 'ক্যারিয়ার', hi: 'करियर' }[locale];
 const teamLabel = { en: 'Our Team', bn: 'আমাদের টিম', hi: 'हमारी टीम' }[locale];
 const transparencyLabel = { en: 'Transparency', bn: 'স্বচ্ছতা', hi: 'पारदर्शिता' }[locale];
-const contactPrompt = {
-  en: 'Direct contact is currently unavailable',
-  bn: 'সরাসরি যোগাযোগ বর্তমানে বন্ধ',
-  hi: 'सीधा संपर्क अभी उपलब्ध नहीं है'
-}[locale];
-const contactAction = { en: 'Contact status', bn: 'যোগাযোগের অবস্থা', hi: 'संपर्क की स्थिति' }[locale];
-const careersPrompt = {
-  en: 'Interested in writing, research, marketing or creative work?',
-  bn: 'লেখালেখি, গবেষণা, মার্কেটিং বা ক্রিয়েটিভ কাজে আগ্রহী?',
-  hi: 'लेखन, शोध, मार्केटिंग या क्रिएटिव काम में रुचि है?'
-}[locale];
-const careersAction = { en: 'Explore careers', bn: 'ক্যারিয়ার দেখুন', hi: 'करियर देखें' }[locale];
+const communityLabel = { en: 'MCQ Group', bn: 'MCQ গ্রুপ', hi: 'MCQ समूह' }[locale];
 
 const footerLinks = [
-  { icon: 'updates', label: t.latestNav, href: route('articles') },
-  { icon: 'clock', label: t.deadlines, href: route('deadlines') },
-  { icon: 'categories', label: t.categories, href: route('categories') },
-  { icon: 'bookmark', label: t.saved, href: route('saved') },
-  { icon: 'briefcase', label: careersLabel, href: route('careers') },
-  { icon: 'group', label: teamLabel, href: route('team') },
-  { icon: 'about', label: t.about, href: trustPagePath(locale, 'about') },
-  { icon: 'mail', label: t.contact, href: trustPagePath(locale, 'contact') }
+  { label: t.latestNav, href: route('articles') },
+  { label: t.deadlines, href: route('deadlines') },
+  { label: t.categories, href: route('categories') },
+  { label: t.saved, href: route('saved') },
+  { label: careersLabel, href: route('careers') },
+  { label: teamLabel, href: route('team') },
+  { label: t.about, href: trustPagePath(locale, 'about') },
+  { label: t.contact, href: trustPagePath(locale, 'contact') }
 ];
 
 const policies = [
@@ -47,10 +36,6 @@ const policies = [
   { label: t.privacy, href: route('privacy') },
   { label: t.terms, href: route('terms') },
   { label: t.disclaimer, href: route('disclaimer') }
-];
-
-const communityLinks = [
-  { className: 'mcq', label: 'MCQ Group', detail: t.practiceCommunity, icon: 'group', href: SOCIALS.telegramMCQ }
 ];
 ---
 
@@ -66,74 +51,33 @@ const communityLinks = [
 </section>
 
 <footer class="site-footer">
-  <SocialFollow {locale} variant="footer" titleId="footerSocialTitle" />
-
   <div class="container footer-main">
     <section class="footer-intro">
       <a class="footer-brand" href={route()}>
         <BrandLogo variant="full" alt={`${brandName} ${t.logo}`} class="footer-brand-logo" loading="lazy" />
       </a>
       <p>{t.disclaimerShort}</p>
-      <div class="footer-cta-grid">
-        <a href={trustPagePath(locale, 'contact')}>
-          <span><Icon name="mail" size={19} /></span>
-          <div><small>{contactPrompt}</small><strong>{contactAction}</strong></div>
-          <Icon name="arrow" size={17} />
-        </a>
-        <a href={route('careers')}>
-          <span><Icon name="briefcase" size={19} /></span>
-          <div><small>{careersPrompt}</small><strong>{careersAction}</strong></div>
-          <Icon name="arrow" size={17} />
-        </a>
-      </div>
+      <a class="community-link" href={SOCIALS.telegramMCQ} target="_blank" rel="noopener noreferrer">
+        <Icon name="group" size={17} />{communityLabel}<Icon name="external" size={15} />
+      </a>
     </section>
 
-    <div class="footer-desktop-columns">
-      <section>
-        <h3>{t.exploreFooter}</h3>
-        <nav class="footer-links" aria-label={t.exploreFooter}>
-          {footerLinks.map((link) => (
-            <a href={link.href}><Icon name={link.icon} /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
-          ))}
-        </nav>
-      </section>
-      <section>
-        <h3>{t.trustPolicies}</h3>
-        <nav class="footer-links" aria-label={t.trustPolicies}>
-          {policies.map((link) => (
-            <a href={link.href}><Icon name="check" /><span>{link.label}</span><Icon name="arrow" size={17} /></a>
-          ))}
-        </nav>
-      </section>
-      <section>
-        <h3>{t.community}</h3>
-        <div class="community-cards">
-          {communityLinks.map((link) => (
-            <a class={link.className} href={link.href} target="_blank" rel="noopener noreferrer">
-              <Icon name={link.icon} />
-              <span><strong>{link.label}</strong><small>{link.detail}</small></span>
-              <Icon name="external" size={17} />
-            </a>
-          ))}
-        </div>
-      </section>
-    </div>
+    <section class="footer-column">
+      <h3>{t.exploreFooter}</h3>
+      <nav class="footer-links" aria-label={t.exploreFooter}>
+        {footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </section>
 
-    <div class="footer-mobile-groups">
-      <details>
-        <summary>{t.exploreFooter}<Icon name="arrow" size={18} /></summary>
-        <nav aria-label={t.exploreFooter}>{footerLinks.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
-      </details>
-      <details>
-        <summary>{t.trustPolicies}<Icon name="arrow" size={18} /></summary>
-        <nav aria-label={t.trustPolicies}>{policies.map((link) => <a href={link.href}>{link.label}</a>)}</nav>
-      </details>
-      <details>
-        <summary>{t.community}<Icon name="arrow" size={18} /></summary>
-        <nav aria-label={t.community}>{communityLinks.map((link) => <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}<Icon name="external" size={16} /></a>)}</nav>
-      </details>
-    </div>
+    <section class="footer-column">
+      <h3>{t.trustPolicies}</h3>
+      <nav class="footer-links" aria-label={t.trustPolicies}>
+        {policies.map((link) => <a href={link.href}>{link.label}</a>)}
+      </nav>
+    </section>
   </div>
+
+  <SocialFollow {locale} variant="footer" titleId="footerSocialTitle" />
 
   <div class="container footer-bottom">
     <div><strong>© 2026 {brandName}</strong><span>{t.independentService} · {t.notGovernmentWebsite}</span></div>
@@ -154,7 +98,10 @@ const communityLinks = [
 </script>
 
 <style>
-  :global(.footer-brand-logo){display:block;width:100%;height:auto}.prefooter{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;transform:translateY(2rem);padding:1.35rem 1.55rem;border:1px solid rgba(255,255,255,.18);border-radius:22px;background:radial-gradient(circle at 10% 0,rgba(14,165,154,.35),transparent 38%),linear-gradient(135deg,#0b1d3a,#102c50);color:#fff;box-shadow:0 24px 60px rgba(11,29,58,.24)}.prefooter span{color:#63d5ca;font-size:.8rem;font-weight:850}.prefooter h2{margin-top:.2rem;color:#fff;font-size:clamp(1.1rem,2vw,1.5rem)}.prefooter-actions{display:flex;flex-wrap:wrap;gap:.6rem}.prefooter-actions a{display:inline-flex;align-items:center;gap:.5rem;min-height:46px;padding:.65rem .9rem;border:1px solid rgba(255,255,255,.16);border-radius:13px;background:rgba(255,255,255,.09);font-weight:800}.prefooter-actions a:hover,.prefooter-actions a:focus-visible{background:rgba(255,255,255,.17)}.site-footer{padding:5.4rem 0 1.5rem;background:radial-gradient(circle at 90% 0,rgba(14,165,154,.09),transparent 28%),#07172e;color:#d9e8f5}.footer-main{display:grid;grid-template-columns:minmax(300px,1.15fr) minmax(0,2fr);gap:clamp(2rem,6vw,5rem)}.footer-brand{display:flex;width:min(100%,340px);padding:.7rem;border-radius:17px;background:#fff}.footer-intro>p{max-width:45ch;margin:1.1rem 0;color:#b9cee0}.footer-cta-grid{display:grid;gap:.65rem;max-width:480px}.footer-cta-grid>a{display:grid;grid-template-columns:40px minmax(0,1fr) 17px;align-items:center;gap:.7rem;min-width:0;padding:.75rem;border:1px solid rgba(255,255,255,.11);border-radius:14px;background:rgba(255,255,255,.055);transition:background .2s,border-color .2s}.footer-cta-grid>a:hover,.footer-cta-grid>a:focus-visible{border-color:rgba(99,213,202,.35);background:rgba(255,255,255,.1)}.footer-cta-grid>a>span{display:grid;place-items:center;width:40px;height:40px;border-radius:11px;background:rgba(99,213,202,.12);color:#63d5ca}.footer-cta-grid div{display:grid;min-width:0}.footer-cta-grid small{overflow:hidden;color:#9fbad0;font-size:.72rem;text-overflow:ellipsis;white-space:nowrap}.footer-cta-grid strong{color:#fff;font-size:.92rem}.footer-desktop-columns{display:grid;grid-template-columns:.9fr .95fr 1.2fr;gap:1.4rem}.site-footer h3{margin-bottom:.8rem;color:#fff;font-size:1rem}.footer-links,.community-cards{display:grid;gap:.35rem}.footer-links a,.community-cards a{display:grid;grid-template-columns:21px minmax(0,1fr) 17px;align-items:center;gap:.55rem;min-height:46px;padding:.6rem .65rem;border-radius:11px;color:#d7e6f2}.footer-links a:hover,.footer-links a:focus-visible,.community-cards a:hover,.community-cards a:focus-visible{background:rgba(255,255,255,.07);color:#fff}.community-cards a.mcq{background:rgba(14,165,154,.08)}.community-cards span{display:flex;flex-direction:column}.community-cards small{color:#9fbad0}.footer-mobile-groups{display:none}.footer-bottom{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:2.5rem;padding-top:1.25rem;border-top:1px solid rgba(255,255,255,.12);color:#9fbad0;font-size:.78rem}.footer-bottom>div{display:grid;gap:.15rem}.footer-bottom strong{color:#fff}.footer-bottom nav{display:flex;flex-wrap:wrap;gap:1rem}.footer-bottom a:hover,.footer-bottom a:focus-visible{color:#fff}
-  @media(max-width:940px){.prefooter{width:calc(100% - 2rem);margin-inline:auto}.footer-main{grid-template-columns:1fr}.footer-desktop-columns{grid-template-columns:repeat(3,minmax(0,1fr))}}
-  @media(max-width:620px){.prefooter{align-items:flex-start;flex-direction:column;padding:1.2rem}.prefooter-actions{width:100%}.prefooter-actions a{flex:1;justify-content:center}.site-footer{padding-top:5rem}.footer-main{gap:1.4rem}.footer-brand{width:min(100%,280px)}.footer-intro>p{font-size:.9rem}.footer-cta-grid{max-width:none}.footer-desktop-columns{display:none}.footer-mobile-groups{display:grid;border-top:1px solid rgba(255,255,255,.12)}.footer-mobile-groups details{border-bottom:1px solid rgba(255,255,255,.12)}.footer-mobile-groups summary{display:flex;align-items:center;justify-content:space-between;min-height:54px;cursor:pointer;color:#fff;font-weight:800;list-style:none}.footer-mobile-groups summary::-webkit-details-marker{display:none}.footer-mobile-groups details[open] summary svg{transform:rotate(90deg)}.footer-mobile-groups nav{display:grid;gap:.15rem;padding:0 0 .8rem}.footer-mobile-groups nav a{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:.45rem .25rem;color:#bfd2e2}.footer-bottom{align-items:flex-start;flex-direction:column}.footer-cta-grid small{white-space:normal}}
+  :global(.footer-brand-logo){display:block;width:100%;height:auto}
+  .prefooter{display:flex;align-items:center;justify-content:space-between;gap:1.25rem;margin-top:2rem;padding:1rem 1.15rem;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:var(--color-navy);color:#fff}
+  .prefooter span{color:#9adbd0;font-size:.78rem;font-weight:700}.prefooter h2{margin-top:.15rem;color:#fff;font-size:clamp(1.05rem,2vw,1.35rem);font-weight:700}.prefooter-actions{display:flex;flex-wrap:wrap;gap:.5rem}.prefooter-actions a{display:inline-flex;align-items:center;gap:.45rem;min-height:42px;padding:.55rem .75rem;border:1px solid rgba(255,255,255,.18);border-radius:7px;font-weight:700}.prefooter-actions a:hover,.prefooter-actions a:focus-visible{background:rgba(255,255,255,.08)}
+  .site-footer{padding:3rem 0 1.35rem;background:var(--footer-bg);color:#d9e8f5}.footer-main{display:grid;grid-template-columns:minmax(260px,1.2fr) repeat(2,minmax(170px,.75fr));gap:clamp(1.5rem,5vw,4rem)}.footer-brand{display:flex;width:min(100%,280px);padding:.45rem;border-radius:8px;background:#fff}.footer-intro>p{max-width:43ch;margin:1rem 0;color:#b9cee0;font-size:.9rem;line-height:1.6}.community-link{display:inline-flex;align-items:center;gap:.4rem;color:#d7e6f2;font-size:.82rem;font-weight:700}.community-link:hover,.community-link:focus-visible{color:#fff}.site-footer h3{margin-bottom:.75rem;color:#fff;font-size:.92rem}.footer-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.15rem .8rem}.footer-links a{min-height:36px;display:flex;align-items:center;color:#c7d7e5;font-size:.82rem}.footer-links a:hover,.footer-links a:focus-visible{color:#fff}.footer-bottom{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.1rem;border-top:1px solid rgba(255,255,255,.12);color:#9fbad0;font-size:.76rem}.footer-bottom>div{display:grid;gap:.12rem}.footer-bottom strong{color:#fff}.footer-bottom nav{display:flex;flex-wrap:wrap;gap:1rem}.footer-bottom a:hover,.footer-bottom a:focus-visible{color:#fff}
+  @media(max-width:840px){.footer-main{grid-template-columns:1fr 1fr}.footer-intro{grid-column:1/-1}.footer-links{grid-template-columns:1fr 1fr}}
+  @media(max-width:620px){.prefooter{align-items:flex-start;flex-direction:column;margin-inline:1rem}.prefooter-actions{width:100%}.prefooter-actions a{flex:1;justify-content:center}.site-footer{padding-top:2.4rem}.footer-main{grid-template-columns:1fr;gap:1.5rem}.footer-intro{grid-column:auto}.footer-brand{width:min(100%,250px)}.footer-column{padding-top:1rem;border-top:1px solid rgba(255,255,255,.12)}.footer-links{grid-template-columns:1fr 1fr}.footer-bottom{align-items:flex-start;flex-direction:column}}
 </style>
