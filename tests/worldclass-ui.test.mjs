@@ -38,17 +38,12 @@ test('responsive interface uses the approved Citizen Affairs brand master', () =
   assert.doesNotMatch(logo, /horizontal:\s*\{[\s\S]*citizen-affairs-horizontal\.png/);
 });
 
-test('news category navigation is static and mobile footer is collapsible', () => {
-  const categoryNavigation = read('src/components/LatestTicker.astro');
-  assert.doesNotMatch(categoryNavigation, /@keyframes|animation\s*:/);
-  assert.match(categoryNavigation, /data-category-navigation/);
-  assert.match(categoryNavigation, /ACTIVE_CATEGORY_IDS/);
-  assert.match(categoryNavigation, /overflow-x: auto/);
-
+test('publication footer remains compact and collapsible on mobile', () => {
   const footer = read('src/components/Footer.astro');
   assert.match(footer, /footer-mobile-groups/);
   assert.match(footer, /<details>/);
   assert.match(footer, /<summary>/);
+  assert.doesNotMatch(footer, /footer-cta-grid/);
 });
 
 test('homepage provides useful empty-content and citizen-task experiences', () => {
@@ -60,12 +55,16 @@ test('homepage provides useful empty-content and citizen-task experiences', () =
   assert.match(homepage, /verificationLabels/);
 });
 
-test('portal navigation exposes the active citizen sections on desktop and mobile', () => {
+test('portal navigation exposes citizen sections without a duplicate category bar', () => {
   const header = read('src/components/PortalHeader.astro');
   assert.match(header, /portal-desktop-nav/);
-  assert.match(header, /portal-mobile-bottom/);
+  assert.match(header, /portal-mobile-panel/);
+  assert.match(header, /portal-search-action/);
+  assert.match(header, /route\('saved'\)/);
   assert.match(header, /categories\/jobs/);
   assert.match(header, /categories\/materials/);
   assert.match(header, /categories\/projects/);
   assert.match(header, /categories\/affairs/);
+  assert.doesNotMatch(header, /LatestTicker/);
+  assert.doesNotMatch(header, /portal-mobile-bottom/);
 });
