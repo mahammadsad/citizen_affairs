@@ -1,0 +1,434 @@
+/*
+ * Citizen Affairs newspaper editorial theme.
+ * Uses an open Bengali typeface and newspaper hierarchy inspired by modern
+ * Bengali news design. It intentionally does not copy Prothom Alo assets,
+ * proprietary Shurjo font files, logo treatment, or page composition.
+ */
+
+:root {
+  --color-primary: #b42318;
+  --color-primary-rgb: 180, 35, 24;
+  --color-navy: #171717;
+  --color-text: #222222;
+  --color-text-muted: #666666;
+  --color-border: #dedede;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f7f7f6;
+  --footer-bg: #151515;
+  --footer-card: #202020;
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .035);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, .055);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, .08);
+}
+
+html[lang="bn"] {
+  --font-display: "Noto Serif Bengali", "Hind Siliguri", serif;
+  --font-body: "Noto Serif Bengali", "Hind Siliguri", serif;
+}
+
+html[lang="en"] {
+  --font-display: Arial, Helvetica, Roboto, system-ui, sans-serif;
+  --font-body: Arial, Helvetica, Roboto, system-ui, sans-serif;
+}
+
+html[lang="bn"] body {
+  font-weight: 400;
+  line-height: 1.72;
+}
+
+html[lang="bn"] :is(button, input, textarea, select, summary) {
+  font-family: "Noto Serif Bengali", "Hind Siliguri", serif;
+}
+
+[data-theme="dark"] {
+  --color-primary: #ff8a80;
+  --color-primary-rgb: 255, 138, 128;
+  --color-text: #eeeeee;
+  --color-text-muted: #b7b7b7;
+  --color-border: #343434;
+  --color-bg: #111111;
+  --color-surface: #151515;
+  --color-surface-alt: #1d1d1d;
+  --footer-bg: #0d0d0d;
+  --footer-card: #191919;
+}
+
+body {
+  background: var(--color-bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-navy);
+}
+
+[data-theme="dark"] :is(h1, h2, h3, h4) {
+  color: #f4f4f4;
+}
+
+.btn,
+.prefooter,
+.footer-brand,
+.footer-cta-grid > a,
+main .search-controls,
+main .jobs-listing,
+main .jobs-filter-panel,
+main .query-field > div,
+main .search-controls input,
+main .search-controls select {
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+
+/* Newspaper masthead: centered brand over a compact section navigation. */
+.portal-header {
+  border-bottom-color: var(--color-border) !important;
+  background: rgba(255, 255, 255, .99) !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+[data-theme="dark"] .portal-header {
+  background: rgba(17, 17, 17, .99) !important;
+}
+
+.portal-icon-action,
+.portal-language > summary,
+.portal-more > div,
+.portal-language > div,
+.portal-menu-theme-toggle {
+  border-radius: 3px !important;
+}
+
+.portal-desktop-nav > a:hover,
+.portal-desktop-nav > a[aria-current="page"] {
+  border-bottom-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+@media (min-width: 1280px) {
+  .portal-navbar-inner {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 76px 44px;
+    gap: 0 1rem !important;
+    min-height: 120px !important;
+  }
+
+  .portal-brand {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    flex: none !important;
+    min-width: 190px !important;
+    overflow: visible !important;
+  }
+
+  .portal-brand-logo {
+    width: 198px !important;
+    max-height: 58px !important;
+  }
+
+  .portal-header-actions {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin-left: 0 !important;
+  }
+
+  .portal-desktop-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-content: center;
+    gap: clamp(.8rem, 1.6vw, 1.35rem) !important;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .portal-desktop-nav > a,
+  .portal-more > summary {
+    min-height: 44px !important;
+    border-bottom-width: 2px !important;
+    font-size: .92rem !important;
+    font-weight: 500 !important;
+  }
+}
+
+/* Homepage: white canvas, image-led lead, fine rules, dense but calm hierarchy. */
+.news-home {
+  --color-primary: #b42318 !important;
+  background: #ffffff !important;
+}
+
+[data-theme="dark"] .news-home {
+  --color-primary: #ff8a80 !important;
+  background: var(--color-bg) !important;
+}
+
+main .section-title-row,
+main .news-section-block {
+  border-color: #262626 !important;
+}
+
+[data-theme="dark"] main .section-title-row,
+[data-theme="dark"] main .news-section-block {
+  border-color: #d0d0d0 !important;
+}
+
+main .section-title-row {
+  margin-bottom: 1.1rem !important;
+  padding-bottom: .62rem !important;
+  border-bottom-width: 1px !important;
+}
+
+main .news-section-block {
+  padding-top: .72rem !important;
+  border-top-width: 1px !important;
+}
+
+main .lead-story,
+main .lead-story.has-image,
+main .latest-rail {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: none !important;
+}
+
+main .lead-story.has-image {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+main .lead-story :is(h2, .story-meta strong) {
+  color: var(--color-text) !important;
+}
+
+main .lead-story .story-kicker strong,
+main .latest-rail-story span,
+main .section-story-copy > span,
+main .news-section-block > header a,
+main .section-title-row a {
+  color: var(--color-primary) !important;
+}
+
+main .lead-story .story-kicker span,
+main .lead-story-copy > p,
+main .lead-story .story-meta {
+  color: var(--color-text-muted) !important;
+}
+
+main .lead-story-copy {
+  padding-inline: 0 !important;
+}
+
+main .lead-story h2,
+main .lead-story.has-image h2 {
+  max-width: 23ch !important;
+  font-weight: 700 !important;
+  line-height: 1.14 !important;
+}
+
+html[lang="bn"] main .lead-story h2,
+html[lang="bn"] main .lead-story.has-image h2 {
+  line-height: 1.23 !important;
+}
+
+main .latest-rail > h2 {
+  padding: .35rem 0 .65rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid #262626 !important;
+  font-size: 1.25rem !important;
+}
+
+[data-theme="dark"] main .latest-rail > h2 {
+  border-bottom-color: #d0d0d0 !important;
+}
+
+main .latest-rail-list {
+  border: 0 !important;
+}
+
+main .latest-rail-story {
+  padding: .85rem 0 !important;
+}
+
+main .latest-rail-story h3 {
+  font-weight: 600 !important;
+  line-height: 1.42 !important;
+}
+
+main .section-story-grid {
+  border-top: 1px solid var(--color-border) !important;
+  border-bottom: 0 !important;
+}
+
+main .section-story {
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+main .section-story.featured .section-story-copy {
+  padding-inline: 0 !important;
+}
+
+main .section-story h4 {
+  font-weight: 600 !important;
+  line-height: 1.45 !important;
+}
+
+main .news-section-block > header h3,
+main .section-title-row h2 {
+  font-weight: 700 !important;
+}
+
+/* Shared cards become newspaper rows instead of app cards. */
+main .utility-card {
+  border: 0 !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+main .utility-card-main,
+main .utility-card-footer {
+  padding-inline: 0 !important;
+}
+
+main .utility-facts div {
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+main .utility-card h3 {
+  font-weight: 600 !important;
+}
+
+/* Category pages: section identity first, filters read like a newspaper index. */
+main .category-hero {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface) !important;
+}
+
+main .category-hero h1 {
+  color: var(--color-text) !important;
+  font-weight: 700 !important;
+}
+
+main .category-filters button {
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 0 !important;
+  padding-inline: .2rem !important;
+}
+
+main .category-filters button[aria-pressed="true"] {
+  border-bottom-color: var(--color-primary) !important;
+  background: transparent !important;
+}
+
+/* Article: serif Bengali, narrower measure, quiet verification and square imagery. */
+main .article-header h1 {
+  max-width: 22ch !important;
+  color: var(--color-text) !important;
+  font-weight: 700 !important;
+  line-height: 1.14 !important;
+}
+
+html[lang="bn"] main .article-header h1 {
+  font-size: clamp(2.15rem, 4.4vw, 3.55rem) !important;
+  line-height: 1.22 !important;
+}
+
+main .article-deck {
+  color: #4d4d4d !important;
+}
+
+[data-theme="dark"] main .article-deck {
+  color: var(--color-text-muted) !important;
+}
+
+main .article-hero-picture,
+main .article-hero-image {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+main .verification-strip {
+  padding: .85rem 0 !important;
+  border: 0 !important;
+  border-block: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+main .article-actions button,
+main .article-actions a,
+main :is(.trust-box, .info-panel, .source-panel, .faq-section, .correction-report, .update-panel, .toc-card, .rail-card),
+main .decision-workspace,
+main .article-decision-disclosure,
+main .article-freshness,
+main .article-quick-summary {
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+
+main .article-content {
+  max-width: 690px !important;
+  font-size: 1.08rem !important;
+  line-height: 1.86 !important;
+}
+
+html[lang="bn"] main .article-content {
+  font-size: 1.16rem !important;
+  line-height: 1.92 !important;
+}
+
+main .article-content :is(h2, h3) {
+  line-height: 1.28 !important;
+}
+
+main .article-content h2 {
+  padding-top: .25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Search/jobs keep their utility but lose the SaaS-card personality. */
+main .search-hero,
+main .jobs-result-line {
+  background: var(--color-surface) !important;
+}
+
+main .search-controls,
+main .jobs-listing {
+  border-inline: 0 !important;
+}
+
+main .jobs-result-line h1,
+main .search-hero h1 {
+  color: var(--color-text) !important;
+  font-weight: 700 !important;
+}
+
+@media (max-width: 680px) {
+  html[lang="bn"] main .article-content {
+    font-size: 1.08rem !important;
+    line-height: 1.88 !important;
+  }
+
+  main .lead-story-copy {
+    padding-inline: 0 !important;
+  }
+
+  main .section-title-row {
+    border-bottom-color: #262626 !important;
+  }
+}
