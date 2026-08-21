@@ -97,9 +97,13 @@ Social media বা third-party job website-এ ঘুরতে থাকা vac
 
 ## Source attachment
 
-আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়। Accessibility ও editorial review-এর জন্য ছবিতে থাকা লেখার একটি transcription সংযুক্ত করা হয়েছে।
+আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়।
 
-[আপলোড করা notice page-এর সংযুক্ত transcription খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 নোটিশের পৃষ্ঠা—registration, application ও correction date" width="500" height="729" loading="lazy" decoding="async">
+
+[নোটিশের পৃষ্ঠার ছবিটি খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+
+[টেক্সট transcription খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
 ## আবেদন করার আগে
 

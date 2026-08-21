@@ -97,9 +97,13 @@ Final notification और application process के लिए Department of Pos
 
 ## Source attachment
 
-अपलोड की गई image **39 pages में से page 2** है, पूरा notification नहीं। Accessibility और editorial review के लिए supplied page का text transcription इस article के साथ जोड़ा गया है।
+अपलोड की गई image **39 pages में से page 2** है, पूरा notification नहीं।
 
-[अपलोड किए गए notice page का attached transcription खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 notice page जिसमें registration, application और correction dates हैं" width="500" height="729" loading="lazy" decoding="async">
+
+[Notice page की image खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+
+[Text transcription खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
 ## आवेदन करने से पहले
 

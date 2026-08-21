@@ -97,9 +97,13 @@ Use the Department of Posts GDS portal for the final notification and applicatio
 
 ## Source attachment
 
-The supplied image is **page 2 of 39**, not the complete notification. A text transcription of that supplied page is attached for accessibility and editorial review.
+The supplied image is **page 2 of 39**, not the complete notification.
 
-[Open the attached transcription of the supplied notice page](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 notice page showing registration, application and correction dates" width="500" height="729" loading="lazy" decoding="async">
+
+[Open the notice page image](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+
+[Open the text transcription](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
 ## Before you apply
 
