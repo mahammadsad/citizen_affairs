@@ -90,7 +90,7 @@ const websiteSchema = {
       '@type': 'EntryPoint',
       urlTemplate: `${searchUrl}?q={search_term_string}`
     },
-    'query-input': 'required name=search_term_string'
+    'query-input': 'required name=query-input'
   }
 };
 
@@ -155,6 +155,7 @@ const t = ui(locale);
     <link rel="stylesheet" href={`${SITE.basePath}assets/newspaper-editorial.css`} />
     <link rel="stylesheet" href={`${SITE.basePath}assets/prothom-white-canvas.css`} />
     <link rel="stylesheet" href={`${SITE.basePath}assets/citizen-affairs-accent.css`} />
+    <link rel="stylesheet" href={`${SITE.basePath}assets/article-link-brand-blue-v2.css`} />
     <meta name="color-scheme" content="light dark" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
