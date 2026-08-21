@@ -29,7 +29,7 @@ sources:
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-22
-    notes: "इस जाँच के समय Citizen Affairs को उपलब्ध official portal view में अभी Schedule-I, January-2026 दिख रहा था। इसलिए publication से पहले Schedule-II page/PDF की दोबारा पुष्टि जरूरी है।"
+    notes: "इस जाँच के समय Citizen Affairs को उपलब्ध official portal view में अभी Schedule-I, January-2026 दिख रहा था। इसलिए Schedule-II page/PDF की दोबारा पुष्टि जरूरी है।"
   - title: "GDS Online Engagement Schedule-II, July-2026 preparatory exercise"
     url: https://aipeugdsnfpe.blogspot.com/2026/07/gdsgds-online-engagement-schedule-ii.html?m=1
     publishingAuthority: "All India Postal Employees Union - GDS (NFPE)"
@@ -61,28 +61,11 @@ faqs:
     answer: "अपलोड किए गए notice page के अनुसार application और fee payment की अंतिम समय-सीमा 21 सितंबर 2026 को 17:00 बजे है।"
   - question: "गलती होने पर क्या दूसरी registration करनी चाहिए?"
     answer: "नहीं। Notice page में multiple या duplicate registration/application को प्रतिबंधित बताया गया है। सुधार के लिए 23 और 24 सितंबर 2026 को अलग correction window है।"
-notice:
-  noticeTitle: "Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026"
-  issuingAuthority: "Department of Posts, Ministry of Communications, Government of India"
-  noticeNumber: "17-12/2026-GDS"
-  noticeDate: 2026-08-20
-  effectiveDate: 2026-08-31
-  expiryDate: 2026-09-24
-  applicableGeography:
-    - "India"
-  affectedPeople:
-    - "Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) या Dak Sevak engagement के लिए इच्छुक उम्मीदवार"
-  eligibilitySummary:
-    - "अपलोड किए गए इस page में पूरी eligibility rules नहीं हैं; आवेदन से पहले full official Schedule-II notification जाँचें।"
-  feeSummary:
-    - "इस page में online application के साथ, जहाँ लागू हो, fee payment की बात है; exact fee categories full official notification से जाँचें।"
-  officialNoticeUrl: https://www.indiapost.gov.in/gdsonlineengagement
-  noticeStatus: current
 ---
 
 Citizen Affairs को अपलोड किए गए डाक विभाग के notice page में **20 अगस्त 2026 का Notification No. 17-12/2026-GDS** और **“Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026”** लिखा है। इसमें Department of Posts के विभिन्न कार्यालयों में **Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) और Dak Sevak** के engagement का उल्लेख है।
 
-> **Verification note:** अपलोड की गई file **39-page notice का page 2** है। 22 अगस्त 2026 को Citizen Affairs ने India Post का official GDS portal जाँचा, लेकिन हमें उपलब्ध public portal view में अभी Schedule-I, January-2026 दिख रहा था। इसलिए complete Schedule-II notification official portal पर उपलब्ध होने तक इस update को **under verification** रखा जा रहा है। इस एक page के आधार पर total vacancy, full eligibility, fee category या दूसरी conditions का अनुमान नहीं लगाना चाहिए।
+> **Verification note:** अपलोड की गई file **39-page notice का page 2** है। 22 अगस्त 2026 को Citizen Affairs ने India Post का official GDS portal जाँचा, लेकिन हमें उपलब्ध public portal view में अभी Schedule-I, January-2026 दिख रहा था। इसलिए complete Schedule-II notification official portal पर उपलब्ध होने तक इस update को **under verification के रूप में publish किया जा रहा है**। इस एक page के आधार पर total vacancy, full eligibility, fee category या दूसरी conditions का अनुमान नहीं लगाना चाहिए।
 
 ## Notice में दी गई महत्वपूर्ण तारीखें
 
@@ -121,6 +104,7 @@ Final notification और application process के लिए Department of Pos
 [Notice page की image खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
 
 [Text transcription खोलें](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+
 ## आवेदन करने से पहले
 
 सिर्फ official India Post portal इस्तेमाल करें, duplicate registration न करें और fee payment या final submission से पहले complete notification दोबारा जाँचें। बाद में corrigendum या portal update से date, vacancy या conditions बदल सकती हैं।

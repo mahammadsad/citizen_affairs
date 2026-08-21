@@ -29,7 +29,7 @@ sources:
     sourceType: official-portal
     designation: primary
     accessedDate: 2026-08-22
-    notes: "At the time of this check, the public portal view available to Citizen Affairs was still showing Schedule-I, January-2026. The Schedule-II page/PDF therefore requires re-verification before publication."
+    notes: "At the time of this check, the public portal view available to Citizen Affairs was still showing Schedule-I, January-2026. The Schedule-II page/PDF therefore requires re-verification."
   - title: "GDS Online Engagement Schedule-II, July-2026 preparatory exercise"
     url: https://aipeugdsnfpe.blogspot.com/2026/07/gdsgds-online-engagement-schedule-ii.html?m=1
     publishingAuthority: "All India Postal Employees Union - GDS (NFPE)"
@@ -61,28 +61,11 @@ faqs:
     answer: "The uploaded notice page shows 21 September 2026 at 17:00 hrs as the application and fee-payment closing time."
   - question: "Can I make a second registration if I make a mistake?"
     answer: "No. The notice page says duplicate or multiple registrations/applications are prohibited. It provides a separate correction window on 23 and 24 September 2026."
-notice:
-  noticeTitle: "Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026"
-  issuingAuthority: "Department of Posts, Ministry of Communications, Government of India"
-  noticeNumber: "17-12/2026-GDS"
-  noticeDate: 2026-08-20
-  effectiveDate: 2026-08-31
-  expiryDate: 2026-09-24
-  applicableGeography:
-    - "India"
-  affectedPeople:
-    - "Candidates seeking engagement as Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) or Dak Sevak"
-  eligibilitySummary:
-    - "The uploaded page does not contain the complete eligibility rules; applicants should check the full official Schedule-II notification before applying."
-  feeSummary:
-    - "The page confirms that fee payment, if applicable, is part of the online application process; exact fee categories must be checked in the full official notification."
-  officialNoticeUrl: https://www.indiapost.gov.in/gdsonlineengagement
-  noticeStatus: current
 ---
 
 The Department of Posts notice page uploaded to Citizen Affairs identifies **Notification No. 17-12/2026-GDS dated 20 August 2026** and the recruitment cycle **“Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026.”** It covers engagement for **Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) and Dak Sevak** posts in different Department of Posts offices.
 
-> **Verification note:** the uploaded file is **page 2 of a 39-page notice**. When Citizen Affairs checked the official India Post GDS portal on 22 August 2026, the public portal view available to us was still showing Schedule-I, January-2026. For that reason, this update is being kept **under verification** until the complete Schedule-II notification is available on the official portal. Vacancy totals, detailed eligibility, fee categories and other conditions should not be inferred from this single page.
+> **Verification note:** the uploaded file is **page 2 of a 39-page notice**. When Citizen Affairs checked the official India Post GDS portal on 22 August 2026, the public portal view available to us was still showing Schedule-I, January-2026. For that reason, this update is being published as **under verification** until the complete Schedule-II notification is available on the official portal. Vacancy totals, detailed eligibility, fee categories and other conditions should not be inferred from this single page.
 
 ## Important dates shown in the notice
 
@@ -121,6 +104,7 @@ The supplied image is **page 2 of 39**, not the complete notification.
 [Open the notice page image](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
 
 [Open the text transcription](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+
 ## Before you apply
 
 Use only the official India Post portal, avoid duplicate registration, and re-check the complete notification before paying any fee or submitting the final form. Dates, vacancies or conditions can also be changed later through a corrigendum or portal update.
