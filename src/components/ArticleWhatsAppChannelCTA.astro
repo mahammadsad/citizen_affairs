@@ -1,0 +1,277 @@
+---
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const channels = {
+  en: {
+    url: 'https://whatsapp.com/channel/0029VbEBWWNHwXb2suA0tf0r',
+    kicker: 'Get the next update on WhatsApp',
+    title: 'Follow Citizen Affairs on WhatsApp',
+    body: 'Get important updates, deadlines and the latest news directly in your WhatsApp Updates tab.',
+    privacy: 'Private follow · Other followers cannot see your phone number.',
+    button: 'Follow English Channel',
+    aria: 'Follow the Citizen Affairs English WhatsApp Channel',
+  },
+  bn: {
+    url: 'https://whatsapp.com/channel/0029Vb8NQAX9cDDTfaEDwk3r',
+    kicker: 'পরবর্তী আপডেট WhatsApp-এ পান',
+    title: 'WhatsApp-এ Citizen Affairs ফলো করুন',
+    body: 'গুরুত্বপূর্ণ আপডেট, শেষ তারিখ ও সর্বশেষ খবর সরাসরি আপনার WhatsApp Updates ট্যাবে পান।',
+    privacy: 'ফলো করা ব্যক্তিগত · অন্য ফলোয়াররা আপনার ফোন নম্বর দেখতে পাবেন না।',
+    button: 'বাংলা চ্যানেল ফলো করুন',
+    aria: 'Citizen Affairs বাংলা WhatsApp চ্যানেল ফলো করুন',
+  },
+  hi: {
+    url: 'https://whatsapp.com/channel/0029VbDMfavLikgC8qYfCM2t',
+    kicker: 'अगला अपडेट WhatsApp पर पाएं',
+    title: 'WhatsApp पर Citizen Affairs को फॉलो करें',
+    body: 'महत्वपूर्ण अपडेट, अंतिम तिथियाँ और ताज़ा खबरें सीधे अपने WhatsApp Updates टैब में पाएं।',
+    privacy: 'फॉलो करना निजी है · दूसरे फ़ॉलोअर्स आपका फ़ोन नंबर नहीं देख सकते।',
+    button: 'हिंदी चैनल फॉलो करें',
+    aria: 'Citizen Affairs हिंदी WhatsApp चैनल फॉलो करें',
+  },
+} satisfies Record<Locale, {
+  url: string;
+  kicker: string;
+  title: string;
+  body: string;
+  privacy: string;
+  button: string;
+  aria: string;
+}>;
+
+const channel = channels[locale];
+const titleId = `whatsapp-channel-title-${locale}`;
+---
+
+<section
+  class="whatsapp-channel-cta"
+  data-whatsapp-channel-cta
+  data-locale={locale}
+  aria-labelledby={titleId}
+>
+  <div class="whatsapp-channel-mark" aria-hidden="true">
+    <svg viewBox="0 0 48 48" role="img">
+      <path d="M13.5 12.75h21A5.75 5.75 0 0 1 40.25 18.5v12A5.75 5.75 0 0 1 34.5 36.25H23l-7.75 5v-5H13.5a5.75 5.75 0 0 1-5.75-5.75v-12a5.75 5.75 0 0 1 5.75-5.75Z" />
+      <path class="pulse" d="M18 22.25a8 8 0 0 1 8 8M18 27a3.25 3.25 0 0 1 3.25 3.25" />
+      <circle cx="17.75" cy="30.25" r="1.75" />
+    </svg>
+  </div>
+
+  <div class="whatsapp-channel-copy">
+    <span class="whatsapp-channel-kicker">{channel.kicker}</span>
+    <h2 id={titleId}>{channel.title}</h2>
+    <p>{channel.body}</p>
+    <div class="whatsapp-channel-privacy">
+      <svg viewBox="0 0 20 20" aria-hidden="true">
+        <path d="m5.8 10.2 2.5 2.5 5.9-6" />
+      </svg>
+      <span>{channel.privacy}</span>
+    </div>
+  </div>
+
+  <a
+    class="whatsapp-channel-button"
+    href={channel.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={channel.aria}
+    data-whatsapp-channel-link
+  >
+    <span>{channel.button}</span>
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M7.25 4.75 12.5 10l-5.25 5.25" />
+    </svg>
+  </a>
+</section>
+
+<style>
+  .whatsapp-channel-cta {
+    --whatsapp-green: #25d366;
+    --whatsapp-green-deep: #0f7a45;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.15rem;
+    margin: 2.4rem 0 2.6rem;
+    padding: 1.25rem 1.3rem;
+    border: 1px solid var(--color-border);
+    border-color: color-mix(in srgb, var(--whatsapp-green) 34%, var(--color-border));
+    border-radius: 16px;
+    background: var(--color-surface);
+    background: color-mix(in srgb, var(--whatsapp-green) 6%, var(--color-surface));
+    box-shadow: 0 8px 24px rgba(7, 30, 52, .06);
+    font-family: var(--font-body);
+  }
+
+  .whatsapp-channel-mark {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--whatsapp-green);
+    color: #07351f;
+  }
+
+  .whatsapp-channel-mark svg {
+    width: 34px;
+    height: 34px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .whatsapp-channel-mark circle {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .whatsapp-channel-copy {
+    min-width: 0;
+  }
+
+  .whatsapp-channel-kicker {
+    display: block;
+    margin-bottom: .28rem;
+    color: var(--whatsapp-green-deep);
+    font-size: .72rem;
+    font-weight: 850;
+    letter-spacing: .025em;
+  }
+
+  .whatsapp-channel-copy h2 {
+    margin: 0 0 .38rem !important;
+    color: var(--color-text);
+    font-size: clamp(1.18rem, .9rem + .9vw, 1.45rem) !important;
+    line-height: 1.22 !important;
+    letter-spacing: -.015em;
+  }
+
+  .whatsapp-channel-copy > p {
+    margin: 0 !important;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: .9rem;
+    line-height: 1.55;
+  }
+
+  .whatsapp-channel-privacy {
+    display: flex;
+    align-items: center;
+    gap: .36rem;
+    margin-top: .55rem;
+    color: var(--color-text-muted);
+    font-size: .72rem;
+    line-height: 1.4;
+  }
+
+  .whatsapp-channel-privacy svg {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--whatsapp-green-deep);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .whatsapp-channel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .42rem;
+    min-height: 48px;
+    padding: .7rem .92rem;
+    border: 1px solid color-mix(in srgb, var(--whatsapp-green-deep) 28%, transparent);
+    border-radius: 10px;
+    background: var(--whatsapp-green);
+    color: #07351f !important;
+    font-family: var(--font-body);
+    font-size: .8rem;
+    font-weight: 850;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .whatsapp-channel-button svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .whatsapp-channel-button:hover {
+    background: #2fe071;
+    box-shadow: 0 8px 18px rgba(15, 122, 69, .16);
+    transform: translateY(-1px);
+  }
+
+  .whatsapp-channel-button:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--whatsapp-green) 40%, var(--color-primary));
+    outline-offset: 3px;
+  }
+
+  :global([data-theme="dark"]) .whatsapp-channel-cta {
+    border-color: color-mix(in srgb, var(--whatsapp-green) 30%, var(--color-border));
+    background: color-mix(in srgb, var(--whatsapp-green) 7%, var(--color-surface));
+    box-shadow: none;
+  }
+
+  :global([data-theme="dark"]) .whatsapp-channel-kicker,
+  :global([data-theme="dark"]) .whatsapp-channel-privacy svg {
+    color: #5be58e;
+    stroke: #5be58e;
+  }
+
+  @media (max-width: 680px) {
+    .whatsapp-channel-cta {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: start;
+      margin: 2rem 0 2.25rem;
+      padding: 1rem;
+      border-radius: 14px;
+    }
+
+    .whatsapp-channel-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+    }
+
+    .whatsapp-channel-mark svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .whatsapp-channel-button {
+      grid-column: 1 / -1;
+      width: 100%;
+      white-space: normal;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-channel-button {
+      transition: none;
+    }
+
+    .whatsapp-channel-button:hover {
+      transform: none;
+    }
+  }
+</style>
