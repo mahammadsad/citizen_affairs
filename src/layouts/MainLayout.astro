@@ -97,6 +97,22 @@ const bodyClass = isArticleDetailPage ? 'article-reading-mode' : undefined;
     margin-bottom: .75rem !important;
   }
 
+  /* Jobs should identify the page before asking readers to operate controls. */
+  :global(.jobs-listing) {
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  :global(.jobs-result-line) {
+    order: -3;
+    padding: 1rem !important;
+    border-top: 0 !important;
+    background: transparent !important;
+  }
+
+  :global(.jobs-controls) { order: -2; }
+  :global(.jobs-stage-tabs) { order: -1; }
+
   /* Horizontal controls should advertise that more options exist. */
   :global(.jobs-stage-tabs),
   :global(.category-filters),
