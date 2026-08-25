@@ -15,13 +15,22 @@ independentReviewStatus: not-assigned
 category: exams
 governmentLevel: central
 featured: true
+featuredImage: /uploads/articles/shared/template-exam-update-1200.webp
+featuredImageAvif: /uploads/articles/shared/template-exam-update-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/template-exam-update-480.webp 480w, /uploads/articles/shared/template-exam-update-768.webp 768w, /uploads/articles/shared/template-exam-update-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/template-exam-update-480.avif 480w, /uploads/articles/shared/template-exam-update-768.avif 768w, /uploads/articles/shared/template-exam-update-1200.avif 1200w
+featuredImageWidth: 1200
+featuredImageHeight: 675
+featuredImageAlt: "RRB NTPC परीक्षा परिणाम और अगले चरण के अपडेट को दर्शाने वाला संपादकीय illustration"
+featuredImageCaption: "यह exam-update illustration है; कोई official Railway Recruitment Board notice या interface नहीं है।"
+featuredImageCredit: "Citizen Affairs source-controlled illustration"
 checkBeforeActing: true
 lastVerified: 2026-08-25
 nextReviewDate: 2026-08-26
 deadline: 2026-09-17
 seoTitle: "RRB NTPC UG Result 2026: PDF, Cut Off, Scorecard"
 seoDescription: "RRB NTPC UG CBT 1 Result 2026 region-wise जारी हो रहा है। CEN 07/2025 official PDF, cut off, scorecard update और CBT 2 date देखें।"
-officialNoticeUrl: https://www.rrbthiruvananthapuram.gov.in/
+officialNoticeUrl: https://www.rrbcdg.gov.in/2025-07-ntpcug.php
 sourceUrls:
   - https://www.rrbthiruvananthapuram.gov.in/
   - https://www.rrbcdg.gov.in/uploads/2025/07-NTPCUG/072025NTPCUG-CEN.pdf
