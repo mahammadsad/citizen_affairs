@@ -1,8 +1,32 @@
 ---
-import { shortLinks } from '../../lib/short-links.mjs';
+import { getCollection } from 'astro:content';
+import { getPreferredShortLink, shortLinks } from '../../lib/short-links.mjs';
 
-export function getStaticPaths() {
-  return shortLinks.map(({ slug, target }) => ({
+export async function getStaticPaths() {
+  const articles = await getCollection(
+    'articles',
+    ({ data }) =>
+      !data.draft &&
+      ['published', 'corrected', 'closed'].includes(data.workflowStatus) &&
+      data.verificationStatus !== 'withdrawn'
+  );
+
+  const generatedLinks = articles.map(({ data }) =>
+    getPreferredShortLink(data.language, data.urlSlug)
+  );
+  const routes = new Map();
+
+  for (const entry of [...shortLinks, ...generatedLinks]) {
+    const existing = routes.get(entry.slug);
+    if (existing && existing.target !== entry.target) {
+      throw new Error(
+        `Short-link collision for /go/${entry.slug}/: ${existing.target} vs ${entry.target}`
+      );
+    }
+    routes.set(entry.slug, entry);
+  }
+
+  return [...routes.values()].map(({ slug, target }) => ({
     params: { slug },
     props: { target },
   }));
