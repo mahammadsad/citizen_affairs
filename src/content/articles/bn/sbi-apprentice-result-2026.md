@@ -10,7 +10,7 @@ updated: 2026-08-25
 author: citizen-affairs-editorial-desk
 workflowStatus: published
 draft: false
-verificationStatus: officially-confirmed
+verificationStatus: partially-confirmed
 independentReviewStatus: not-assigned
 category: exams
 governmentLevel: central
