@@ -21,7 +21,7 @@ nextReviewDate: 2026-08-26
 deadline: 2026-09-17
 seoTitle: "RRB NTPC UG Result 2026: PDF, Cut Off, Scorecard"
 seoDescription: "RRB NTPC UG CBT 1 Result 2026 region-wise প্রকাশিত হচ্ছে। CEN 07/2025 official PDF, cut off, scorecard update ও CBT 2 date দেখুন।"
-officialNoticeUrl: https://www.rrbthiruvananthapuram.gov.in/
+officialNoticeUrl: https://www.rrbcdg.gov.in/2025-07-ntpcug.php
 sourceUrls:
   - https://www.rrbthiruvananthapuram.gov.in/
   - https://www.rrbcdg.gov.in/uploads/2025/07-NTPCUG/072025NTPCUG-CEN.pdf
