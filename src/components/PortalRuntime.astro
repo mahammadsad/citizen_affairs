@@ -130,7 +130,7 @@
 
     const syncDisclosureSemantics = () => {
       document
-        .querySelectorAll('.portal-language > summary, .portal-more > summary')
+        .querySelectorAll<HTMLElement>('.portal-language > summary, .portal-more > summary')
         .forEach((summary) => {
           const details = summary.parentElement;
           if (!(details instanceof HTMLDetailsElement)) return;
