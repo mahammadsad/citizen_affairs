@@ -1,0 +1,13 @@
+---
+import { shortLinks } from '../../lib/short-links.mjs';
+
+export function getStaticPaths() {
+  return shortLinks.map(({ slug, target }) => ({
+    params: { slug },
+    props: { target },
+  }));
+}
+
+const { target } = Astro.props;
+return Astro.redirect(target, 301);
+---
