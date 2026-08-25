@@ -15,6 +15,15 @@ independentReviewStatus: not-assigned
 category: exams
 governmentLevel: central
 featured: true
+featuredImage: /uploads/articles/shared/template-exam-update-1200.webp
+featuredImageAvif: /uploads/articles/shared/template-exam-update-1200.avif
+featuredImageSrcSet: /uploads/articles/shared/template-exam-update-480.webp 480w, /uploads/articles/shared/template-exam-update-768.webp 768w, /uploads/articles/shared/template-exam-update-1200.webp 1200w
+featuredImageAvifSrcSet: /uploads/articles/shared/template-exam-update-480.avif 480w, /uploads/articles/shared/template-exam-update-768.avif 768w, /uploads/articles/shared/template-exam-update-1200.avif 1200w
+featuredImageWidth: 1200
+featuredImageHeight: 675
+featuredImageAlt: "RRB NTPC পরীক্ষার ফলাফল ও পরবর্তী ধাপের আপডেট বোঝাতে সম্পাদকীয় illustration"
+featuredImageCaption: "এটি একটি exam-update illustration; কোনো official Railway Recruitment Board notice বা interface নয়।"
+featuredImageCredit: "Citizen Affairs source-controlled illustration"
 checkBeforeActing: true
 lastVerified: 2026-08-25
 nextReviewDate: 2026-08-26
