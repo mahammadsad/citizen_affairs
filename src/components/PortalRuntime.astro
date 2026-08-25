@@ -1,4 +1,6 @@
-<script is:inline>
+<script>
+  import { shortPathForArticle } from '../lib/short-links.mjs';
+
   (() => {
     const externalCopy = {
       en: { opens: 'Opens external destination in a new tab', destination: 'Destination' },
@@ -10,6 +12,116 @@
       ? document.documentElement.lang
       : 'en';
     const external = externalCopy[locale];
+
+    const getArticleShareContext = () => {
+      const article = document.querySelector('[data-article]');
+      if (!(article instanceof HTMLElement)) return null;
+
+      const articleId = article.dataset.id || '';
+      const separator = articleId.indexOf(':');
+      if (separator <= 0) return null;
+
+      const articleLocale = articleId.slice(0, separator);
+      const urlSlug = articleId.slice(separator + 1);
+      if (!['en', 'bn', 'hi'].includes(articleLocale) || !urlSlug) return null;
+
+      return {
+        title: article.dataset.title || document.title,
+        description: article.dataset.description || '',
+        shortUrl: new URL(shortPathForArticle(articleLocale, urlSlug), location.origin).href,
+      };
+    };
+
+    const setShortShareHref = (link, context) => {
+      const shareUrl = encodeURIComponent(context.shortUrl);
+      const shareText = encodeURIComponent(context.title);
+      const type = link.dataset.share;
+
+      link.href = type === 'whatsapp'
+        ? `https://wa.me/?text=${shareText}%20${shareUrl}`
+        : type === 'telegram'
+          ? `https://t.me/share/url?url=${shareUrl}&text=${shareText}`
+          : `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+    };
+
+    const syncShortShareLinks = () => {
+      const context = getArticleShareContext();
+      if (!context) return;
+
+      document.querySelectorAll('[data-share]').forEach((link) => {
+        if (link instanceof HTMLAnchorElement) setShortShareHref(link, context);
+      });
+    };
+
+    const copyText = async (value) => {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(value);
+        return;
+      }
+
+      const textarea = document.createElement('textarea');
+      textarea.value = value;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.append(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+    };
+
+    const handleShortShareClick = async (event) => {
+      const target = event.target instanceof Element
+        ? event.target.closest('#nativeShare, #copyLink, [data-share]')
+        : null;
+      if (!target) return;
+
+      const context = getArticleShareContext();
+      if (!context) return;
+
+      if (target instanceof HTMLAnchorElement && target.dataset.share) {
+        setShortShareHref(target, context);
+        return;
+      }
+
+      if (!(target instanceof HTMLButtonElement)) return;
+
+      if (target.id === 'nativeShare') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: context.title,
+              text: context.description,
+              url: context.shortUrl,
+            });
+          } else {
+            await copyText(context.shortUrl);
+          }
+        } catch (error) {
+          if (!(error instanceof DOMException && error.name === 'AbortError')) {
+            console.warn('Unable to share article', error);
+          }
+        }
+        return;
+      }
+
+      if (target.id === 'copyLink') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        await copyText(context.shortUrl);
+        const label = target.querySelector('span');
+        if (label) {
+          label.textContent = target.dataset.copiedLabel || 'Copied';
+          setTimeout(() => {
+            label.textContent = target.dataset.copyLabel || 'Copy link';
+          }, 1600);
+        }
+      }
+    };
 
     const syncDisclosureSemantics = () => {
       document
@@ -67,7 +179,10 @@
       document.querySelector('.action-grid')?.classList.add('portal-action-grid');
       syncDisclosureSemantics();
       hardenExternalLinks();
+      syncShortShareLinks();
     };
+
+    document.addEventListener('click', handleShortShareClick, true);
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', syncPortalSelectors, { once: true });
