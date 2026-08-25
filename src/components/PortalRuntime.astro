@@ -1,19 +1,24 @@
 <script>
   import { shortPathForArticle } from '../lib/short-links.mjs';
 
+  type ArticleShareContext = {
+    title: string;
+    description: string;
+    shortUrl: string;
+  };
+
   (() => {
     const externalCopy = {
       en: { opens: 'Opens external destination in a new tab', destination: 'Destination' },
       bn: { opens: 'নতুন ট্যাবে বাইরের গন্তব্য খুলবে', destination: 'গন্তব্য' },
       hi: { opens: 'बाहरी गंतव्य नए टैब में खुलेगा', destination: 'गंतव्य' }
-    };
+    } as const;
 
-    const locale = ['bn', 'hi'].includes(document.documentElement.lang)
-      ? document.documentElement.lang
-      : 'en';
+    const documentLocale = document.documentElement.lang;
+    const locale = documentLocale === 'bn' ? 'bn' : documentLocale === 'hi' ? 'hi' : 'en';
     const external = externalCopy[locale];
 
-    const getArticleShareContext = () => {
+    const getArticleShareContext = (): ArticleShareContext | null => {
       const article = document.querySelector('[data-article]');
       if (!(article instanceof HTMLElement)) return null;
 
@@ -32,7 +37,7 @@
       };
     };
 
-    const setShortShareHref = (link, context) => {
+    const setShortShareHref = (link: HTMLAnchorElement, context: ArticleShareContext) => {
       const shareUrl = encodeURIComponent(context.shortUrl);
       const shareText = encodeURIComponent(context.title);
       const type = link.dataset.share;
@@ -55,7 +60,7 @@
       });
     };
 
-    const copyText = async (value) => {
+    const copyText = async (value: string) => {
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(value);
         return;
@@ -72,7 +77,7 @@
       textarea.remove();
     };
 
-    const handleShortShareClick = async (event) => {
+    const handleShortShareClick = async (event: MouseEvent) => {
       const target = event.target instanceof Element
         ? event.target.closest('#nativeShare, #copyLink, [data-share]')
         : null;
