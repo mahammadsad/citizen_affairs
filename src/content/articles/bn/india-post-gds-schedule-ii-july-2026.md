@@ -3,110 +3,167 @@ contentType: explainer
 language: bn
 translationKey: india-post-gds-schedule-ii-july-2026
 urlSlug: india-post-gds-schedule-ii-july-2026
-title: "India Post GDS Schedule-II 2026: নোটিশে তারিখ প্রকাশ, অফিসিয়াল PDF এখনও অপেক্ষায়"
-description: "আপলোড করা India Post GDS Schedule-II, July-2026 নোটিশের পৃষ্ঠা থেকে রেজিস্ট্রেশন, আবেদন ও সংশোধনের তারিখের প্রকাশ্য কিন্তু যাচাইাধীন সারাংশ; পূর্ণ অফিসিয়াল PDF এখনও অপেক্ষায়।"
+title: "India Post GDS Recruitment 2026 Schedule-II: ৩১ আগস্ট Registration, ২ সেপ্টেম্বর থেকে আবেদন"
+description: "India Post GDS Recruitment 2026 Schedule-II এখন অফিসিয়াল portal-এ active। Registration, application, correction date, vacancy যাচাইয়ের নিয়ম ও official link দেখুন।"
 date: 2026-08-22
+updated: 2026-08-27
 author: citizen-affairs-editorial-desk
 workflowStatus: published
 draft: false
-verificationStatus: under-verification
+verificationStatus: partially-confirmed
 independentReviewStatus: not-assigned
-category: notices
+category: jobs
 governmentLevel: central
 featured: false
 checkBeforeActing: true
-lastVerified: 2026-08-22
-nextReviewDate: 2026-08-25
+lastVerified: 2026-08-27
+nextReviewDate: 2026-08-31
 deadline: 2026-09-21
+seoTitle: "India Post GDS Recruitment 2026: Schedule-II তারিখ"
+seoDescription: "India Post GDS Recruitment 2026 Schedule-II: registration ৩১ আগস্ট, আবেদন ২ সেপ্টেম্বর থেকে, শেষ ২১ সেপ্টেম্বর। শুধুমাত্র official India Post link ব্যবহার করুন।"
 officialNoticeUrl: https://www.indiapost.gov.in/gdsonlineengagement
+applicationUrl: https://app.indiapost.gov.in/gdscandidate
 sourceUrls:
   - https://www.indiapost.gov.in/gdsonlineengagement
-  - https://aipeugdsnfpe.blogspot.com/2026/07/gdsgds-online-engagement-schedule-ii.html?m=1
 sources:
-  - title: "India Post GDS Online Engagement portal"
+  - title: "India Post GDS Online Engagement portal - Schedule-II, July-2026"
     url: https://www.indiapost.gov.in/gdsonlineengagement
     publishingAuthority: "Department of Posts, Ministry of Communications, Government of India"
     sourceType: official-portal
     designation: primary
-    accessedDate: 2026-08-22
-    notes: "এই যাচাইয়ের সময় Citizen Affairs-এর কাছে উপলভ্য অফিসিয়াল portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই Schedule-II page/PDF আবার যাচাই করা প্রয়োজন।"
-  - title: "GDS Online Engagement Schedule-II, July-2026 preparatory exercise"
-    url: https://aipeugdsnfpe.blogspot.com/2026/07/gdsgds-online-engagement-schedule-ii.html?m=1
-    publishingAuthority: "All India Postal Employees Union - GDS (NFPE)"
-    sourceType: secondary
-    designation: secondary
-    publicationDate: 2026-07-30
-    accessedDate: 2026-08-22
-    notes: "Schedule-II প্রস্তুতি ও notification number-এর secondary corroboration; এটি Department of Posts-এর অফিসিয়াল notification-এর বিকল্প নয়।"
+    accessedDate: 2026-08-27
+    notes: "Active official portal-এ GDS Online Engagement Schedule-II, July-2026 দেখানো হচ্ছে এবং registration, application ও edit/correction date নিশ্চিত করা হয়েছে। Portal-এ Notification-English, Vacant Posts ও Annexures দেখার ব্যবস্থাও আছে।"
 tags:
-  - "India Post GDS 2026"
-  - "GDS Schedule-II"
-  - "গ্রামীণ ডাক সেবক"
+  - "India Post GDS Recruitment 2026"
+  - "GDS Schedule-II 2026"
+  - "Gramin Dak Sevak Recruitment"
+  - "India Post GDS Apply Online"
   - "BPM ABPM Dak Sevak"
 quickSummary:
-  - "আপলোড করা নোটিশের পৃষ্ঠায় GDS Online Engagement Schedule-II, July-2026-এর জন্য ২০ আগস্ট ২০২৬ তারিখের Notification No. 17-12/2026-GDS উল্লেখ আছে।"
-  - "One-Time Registration: ৩১ আগস্ট থেকে ১৯ সেপ্টেম্বর ২০২৬, বিকেল ৫টা (১৭:০০) পর্যন্ত।"
-  - "অনলাইন আবেদন ও fee payment: ২ সেপ্টেম্বর থেকে ২১ সেপ্টেম্বর ২০২৬, বিকেল ৫টা (১৭:০০) পর্যন্ত।"
-  - "Correction window: ২৩ থেকে ২৪ সেপ্টেম্বর ২০২৬, বিকেল ৫টা (১৭:০০) পর্যন্ত।"
+  - "India Post-এর official GDS portal-এ এখন Gramin Dak Sevak Online Engagement Schedule-II, July-2026 active notification হিসেবে দেখা যাচ্ছে।"
+  - "One-Time Registration ৩১ আগস্ট থেকে ১৯ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত।"
+  - "Online application ও fee payment ২ সেপ্টেম্বর থেকে ২১ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত।"
+  - "সারা ভারতের মোট vacancy-র কোনও অনুমানকে official সংখ্যা হিসেবে ধরা হচ্ছে না; division-wise তথ্য official portal-এর Vacant Posts ও Annexures থেকে দেখুন।"
 importantDates:
-  - "One-Time Registration: ৩১ আগস্ট ২০২৬ থেকে ১৯ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত"
-  - "অনলাইন আবেদন ও fee payment: ২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত"
-  - "Edit/correction window: ২৩ সেপ্টেম্বর ২০২৬ থেকে ২৪ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত"
+  - "One-Time Registration: ৩১ আগস্ট ২০২৬ থেকে ১৯ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত"
+  - "Application submission ও fee payment: ২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত"
+  - "Edit/correction window: ২৩ সেপ্টেম্বর ২০২৬ থেকে ২৪ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত"
 updateHistory:
-  - "2026-08-22: আপলোড করা নোটিশের পৃষ্ঠা থেকে under-verification explainer হিসেবে প্রকাশ করা হয়েছে। প্রকাশের সময় পূর্ণ Schedule-II PDF অফিসিয়াল portal-এ পাওয়া যায়নি।"
+  - "2026-08-27: India Post-এর official GDS portal-এ Schedule-II, July-2026 active notification হিসেবে দেখানোর পর article আপডেট করা হয়েছে। আগের non-government secondary source সরানো হয়েছে এবং article Government Jobs category-তে নেওয়া হয়েছে।"
+  - "2026-08-22: সরবরাহ করা Schedule-II notice page-এর ভিত্তিতে under-verification explainer প্রকাশ করা হয়েছিল; তখন Citizen Affairs-এর দেখা public India Post portal view-এ এখনও Schedule-I ছিল।"
 faqs:
-  - question: "India Post GDS Schedule-II-এর রেজিস্ট্রেশন কবে শুরু হবে?"
-    answer: "আপলোড করা নোটিশের পৃষ্ঠা অনুযায়ী One-Time Registration ৩১ আগস্ট ২০২৬ শুরু হয়ে ১৯ সেপ্টেম্বর ২০২৬ বিকেল ৫টা (১৭:০০) পর্যন্ত চলবে।"
-  - question: "অনলাইন আবেদন জমা দেওয়ার শেষ তারিখ কবে?"
-    answer: "আপলোড করা নোটিশের পৃষ্ঠা অনুযায়ী ২১ সেপ্টেম্বর ২০২৬ বিকেল ৫টা (১৭:০০) পর্যন্ত আবেদন ও fee payment করা যাবে।"
-  - question: "ভুল হলে কি দ্বিতীয়বার registration করতে হবে?"
-    answer: "না। নোটিশে multiple বা duplicate registration/application নিষিদ্ধ বলা হয়েছে। ভুল সংশোধনের জন্য ২৩ ও ২৪ সেপ্টেম্বর ২০২৬ আলাদা correction window দেওয়া হয়েছে।"
+  - question: "India Post GDS Schedule-II registration কবে শুরু হবে?"
+    answer: "Official India Post GDS portal অনুযায়ী One-Time Registration ৩১ আগস্ট ২০২৬ থেকে শুরু হয়ে ১৯ সেপ্টেম্বর ২০২৬ বিকেল ৫টা পর্যন্ত চলবে।"
+  - question: "India Post GDS Recruitment 2026 Schedule-II-তে online application কবে থেকে?"
+    answer: "Official portal অনুযায়ী online application submission ও fee payment ২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬ বিকেল ৫টা পর্যন্ত।"
+  - question: "GDS Schedule-II correction window কবে?"
+    answer: "India Post-এর portal-এ edit/correction window ২৩ সেপ্টেম্বর থেকে ২৪ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত দেখানো হয়েছে।"
+  - question: "India Post GDS Schedule-II 2026-এ মোট vacancy কত?"
+    answer: "Citizen Affairs কোনও অনুমানভিত্তিক all-India total-কে official vacancy হিসেবে প্রকাশ করছে না। বর্তমান division-wise vacancy official India Post GDS portal-এর Vacant Posts ও Annexures section থেকে দেখুন।"
+  - question: "India Post GDS 2026-এ কোথা থেকে আবেদন করব?"
+    answer: "শুধুমাত্র official India Post GDS Online Engagement portal ব্যবহার করুন। Current notification, registration/application access, vacancies, annexures ও instructions ওই portal-এই পাওয়া যাবে।"
 ---
 
-ডাক বিভাগের যে নোটিশের পৃষ্ঠাটি Citizen Affairs-এ আপলোড করা হয়েছে, সেখানে **২০ আগস্ট ২০২৬ তারিখের Notification No. 17-12/2026-GDS** এবং **“Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026”** উল্লেখ আছে। এতে Department of Posts-এর বিভিন্ন অফিসে **Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) এবং Dak Sevak** হিসেবে engagement-এর কথা বলা হয়েছে।
+**India Post GDS Recruitment 2026 Schedule-II** এখন Department of Posts-এর official GDS portal-এ active। Portal-এ recruitment cycle-টি **Gramin Dak Sevak (GDS) Online Engagement Schedule-II, July-2026** হিসেবে দেখানো হচ্ছে এবং registration, application ও correction-এর তারিখ প্রকাশ করা হয়েছে।
 
-> **যাচাই-সংক্রান্ত গুরুত্বপূর্ণ নোট:** আপলোড করা ফাইলটি **৩৯ পৃষ্ঠার নোটিশের ২ নম্বর পৃষ্ঠা**। ২২ আগস্ট ২০২৬-এ Citizen Affairs যখন India Post-এর অফিসিয়াল GDS portal যাচাই করেছে, তখন আমাদের কাছে উপলভ্য public portal view-এ এখনও Schedule-I, January-2026 দেখা যাচ্ছিল। তাই পূর্ণ Schedule-II notification অফিসিয়াল portal-এ পাওয়া না যাওয়া পর্যন্ত এই আপডেটটি **যাচাইাধীন অবস্থায় প্রকাশ করা হচ্ছে**। এই একটি পৃষ্ঠা দেখে মোট vacancy, পূর্ণ eligibility, fee category বা অন্য শর্ত অনুমান করা উচিত নয়।
+আমাদের প্রথম update-এর পর সবচেয়ে গুরুত্বপূর্ণ পরিবর্তন হল—এটি এখন আর শুধু circulate হওয়া notice page-এর তথ্য নয়। **India Post-এর official portal নিজেই Schedule-II-কে active notification হিসেবে দেখাচ্ছে।** Registration শুরু হবে **৩১ আগস্ট ২০২৬**, আর online application শুরু হবে **২ সেপ্টেম্বর ২০২৬**।
 
-## নোটিশে দেওয়া গুরুত্বপূর্ণ তারিখ
+> **যাচাই নোট:** Schedule-II active হওয়া এবং গুরুত্বপূর্ণ তারিখগুলি official portal থেকে নিশ্চিত। তবে Citizen Affairs কোনও অনুমানভিত্তিক all-India vacancy total-কে official সংখ্যা হিসেবে প্রকাশ করছে না। India Post portal-এ আলাদা **Vacant Posts** ও **Annexures** section আছে; বর্তমান division-wise vacancy সেখান থেকেই যাচাই করুন।
 
-| কাজ | সময়সূচি |
+## India Post GDS Recruitment 2026: এক নজরে
+
+| বিষয় | যাচাই করা তথ্য |
 | --- | --- |
-| Online One-Time Registration | ৩১ আগস্ট ২০২৬ থেকে ১৯ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত |
-| Online application submission ও fee payment | ২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত |
-| Registration/application form correction, প্রযোজ্য হলে online fee payment-সহ | ২৩ সেপ্টেম্বর ২০২৬ থেকে ২৪ সেপ্টেম্বর ২০২৬, ১৭:০০ পর্যন্ত |
+| নিয়োগকারী কর্তৃপক্ষ | Department of Posts, Ministry of Communications, Government of India |
+| Recruitment cycle | GDS Online Engagement Schedule-II, July-2026 |
+| সরবরাহ করা Schedule-II notice page-এ উল্লেখিত পদ | Branch Postmaster (BPM), Assistant Branch Postmaster (ABPM) ও Dak Sevak |
+| Registration | ৩১ আগস্ট থেকে ১৯ সেপ্টেম্বর ২০২৬ |
+| Online application | ২ সেপ্টেম্বর থেকে ২১ সেপ্টেম্বর ২০২৬ |
+| Correction window | ২৩ থেকে ২৪ সেপ্টেম্বর ২০২৬ |
+| মোট vacancy | Official portal-এর division-wise Vacant Posts/Annexures দেখুন |
+| Application mode | India Post-এর মাধ্যমে online |
 
-## এই পৃষ্ঠা থেকে প্রার্থীদের যা জানা যাচ্ছে
+## GDS Schedule-II 2026-এর গুরুত্বপূর্ণ তারিখ
 
-নোটিশ অনুযায়ী প্রতি প্রার্থীর জন্য **শুধু একটি registration** অনুমোদিত। Multiple বা duplicate registration/application কঠোরভাবে নিষিদ্ধ। Duplicate application ধরা পড়লে candidature বাতিল বা GDS rules অনুযায়ী অন্য ব্যবস্থা নেওয়া হতে পারে।
+India Post-এর official GDS portal-এ বর্তমানে নিচের schedule দেখানো হচ্ছে:
 
-এই পৃষ্ঠার নির্দেশনা অনুযায়ী application form-এর সঙ্গে আলাদা supporting document upload করতে হবে না। তবে নির্ধারিত নিয়মে **সাম্প্রতিক photograph এবং signature upload করতে হবে**। Final submission-এর আগে registration ও application form-এর সব তথ্য ভালোভাবে মিলিয়ে দেখার পরামর্শও দেওয়া হয়েছে।
+| Activity | Date |
+| --- | --- |
+| One-Time Registration | **৩১ আগস্ট ২০২৬ থেকে ১৯ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত** |
+| Online application submission ও fee payment | **২ সেপ্টেম্বর ২০২৬ থেকে ২১ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত** |
+| Edit/Correction Window | **২৩ সেপ্টেম্বর ২০২৬ থেকে ২৪ সেপ্টেম্বর ২০২৬, বিকেল ৫টা পর্যন্ত** |
 
-Registration বা application submit করার পরে ভুল ধরা পড়লে **নতুন করে registration করা যাবে না**। Application closing date-এর পরে দুই দিনের edit/correction window দেওয়া হয়েছে।
+আবেদন করতে চাইলে শেষ দিনের শেষ সময় পর্যন্ত অপেক্ষা না করাই ভালো। আগে registration সম্পূর্ণ করুন, তারপর আলাদা application window-এর মধ্যে application submit করুন।
 
-## এই পৃষ্ঠা থেকে যা নিশ্চিত নয়
+## India Post GDS Vacancy 2026: অনুমানভিত্তিক total বিশ্বাস করবেন না
 
-এই এক পৃষ্ঠায় সম্পূর্ণ state/circle-wise vacancy list, full eligibility, age rules, fee category, reservation conditions, selection process বা পরবর্তী ধাপে প্রয়োজনীয় সব document-এর তথ্য নেই। এগুলো Department of Posts-এর পূর্ণ Schedule-II notification ও annexure প্রকাশের পরে অফিসিয়াল source থেকে যাচাই করতে হবে।
+Schedule-II নিয়ে বিভিন্ন recruitment website বা social-media post-এ বড় একটি all-India vacancy number দেখা যেতে পারে। Citizen Affairs সেই ধরনের অনুমানকে official vacancy total হিসেবে প্রকাশ করছে না।
 
-Social media বা third-party job website-এ ঘুরতে থাকা vacancy number অফিসিয়াল Annexure-I-এর সঙ্গে না মেলা পর্যন্ত বিশ্বাস করবেন না।
+Official GDS portal-এ **Vacant Posts** ও **Annexures** নামে আলাদা section আছে। India Post আপনার Circle বা Division-এর vacancy list প্রকাশ করলে সেখান থেকেই বর্তমান position দেখুন।
 
-## অফিসিয়াল portal
+শুধু national total জানলেই আবেদনকারীর কাজ শেষ হয় না। আপনার জন্য কোন vacancy relevant হবে তা **Circle, Division, office, post preference এবং local-language requirement**-এর উপর নির্ভর করতে পারে।
 
-চূড়ান্ত notification ও application process-এর জন্য Department of Posts-এর GDS portal ব্যবহার করুন:
+## Schedule-II notice page থেকে কী কী নিশ্চিত
 
-[India Post-এর অফিসিয়াল GDS portal খুলুন](https://www.indiapost.gov.in/gdsonlineengagement)
+Citizen Affairs আগেই সরবরাহ করা Schedule-II notice page প্রকাশ করেছিল, যখন main India Post portal-এ এখনও পুরনো recruitment cycle দেখা যাচ্ছিল। ওই notice page-এ **Notification No. 17-12/2026-GDS dated 20 August 2026** এবং BPM, ABPM ও Dak Sevak engagement-এর উল্লেখ আছে।
 
-## Source attachment
+Notice page-এ আরও বলা আছে, **একজন candidate-এর জন্য শুধুমাত্র একটি registration অনুমোদিত**। Multiple বা duplicate registration/application নিষিদ্ধ। Registration বা application submit করার পরে ভুল ধরা পড়লে আবার নতুন registration না করে official correction facility ব্যবহার করতে বলা হয়েছে।
 
-আপলোড করা ছবিটি **৩৯ পৃষ্ঠার মধ্যে ২ নম্বর পৃষ্ঠা**, সম্পূর্ণ notification নয়।
+ওই notice page অনুযায়ী application form-এর সঙ্গে তখন supporting documents upload করতে হয় না, তবে prescribed manner-এ **recent photograph ও signature** upload করতে হবে।
 
-<img src="/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg" alt="India Post GDS Schedule-II July 2026 নোটিশের পৃষ্ঠা—registration, application ও correction date" width="500" height="729" loading="lazy" decoding="async">
+[Citizen Affairs-এ রাখা Schedule-II notice page খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
 
-[নোটিশের পৃষ্ঠার ছবিটি খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.jpg)
+[Notice page-এর text transcription পড়ুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
 
-[টেক্সট transcription খুলুন](/uploads/notices/india-post-gds-schedule-ii-july-2026-notice-page-2.txt)
+## Eligibility, fee ও বিস্তারিত condition: active notification দেখে নিশ্চিত করুন
 
-## আবেদন করার আগে
+Live India Post portal-এ এখন **Notification-English**-এর পাশাপাশি registration, application, fee এবং correction instruction-এর আলাদা option আছে। Detailed eligibility, fee, reservation, TRCA বা document condition-এর উপর নির্ভর করার আগে current notification খুলে heading-এ **Schedule-II, July-2026** লেখা আছে কি না নিশ্চিত করুন।
 
-শুধু official India Post portal ব্যবহার করুন, duplicate registration করবেন না এবং fee payment বা final submission-এর আগে পূর্ণ notification আবার যাচাই করুন। পরবর্তীতে corrigendum বা portal update-এর মাধ্যমে date, vacancy বা condition বদলাতেও পারে।
+এই check জরুরি, কারণ India Post একই GDS portal নিয়মিত update করে। পুরনো recruitment cycle-এর saved বা cached PDF দেখতে অনেকটা একই রকম হতে পারে, কিন্তু date বা annexure আলাদা হতে পারে।
 
-**Citizen Affairs একটি স্বাধীন public-information platform; এটি Department of Posts বা Government of India-এর অংশ বা অনুমোদিত সংস্থা নয়।**
+Citizen Affairs **৩১ আগস্ট ২০২৬** registration শুরু হলে portal আবার check করবে এবং India Post নতুন vacancy বা instruction detail দিলে এই page update করা হবে।
+
+## India Post GDS Recruitment 2026-এ কীভাবে আবেদন করবেন
+
+শুধুমাত্র Department of Posts-এর official online system ব্যবহার করুন। সাধারণভাবে ধাপগুলি হবে:
+
+1. **Official India Post GDS Online Engagement portal** খুলুন।
+2. Active Schedule-II notification এবং registration instructions পড়ুন।
+3. **৩১ আগস্ট ২০২৬** থেকে One-Time Registration সম্পূর্ণ করুন।
+4. India Post দেখানো eligible Division/post preference যাচাই করে **২ সেপ্টেম্বর ২০২৬** থেকে online application submit করুন।
+5. আপনার ক্ষেত্রে fee প্রযোজ্য হলে official fee instructions অনুসরণ করুন।
+6. Prescribed recent photograph ও signature upload করুন।
+7. Final submission-এর আগে application ভালোভাবে review করুন।
+8. Permitted correction লাগলে duplicate registration না করে **২৩-২৪ সেপ্টেম্বর ২০২৬** edit/correction window ব্যবহার করুন।
+
+## Official India Post link
+
+**GDS notification, dates, vacancies, annexures ও instructions:**  
+[India Post GDS Online Engagement Portal](https://www.indiapost.gov.in/gdsonlineengagement)
+
+**Official candidate login/registration system:**  
+[India Post GDS Candidate Portal](https://app.indiapost.gov.in/gdscandidate)
+
+দুটিই India Post-এর government-controlled domain। Citizen Affairs কোনও application গ্রহণ করে না, recruitment fee সংগ্রহ করে না এবং selection-এর নিশ্চয়তা দেয় না।
+
+## Fake GDS recruitment message থেকে সতর্ক থাকুন
+
+India Post-এর active portal-এ security notice দিয়ে unauthorised বা suspicious email ID থেকে আসা communication বিশ্বাস না করতে বলা হয়েছে। Department জানিয়েছে, official GDS communication authorised India Post domain ব্যবহার করে।
+
+কেউ GDS post নিশ্চিত করে দেওয়ার কথা বলে OTP, password বা payment credential চাইলে দেবেন না। সন্দেহজনক message বা website পেলে আমাদের internal guide পড়ুন: [ভুয়া সরকারি message, website বা recruitment claim দেখলে কী করবেন](/bn/articles/report-fake-government-message-and-website/)।
+
+WhatsApp বা Telegram-এ পাওয়া recruitment link খোলার আগে [আসল সরকারি website ও online service কীভাবে খুঁজবেন](/bn/articles/find-official-government-websites-and-services/) guide-টিও কাজে লাগতে পারে।
+
+## ৩১ আগস্ট কী কী check করবেন
+
+One-Time Registration শুরু হলে official portal-এ তিনটি জিনিস সরাসরি check করুন: active **Schedule-II notification**, আপনার Circle/Division-এর **Vacant Posts**, এবং post/local language-এর সঙ্গে সম্পর্কিত **Annexures**।
+
+আরও যাচাইকৃত recruitment update-এর জন্য [Citizen Affairs Government Jobs section](/bn/categories/jobs/) দেখুন।
+
+## শেষ কথা
+
+**India Post GDS Schedule-II, July-2026 এখন official GDS portal-এ active।** Registration **৩১ আগস্ট-১৯ সেপ্টেম্বর ২০২৬**, application **২-২১ সেপ্টেম্বর ২০২৬**, এবং correction **২৩-২৪ সেপ্টেম্বর ২০২৬** নির্ধারিত।
+
+Vacancy list এবং বিস্তারিত instruction-এর জন্য official India Post portal ব্যবহার করুন। Unofficial vacancy estimate-কে confirmed government figure হিসেবে ধরে আবেদন করবেন না।
+
+**Citizen Affairs একটি স্বাধীন public-information platform। এটি India Post, Department of Posts বা Government of India-এর সঙ্গে যুক্ত নয়।**
