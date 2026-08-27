@@ -71,8 +71,8 @@ faqs:
     answer: "অবশ্যই নয়। State-level UDISE+ table একা প্রতিটি স্কুলের operational status প্রমাণ করে না; তার জন্য school-level বা departmental record দরকার।"
 ---
 
-**Last verified:** 27 August 2026, 18:59 IST  
-**Verification label:** Private draft — official-source evidence recorded; final publication requires human editorial action.  
+**Last verified:** 27 August 2026, 18:59 IST
+**Verification label:** Private draft — official-source evidence recorded; final publication requires human editorial action.
 **Official source count:** 2
 
 UDISE+ 2025–26-এর state-wise data অনুযায়ী, পশ্চিমবঙ্গে **4,133টি স্কুলে enrolment শূন্য** হিসেবে নথিভুক্ত হয়েছে এবং ওই স্কুলগুলির সঙ্গে **19,502 জন শিক্ষক** নথিভুক্ত রয়েছেন। একই সঙ্গে রাজ্যে **6,769টি single-teacher school**-এ মোট **2,29,569 enrolment** নথিভুক্ত রয়েছে।
@@ -146,10 +146,10 @@ Single-teacher school-এর সংখ্যা **29 July 2026**-এর Ministry
 
 ## Official links and sources
 
-1. **Department of School Education & Literacy, Ministry of Education — UDISE+ Report 2025-26, Existing Structure.** Publication date: 7 July 2026. Accessed: 27 August 2026. Tier A. West Bengal-এর schools, enrolment, teachers, zero-enrolment এবং single-teacher figures সমর্থন করে।  
+1. **Department of School Education & Literacy, Ministry of Education — UDISE+ Report 2025-26, Existing Structure.** Publication date: 7 July 2026. Accessed: 27 August 2026. Tier A. West Bengal-এর schools, enrolment, teachers, zero-enrolment এবং single-teacher figures সমর্থন করে।
    https://udiseplus.gov.in/#/en/page/publications
 
-2. **Ministry of Education — Rajya Sabha Unstarred Question No. 1165, “Vacancies in Schools.”** Answered: 29 July 2026. Accessed: 27 August 2026. Tier A. West Bengal-এর 6,769 single-teacher school-এর সংখ্যা সমর্থন করে এবং source হিসেবে UDISE+ 2025–26 উল্লেখ করে।  
+2. **Ministry of Education — Rajya Sabha Unstarred Question No. 1165, “Vacancies in Schools.”** Answered: 29 July 2026. Accessed: 27 August 2026. Tier A. West Bengal-এর 6,769 single-teacher school-এর সংখ্যা সমর্থন করে এবং source হিসেবে UDISE+ 2025–26 উল্লেখ করে।
    https://www.pib.gov.in/PressReleasePage.aspx?PRID=2291277&lang=1&reg=3
 
 **Citizen Affairs is an independent information platform. It is not affiliated with any government department. Verify current rules and instructions with the responsible official authority before acting.**
