@@ -216,6 +216,34 @@
     white-space: nowrap;
   }
 
+  /* Source-panel CTAs also receive the injected destination-domain cue above.
+     Keep the action label and domain readable against every theme, especially
+     the solid primary button on narrow mobile screens. */
+  .source-panel .source-actions a {
+    min-width: min(100%, 260px);
+    justify-content: space-between;
+    white-space: normal;
+    text-align: left;
+  }
+
+  .source-panel .source-actions .btn-primary {
+    color: #fff !important;
+  }
+
+  .source-panel .source-actions .btn-primary .external-domain-cue {
+    color: rgba(255, 255, 255, .82) !important;
+  }
+
+  .source-panel .source-actions .btn-secondary .external-domain-cue {
+    color: var(--color-text-muted) !important;
+  }
+
+  .source-panel .source-actions .external-domain-cue {
+    flex: 0 1 auto;
+    margin: 0 0 0 auto;
+    text-align: right;
+  }
+
   html[data-theme='dark'] .portal-search {
     background: var(--color-surface);
   }
@@ -238,5 +266,22 @@
   html[data-theme='dark'] .portal-action-grid a:hover,
   html[data-theme='dark'] .portal-action-grid a:focus-visible {
     background: var(--color-surface-alt);
+  }
+
+  @media (max-width: 700px) {
+    .source-panel .source-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: .55rem;
+    }
+
+    .source-panel .source-actions a {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .source-panel .source-actions .external-domain-cue {
+      max-width: 42%;
+    }
   }
 </style>
