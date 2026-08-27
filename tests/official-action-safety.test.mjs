@@ -58,8 +58,12 @@ test('editorial cards stay internal while legacy source panels harden external n
   assert.match(runtime, /external-domain-cue/);
 });
 
-test('source-panel primary actions keep readable contrast after the domain cue is injected', () => {
-  assert.match(runtime, /\.source-panel \.source-actions \.btn-primary\s*\{[\s\S]*?color: #fff !important;/);
-  assert.match(runtime, /\.source-panel \.source-actions \.btn-primary \.external-domain-cue\s*\{[\s\S]*?rgba\(255, 255, 255, \.82\) !important;/);
-  assert.match(runtime, /@media \(max-width: 700px\)[\s\S]*?\.source-panel \.source-actions[\s\S]*?grid-template-columns: minmax\(0, 1fr\)/);
+test('source-panel actions separate the label from the domain and force readable mobile contrast', () => {
+  assert.match(runtime, /enhanceSourceAction/);
+  assert.match(runtime, /source-action-label/);
+  assert.match(runtime, /source-action-domain/);
+  assert.match(runtime, /link\.closest\('\.source-actions'\)/);
+  assert.match(runtime, /\.source-panel \.source-actions > \.btn-primary,[\s\S]*?-webkit-text-fill-color: #fff !important;/);
+  assert.match(runtime, /\.btn-primary\.source-action-link \.source-action-label,[\s\S]*?-webkit-text-fill-color: #fff !important;/);
+  assert.match(runtime, /@media \(max-width: 700px\)[\s\S]*?font-size: 1\.05rem !important;/);
 });
