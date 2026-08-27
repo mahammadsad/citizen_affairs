@@ -12,7 +12,7 @@ workflowStatus: draft
 draft: true
 verificationStatus: under-verification
 independentReviewStatus: not-assigned
-category: education
+category: materials
 governmentLevel: west-bengal
 regionLabel: "West Bengal"
 featured: false
