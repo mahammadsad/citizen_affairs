@@ -57,3 +57,9 @@ test('editorial cards stay internal while legacy source panels harden external n
   assert.match(runtime, /link\.referrerPolicy = 'no-referrer'/);
   assert.match(runtime, /external-domain-cue/);
 });
+
+test('source-panel primary actions keep readable contrast after the domain cue is injected', () => {
+  assert.match(runtime, /\.source-panel \.source-actions \.btn-primary\s*\{[\s\S]*?color: #fff !important;/);
+  assert.match(runtime, /\.source-panel \.source-actions \.btn-primary \.external-domain-cue\s*\{[\s\S]*?rgba\(255, 255, 255, \.82\) !important;/);
+  assert.match(runtime, /@media \(max-width: 700px\)[\s\S]*?\.source-panel \.source-actions[\s\S]*?grid-template-columns: minmax\(0, 1fr\)/);
+});
