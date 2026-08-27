@@ -138,10 +138,12 @@ Citizen Affairs **৩১ আগস্ট ২০২৬** registration শুর�
 
 ## Official India Post link
 
-**GDS notification, dates, vacancies, annexures ও instructions:**  
+**GDS notification, dates, vacancies, annexures ও instructions:**
+
 [India Post GDS Online Engagement Portal](https://www.indiapost.gov.in/gdsonlineengagement)
 
-**Official candidate login/registration system:**  
+**Official candidate login/registration system:**
+
 [India Post GDS Candidate Portal](https://app.indiapost.gov.in/gdscandidate)
 
 দুটিই India Post-এর government-controlled domain। Citizen Affairs কোনও application গ্রহণ করে না, recruitment fee সংগ্রহ করে না এবং selection-এর নিশ্চয়তা দেয় না।
