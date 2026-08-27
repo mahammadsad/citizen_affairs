@@ -91,6 +91,16 @@ const aria = `${label}. ${identity.hostname || labels.invalid}. ${labels.newTab}
     min-height: 48px;
     text-align: left;
   }
+  /* Article link styles are more specific than the generic .btn-primary rule.
+     Keep action buttons self-contained so Bengali labels/icons cannot become
+     primary-color-on-primary-color (especially in Android/WebKit rendering). */
+  .official-action-link.btn {
+    text-decoration: none !important;
+  }
+  .official-action-link.btn-primary {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+  }
   .official-action-copy { display: grid; gap: .1rem; min-width: 0; }
   .official-action-copy strong { font-size: .82rem; }
   .official-action-copy small {
