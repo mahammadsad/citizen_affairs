@@ -138,10 +138,12 @@ Use only the Department of Posts' official online system. The practical sequence
 
 ## Official India Post links
 
-**GDS notification, dates, vacancies, annexures and instructions:**  
+**GDS notification, dates, vacancies, annexures and instructions:**
+
 [India Post GDS Online Engagement Portal](https://www.indiapost.gov.in/gdsonlineengagement)
 
-**Official candidate login/registration system:**  
+**Official candidate login/registration system:**
+
 [India Post GDS Candidate Portal](https://app.indiapost.gov.in/gdscandidate)
 
 These are government-controlled India Post domains. Citizen Affairs does not accept applications, collect recruitment fees or guarantee selection.
