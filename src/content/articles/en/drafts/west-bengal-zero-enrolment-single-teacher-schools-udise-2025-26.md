@@ -71,8 +71,8 @@ faqs:
     answer: "Not necessarily. The state-level UDISE+ table alone does not establish the operational status of every school; school-level or departmental records are needed for that conclusion."
 ---
 
-**Last verified:** 27 August 2026, 18:59 IST  
-**Verification label:** Private draft — official-source evidence recorded; final publication requires human editorial action.  
+**Last verified:** 27 August 2026, 18:59 IST
+**Verification label:** Private draft — official-source evidence recorded; final publication requires human editorial action.
 **Official source count:** 2
 
 UDISE+ 2025–26 records **4,133 zero-enrolment schools** in West Bengal with **19,502 teachers** associated with them. The same state-wise data records **6,769 single-teacher schools** with a combined enrolment of **229,569 students**.
@@ -146,10 +146,10 @@ The single-teacher-school figure can also be checked against the Ministry of Edu
 
 ## Official links and sources
 
-1. **Department of School Education & Literacy, Ministry of Education — UDISE+ Report 2025-26, Existing Structure.** Publication date: 7 July 2026. Accessed: 27 August 2026. Tier A. Supports the West Bengal school, enrolment, teacher, zero-enrolment and single-teacher figures.  
+1. **Department of School Education & Literacy, Ministry of Education — UDISE+ Report 2025-26, Existing Structure.** Publication date: 7 July 2026. Accessed: 27 August 2026. Tier A. Supports the West Bengal school, enrolment, teacher, zero-enrolment and single-teacher figures.
    https://udiseplus.gov.in/#/en/page/publications
 
-2. **Ministry of Education — Rajya Sabha Unstarred Question No. 1165, “Vacancies in Schools.”** Answered: 29 July 2026. Accessed: 27 August 2026. Tier A. Supports the 6,769 single-teacher-school figure in West Bengal and identifies UDISE+ 2025–26 as the source.  
+2. **Ministry of Education — Rajya Sabha Unstarred Question No. 1165, “Vacancies in Schools.”** Answered: 29 July 2026. Accessed: 27 August 2026. Tier A. Supports the 6,769 single-teacher-school figure in West Bengal and identifies UDISE+ 2025–26 as the source.
    https://www.pib.gov.in/PressReleasePage.aspx?PRID=2291277&lang=1&reg=3
 
 **Citizen Affairs is an independent information platform. It is not affiliated with any government department. Verify current rules and instructions with the responsible official authority before acting.**
