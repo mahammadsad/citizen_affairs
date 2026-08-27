@@ -148,6 +148,41 @@
         });
     };
 
+    const enhanceSourceAction = (link: HTMLAnchorElement, hostname: string) => {
+      if (!link.closest('.source-actions') || link.dataset.sourceActionReady === 'true') return;
+
+      const labelText = (link.textContent || '')
+        .replace(/\s*↗\s*$/, '')
+        .trim() || external.destination;
+
+      link.dataset.sourceActionReady = 'true';
+      link.classList.add('source-action-link');
+      link.textContent = '';
+
+      const label = document.createElement('span');
+      label.className = 'source-action-label';
+      label.textContent = labelText;
+
+      const arrow = document.createElement('span');
+      arrow.className = 'source-action-arrow';
+      arrow.textContent = '↗';
+      arrow.setAttribute('aria-hidden', 'true');
+
+      link.append(label, arrow);
+
+      const item = document.createElement('div');
+      item.className = 'source-action-item';
+      link.before(item);
+      item.append(link);
+
+      if (hostname) {
+        const domain = document.createElement('small');
+        domain.className = 'source-action-domain';
+        domain.textContent = hostname;
+        item.append(domain);
+      }
+    };
+
     const hardenExternalLinks = () => {
       document
         .querySelectorAll(
@@ -171,7 +206,9 @@
             link.setAttribute('aria-label', `${label}. ${hostname || external.destination}. ${external.opens}.`);
           }
 
-          if (link.closest('.source-panel') && hostname && !link.querySelector('.external-domain-cue')) {
+          if (link.closest('.source-actions')) {
+            enhanceSourceAction(link, hostname);
+          } else if (link.closest('.source-panel') && hostname && !link.querySelector('.external-domain-cue')) {
             const cue = document.createElement('small');
             cue.className = 'external-domain-cue';
             cue.textContent = hostname;
@@ -216,32 +253,96 @@
     white-space: nowrap;
   }
 
-  /* Source-panel CTAs also receive the injected destination-domain cue above.
-     Keep the action label and domain readable against every theme, especially
-     the solid primary button on narrow mobile screens. */
-  .source-panel .source-actions a {
-    min-width: min(100%, 260px);
-    justify-content: space-between;
-    white-space: normal;
+  /* Official source actions are intentionally self-contained instead of
+     inheriting the generic article/button cascade. The previous layout mixed
+     the action label and an injected domain inside one flex row, which could
+     make the Bengali label blue-on-blue and force the arrow onto its own line. */
+  .source-panel .source-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .8rem;
+    margin: 1.1rem 0 1.25rem;
+  }
+
+  .source-panel .source-actions > a,
+  .source-panel .source-actions .source-action-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: .8rem;
+    width: 100%;
+    min-width: 0;
+    min-height: 54px;
+    padding: .82rem 1rem !important;
+    border-radius: 9px;
+    white-space: normal !important;
     text-align: left;
+    text-decoration: none !important;
+    font-family: var(--font-body) !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    line-height: 1.35;
+    opacity: 1 !important;
   }
 
-  .source-panel .source-actions .btn-primary {
+  .source-panel .source-actions > .btn-primary,
+  .source-panel .source-actions .btn-primary.source-action-link {
+    border-color: var(--color-primary) !important;
+    background: var(--color-primary) !important;
     color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
   }
 
-  .source-panel .source-actions .btn-primary .external-domain-cue {
-    color: rgba(255, 255, 255, .82) !important;
+  .source-panel .source-actions > .btn-secondary,
+  .source-panel .source-actions .btn-secondary.source-action-link {
+    border: 1.5px solid var(--color-border) !important;
+    background: var(--color-surface) !important;
+    color: var(--color-primary) !important;
+    -webkit-text-fill-color: var(--color-primary) !important;
   }
 
-  .source-panel .source-actions .btn-secondary .external-domain-cue {
-    color: var(--color-text-muted) !important;
+  .source-panel .source-action-item {
+    min-width: 0;
   }
 
-  .source-panel .source-actions .external-domain-cue {
-    flex: 0 1 auto;
-    margin: 0 0 0 auto;
-    text-align: right;
+  .source-panel .source-action-label {
+    min-width: 0;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font: inherit !important;
+    font-weight: 800 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .source-panel .btn-primary.source-action-link .source-action-label,
+  .source-panel .btn-primary.source-action-link .source-action-arrow {
+    color: #fff !important;
+    -webkit-text-fill-color: #fff !important;
+  }
+
+  .source-panel .source-action-arrow {
+    flex: 0 0 auto;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1;
+    opacity: 1 !important;
+  }
+
+  .source-panel .source-action-domain {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    margin: .38rem .15rem 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-body);
+    font-size: .78rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   html[data-theme='dark'] .portal-search {
@@ -269,19 +370,28 @@
   }
 
   @media (max-width: 700px) {
+    .source-panel > p {
+      color: var(--color-text) !important;
+      font-size: 1rem !important;
+      line-height: 1.72 !important;
+    }
+
     .source-panel .source-actions {
-      display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: .55rem;
+      gap: .78rem;
     }
 
-    .source-panel .source-actions a {
-      width: 100%;
-      min-width: 0;
+    .source-panel .source-actions > a,
+    .source-panel .source-actions .source-action-link {
+      min-height: 58px;
+      padding: .9rem 1rem !important;
+      font-size: 1.05rem !important;
     }
 
-    .source-panel .source-actions .external-domain-cue {
-      max-width: 42%;
+    .source-panel .source-action-domain {
+      margin-top: .42rem;
+      font-size: .82rem;
+      font-weight: 650;
     }
   }
 </style>
