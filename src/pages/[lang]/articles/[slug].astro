@@ -8,6 +8,7 @@ import ArticlePublicationMeta from '@components/ArticlePublicationMeta.astro';
 import ArticleQuickSummary from '@components/ArticleQuickSummary.astro';
 import ArticleReadingTools from '@components/ArticleReadingTools.astro';
 import ArticleStructuredData from '@components/ArticleStructuredData.astro';
+import ArticleWhatsAppChannelCTA from '@components/ArticleWhatsAppChannelCTA.astro';
 import { getCollection, render } from 'astro:content';
 import { getArticleTranslation, getRelatedArticles } from '@lib/content';
 import { canOfferApplicationAction } from '@lib/freshness';
@@ -208,4 +209,5 @@ const sourceCount = new Set(sourceLinks).size;
     updateHistory={article.data.updateHistory}
     correctionHistory={[...article.data.correctionHistory, ...ledgerCorrections]}
   />
+  <ArticleWhatsAppChannelCTA locale={locale} />
 </ArticleLayout>
