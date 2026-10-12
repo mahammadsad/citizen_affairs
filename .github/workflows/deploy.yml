@@ -66,7 +66,7 @@ jobs:
 
       - name: Upload workflow maintenance report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: workflow-maintenance-${{ github.run_id }}
           path: .artifacts/workflow-maintenance-report.json
@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload editorial freshness report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: editorial-freshness-${{ github.run_id }}
           path: .artifacts/editorial-freshness-report.json
@@ -101,7 +101,7 @@ jobs:
 
       - name: Upload editorial launch readiness report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: editorial-readiness-${{ github.run_id }}
           path: |
@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload performance and resilience report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: performance-resilience-${{ github.run_id }}
           path: .artifacts/performance-resilience-report.json
@@ -136,7 +136,7 @@ jobs:
 
       - name: Upload internal link report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: internal-links-${{ github.run_id }}
           path: .artifacts/internal-link-report.json
@@ -157,7 +157,7 @@ jobs:
 
       - name: Upload responsive article evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: responsive-article-evidence-${{ github.run_id }}
           path: test-results/**/article-*.png
@@ -254,7 +254,7 @@ jobs:
         run: npm run summarize:production
       - name: Retain production screenshots and health report
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: production-smoke-${{ github.run_id }}
           path: |
